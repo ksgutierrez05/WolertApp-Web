@@ -1,0 +1,654 @@
+/* ============================================================
+   GLOBAL.CSS — ÍNDICE
+   ============================================================
+   01. VARIABLES DE COLOR (:root)
+   02. SCROLL BASE (html, body)
+   03. RESET DE ENLACES (a)
+   04. SIDEBAR                    → .sidebar-dash
+   05. TOPBAR / MAIN              → #wrapperDash, .main-dash
+   06. HERO / SALUDO              → .hero-dash
+   07. KPIs (tarjetas de números) → .kpi-dash
+   08. ENCABEZADOS Y TARJETAS     → .card-panel-dash
+   09. BADGES Y ESTADOS           → .badge-dash, .wait-dash
+   10. BOTONES PROPIOS            → .btn-cv-*
+   11. RAIL DERECHO (perfil/cal)  → .rail-dash
+   12. TOGGLE DEL RAIL            → body.rail-collapsed
+   13. RESPONSIVE
+   ============================================================ */
+   /* [SECCIÓN 01] VARIABLES DE COLOR -------------------------------- */
+   /* sobreescritas por: css/temas.css → .rol-transito, .rol-admin,
+   .rol-policia, .rol-ciudadano (cada rol pisa estas mismas
+   variables, así que para cambiar la paleta de un rol se edita
+   temas.css*/
+   
+   :root {
+  --shadow-xs: 0 1px 2px rgba(16, 24, 40, 0.04);
+  --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.03), 0 6px 18px -10px rgba(16, 24, 40, 0.10);
+  --shadow-md: 0 14px 28px -16px rgba(16, 24, 40, 0.20);
+
+  /* ---------- sistema de colores por rol ----------
+     Estos son los valores por defecto (equivalen al rol Tránsito).
+     Cada rol define su propia paleta sobreescribiendo estas mismas
+     variables dentro de una clase .rol-xxxx en css/temas.css.
+     Todo el CSS de abajo usa var(--color-...) en vez de hex directo,
+     así que basta con poner la clase de rol en <body> para que
+     cambie el color en TODA la interfaz sin tocar una sola regla. */
+  --color-primary: #0a2f5c;
+  --color-primary-2: #154d8c;
+  --color-danger: #c81e2c;
+  --color-danger-2: #dd4048;
+  --color-amber: #c9821c;
+  --color-green: #1f9d5b;
+  --color-blue: #1f5fa8;
+
+  --ink: #0a1220;
+  --muted: #667085;
+  --subtle: #98a2b3;
+  --line: #e6e8f0;
+  --fog: #f4f5f9;
+  --page: #f6f7fa;
+}
+
+/* [SECCIÓN 02] SCROLL BASE ---------------------------------------- */
+html {
+  height: 100%;
+}
+
+body {
+  min-height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background-color: var(--page);
+  font-family: "Inter", sans-serif;
+  color: var(--ink);
+}
+
+h1, h2, h3 {
+  font-family: "Space Grotesk", sans-serif;
+}
+
+/* [SECCIÓN 03] RESET DE ENLACES ------------------------------------ */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* [SECCIÓN 04] SIDEBAR ---------------------------------------------- */
+
+.sidebar-dash {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 78px;
+  height: 100vh;
+  background-color: #ffffff;
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  padding: 24px 0;
+  overflow: hidden;
+  transition: width 0.24s ease;
+  z-index: 100;
+}
+
+.sidebar-dash:hover {
+  width: 250px;
+  overflow-y: auto;
+  box-shadow: 16px 0 36px -18px rgba(23, 43, 65, 0.35);
+}
+
+.brand-dash {
+  padding: 2px 24px 26px;
+}
+
+.brand-icon-dash {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-2));
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  flex-shrink: 0;
+}
+
+.brand-name-dash {
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 700;
+  font-size: 16.5px;
+  margin-left: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.sidebar-dash:hover .brand-name-dash {
+  opacity: 1;
+}
+
+.glabel-dash {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  padding: 0 24px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  margin: 10px 0 0;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.sidebar-dash:hover .glabel-dash {
+  opacity: 1;
+}
+
+.menu-dash {
+  padding: 0 14px;
+}
+
+.menu-dash a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  width: 44px;
+  height: 44px;
+  margin: 0 auto;
+  padding: 0;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  transition: background 0.15s ease, color 0.15s ease, justify-content 0.2s ease,
+    width 0.2s ease, height 0.2s ease, margin 0.2s ease, padding 0.2s ease,
+    border-radius 0.2s ease, gap 0.2s ease;
+}
+
+/* Al pasar el mouse (sidebar expandido) vuelve a ser la píldora
+   completa de ancho total*/
+.sidebar-dash:hover .menu-dash a {
+  justify-content: flex-start;
+  gap: 13px;
+  width: 100%;
+  height: auto;
+  margin: 0;
+  padding: 11px 12px;
+  border-radius: 12px;
+}
+
+.menu-dash a i {
+  width: 19px;
+  flex-shrink: 0;
+  font-size: 17px;
+  text-align: center;
+  color: var(--subtle);
+  transition: color 0.15s ease;
+}
+
+/* -- contenedor de icono propio (SVG) */
+.ic-dash {
+  width: 19px;
+  display: inline-flex;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ic-dash svg {
+  color: var(--subtle);
+  transition: color 0.15s ease;
+}
+
+.menu-dash a:hover {
+  background-color: var(--fog);
+  color: var(--ink);
+}
+
+.menu-dash a:hover i,
+.menu-dash a:hover .ic-dash svg {
+  color: var(--ink);
+}
+
+.menu-dash a.active {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-2));
+  color: #fff;
+  box-shadow: 0 6px 14px -6px rgba(23, 43, 65, 0.45);
+}
+
+.menu-dash a.active i,
+.menu-dash a.active .ic-dash svg {
+  color: #fff;
+}
+
+.menu-dash a .lbl-dash {
+  opacity: 0;
+  width: 0;
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: opacity 0.2s ease;
+}
+
+.sidebar-dash:hover .menu-dash a .lbl-dash {
+  opacity: 1;
+  width: auto;
+  transition: opacity 0.25s ease 0.08s;
+}
+
+.side-cta-dash {
+  margin: 14px 14px 0;
+  padding: 14px;
+  border-radius: 14px;
+  background: linear-gradient(150deg, var(--color-primary), var(--color-primary-2));
+  color: #fff;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.side-cta-icon-dash {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, var(--color-danger-2), var(--color-danger));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 14px;
+  flex-shrink: 0;
+  box-shadow: 0 4px 10px -2px rgba(200, 30, 44, 0.5);
+}
+
+.side-cta-dash .txt-dash {
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: opacity 0.2s ease;
+}
+
+.sidebar-dash:hover .side-cta-dash .txt-dash {
+  opacity: 1;
+  max-height: 200px;
+}
+
+.side-cta-dash b {
+  display: block;
+  font-size: 12.5px;
+}
+
+.side-cta-dash span {
+  display: block;
+  font-size: 11px;
+  color: #aab6c8;
+  margin-top: 3px;
+}
+
+.logout-dash {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 11px 12px;
+  margin: 10px 14px 0;
+  border-radius: 12px;
+  color: var(--color-danger);
+  font-weight: 700;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  justify-content: center;
+  transition: background 0.15s ease, justify-content 0.2s ease;
+}
+
+.sidebar-dash:hover .logout-dash {
+  justify-content: flex-start;
+}
+
+.logout-dash i {
+  width: 19px;
+  flex-shrink: 0;
+  font-size: 17px;
+  text-align: center;
+}
+
+.logout-dash .ic-dash svg {
+  color: var(--color-danger);
+}
+
+.logout-dash:hover {
+  background-color: #fce8e9;
+}
+
+.logout-dash .lbl-dash {
+  opacity: 0;
+  width: 0;
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: opacity 0.2s ease;
+}
+
+.sidebar-dash:hover .logout-dash .lbl-dash {
+  opacity: 1;
+  width: auto;
+  transition: opacity 0.25s ease 0.08s;
+}
+
+/* [SECCIÓN 05] TOPBAR / MAIN (igual en todos los roles) ---------- */
+/* usado en: el <main class="main-dash"> de cada panel. Contiene
+   el buscador, la campana de notificaciones y el avatar */
+
+.main-dash {
+  min-width: 0;
+}
+
+
+#wrapperDash {
+  padding-left: 78px;
+}
+
+/* Centra el contenido del main*/
+.main-dash .container-fluid {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 26px 28px 48px !important;
+  transition: max-width 0.28s ease;
+}
+
+.search-dash {
+  border-radius: 100px;
+  border: 1px solid var(--line);
+  overflow: hidden;
+  box-shadow: var(--shadow-xs);
+}
+
+.search-dash .input-group-text {
+  padding: 12px 6px 12px 18px;
+  font-size: 16px;
+  color: var(--muted);
+}
+
+.search-dash .form-control {
+  padding: 12px 18px 12px 6px;
+  font-size: 13.5px;
+}
+
+.search-dash .form-control::placeholder {
+  color: var(--subtle);
+}
+
+.icon-btn-dash {
+  width: 44px;
+  height: 44px;
+  box-shadow: var(--shadow-xs);
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.icon-btn-dash:hover {
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
+}
+
+.avatar-dash {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-2));
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.2s ease;
+}
+
+.avatar-dash:hover {
+  box-shadow: 0 0 0 3px var(--fog);
+}
+
+
+.rail-fijo-dash .avatar-dash {
+  width: 42px;
+  height: 42px;
+  font-size: 14px;
+}
+
+/* [SECCIÓN 06] HERO / SALUDO ------------------------------------------ */
+.hero-dash {
+  position: relative;
+  overflow: hidden;
+  border-radius: 22px;
+  padding: 30px 34px;
+  background: linear-gradient(120deg, var(--color-primary) 0%, var(--color-primary-2) 100%),
+    radial-gradient(circle at 85% 20%, rgba(200, 30, 44, 0.35), transparent 55%);
+  color: #fff;
+  box-shadow: var(--shadow-md);
+}
+
+.eyebrow-dash {
+  font-size: 12px;
+  font-weight: 600;
+  color: #b7c0d6;
+  margin-bottom: 10px;
+}
+
+.hero-title-dash {
+  font-weight: 800;
+  font-size: 25px;
+  letter-spacing: -0.02em;
+  max-width: 480px;
+  line-height: 1.3;
+  color: #fff;
+  font-family: "Inter", sans-serif;
+}
+
+.hero-text-dash {
+  margin-top: 9px;
+  font-size: 13.5px;
+  color: #c3cade;
+  max-width: 440px;
+}
+
+.hero-cta-dash {
+  font-size: 13px;
+  padding: 11px 20px;
+  gap: 9px;
+}
+
+.dot-danger-dash {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--color-danger);
+}
+
+/* El ícono de fondo del hero */
+.hero-icon-dash {
+  position: absolute;
+  right: 26px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.5;
+}
+
+/* [SECCIÓN 07] KPIs (tarjetas de números) ------------------------------ */
+/* usado en: las tarjetas de conteo arriba del panel en TODOS los
+   roles (ej. "6 casos activos", "20 reportes"). Los datos y el
+   ícono cambian por vista; estas clases de color son reusables*/
+
+.kpi-dash {
+  position: relative;
+  background-color: #fff;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 18px 18px 16px;
+  min-height: 104px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+.kpi-dash:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.kpi-dash::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 4px;
+}
+
+.kpi-red-dash::before { background-color: var(--color-danger); }
+.kpi-blue-dash::before { background-color: var(--color-blue); }
+.kpi-green-dash::before { background-color: var(--color-green); }
+.kpi-amber-dash::before { background-color: var(--color-amber); }
+
+
+.kpi-icon-dash {
+  position: absolute;
+  right: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 86px;
+  line-height: 1;
+  opacity: 0.12;
+}
+
+.kpi-red-dash .kpi-icon-dash, .kpi-red-dash .kpi-num-dash { color: var(--color-danger); }
+.kpi-blue-dash .kpi-icon-dash, .kpi-blue-dash .kpi-num-dash { color: var(--color-blue); }
+.kpi-green-dash .kpi-icon-dash, .kpi-green-dash .kpi-num-dash { color: var(--color-green); }
+.kpi-amber-dash .kpi-icon-dash, .kpi-amber-dash .kpi-num-dash { color: var(--color-amber); }
+
+.kpi-num-dash {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 27px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.kpi-label-dash {
+  color: var(--muted);
+  font-size: 12.5px;
+  font-weight: 600;
+  margin-top: 7px;
+}
+
+/* ---------- encabezados de sección y tarjetas contenedoras ---------- */
+.section-title-dash {
+  font-size: 16px;
+  margin: 0;
+}
+
+.see-all-dash {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.see-all-dash:hover {
+  color: var(--ink);
+}
+
+.card-panel-dash {
+  background-color: #fff;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: var(--shadow-sm);
+}
+
+.label-col-dash {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.info-title-dash {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.info-sub-dash {
+  font-size: 11.5px;
+  color: var(--muted);
+}
+
+/* [SECCIÓN 09] BADGES Y ESTADOS ------------------------------------------ */
+/* usado en: cualquier tabla o lista de cualquier rol que necesite
+   marcar un estado (ej. "Activo", "Pendiente", "Cerrado"). */
+
+.badge-dash {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 100px;
+}
+
+.badge-red-dash { background-color: #fce8e9; color: var(--color-danger); }
+.badge-amber-dash { background-color: #fcf0da; color: var(--color-amber); }
+.badge-green-dash { background-color: #e3f8ec; color: var(--color-green); }
+.badge-blue-dash { background-color: #e8f0fb; color: var(--color-blue); }
+
+.wait-dash {
+  display: inline-block;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 5px 11px;
+  border-radius: 100px;
+}
+
+.wait-urgent-dash { background-color: #fce8e9; color: var(--color-danger); }
+.wait-warn-dash { background-color: #fcf0da; color: var(--color-amber); }
+
+.link-btn-dash {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-blue);
+}
+
+/* [SECCIÓN 10] BOTONES PROPIOS -------------------------------------------- */
+.btn-cv-azul {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+
+.btn-cv-azul:hover {
+  background-color: var(--color-primary-2);
+  border-color: var(--color-primary-2);
+  color: #fff;
+}
+
+.btn-cv-rosado {
+  background-color: var(--color-danger);
+  border-color: var(--color-danger);
+  color: #fff;
+  font-size: 0.75rem;
+}
+
+.btn-cv-rosado:hover {
+  background-color: #a91824;
+  border-color: #a91824;
+  color: #fff;
+}
+
