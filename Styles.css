@@ -51,9 +51,8 @@ header {
 }
 
 section {
-    max-width: 720px;
-    margin: 0 auto;
-    padding: 100px 40px 60px;
+    max-width: 640px;
+    padding: 64px 40px 60px;
     text-align: left;
 }
 
@@ -86,4 +85,15 @@ section p {
 
 .btn:hover {
     background: #27ae60;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo-img {
+    height: 100px;
+    width: auto;
 }
