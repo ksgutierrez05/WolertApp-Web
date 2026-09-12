@@ -1,4 +1,4 @@
-// js/transito/sidebar.js
+// js/transito/director-transito/sidebar.js
 // Inyecta el sidebar del rol Tránsito en cada página.
 // Uso: <aside id="sidebarDash"></aside> + renderSidebarTransito('panel')
 // El id pasado debe coincidir con un "id" de MENU_TRANSITO.
@@ -6,8 +6,8 @@
 const ICONOS_TRANSITO = {
   logo: 'bi-shield-check',
   panel: 'bi-house',
-  accidentes: 'bi-cone-striped',
-  agentes: 'bi-person-badge',
+  accidentes: 'bi bi-exclamation-triangle',
+  agentes: 'bi bi-briefcase',
   casos: 'bi-file-earmark-text',
   mapa: 'bi-geo-alt',
   reportes: 'bi-bar-chart',
@@ -54,7 +54,10 @@ function renderSidebarTransito(paginaActiva) {
   el.innerHTML = `
     <div class="d-flex align-items-center brand-dash">
       <span class="brand-icon-dash"><i class="bi ${ICONOS_TRANSITO.logo}"></i></span>
-      <span class="brand-name-dash">WolertApp</span>
+       <span class="brand-name-dash">
+        <span class="d-block">Secretaria de</span>
+        <span class="d-block">Tránsito</span>
+      </span>
     </div>
 
     ${secciones}
