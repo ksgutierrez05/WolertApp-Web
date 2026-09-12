@@ -12,6 +12,10 @@
     box-sizing: border-box;
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
 body {
     font-family: 'Inter', sans-serif;
     color: var(--texto);
@@ -36,9 +40,15 @@ nav {
     font-weight: 700;
     font-size: 20px;
 }
+
+.logo,
+nav a {
+    color: #ffffff;
+}
+
 nav a {
     text-decoration: none;
-    color: var(--texto);
+    color: var(--fondo);
     font-size: 15px;
 }
 
@@ -49,12 +59,24 @@ body {
 
 header {
     border-bottom: 1px solid #e5e7eb;
+    background: var(--azul-oscuro);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    
+}
+
+header {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 24px;
+    padding: 20px 40px;
 }
 
 section {
     max-width: 640px;
     padding: 64px 40px 60px;
     text-align: left;
+    scroll-margin-top: 80px;
 }
 
 section h1 {
@@ -73,30 +95,31 @@ section p {
 
 .btn {
     display: inline-block;
-    margin-top: 32px;
+    margin-top: 0px;
     padding: 13px 26px;
-    background: var(--acento);
+    background: var(--azul-oscuro);
     color: #ffffff;
     text-decoration: none;
     font-weight: 600;
     font-size: 15px;
-    border-radius: 8px;
+    border-radius: 100px;
     transition: background 0.2s ease;
 }
 
 .btn:hover {
-    background: #27ae60;
+    text-decoration: none;
+    background: #0e1d36;
 }
 
 .btn-header {
     padding: 9px 18px;
     background: transparent;
-    border: 1px solid var(--muted);
-    color: var(--texto);
+    border: 1px solid var(--muted);   
+    color: var(--texto); 
 }
 
 .btn-header:hover {
-    border-color: var(--fondo);
+    border-color: rgba(255, 255, 255, 0.4);
     color: var(--fondo);
 }
 
