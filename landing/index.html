@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bienvenido a WolertApp</title>
-    <script src='script.js' defer></script>
+    <script src="../js/landing/script.js" defer></script>
     <link rel="stylesheet" href="../css/landing/styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -104,57 +104,75 @@
             </ul>
         </section>
 
-        <section id="como-funciona" class="como-funciona">
+    <section id="como-funciona" class="como-funciona">
+        <div class="sec-head">
+            <span class="kicker">Proceso</span>
             <h2>Cómo funciona</h2>
+            <p>Cinco pasos simples para que tu comunidad esté siempre alerta.</p>
+        </div>
 
-            <div class="paso">
-                <span class="num">1</span>
-                <div>
-                    <h3>Regístrate</h3>
-                    <p>Crea tu cuenta en un par de minutos, sin complicaciones.</p>
+        <div class="como-funciona-grid">
+            <div class="pasos-lista">
+                    <div class="paso">
+                    <span class="num">1</span>
+                    <div>
+                        <h3>Regístrate</h3>
+                        <p>Crea tu cuenta en un par de minutos, sin complicaciones.</p>
+                    </div>
+                </div>
+
+                <div class="paso">
+                    <span class="num">2</span>
+                    <div>
+                        <h3>Roles</h3>
+                        <p>El administrador que se te asigne te pondrá un rol dependiendo de tu cargo, o si eres ciudadano tendrás acceso sencillo.</p>
+                    </div>
+                </div>
+
+                <div class="paso">
+                    <span class="num">3</span>
+                    <div>
+                        <h3>Gestiona alertas</h3>
+                        <p>Recibe o genera notificaciones en tiempo real sobre eventos importantes en tu comunidad.</p>
+                    </div>
+                </div>
+
+                <div class="paso">
+                    <span class="num">4</span>
+                    <div>
+                        <h3>Colabora</h3>
+                        <p>Participa en la mejora de tu comunidad al compartir información y experiencias relevantes.</p>
+                    </div>
+                </div>
+
+                <div class="paso">
+                    <span class="num">5</span>
+                    <div>
+                        <h3>Gestiona</h3>
+                        <p>Accede a un historial de alertas y reportes para mantener un registro de lo que ha sucedido en tu comunidad.</p>
+                    </div>
                 </div>
             </div>
 
-            <div class="paso">
-                <span class="num">2</span>
-                <div>
-                    <h3>Roles</h3>
-                    <p>El administrador que se te asigne te pondrá un rol dependiendo de tu cargo, o si eres ciudadano tendrás acceso sencillo.</p>
-                </div>
+                <div class="como-funciona-imagen">
+                <img src="../img/maya.png" alt="Mascota de WolertApp">
             </div>
-
-            <div class="paso">
-                <span class="num">3</span>
-                <div>
-                    <h3>Gestiona alertas</h3>
-                    <p>Recibe o genera notificaciones en tiempo real sobre eventos importantes en tu comunidad.</p>
-                </div>
-            </div>
-
-            <div class="paso">
-                <span class="num">4</span>
-                <div>
-                    <h3>Colabora</h3>
-                    <p>Participa en la mejora de tu comunidad al compartir información y experiencias relevantes.</p>
-                </div>
-            </div>
-
-            <div class="paso">
-                <span class="num">5</span>
-                <h3>Gestiona </h3>
-                <p>Accede a un historial de alertas y reportes para mantener un registro de lo que ha sucedido en tu comunidad.</p>
-            </div>
-            
-        </section>
+        </div>
+    </section>
 
         <section id="cobertura" class="cobertura" aria-labelledby="cobertura-title">
-
             <div class="cobertura-texto">
+                <span class="cobertura-badge">
+                    <span class="punto-activo"></span>
+                    Cobertura activa
+                </span>
                 <h2 id="cobertura-title">Dónde ya está activo WolertApp</h2>
                 <p>Por ahora WolertApp funciona en Valledupar, con planes de expandirse a más ciudades próximamente.</p>
             </div>
-            <img src="../img/mapa-valledupar.png" alt="Mapa de cobertura de WolertApp en Valledupar" class="cobertura-mapa">
-            
+
+            <div class="cobertura-mapa-wrap">
+                <img src="../img/mapa-valledupar.png" alt="Mapa de cobertura de WolertApp en Valledupar" class="cobertura-mapa">
+            </div>
         </section>
 
         <section id="seguridad" class="seguridad" aria-labelledby="seguridad-title">
