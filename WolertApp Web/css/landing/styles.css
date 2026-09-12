@@ -80,6 +80,24 @@ header {
     -webkit-backdrop-filter: blur(10px);
 }
 
+.sec-head {
+    max-width: 56ch;
+    margin: 0 auto 56px;
+    text-align: center;
+}
+
+.kicker {
+    display: block;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--acento);
+    margin-bottom: 10px;
+}
+
+.producto {
+    padding: 100px 40px;
+}
+
 .logo {
     display: flex;
     align-items: center;
@@ -138,6 +156,9 @@ section p {
     background: var(--azul-oscuro);
     padding: 60px 48px;
     max-width: 100%;
+    min-height: calc(100vh - 80px);
+    display: flex;
+    align-items: center;
 }
 
 .hero-inner {
@@ -282,8 +303,9 @@ section p {
    PRODUCTO
 ============================ */
 .producto {
-    max-width: 640px;
     padding: 60px 40px;
+    max-width: 960px;
+    margin: 0 auto;
 }
 
 .producto h2 {
@@ -307,6 +329,43 @@ section p {
 .feature + .feature {
     margin-top: 32px;
 }
+
+.features-grid {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+
+.feature-card {
+    background: #f7f7f5;
+    border-radius: 16px;
+    padding: 28px 24px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+}
+
+.feature-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: rgba(46, 204, 113, 0.12);
+    color: var(--acento);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+
+.feature-card h3 {
+    font-size: 17px;
+    margin-bottom: 8px;
+}
+
 
 /* ============================
    CÓMO FUNCIONA
