@@ -97,3 +97,66 @@ section p {
     height: 100px;
     width: auto;
 }
+
+.producto {
+    max-width: 640px;
+    padding: 60px 40px;
+}
+
+.producto h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 28px;
+    line-height: 1.25;
+    margin-bottom: 40px;
+}
+
+.feature h3 {
+    font-size: 19px;
+    margin-bottom: 10px;
+}
+
+.feature p {
+    color: var(--muted);
+    font-size: 15.5px;
+    max-width: 55ch;
+}
+
+.feature + .feature {
+    margin-top: 32px;
+}
+
+.como-funciona {
+    max-width: 640px;
+    padding: 60px 40px;
+}
+
+.como-funciona h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 28px;
+    line-height: 1.25;
+    margin-bottom: 40px;
+}
+
+.paso {
+    display: flex;
+    gap: 18px;
+    align-items: flex-start;
+}
+
+.paso .num {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--acento);
+    flex-shrink: 0;
+}
+
+.paso h3 {
+    font-size: 19px;
+    margin-bottom: 6px;
+}
+
+.paso p {
+    color: var(--muted);
+    font-size: 15.5px;
+}
