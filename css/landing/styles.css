@@ -348,9 +348,9 @@ section p { margin-top: 20px; font-size: 17px; color: var(--muted); max-width: 5
 /* ============================
    COBERTURA
 ============================ */
-.cobertura { max-width: 960px; display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+.cobertura { max-width: 960px; margin: 0 auto; }
 
-.cobertura-texto { display: flex; flex-direction: column; gap: 8px; }
+.cobertura .sec-head { margin-bottom: 48px; }
 
 .cobertura-badge {
     display: inline-flex;
@@ -362,8 +362,7 @@ section p { margin-top: 20px; font-size: 17px; color: var(--muted); max-width: 5
     font-weight: 600;
     padding: 6px 14px;
     border-radius: 100px;
-    width: fit-content;
-    margin-bottom: 8px;
+    margin-bottom: 16px;
 }
 
 .cobertura-badge .punto-activo {
@@ -376,5 +375,104 @@ section p { margin-top: 20px; font-size: 17px; color: var(--muted); max-width: 5
 
 @keyframes pulso-badge { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
-.cobertura-mapa-wrap { position: relative; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 45px rgba(0, 0, 0, 0.12); }
+.cobertura-grid {
+    display: grid;
+    grid-template-columns: 0.85fr 1.15fr;
+    gap: 56px;
+    align-items: center;
+}
+
+.cobertura-panel { display: flex; flex-direction: column; gap: 32px; }
+
+.cobertura-stats { list-style: none; display: flex; gap: 28px; }
+.cobertura-stats li { display: flex; flex-direction: column; gap: 4px; }
+
+.stat-num {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 26px;
+    color: var(--azul-oscuro);
+}
+
+.stat-label { font-size: 13px; color: var(--muted); max-width: 14ch; }
+
+.cobertura-roadmap {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid rgba(10, 18, 32, 0.08);
+}
+
+.roadmap-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(10, 18, 32, 0.08);
+}
+
+.roadmap-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(10, 18, 32, 0.15); flex-shrink: 0; }
+.roadmap-item.is-activo .roadmap-dot { background: var(--acento); }
+
+.roadmap-ciudad { font-size: 15px; font-weight: 600; flex: 1; }
+.roadmap-estado { font-size: 13px; color: var(--muted); }
+.roadmap-item.is-activo .roadmap-estado { color: var(--acento); font-weight: 600; }
+
+/* --- Tarjeta del mapa --- */
+.cobertura-mapa-wrap {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 25px 60px rgba(10, 18, 32, 0.18);
+    isolation: isolate;
+}
+
+.cobertura-mapa-wrap::before {
+    content: "";
+    position: absolute;
+    inset: -30px;
+    background: radial-gradient(circle at 30% 20%, rgba(46, 204, 113, 0.35), transparent 60%);
+    filter: blur(30px);
+    z-index: -1;
+}
+
 .cobertura-mapa { width: 100%; height: auto; display: block; }
+
+.mapa-pin {
+    position: absolute;
+    top: 46%;
+    left: 42%;
+    width: 14px;
+    height: 14px;
+}
+
+.mapa-pin-punto {
+    position: absolute;
+    inset: 3px;
+    border-radius: 50%;
+    background: var(--acento);
+    border: 2px solid #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.mapa-pin-pulso {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: var(--acento);
+    animation: pulso 2s ease-out infinite;
+}
+
+.mapa-etiqueta {
+    position: absolute;
+    top: calc(46% + 20px);
+    left: calc(42% + 16px);
+    background: #ffffff;
+    color: var(--texto);
+    font-size: 12.5px;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 100px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+    white-space: nowrap;
+}

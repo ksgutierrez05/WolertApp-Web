@@ -16,6 +16,7 @@
 
             <div class="logo"> <img src="../img/logo.png" alt="WolertApp" class="logo-img">WolertApp</div>
             <nav>
+                <a href="#inicio">Inicio</a>
                 <a href="#producto">Producto</a>
                 <a href="#como-funciona">Cómo funciona</a>
                 <a href="#cobertura">Cobertura</a>
@@ -25,7 +26,7 @@
 
         </header>
 
-        <section class="hero">
+        <section id="inicio" class="hero">
             <div class="aurora"></div>
 
             <div class="hero-inner">
@@ -160,20 +161,52 @@
         </div>
     </section>
 
-        <section id="cobertura" class="cobertura" aria-labelledby="cobertura-title">
-            <div class="cobertura-texto">
-                <span class="cobertura-badge">
-                    <span class="punto-activo"></span>
-                    Cobertura activa
-                </span>
-                <h2 id="cobertura-title">Dónde ya está activo WolertApp</h2>
-                <p>Por ahora WolertApp funciona en Valledupar, con planes de expandirse a más ciudades próximamente.</p>
+    <section id="cobertura" class="cobertura" aria-labelledby="cobertura-title">
+        <div class="sec-head">
+            <span class="cobertura-badge">
+                <span class="punto-activo"></span>
+                Cobertura activa
+            </span>
+            <h2 id="cobertura-title">Dónde ya está activo WolertApp</h2>
+            <p>Por ahora WolertApp funciona en Valledupar, con planes de expandirse a más ciudades próximamente.</p>
+        </div>
+
+        <div class="cobertura-grid">
+            <div class="cobertura-panel">
+                <ul class="cobertura-stats">
+                    <li><span class="stat-num">1</span><span class="stat-label">ciudad activa</span></li>
+                    <li><span class="stat-num">24/7</span><span class="stat-label">monitoreo comunitario</span></li>
+                </ul>
+
+                <ul class="cobertura-roadmap">
+                    <li class="roadmap-item is-activo">
+                        <span class="roadmap-dot"></span>
+                        <span class="roadmap-ciudad">Valledupar</span>
+                        <span class="roadmap-estado">Activo</span>
+                    </li>
+                    <li class="roadmap-item">
+                        <span class="roadmap-dot"></span>
+                        <span class="roadmap-ciudad">Bogotá</span>
+                        <span class="roadmap-estado">Próximamente</span>
+                    </li>
+                    <li class="roadmap-item">
+                        <span class="roadmap-dot"></span>
+                        <span class="roadmap-ciudad">Barranquilla</span>
+                        <span class="roadmap-estado">Próximamente</span>
+                    </li>
+                </ul>
             </div>
 
             <div class="cobertura-mapa-wrap">
                 <img src="../img/mapa-valledupar.png" alt="Mapa de cobertura de WolertApp en Valledupar" class="cobertura-mapa">
+                <span class="mapa-pin">
+                    <span class="mapa-pin-pulso"></span>
+                    <span class="mapa-pin-punto"></span>
+                </span>
+                <span class="mapa-etiqueta">Valledupar</span>
             </div>
-        </section>
+        </div>
+    </section>
 
         <section id="seguridad" class="seguridad" aria-labelledby="seguridad-title">
 
