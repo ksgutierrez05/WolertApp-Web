@@ -4,7 +4,7 @@
 // el HTML tenga los ids: sidebarDash, kpiTotal, kpiCamino, kpiSitio,
 // kpiPorCerrar, filtrosAt, listaAt, panelDetalleAt.
 
-renderSidebarPatrullero('atenciones');
+renderSidebarPolicia('misatenciones');
 
 /* ============================================================
    DATOS DE EJEMPLO

@@ -2,7 +2,7 @@
 // Lógica de "Notificaciones" del rol Patrullero.
 // Distinto de Alarmas: aquí van comunicaciones informativas, no urgencias.
 
-renderSidebarPatrullero('notificaciones');
+renderSidebarPolicia('notificaciones');
 
 let notificaciones = [
   { id: 'N-501', grupo: 'Hoy', texto: 'Tienes una nueva alerta de alta prioridad asignada.', hora: 'Hace 6 min', leida: false },

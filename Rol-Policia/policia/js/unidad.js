@@ -2,7 +2,7 @@
 // Lógica de "Mi Unidad" del rol Patrullero.
 // Consulta únicamente: no crea, elimina ni modifica integrantes.
 
-renderSidebarPatrullero('miunidad');
+renderSidebarPolicia('miunidad');
 
 const ETIQUETAS_ESTADO_UNI = {
   DISPONIBLE: { texto: 'Disponible', clase: 'estado-disponible-uni' },

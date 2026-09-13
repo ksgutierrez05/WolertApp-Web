@@ -6,5 +6,5 @@
 // datos reales, sin tocar el HTML ni el CSS.
 
 document.addEventListener('DOMContentLoaded', () => {
-  renderSidebarPatrullero('centrooperaciones');
+  renderSidebarPolicia('centrooperaciones');
 });

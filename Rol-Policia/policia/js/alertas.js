@@ -7,7 +7,7 @@
 // (que deben mover el caso a Mis Atenciones).
 
 document.addEventListener('DOMContentLoaded', () => {
-  renderSidebarPatrullero('alertas');
+  renderSidebarPolicia('misalertas');
 
   const chips = document.querySelectorAll('.al-chip');
   const tarjetas = document.querySelectorAll('.al-card');

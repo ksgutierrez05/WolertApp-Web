@@ -2,7 +2,7 @@
 // Lógica de "Historial" del rol Patrullero.
 // Muestra únicamente las atenciones ya realizadas por este patrullero.
 
-renderSidebarPatrullero('historial');
+renderSidebarPolicia('historial');
 
 const historialAtenciones = [
   {
