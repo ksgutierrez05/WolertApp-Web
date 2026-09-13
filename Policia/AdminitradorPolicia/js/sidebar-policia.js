@@ -60,10 +60,10 @@ const MENU_POLICIA = [
   {
     seccion: 'Gestión',
     items: [
-      { id: 'historial',      label: 'Historial',      href: '#', icon: ICONOS_POLICIA.historial },
-      { id: 'estadisticas',   label: 'Estadísticas',   href: '#', icon: ICONOS_POLICIA.estadisticas },
+      { id: 'historial',      label: 'Historial',      href: '../Historial/historial.html', icon: ICONOS_POLICIA.historial },
+      { id: 'estadisticas',   label: 'Estadísticas',   href: '../Estadisticas/estadisticas.html', icon: ICONOS_POLICIA.estadisticas },
       { id: 'reportes',       label: 'Reportes',       href: '#', icon: ICONOS_POLICIA.reportes },
-      { id: 'notificaciones', label: 'Notificaciones', href: '#', icon: ICONOS_POLICIA.notificaciones, badge: 3 },
+      { id: 'notificaciones', label: 'Notificaciones', href: '#', icon: ICONOS_POLICIA.notificaciones },
       { id: 'configuracion',  label: 'Configuración',  href: '#', icon: ICONOS_POLICIA.configuracion },
     ],
   },
