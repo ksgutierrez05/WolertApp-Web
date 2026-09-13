@@ -1,18 +1,33 @@
-const fechaSpan = document.getElementById("fecha-actual");
-const horaSpan = document.getElementById("hora-actual");
+//resaltar link activo del sidebar
+    const linksMenu = document.querySelectorAll(".menu-dash a");
 
-function actualizarFechaHora() {
-    const ahora = new Date();
+    linksMenu.forEach((link) => {
+        link.addEventListener("click", () => {
+            linksMenu.forEach((otroLink) => {
+                otroLink.classList.remove("active");
+            });
+            link.classList.add("active");
+        });
+    });
+//
 
-    const opcionesFecha = { day: 'numeric', month: 'long', year: 'numeric' };
-    const fechaTexto = ahora.toLocaleDateString('es-ES', opcionesFecha);
+//hora dinamica
+    const fechaSpan = document.getElementById("fecha-actual");
+    const horaSpan = document.getElementById("hora-actual");
 
-    const opcionesHora = { hour: '2-digit', minute: '2-digit', second: '2-digit' };
-    const horaTexto = ahora.toLocaleTimeString('es-ES', opcionesHora);
+    function actualizarFechaHora() {
+        const ahora = new Date();
 
-    fechaSpan.textContent = fechaTexto;
-    horaSpan.textContent = horaTexto;
-}
+        const opcionesFecha = { day: 'numeric', month: 'long', year: 'numeric' };
+        const fechaTexto = ahora.toLocaleDateString('es-ES', opcionesFecha);
 
-//funciona para reptetir acciones en itervalos de tiempo en milisegundos
-actualizarFechaHora(actualizarFechaHora,1000);
+        const opcionesHora = { hour: '2-digit', minute: '2-digit', second: '2-digit' };
+        const horaTexto = ahora.toLocaleTimeString('es-ES', opcionesHora);
+
+        fechaSpan.textContent = fechaTexto;
+        horaSpan.textContent = horaTexto;
+    }
+
+    //funciona para reptetir acciones en itervalos de tiempo en milisegundos
+    actualizarFechaHora(actualizarFechaHora,1000);
+//
