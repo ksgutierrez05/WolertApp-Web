@@ -37,3 +37,30 @@ body {
     border-radius: 0 30px 30px 0;
     justify-content: center;
 }
+
+.login-logo {
+    width: 280px;
+    height: 280px;
+    margin-bottom: 12px;
+} 
+
+.login-panel-izq h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 26px;
+}
+
+.login-tagline {
+    color: var(--muted);
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.btn-registrarse {
+    background: #ffffff;
+    color: var(--azul-oscuro);
+    border: none;
+    padding: 12px 32px;
+    border-radius: 100px;
+    font-weight: 600;
+    cursor: pointer;
+}
