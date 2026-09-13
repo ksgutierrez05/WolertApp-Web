@@ -17,30 +17,55 @@
     </a>
 
     <body>
-        <div class="login-card">
 
-            <div class="login-panel-izq">
-                <img src="../img/logo.png" alt="WolertApp" class="login-logo">
-                <h1>WolertApp</h1>
-                <p>Sistema de alertas comunitarias</p>
-                <p class="login-tagline">Seguridad en tu barrio y notificaciones en tiempo real</p>
-                <button type="button" class="btn-registrarse">Registrarse</button>
-            </div>
+        <a href="../landing/index.html" class="btn-volver">
+            <i class="bi bi-arrow-left"></i>
+            Volver
+        </a>
 
-            <div class="login-panel-der">
-                <h2>Iniciar sesión</h2>
-                <form>
+        <div class="auth-container" id="auth-container">
+
+            <div class="form-box form-login">
+                <form id="form-login">
+                    <h2>Iniciar sesión</h2>
+
                     <input type="text" placeholder="Usuario" class="login-input">
+
                     <div class="input-wrapper">
                         <i class="bi bi-lock"></i>
                         <input type="password" placeholder="Contraseña" class="login-input" id="password">
                         <i class="bi bi-eye" id="toggle-password"></i>
                     </div>
-                    <button type="submit" class="btn-login">LOGIN</button>
+
+                    <button type="submit" class="btn-login">Ingresar</button>
                     <a href="#" class="link-olvide">¿Olvidaste tu contraseña?</a>
                 </form>
             </div>
 
+            <div class="panel-deslizante" id="panel-deslizante">
+                <img src="../img/logo.png" alt="WolertApp" class="login-logo">
+                <h1>WolertApp</h1>
+                <p>Sistema de alertas comunitarias</p>
+                <p class="login-tagline">Seguridad para tu barrio y notificaciones en tiempo real</p>
+                <button type="button" class="btn-registrarse" id="btn-toggle">Registrarse</button>
+            </div>
+
+            <div class="form-box form-registro">
+                <form id="form-registro">
+                    <h2>Crear cuenta</h2>
+
+                    <input type="text" placeholder="Nombre completo" class="login-input">
+                    <input type="email" placeholder="Correo electrónico" class="login-input">
+                    <input type="text" placeholder="Usuario" class="login-input">
+
+                    <div class="input-wrapper">
+                        <i class="bi bi-lock"></i>
+                        <input type="password" placeholder="Contraseña" class="login-input">
+                    </div>
+
+                    <button type="submit" class="btn-login">Registrarse</button>
+                </form>
+            </div>
         </div>
     </body>
 </html>
