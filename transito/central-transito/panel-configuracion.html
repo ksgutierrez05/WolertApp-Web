@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WolertApp - Configuración</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="../../css/global.css" />
+  <link rel="stylesheet" href="../../css/temas.css" />
+  <link rel="stylesheet" href="../../css/transito/central-transito/panel-configuracion.css" />
+  <script src="../../js/global.js" defer></script>
+</head>
+
+<body class="rol-transito rail-collapsed" data-rol="transito">
+
+  <div class="d-flex" id="wrapperDash">
+
+    <aside class="sidebar-dash" id="sidebarDash">
+
+    </aside>
+
+    <!-- ===================== MAIN ===================== -->
+    <main class="main-dash flex-grow-1">
+      <div class="container-fluid px-4 py-4">
+
+        <!-- topbar -->
+        <div class="row g-3 align-items-center mb-5">
+          <div class="col">
+            <div class="input-group search-dash">
+              <span class="input-group-text bg-white border-0"><i class="bi bi-search"></i></span>
+              <input type="text" class="form-control border-0" placeholder="Buscar por caso, barrio o agente...">
+            </div>
+          </div>
+          <div class="col-auto">
+            <button class="btn btn-light rounded-circle position-relative icon-btn-dash">
+              <i class="bi bi-bell"></i>
+              <span class="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle">9+</span>
+            </button>
+          </div>
+          <div class="col-auto">
+            <span class="avatar-dash" id="railToggle" title="Mostrar/ocultar perfil">D</span>
+          </div>
+        </div>
+
+        <!-- encabezado -->
+        <div class="mb-4">
+          <h1 class="section-title-dash">Configuración</h1>
+          <p class="section-text-dash mb-0">Preferencias de notificaciones y del turno de despacho.</p>
+        </div>
+
+        <!-- notificaciones -->
+        <div class="panel-card-dash mb-3">
+          <h2 class="panel-title-dash">Notificaciones</h2>
+
+          <div class="config-row-dash">
+            <div>
+              <div class="config-label-dash">Sonido al recibir un caso nuevo</div>
+              <div class="config-text-dash">Reproduce una alerta sonora cada vez que llega un reporte sin asignar.</div>
+            </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" role="switch" checked>
+            </div>
+          </div>
+
+          <div class="config-row-dash">
+            <div>
+              <div class="config-label-dash">Aviso de espera crítica</div>
+              <div class="config-text-dash">Notifica cuando un caso lleva más de 10 minutos sin ser asignado.</div>
+            </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" role="switch" checked>
+            </div>
+          </div>
+        </div>
+
+        <!-- turno -->
+        <div class="panel-card-dash mb-3">
+          <h2 class="panel-title-dash">Turno de despacho</h2>
+
+          <div class="row g-3 align-items-end">
+            <div class="col-md-4">
+              <label class="config-field-label-dash">Horario del turno</label>
+              <select class="form-select">
+                <option>6:00 a.m. – 2:00 p.m.</option>
+                <option selected>2:00 p.m. – 10:00 p.m.</option>
+                <option>10:00 p.m. – 6:00 a.m.</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="config-field-label-dash">Reasignar si el agente no responde en</label>
+              <select class="form-select">
+                <option>3 minutos</option>
+                <option selected>5 minutos</option>
+                <option>10 minutos</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <div class="form-check form-switch d-flex align-items-center gap-2">
+                <input class="form-check-input" type="checkbox" role="switch" checked>
+                <label class="config-label-dash mb-0">Reasignación automática</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- cuenta -->
+        <div class="panel-card-dash">
+          <h2 class="panel-title-dash">Cuenta</h2>
+
+          <div class="config-row-dash">
+            <div>
+              <div class="config-label-dash">Contraseña</div>
+              <div class="config-text-dash">Última actualización hace 3 meses.</div>
+            </div>
+            <button class="btn-secundario-dash">Cambiar contraseña</button>
+          </div>
+
+          <div class="config-row-dash">
+            <div>
+              <div class="config-label-dash">Sesiones activas</div>
+              <div class="config-text-dash">Cierra el acceso desde otros dispositivos conectados a tu cuenta.</div>
+            </div>
+            <button class="btn-secundario-dash">Cerrar otras sesiones</button>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-skAcpIdS7UcVUC05LJ9Dxay8AXcDYfBJqt1CJ85S/CFujCsTpJa/mR1LT" crossorigin="anonymous"></script>
+  <script src="../../js/transito/central-transito/slidebar.js"></script>
+  <script>renderSidebarTransito('configuracion');</script>
+</body>
+
+</html>
