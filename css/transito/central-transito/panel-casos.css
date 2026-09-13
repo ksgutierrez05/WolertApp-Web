@@ -1,0 +1,152 @@
+.section-title-dash {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 26px;
+  color: #182339;
+  margin-bottom: 4px;
+}
+
+.section-text-dash {
+  color: #6b7a90;
+  font-size: 14px;
+}
+
+.hero-page-dash {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-2));
+  border-radius: 18px;
+  padding: 28px 32px;
+  color: #ffffff;
+}
+
+.hero-page-title-dash {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 28px;
+  margin: 4px 0 6px;
+}
+
+.hero-page-text-dash {
+  color: #cfd9ec;
+  font-size: 14px;
+}
+
+.kpi-card-dash {
+  position: relative;
+  overflow: hidden;
+  border-radius: 14px;
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 6px rgba(16, 30, 54, 0.06);
+}
+
+.border-blue-dash,
+.border-green-dash,
+.border-red-dash,
+.border-amber-dash {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-2));
+}
+
+.kpi-content-dash {
+  position: relative;
+  z-index: 2;
+}
+
+.kpi-value-dash {
+  font-size: 26px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.kpi-label-dash {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.kpi-icon-box-dash {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 50px;
+  line-height: 1;
+  z-index: 1;
+  color: rgba(255, 255, 255, 0.775);
+}
+
+.table-card-dash {
+  background-color: #ffffff;
+  border-radius: 14px;
+  padding: 18px 20px;
+  box-shadow: 0 2px 6px rgba(16, 30, 54, 0.06);
+}
+
+.table-title-dash {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 17px;
+  color: #182339;
+}
+
+.table-card-dash table th {
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #8a97ab;
+  font-weight: 600;
+  border-bottom: 1px solid #eef1f5;
+  padding: 12px 8px;
+}
+
+.table-card-dash table td {
+  padding: 14px 8px;
+  border-bottom: 1px solid #f2f4f8;
+  font-size: 14px;
+  color: #182339;
+}
+
+.badge-tipo-dash {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.tipo-semaforo-dash { background-color: #fdf3e0; color: #cf8a08; }
+.tipo-accidente-dash { background-color: #fdecec; color: #d9364a; }
+
+.badge-espera-dash {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.espera-alta-dash { background-color: #fdecec; color: #d9364a; }
+.espera-media-dash { background-color: #fdf3e0; color: #cf8a08; }
+
+.btn-asignar-dash {
+  background-color:rgba(106, 20, 20, 0.83);
+  color: #ffffff;
+  border: none;
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.btn-asignar-dash:hover {
+  background-color: rgba(192, 108, 108, 0.866);
+}
+
+.link-detalle-dash {
+  color: var(--color-primary);
+  font-weight: 600;
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.link-detalle-dash:hover {
+  text-decoration: underline;
+}
