@@ -15,6 +15,7 @@ const ICONOS_TRANSITO = {
   reportes: 'bi-bar-chart-line',
   usuarios: 'bi-people',
   configuracion: 'bi-gear',
+  semaforo: 'bi bi-stoplights',
   logout: 'bi-box-arrow-left',
 };
 
@@ -29,6 +30,7 @@ const MENU_TRANSITO = [
     { id: 'agentes',    label: 'Agentes',    href: 'panel-agentes.html', icon: ICONOS_TRANSITO.agentes },
     { id: 'casos',      label: 'Casos',      href: 'panel-casos.html', icon: ICONOS_TRANSITO.casos },
     { id: 'catalogo',       label: 'Catálogo',       href: 'panel-catalogo.html', icon: ICONOS_TRANSITO.catalogo },
+    { id: 'semaforo',       label: 'Semáforos',       href: 'panel-semaforos.html', icon: ICONOS_TRANSITO.semaforo },
     { id: 'mapa',       label: 'Mapa',       href: 'panel-mapa.html', icon: ICONOS_TRANSITO.mapa },
   ]},
   { seccion: 'Gestión', items: [

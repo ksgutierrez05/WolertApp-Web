@@ -1,0 +1,329 @@
+/* ==========================================================================
+   WolertApp - Panel de Semáforos
+   Misma identidad visual que panel-casos.css (Director de Tránsito)
+   ========================================================================== */
+
+.section-title-dash {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 26px;
+  color: #182339;
+  margin-bottom: 4px;
+}
+
+.section-text-dash {
+  color: #6b7a90;
+  font-size: 14px;
+}
+
+/* ------------------------------- Botón primario ------------------------------- */
+
+.btn-primario-dash {
+  background:#782b2b;;
+  border: none;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 6px 16px;
+  border-radius: 20px;
+  transition: filter 0.15s ease, transform 0.1s ease;
+}
+
+.btn-primario-dash:hover {
+  filter: brightness(1.05);
+  color: #ffffff;
+  background: #974646;
+}
+
+.btn-primario-dash:active {
+  transform: scale(0.98);
+}
+
+/* ---------------------------------- KPIs ---------------------------------- */
+
+.kpi-card-dash {
+  position: relative;
+  overflow: hidden;
+  border-radius: 14px;
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 6px rgba(16, 30, 54, 0.06);
+}
+
+.border-blue-dash,
+.border-green-dash,
+.border-red-dash,
+.border-amber-dash {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-2));
+}
+
+.kpi-content-dash {
+  position: relative;
+  z-index: 2;
+}
+
+.kpi-value-dash {
+  font-size: 26px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.kpi-label-dash {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.456);
+}
+
+.kpi-icon-box-dash {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 50px;
+  line-height: 1;
+  z-index: 1;
+  color: rgba(255, 255, 255, 0.775);
+}
+
+/* ------------------------------- Tarjeta tabla ------------------------------- */
+
+.table-card-dash {
+  background-color: #ffffff;
+  border-radius: 14px;
+  padding: 18px 20px;
+  box-shadow: 0 2px 6px rgba(16, 30, 54, 0.06);
+}
+
+.tabs-dash {
+  flex-wrap: wrap;
+}
+
+.tab-dash-sem {
+  border: none;
+  background-color: #eef1f8;
+  color: #6b7a90;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 8px 18px;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.tab-dash-sem.active-dash {
+  background-color: var(--color-primary);
+  color: #ffffff;
+}
+
+.table-card-dash table th {
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #8a97ab;
+  font-weight: 600;
+  border-bottom: 1px solid #eef1f5;
+  padding: 12px 8px;
+}
+
+.table-card-dash table td {
+  padding: 14px 8px;
+  border-bottom: 1px solid #f2f4f8;
+  font-size: 14px;
+  color: #182339;
+}
+
+/* ------------------------------- Badges de estado ------------------------------- */
+
+.badge-estado-dash {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.estado-atencion-dash  { background-color: #fdf3e0; color: #cf8a08; } /* mantenimiento */
+.estado-critica-dash   { background-color: #fdecec; color: #d9364a; } /* dañado */
+.estado-camino-dash    { background-color: #eaf1fe; color: #2f6fed; }
+.estado-resuelta-dash  { background-color: #e9f8ee; color: #2fa84f; } /* funcionando */
+
+
+/* ------------------------------- Íconos de acciones ------------------------------- */
+
+.btn-icono-dash {
+  border: none;
+  background-color: transparent;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  color: #6b7a90;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.btn-icono-dash:hover {
+  background-color: #eef1f8;
+}
+
+.btn-icono-editar-dash:hover {
+  color: #2f6fed;
+}
+
+.btn-icono-eliminar-dash:hover {
+  color: #d9364a;
+}
+
+.btn-light.btn-sm {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7a90;
+}
+
+.btn-light.btn-sm:hover {
+  background-color: var(--color-primary);
+  color: #fcfcfc;
+}
+
+/* --------------------------------- Paginación --------------------------------- */
+
+.paginacion-dash {
+  border-top: 1px solid #eef1f5;
+}
+
+.page-btn-dash {
+  width: 32px;
+  height: 32px;
+  border: 1px solid #eef1f5;
+  background-color: #ffffff;
+  color: #6b7a90;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.page-btn-dash.active-dash {
+  background-color: var(--color-primary);
+  color: #ffffff;
+  border-color: var(--color-primary);
+}
+
+/* --------------------------------- Filtros --------------------------------- */
+
+.filtros-titulo-dash {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  color: #182339;
+  margin-bottom: 16px;
+}
+
+.filtros-subtitulo-dash {
+  font-size: 12px;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: #8a97ab;
+  margin-bottom: 8px;
+}
+
+.filtros-fila-dash {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #eef1f5;
+}
+
+.filtros-busqueda-dash {
+  flex: 1 1 260px;
+  max-width: 320px;
+  background-color: #f7f8fb;
+  border-radius: 10px;
+}
+
+/* Pills de filtro por estado (panel lateral / topbar de filtros) */
+.pill-filtro-dash {
+  border: 1px solid transparent;
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  background-color: #eef1f8;
+  color: #6b7a90;
+  cursor: pointer;
+  transition: filter 0.15s ease, transform 0.1s ease;
+}
+
+.pill-filtro-dash:hover {
+  filter: brightness(0.97);
+}
+
+.pill-filtro-dash:active {
+  transform: scale(0.97);
+}
+
+.pill-funcionando-dash.pill-activa-dash   { background-color: #e9f8ee; color: #2fa84f; border-color: #2fa84f; }
+.pill-danado-dash.pill-activa-dash        { background-color: #fdecec; color: #d9364a; border-color: #d9364a; }
+.pill-mantenimiento-dash.pill-activa-dash { background-color: #fdf3e0; color: #cf8a08; border-color: #cf8a08; }
+
+/* ==========================================================================
+   Modal: Crear / Editar semáforo
+   ========================================================================== */
+
+.modal-dash .modal-content {
+  border: none;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.modal-dash .modal-header {
+  border-bottom: 1px solid #eef1f5;
+  padding: 20px 24px;
+}
+
+.modal-dash .modal-title {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  color: #182339;
+}
+
+.modal-dash .modal-body {
+  padding: 22px 24px 6px;
+}
+
+.modal-dash .modal-footer {
+  border-top: 1px solid #eef1f5;
+  padding: 16px 24px;
+}
+
+.form-label-dash {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #8a97ab;
+  margin-bottom: 6px;
+}
+
+.form-control-dash {
+  border: 1px solid #eef1f5;
+  background-color: #f7f8fb;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 14px;
+  color: #182339;
+}
+
+.form-control-dash:focus {
+  border-color: var(--color-primary);
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(47, 111, 237, 0.15);
+}
+
+.form-control-dash[readonly] {
+  color: #8a97ab;
+  cursor: not-allowed;
+}
