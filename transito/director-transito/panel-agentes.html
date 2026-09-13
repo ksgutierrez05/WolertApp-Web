@@ -16,7 +16,9 @@
   <link rel="stylesheet" href="../../css/temas.css" />
   <link rel="stylesheet" href="../../css/transito/director-transito/panel-agentes.css" />
   <script src="../../js/global.js" defer></script>
+  <script src="../../js/transito/director-transito/panel-agentes.js" defer></script>
 </head>
+
 <body class="rol-transito rail-collapsed" data-rol="transito">
  
   <div class="d-flex" id="wrapperDash">
@@ -54,7 +56,7 @@
             <h1 class="section-title-dash">Agentes de Tránsito</h1>
             <p class="section-text-dash mb-0">Gestiona el personal de campo asignado al módulo de Tránsito.</p>
           </div>
-          <button class="btn btn-primary rounded-pill fw-bold btn-nuevo-dash">
+          <button type="button" class="btn btn-primary rounded-pill fw-bold btn-nuevo-dash" data-bs-toggle="modal" data-bs-target="#modalAgente">
             <i class="bi bi-person-plus me-2"></i>Nuevo agente
           </button>
         </div>
@@ -64,7 +66,7 @@
           <div class="col-md-3">
             <div class="kpi-card-dash border-blue-dash">
               <div class="kpi-content-dash">
-                <div class="kpi-value-dash">15</div>
+                <div class="kpi-value-dash" id="kpiTotal">0</div>
                 <div class="kpi-label-dash">Agentes totales</div>
               </div>
               <i class="bi bi-people kpi-icon-dash"></i>
@@ -73,7 +75,7 @@
           <div class="col-md-3">
             <div class="kpi-card-dash border-green-dash">
               <div class="kpi-content-dash">
-                <div class="kpi-value-dash">11</div>
+                <div class="kpi-value-dash" id="kpiActivos">0</div>
                 <div class="kpi-label-dash">Activos ahora</div>
               </div>
               <i class="bi bi-person-check kpi-icon-dash"></i>
@@ -82,7 +84,7 @@
           <div class="col-md-3">
             <div class="kpi-card-dash border-red-dash">
               <div class="kpi-content-dash">
-                <div class="kpi-value-dash">4</div>
+                <div class="kpi-value-dash" id="kpiInactivos">0</div>
                 <div class="kpi-label-dash">Inactivos</div>
               </div>
               <i class="bi bi-person-dash kpi-icon-dash"></i>
@@ -102,10 +104,16 @@
         <!-- tabla -->
         <div class="table-card-dash">
  
-          <div class="d-flex gap-2 tabs-dash mb-3">
-            <button class="tab-dash active-dash">Todos (15)</button>
-            <button class="tab-dash">Activos (11)</button>
-            <button class="tab-dash">Inactivos (4)</button>
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+            <div class="d-flex gap-2 tabs-dash">
+              <button class="tab-dash active-dash" id="tabTodos" onclick="FiltrarAgentes('todos')">Todos (0)</button>
+              <button class="tab-dash" id="tabActivos" onclick="FiltrarAgentes('activo')">Activos (0)</button>
+              <button class="tab-dash" id="tabInactivos" onclick="FiltrarAgentes('inactivo')">Inactivos (0)</button>
+            </div>
+            <div class="input-group search-panel-dash">
+              <span class="input-group-text bg-white border-0"><i class="bi bi-search"></i></span>
+              <input type="text" class="form-control border-0" id="buscarAgente" placeholder="Buscar agente, cédula o zona..." oninput="BuscarAgentes(this.value)">
+            </div>
           </div>
  
           <table class="table align-middle mb-0">
@@ -119,93 +127,15 @@
                 <th class="text-end">Acciones</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td>
-                  <div class="d-flex align-items-center gap-2">
-                    <div class="avatar-sm-dash">JR</div>
-                    <div>
-                      <div class="fw-semibold">Jorge Ramírez</div>
-                      <div class="text-muted small">CC 1065.234.812</div>
-                    </div>
-                  </div>
-                </td>
-                <td>Zona Norte</td>
-                <td><span class="badge-state-dash badge-active-dash">Activo</span></td>
-                <td>18</td>
-                <td>4.2 min</td>
-                <td class="text-end">
-                  <button class="btn-icon-dash" title="Ver perfil"><i class="bi bi-eye"></i></button>
-                  <button class="btn-icon-dash" title="Desactivar"><i class="bi bi-toggle-on text-green-dash"></i></button>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <div class="d-flex align-items-center gap-2">
-                    <div class="avatar-sm-dash">LP</div>
-                    <div>
-                      <div class="fw-semibold">Laura Pacheco</div>
-                      <div class="text-muted small">CC 1102.556.903</div>
-                    </div>
-                  </div>
-                </td>
-                <td>Centro</td>
-                <td><span class="badge-state-dash badge-active-dash">Activo</span></td>
-                <td>22</td>
-                <td>3.8 min</td>
-                <td class="text-end">
-                  <button class="btn-icon-dash" title="Ver perfil"><i class="bi bi-eye"></i></button>
-                  <button class="btn-icon-dash" title="Desactivar"><i class="bi bi-toggle-on text-green-dash"></i></button>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <div class="d-flex align-items-center gap-2">
-                    <div class="avatar-sm-dash">MC</div>
-                    <div>
-                      <div class="fw-semibold">Manuel Contreras</div>
-                      <div class="text-muted small">CC 1098.774.221</div>
-                    </div>
-                  </div>
-                </td>
-                <td>Sector La Nevada</td>
-                <td><span class="badge-state-dash badge-inactive-dash">Inactivo</span></td>
-                <td>9</td>
-                <td>5.6 min</td>
-                <td class="text-end">
-                  <button class="btn-icon-dash" title="Ver perfil"><i class="bi bi-eye"></i></button>
-                  <button class="btn-icon-dash" title="Activar"><i class="bi bi-toggle-off text-muted"></i></button>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <div class="d-flex align-items-center gap-2">
-                    <div class="avatar-sm-dash">DT</div>
-                    <div>
-                      <div class="fw-semibold">Diana Torres</div>
-                      <div class="text-muted small">CC 1076.443.190</div>
-                    </div>
-                  </div>
-                </td>
-                <td>Zona Norte</td>
-                <td><span class="badge-state-dash badge-active-dash">Activo</span></td>
-                <td>15</td>
-                <td>4.9 min</td>
-                <td class="text-end">
-                  <button class="btn-icon-dash" title="Ver perfil"><i class="bi bi-eye"></i></button>
-                  <button class="btn-icon-dash" title="Desactivar"><i class="bi bi-toggle-on text-green-dash"></i></button>
-                </td>
-              </tr>
+            <tbody id="tablaAgentesBody">
+              <!-- Se llena dinámicamente desde panel-agentes.js -->
             </tbody>
           </table>
  
           <div class="d-flex justify-content-between align-items-center pt-3 paginacion-dash">
-            <span class="text-muted small">Mostrando 1–4 de 15 agentes</span>
+            <span class="text-muted small" id="resumenPaginacion">Mostrando 0 agentes</span>
             <div class="d-flex gap-1">
               <button class="page-btn-dash active-dash">1</button>
-              <button class="page-btn-dash">2</button>
-              <button class="page-btn-dash">3</button>
-              <button class="page-btn-dash"><i class="bi bi-chevron-right"></i></button>
             </div>
           </div>
  
@@ -216,11 +146,55 @@
  
   </div>
  
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-skAcpIdS7UcVUC05LJ9Dxay8AXcDYfBJqt1CJ85S/CFujCsTpJa/mR1LT" crossorigin="anonymous"></script>
-  <script src="/js/transito/director-transito/slidebar.js"></script>
+  <!-- ===================== MODAL: NUEVO AGENTE ===================== -->
+  <div class="modal fade" id="modalAgente" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content modal-dash">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="panel-title-dash mb-0">Nuevo agente de tránsito</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <form id="formAgente">
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="config-field-label-dash">Nombre completo</label>
+              <input type="text" class="form-control" id="inputNombre" placeholder="Ej: Camilo Vega" required>
+            </div>
+            <div class="mb-3">
+              <label class="config-field-label-dash">Cédula</label>
+              <input type="text" class="form-control" id="inputCedula" placeholder="Ej: CC 1085.223.910" required>
+            </div>
+            <div class="mb-3">
+              <label class="config-field-label-dash">Zona asignada</label>
+              <select class="form-select" id="inputZona" required>
+                <option value="" disabled selected>Selecciona una zona</option>
+                <option>Zona Norte</option>
+                <option>Centro</option>
+                <option>Sector La Nevada</option>
+                <option>Los Fundadores</option>
+              </select>
+            </div>
+            <div class="mb-1">
+              <label class="config-field-label-dash">Estado inicial</label>
+              <select class="form-select" id="inputEstado">
+                <option value="activo" selected>Activo</option>
+                <option value="inactivo">Inactivo</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer border-0 pt-0">
+            <button type="button" class="btn-secundario-dash" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn-guardar-dash">Guardar agente</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../../js/transito/director-transito/slidebar.js"></script>
   <script>renderSidebarTransito('agentes');</script>
+
 </body>
- 
+
 </html>
- 

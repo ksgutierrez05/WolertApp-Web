@@ -76,6 +76,18 @@
 .text-red-dash { color: #e63946; }
 .text-amber-dash { color: #f0a202; }
 
+.search-panel-dash {
+  background-color: #f4f6f9;
+  border-radius: 20px;
+  padding: 4px 14px;
+  max-width: 280px;
+  color: #6b7a90;
+}
+
+.search-panel-dash input::placeholder {
+  color: #8a97ab;
+}
+
 .table-card-dash {
   background-color: #ffffff;
   border-radius: 14px;
@@ -178,4 +190,55 @@
 
 .btn-icon-dash:hover {
   color: var(--color-primary);
+}
+
+/* ===================== MODAL: NUEVO AGENTE ===================== */
+
+.modal-dash {
+  border-radius: 16px;
+  border: none;
+  padding: 8px;
+}
+
+.panel-title-dash {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 17px;
+  color: #182339;
+}
+
+.config-field-label-dash {
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7a90;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.btn-guardar-dash {
+  background-color: var(--color-primary);
+  color: #ffffff;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 20px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.btn-guardar-dash:hover {
+  background-color: var(--color-primary-2);
+}
+
+.btn-secundario-dash {
+  background-color: #eef1f8;
+  color: var(--color-primary);
+  border: none;
+  border-radius: 20px;
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.btn-secundario-dash:hover {
+  background-color: #e2e7f3;
 }

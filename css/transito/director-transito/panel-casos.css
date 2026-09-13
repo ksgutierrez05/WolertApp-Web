@@ -186,3 +186,70 @@
   color: #ffffff;
   border-color: var(--color-primary);
 }
+
+.filtros-titulo-dash {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  color: #182339;
+  margin-bottom: 16px;
+}
+ 
+.filtros-subtitulo-dash {
+  font-size: 12px;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: #8a97ab;
+  margin-bottom: 8px;
+}
+ 
+.filtros-fila-dash {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #eef1f5;
+}
+ 
+.filtros-busqueda-dash {
+  flex: 1 1 260px;
+  max-width: 320px;
+  background-color: #f7f8fb;
+  border-radius: 10px;
+}
+ 
+.tab-dash {
+  cursor: pointer;
+}
+ 
+.link-detalle-dash {
+  cursor: pointer;
+}
+ 
+/* Pills de filtro por estado (panel lateral) */
+.pill-filtro-dash {
+  border: 1px solid transparent;
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  background-color: #eef1f8;
+  color: #6b7a90;
+  cursor: pointer;
+  transition: filter 0.15s ease, transform 0.1s ease;
+}
+ 
+.pill-filtro-dash:hover {
+  filter: brightness(0.97);
+}
+ 
+.pill-filtro-dash:active {
+  transform: scale(0.97);
+}
+ 
+.pill-atencion-dash.pill-activa-dash { background-color: #fdf3e0; color: #cf8a08; border-color: #cf8a08; }
+.pill-critica-dash.pill-activa-dash  { background-color: #fdecec; color: #d9364a; border-color: #d9364a; }
+.pill-camino-dash.pill-activa-dash   { background-color: #eaf1fe; color: #2f6fed; border-color: #2f6fed; }
+.pill-resuelta-dash.pill-activa-dash { background-color: #e9f8ee; color: #2fa84f; border-color: #2fa84f; }
+ 
