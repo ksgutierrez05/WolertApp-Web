@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WolertApp - Agentes</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="../../css/global.css" />
+  <link rel="stylesheet" href="../../css/temas.css" />
+  <link rel="stylesheet" href="../../css/transito/central-transito/panel-agentes.css" />
+  <script src="../../js/global.js" defer></script>
+</head>
+
+<body class="rol-transito rail-collapsed" data-rol="transito">
+
+  <div class="d-flex" id="wrapperDash">
+
+    <aside class="sidebar-dash" id="sidebarDash">
+
+    </aside>
+
+    <!-- ===================== MAIN ===================== -->
+    <main class="main-dash flex-grow-1">
+      <div class="container-fluid px-4 py-4">
+
+        <!-- topbar -->
+        <div class="row g-3 align-items-center mb-5">
+          <div class="col">
+            <div class="input-group search-dash">
+              <span class="input-group-text bg-white border-0"><i class="bi bi-search"></i></span>
+              <input type="text" class="form-control border-0" placeholder="Buscar por caso, barrio o agente...">
+            </div>
+          </div>
+          <div class="col-auto">
+            <button class="btn btn-light rounded-circle position-relative icon-btn-dash">
+              <i class="bi bi-bell"></i>
+              <span class="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle">9+</span>
+            </button>
+          </div>
+          <div class="col-auto">
+            <span class="avatar-dash" id="railToggle" title="Mostrar/ocultar perfil">D</span>
+          </div>
+        </div>
+
+        <!-- encabezado -->
+        <div class="mb-4">
+          <h1 class="section-title-dash">Agentes</h1>
+          <p class="section-text-dash mb-0">Consulta el estado y la disponibilidad de los agentes de tránsito para asignar casos.</p>
+        </div>
+
+        <!-- KPIs -->
+        <div class="row g-3 mb-5">
+          <div class="col-md-3">
+            <div class="kpi-card-dash border-blue-dash">
+              <div class="kpi-content-dash">
+                <div class="kpi-value-dash">15</div>
+                <div class="kpi-label-dash">Agentes totales</div>
+              </div>
+              <span class="kpi-icon-box-dash bg-blue-dash"><i class="bi bi-people"></i></span>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="kpi-card-dash border-green-dash">
+              <div class="kpi-content-dash">
+                <div class="kpi-value-dash">11</div>
+                <div class="kpi-label-dash">Disponibles ahora</div>
+              </div>
+              <span class="kpi-icon-box-dash bg-green-dash"><i class="bi bi-person-check"></i></span>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="kpi-card-dash border-amber-dash">
+              <div class="kpi-content-dash">
+                <div class="kpi-value-dash">4</div>
+                <div class="kpi-label-dash">En atención</div>
+              </div>
+              <span class="kpi-icon-box-dash bg-amber-dash"><i class="bi bi-cone-striped"></i></span>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="kpi-card-dash border-red-dash">
+              <div class="kpi-content-dash">
+                <div class="kpi-value-dash">0</div>
+                <div class="kpi-label-dash">No disponibles</div>
+              </div>
+              <span class="kpi-icon-box-dash bg-red-dash"><i class="bi bi-person-dash"></i></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- tabla -->
+        <div class="table-card-dash">
+
+          <div class="d-flex gap-2 tabs-dash mb-3">
+            <button class="tab-dash active-dash">Todos (15)</button>
+            <button class="tab-dash">Disponibles (11)</button>
+            <button class="tab-dash">En atención (4)</button>
+          </div>
+
+          <table class="table align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Agente</th>
+                <th>Zona</th>
+                <th>Estado</th>
+                <th>Caso actual</th>
+                <th class="text-end">&nbsp;</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="avatar-icon-dash avatar-green-dash">JR</span>
+                    <div class="fw-semibold">Jorge Ramírez</div>
+                  </div>
+                </td>
+                <td>Zona Norte</td>
+                <td><span class="badge-estado-dash estado-resuelta-dash">Disponible</span></td>
+                <td class="text-muted">—</td>
+                <td class="text-end"><a href="#" class="link-detalle-dash">Ver perfil</a></td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="avatar-icon-dash avatar-amber-dash">LP</span>
+                    <div class="fw-semibold">Laura Pacheco</div>
+                  </div>
+                </td>
+                <td>Centro</td>
+                <td><span class="badge-estado-dash estado-atencion-dash">En atención</span></td>
+                <td>Accidente · Casimiro Raúl Maestre</td>
+                <td class="text-end"><a href="#" class="link-detalle-dash">Ver perfil</a></td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="avatar-icon-dash avatar-green-dash">MC</span>
+                    <div class="fw-semibold">Manuel Contreras</div>
+                  </div>
+                </td>
+                <td>Sector La Nevada</td>
+                <td><span class="badge-estado-dash estado-resuelta-dash">Disponible</span></td>
+                <td class="text-muted">—</td>
+                <td class="text-end"><a href="#" class="link-detalle-dash">Ver perfil</a></td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="avatar-icon-dash avatar-amber-dash">DT</span>
+                    <div class="fw-semibold">Diana Torres</div>
+                  </div>
+                </td>
+                <td>Zona Norte</td>
+                <td><span class="badge-estado-dash estado-atencion-dash">En atención</span></td>
+                <td>Semáforo dañado · Los Fundadores</td>
+                <td class="text-end"><a href="#" class="link-detalle-dash">Ver perfil</a></td>
+              </tr>
+            </tbody>
+          </table>
+
+        </div>
+
+      </div>
+    </main>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-skAcpIdS7UcVUC05LJ9Dxay8AXcDYfBJqt1CJ85S/CFujCsTpJa/mR1LT" crossorigin="anonymous"></script>
+  <script src="../../js/transito/central-transito/slidebar.js"></script>
+  <script>renderSidebarTransito('agentes-transito');</script>
+</body>
+
+</html>

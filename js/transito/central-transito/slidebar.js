@@ -28,7 +28,7 @@ const MENU_TRANSITO = [
     
     { id: 'asignar',    label: 'Casos sin asignar',    href: 'panel-casos.html', icon: ICONOS_TRANSITO.casos },
     { id: 'mapa',       label: 'Mapa',       href: 'panel-mapa.html', icon: ICONOS_TRANSITO.mapa },
-    { id: 'agentes',      label: 'Agentes',      href: 'panel-agentes.html', icon: ICONOS_TRANSITO.agentes },
+    { id: 'agentes-transito',      label: 'Agentes',      href: 'panel-agentes.html', icon: ICONOS_TRANSITO.agentes },
     { id: 'historial',       label: 'Historial de casos',       href: 'panel-catalogo.html', icon: ICONOS_TRANSITO.catalogo },
   ]},
   { seccion: 'Gestión', items: [

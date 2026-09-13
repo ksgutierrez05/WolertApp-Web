@@ -11,25 +11,6 @@
   font-size: 14px;
 }
 
-.hero-page-dash {
-  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-2));
-  border-radius: 18px;
-  padding: 28px 32px;
-  color: #ffffff;
-}
-
-.hero-page-title-dash {
-  font-family: 'Space Grotesk', sans-serif;
-  font-weight: 700;
-  font-size: 28px;
-  margin: 4px 0 6px;
-}
-
-.hero-page-text-dash {
-  color: #cfd9ec;
-  font-size: 14px;
-}
-
 .kpi-card-dash {
   position: relative;
   overflow: hidden;
@@ -83,11 +64,23 @@
   box-shadow: 0 2px 6px rgba(16, 30, 54, 0.06);
 }
 
-.table-title-dash {
-  font-family: 'Inter', sans-serif;
-  font-weight: 700;
-  font-size: 17px;
-  color: #182339;
+.tabs-dash {
+  flex-wrap: wrap;
+}
+
+.tab-dash {
+  border: none;
+  background-color: #eef1f8;
+  color: #6b7a90;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 8px 18px;
+  border-radius: 20px;
+}
+
+.tab-dash.active-dash {
+  background-color: var(--color-primary);
+  color: #ffffff;
 }
 
 .table-card-dash table th {
@@ -106,39 +99,31 @@
   color: #182339;
 }
 
-.badge-tipo-dash {
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 11px;
+.avatar-icon-dash {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
   font-weight: 700;
 }
 
-.tipo-semaforo-dash { background-color: #fdf3e0; color: #cf8a08; }
-.tipo-accidente-dash { background-color: #fdecec; color: #d9364a; }
+.avatar-blue-dash { background-color: var(--color-primary); }
+.avatar-green-dash { background-color: #2fa84f; }
+.avatar-amber-dash { background-color: #cf8a08; }
 
-.badge-espera-dash {
+.badge-estado-dash {
   padding: 4px 12px;
   border-radius: 20px;
   font-size: 12px;
   font-weight: 600;
 }
 
-.espera-alta-dash { background-color: #fdecec; color: #d9364a; }
-.espera-media-dash { background-color: #fdf3e0; color: #cf8a08; }
-
-.btn-asignar-dash {
-  background-color: var(--color-primary);
-  color: #ffffff;
-  border: none;
-  border-radius: 20px;
-  padding: 8px 18px;
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.btn-asignar-dash:hover {
-  background-color: var(--color-primary-2);
-}
+.estado-resuelta-dash { background-color: #e9f8ee; color: #2fa84f; }
+.estado-atencion-dash { background-color: #fdf3e0; color: #cf8a08; }
 
 .link-detalle-dash {
   color: var(--color-primary);
