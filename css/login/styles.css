@@ -95,6 +95,25 @@ body {
     font-size: 15px;
 }
 
+.input-wrapper {
+    position: relative;
+    margin-bottom: 16px;
+}
+
+.input-wrapper i {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    font-size: 15px;
+}
+
+.input-wrapper .login-input {
+    padding-left: 42px;
+    margin-bottom: 0;
+}
+
 .btn-login {
     background: var(--azul-oscuro);
     color: #ffffff;
@@ -104,4 +123,15 @@ body {
     font-weight: 600;
     cursor: pointer;
     margin-top: 8px;
+}
+
+.input-wrapper #toggle-password {
+    position: absolute;
+    left: auto;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    font-size: 15px;
+    cursor: pointer;
 }
