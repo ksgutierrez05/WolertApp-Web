@@ -64,3 +64,44 @@ body {
     font-weight: 600;
     cursor: pointer;
 }
+
+.login-panel-der {
+    background: #ffffff;
+    padding: 48px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-panel-der form{
+    max-width: 380px;
+
+}
+
+.login-panel-der h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 28px;
+}
+
+.login-input {
+    width: 100%;
+    padding: 20px 18px;
+    border: 1px solid #e0e0e0;
+    border-radius: 30px;
+    margin-bottom: 16px;
+    font-size: 15px;
+}
+
+.btn-login {
+    background: var(--azul-oscuro);
+    color: #ffffff;
+    border: none;
+    padding: 14px;
+    border-radius: 30px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 8px;
+}
