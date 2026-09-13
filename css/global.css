@@ -254,17 +254,17 @@ a {
 }
 
 .side-cta-icon-dash {
-  width: 32px;
-  height: 32px;
+  width: 26px;
+  height: 26px;
   border-radius: 9px;
-  background: linear-gradient(135deg, var(--color-danger-2), var(--color-danger));
+  background: rgba(255, 255, 255, 0.15);
   display: flex;
   align-items: center;
   justify-content: center;
   color: #fff;
-  font-size: 14px;
+  font-size: 12px;
   flex-shrink: 0;
-  box-shadow: 0 4px 10px -2px rgba(200, 30, 44, 0.5);
+  box-shadow: none;
 }
 
 .side-cta-dash .txt-dash {
@@ -650,5 +650,18 @@ a {
   background-color: #a91824;
   border-color: #a91824;
   color: #fff;
+}
+
+.brand-subtitle-dash {
+    display: block;
+    font-size: 11px;
+    color: var(--muted);
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.sidebar-dash:hover .brand-subtitle-dash {
+    opacity: 1;
 }
 
