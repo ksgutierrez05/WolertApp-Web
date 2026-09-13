@@ -707,14 +707,14 @@ body:has(.sidebar-dash:hover) #wrapperDash {
 }
 
 .btn-cv-rosado {
-  background-color: var(--color-danger);
-  border-color: var(--color-danger);
+  background-color: #087F5B;
+  border-color: #087F5B;
   color: #fff;
   font-size: 0.75rem;
 }
 
 .btn-cv-rosado:hover {
-  background-color: #a91824;
-  border-color: #a91824;
+  background-color: #006B5B;
+  border-color: #006B5B;
   color: #fff;
 }

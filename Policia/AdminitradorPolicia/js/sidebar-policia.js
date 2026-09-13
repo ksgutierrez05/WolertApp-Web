@@ -44,7 +44,7 @@ const MENU_POLICIA = [
   {
     seccion: 'General',
     items: [
-      { id: 'centrooperaciones', label: 'Centro de Operaciones', href: '../CentroOperaciones/index.html', icon: ICONOS_POLICIA.centrooperaciones },
+      { id: 'centrooperaciones', label: 'Centro de Operaciones', href: '../centro-operaciones/centro-operaciones.html', icon: ICONOS_POLICIA.centrooperaciones },
     ],
   },
   {
@@ -52,8 +52,8 @@ const MENU_POLICIA = [
     items: [
       { id: 'alertas',      label: 'Alertas',      href: '../Alertas/alertas.html', icon: ICONOS_POLICIA.alertas },
       { id: 'alarmas',      label: 'Alarmas',      href: '../Alarmas/alarmas.html', icon: ICONOS_POLICIA.alarmas },
-      { id: 'asignaciones', label: 'Asignaciones', href: '#', icon: ICONOS_POLICIA.asignaciones },
-      { id: 'unidades',     label: 'Unidades',     href: '#', icon: ICONOS_POLICIA.unidades },
+      { id: 'asignaciones', label: 'Asignaciones', href: '../Asignaciones/asignaciones.html', icon: ICONOS_POLICIA.asignaciones },
+      { id: 'unidades',     label: 'Unidades',     href: '../Unidades/unidades.html', icon: ICONOS_POLICIA.unidades },
       { id: 'policias',     label: 'Policías',     href: '#', icon: ICONOS_POLICIA.policias },
     ],
   },
@@ -98,7 +98,7 @@ function renderSidebarPolicia(paginaActiva) {
 
   el.innerHTML = `
     <div class="d-flex align-items-center brand-dash">
-      <span class="brand-icon-dash"><img src="../../../img/LogoWolertAPP.png" alt="WolertApp" style="width:100%;height:100%;object-fit:contain;border-radius:inherit;"></span>
+      <span class="brand-icon-dash"><img src="../../../img/LogoWolertApp.png" alt="Policía Nacional" style="width:100%;height:100%;object-fit:contain;"></span>
       <span class="brand-name-dash">WolertApp</span>
     </div>
 

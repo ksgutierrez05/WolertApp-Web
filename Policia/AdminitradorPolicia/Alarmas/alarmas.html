@@ -22,11 +22,11 @@
     <main class="main-dash">
       <div class="container-fluid">
 
-        <!-- Topbar (igual en todos los roles) -->
+        <!-- Topbar -->
         <div class="d-flex align-items-center gap-3 mb-4">
           <div class="search-dash flex-grow-1 d-flex align-items-center input-group">
             <span class="input-group-text bg-transparent border-0"><i class="bi bi-search"></i></span>
-            <input type="text" id="buscarAlarma" class="form-control border-0 bg-transparent" placeholder="Buscar alarma por nombre o barrio…">
+            <input type="text" id="buscarAlarma" class="form-control border-0 bg-transparent" placeholder="Buscar por nombre o barrio...">
           </div>
           <button class="icon-btn-dash btn btn-light rounded-circle position-relative">
             <i class="bi bi-bell"></i>
@@ -51,26 +51,17 @@
           <div class="col-6 col-xl-3">
             <div class="kpi-solid-dash">
               <div>
-                <p class="kpi-solid-num-dash" id="kpiTotal">0</p>
+                <p class="kpi-solid-num-dash" id="kpiTotalAlarmas">12</p>
                 <p class="kpi-solid-label-dash">Total de alarmas</p>
               </div>
-              <span class="kpi-solid-icon-dash"><i class="bi bi-megaphone"></i></span>
+              <span class="kpi-solid-icon-dash"><i class="bi bi-bell"></i></span>
             </div>
           </div>
           <div class="col-6 col-xl-3">
             <div class="kpi-solid-dash">
               <div>
-                <p class="kpi-solid-num-dash" id="kpiActivas">0</p>
+                <p class="kpi-solid-num-dash" id="kpiActivas">4</p>
                 <p class="kpi-solid-label-dash">Activas</p>
-              </div>
-              <span class="kpi-solid-icon-dash"><i class="bi bi-broadcast"></i></span>
-            </div>
-          </div>
-          <div class="col-6 col-xl-3">
-            <div class="kpi-solid-dash">
-              <div>
-                <p class="kpi-solid-num-dash" id="kpiInactivas">0</p>
-                <p class="kpi-solid-label-dash">Inactivas</p>
               </div>
               <span class="kpi-solid-icon-dash"><i class="bi bi-check-circle"></i></span>
             </div>
@@ -78,7 +69,16 @@
           <div class="col-6 col-xl-3">
             <div class="kpi-solid-dash">
               <div>
-                <p class="kpi-solid-num-dash" id="kpiMantenimiento">0</p>
+                <p class="kpi-solid-num-dash" id="kpiInactivas">6</p>
+                <p class="kpi-solid-label-dash">Inactivas</p>
+              </div>
+              <span class="kpi-solid-icon-dash"><i class="bi bi-slash-circle"></i></span>
+            </div>
+          </div>
+          <div class="col-6 col-xl-3">
+            <div class="kpi-solid-dash">
+              <div>
+                <p class="kpi-solid-num-dash" id="kpiMantenimiento">2</p>
                 <p class="kpi-solid-label-dash">En mantenimiento</p>
               </div>
               <span class="kpi-solid-icon-dash"><i class="bi bi-tools"></i></span>
@@ -86,12 +86,12 @@
           </div>
         </div>
 
-        <!-- Filtros por estado -->
+        <!-- Filtros -->
         <div class="d-flex gap-2 flex-wrap mb-3" id="filtrosAlarmas">
-          <button class="chip-filtro-dash active" data-filtro="todas">Todas</button>
-          <button class="chip-filtro-dash" data-filtro="ACTIVA">Activas</button>
-          <button class="chip-filtro-dash" data-filtro="INACTIVA">Inactivas</button>
-          <button class="chip-filtro-dash" data-filtro="EN_MANTENIMIENTO">En mantenimiento</button>
+          <button class="chip-filtro-dash active" data-filtro="todas">Todas <span class="chip-count-dash">12</span></button>
+          <button class="chip-filtro-dash" data-filtro="ACTIVA">Activas <span class="chip-count-dash">4</span></button>
+          <button class="chip-filtro-dash" data-filtro="INACTIVA">Inactivas <span class="chip-count-dash">6</span></button>
+          <button class="chip-filtro-dash" data-filtro="MANTENIMIENTO">En mantenimiento <span class="chip-count-dash">2</span></button>
         </div>
 
         <!-- Tabla de alarmas -->
@@ -100,15 +100,72 @@
             <table class="table table-borderless align-middle tabla-alarmas-dash mb-0">
               <thead>
                 <tr>
-                  <th>Alarma</th>
+                  <th>Nombre</th>
                   <th>Barrio</th>
-                  <th>Coordenadas</th>
-                  <th>Radio cobertura</th>
                   <th>Estado</th>
+                  <th>Radio (m)</th>
+                  <th>Coordenadas</th>
                   <th class="text-end">Acciones</th>
                 </tr>
               </thead>
-              <tbody id="filaAlarmas"></tbody>
+              <tbody id="filaAlarmas">
+                <tr>
+                  <td><span class="nombre-alarma-dash">Alarma La Nevada 1</span></td>
+                  <td>La Nevada</td>
+                  <td><span class="badge-dash badge-green-dash">Activa</span></td>
+                  <td>150</td>
+                  <td><span class="coordenadas-dash">10.4631, -73.2532</span></td>
+                  <td class="text-end">
+                    <div class="acciones-alarma-dash justify-content-end">
+                      <button class="btn btn-icon-dash btn-ver-dash" title="Ver"><i class="bi bi-eye"></i></button>
+                      <button class="btn btn-icon-dash btn-editar-dash" title="Editar"><i class="bi bi-pencil"></i></button>
+                      <button class="btn btn-icon-dash btn-eliminar-dash" title="Eliminar"><i class="bi bi-trash"></i></button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><span class="nombre-alarma-dash">Alarma Cañaguate</span></td>
+                  <td>Cañaguate</td>
+                  <td><span class="badge-dash badge-muted-dash">Inactiva</span></td>
+                  <td>200</td>
+                  <td><span class="coordenadas-dash">10.4550, -73.2461</span></td>
+                  <td class="text-end">
+                    <div class="acciones-alarma-dash justify-content-end">
+                      <button class="btn btn-icon-dash btn-ver-dash" title="Ver"><i class="bi bi-eye"></i></button>
+                      <button class="btn btn-icon-dash btn-editar-dash" title="Editar"><i class="bi bi-pencil"></i></button>
+                      <button class="btn btn-icon-dash btn-eliminar-dash" title="Eliminar"><i class="bi bi-trash"></i></button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><span class="nombre-alarma-dash">Alarma Almendros</span></td>
+                  <td>Los Almendros</td>
+                  <td><span class="badge-dash badge-amber-dash">En mantenimiento</span></td>
+                  <td>120</td>
+                  <td><span class="coordenadas-dash">10.4702, -73.2598</span></td>
+                  <td class="text-end">
+                    <div class="acciones-alarma-dash justify-content-end">
+                      <button class="btn btn-icon-dash btn-ver-dash" title="Ver"><i class="bi bi-eye"></i></button>
+                      <button class="btn btn-icon-dash btn-editar-dash" title="Editar"><i class="bi bi-pencil"></i></button>
+                      <button class="btn btn-icon-dash btn-eliminar-dash" title="Eliminar"><i class="bi bi-trash"></i></button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><span class="nombre-alarma-dash">Alarma Sicarare</span></td>
+                  <td>Sicarare</td>
+                  <td><span class="badge-dash badge-green-dash">Activa</span></td>
+                  <td>180</td>
+                  <td><span class="coordenadas-dash">10.4489, -73.2705</span></td>
+                  <td class="text-end">
+                    <div class="acciones-alarma-dash justify-content-end">
+                      <button class="btn btn-icon-dash btn-ver-dash" title="Ver"><i class="bi bi-eye"></i></button>
+                      <button class="btn btn-icon-dash btn-editar-dash" title="Editar"><i class="bi bi-pencil"></i></button>
+                      <button class="btn btn-icon-dash btn-eliminar-dash" title="Eliminar"><i class="bi bi-trash"></i></button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
             </table>
           </div>
         </div>
@@ -117,8 +174,9 @@
     </main>
   </div>
 
-  <!-- Scripts al final: primero la librería del sidebar, luego la lógica propia de esta página -->
   <script src="../js/sidebar-policia.js"></script>
-  <script src="../js/alarmas.js"></script>
+  <script>
+    renderSidebarPolicia('alarmas');
+  </script>
 </body>
 </html>

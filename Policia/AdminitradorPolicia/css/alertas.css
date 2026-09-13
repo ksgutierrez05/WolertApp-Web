@@ -1,6 +1,5 @@
 /* Piezas de Alertas que no existen en global.css
-   (chips de filtro por estado y tabla de alertas).
-   Usan las variables del rol activo para mantenerse consistentes. */
+   (chips de filtro, avatares, tabla, tono violeta adicional y paginación). */
 
 .chip-filtro-dash {
   border: 1px solid var(--line);
@@ -10,6 +9,9 @@
   padding: 7px 16px;
   font-size: 12.5px;
   font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
@@ -21,6 +23,20 @@
   background: linear-gradient(135deg, var(--color-primary), var(--color-primary-2));
   color: #fff;
   border-color: transparent;
+}
+
+.chip-count-dash {
+  background-color: var(--fog);
+  color: var(--muted);
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: 100px;
+}
+
+.chip-filtro-dash.active .chip-count-dash {
+  background-color: rgba(255, 255, 255, 0.25);
+  color: #fff;
 }
 
 .tabla-alertas-dash thead th {
@@ -52,23 +68,78 @@
   color: var(--ink);
 }
 
-.sub-alerta-dash {
+.dato-secundario-dash {
   font-size: 11.5px;
+  color: var(--muted);
+  margin-top: 1px;
+}
+
+.link-btn-dash i {
+  font-size: 11px;
+  margin-left: 2px;
+}
+
+/* Avatar circular de color por ciudadano que reporta */
+.avatar-sm-dash {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.avatar-amber-dash { background: linear-gradient(135deg, var(--color-amber), #e0a53f); }
+.avatar-green-dash { background: linear-gradient(135deg, var(--color-primary), var(--color-primary-2)); }
+.avatar-blue-dash { background: linear-gradient(135deg, var(--color-blue), #4c86c9); }
+
+/* Tonos extra para estados que no encajan en rojo/ámbar/verde/azul,
+   alineados a los valores reales del enum EstadoAlerta */
+.badge-violeta-dash {
+  background-color: #f0ecfb;
+  color: #6c4fd1;
+}
+
+.badge-teal-dash {
+  background-color: #e3f6f6;
+  color: #0f7a7a;
+}
+
+.badge-muted-dash {
+  background-color: var(--fog);
   color: var(--muted);
 }
 
-.acciones-alerta-dash {
-  display: flex;
-  gap: 6px;
-  justify-content: flex-end;
+/* Paginación */
+.paginacion-alertas-dash {
+  border-top: 1px solid var(--line);
 }
 
-.acciones-alerta-dash .btn {
-  width: 32px;
-  height: 32px;
-  padding: 0;
+.pagina-btn-dash {
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--line);
+  background-color: #fff;
+  color: var(--muted);
   border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 700;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.pagina-btn-dash:hover {
+  background-color: var(--fog);
+}
+
+.pagina-btn-dash.active {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-2));
+  border-color: transparent;
+  color: #fff;
 }
