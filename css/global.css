@@ -352,6 +352,14 @@ a {
 
 #wrapperDash {
   padding-left: 78px;
+  transition: padding-left 0.24s ease;
+}
+
+/* Cuando el sidebar se expande (hover), empuja el contenido en vez
+   de taparlo — el sidebar sigue siendo "fixed" pero el wrapper le
+   deja el espacio equivalente a su ancho expandido. */
+body:has(.sidebar-dash:hover) #wrapperDash {
+  padding-left: 250px;
 }
 
 /* Centra el contenido del main*/
@@ -535,6 +543,53 @@ a {
 .kpi-green-dash .kpi-icon-dash, .kpi-green-dash .kpi-num-dash { color: var(--color-green); }
 .kpi-amber-dash .kpi-icon-dash, .kpi-amber-dash .kpi-num-dash { color: var(--color-amber); }
 
+/* ---------- variante de relleno sólido (color del rol activo) ---------- */
+.kpi-solid-dash {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-2));
+  color: #fff;
+  border-radius: 18px;
+  padding: 18px 20px;
+  min-height: 104px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+.kpi-solid-dash:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.kpi-solid-num-dash {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1;
+  margin: 0;
+}
+
+.kpi-solid-label-dash {
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 600;
+  margin-top: 7px;
+}
+
+.kpi-solid-icon-dash {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.16);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 19px;
+  flex-shrink: 0;
+}
+
 .kpi-num-dash {
   font-family: "Space Grotesk", sans-serif;
   font-size: 27px;
@@ -553,6 +608,18 @@ a {
 .section-title-dash {
   font-size: 16px;
   margin: 0;
+}
+
+/* Título grande de cada vista (ej. "Alarmas", "Alertas") — distinto
+   de .section-title-dash, que es para subtítulos de panel más chicos
+   (ej. "Alertas recientes" dentro de Centro de Operaciones). */
+.page-title-dash {
+  font-size: 24px;
+  margin: 0;
+}
+
+.page-title-dash i {
+  color: var(--color-primary);
 }
 
 .see-all-dash {
@@ -651,4 +718,3 @@ a {
   border-color: #a91824;
   color: #fff;
 }
-

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>WolertApp — Centro de Operaciones</title>
+
+<!-- Bootstrap (layout + iconos, igual que el resto del proyecto) -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+<!-- Sistema compartido de estilos (rutas desde Policia/AdministradorPolicia/centro-operaciones/) -->
+<link rel="stylesheet" href="../../../css/global.css">
+<link rel="stylesheet" href="../../../css/temas.css">
+<link rel="stylesheet" href="../css/centro-operciones.css">
+</head>
+<body class="rol-policia">
+
+  <aside class="sidebar-dash" id="sidebarDash"></aside>
+
+  <div id="wrapperDash">
+    <main class="main-dash">
+      <div class="container-fluid">
+
+        <!-- Topbar -->
+        <div class="d-flex align-items-center gap-3 mb-4">
+          <div class="search-dash flex-grow-1 d-flex align-items-center input-group">
+            <span class="input-group-text bg-transparent border-0"><i class="bi bi-search"></i></span>
+            <input type="text" class="form-control border-0 bg-transparent" placeholder="Buscar por alerta, barrio, unidad, policía…">
+          </div>
+          <button class="icon-btn-dash btn btn-light rounded-circle position-relative">
+            <i class="bi bi-bell"></i>
+            <span class="dot-danger-dash position-absolute top-0 end-0"></span>
+          </button>
+          <span class="avatar-dash">SG</span>
+        </div>
+
+        <!-- Hero -->
+        <div class="hero-dash mb-4">
+          <p class="eyebrow-dash">CENTRO DE OPERACIONES POLICIAL · 11 DE SEPTIEMBRE DE 2026</p>
+          <h1 class="hero-title-dash">¡Bienvenida, Sofía!</h1>
+          <p class="hero-text-dash">6 alertas activas y el sistema operativo con monitoreo en tiempo real.</p>
+          <button class="btn btn-light rounded-pill hero-cta-dash d-inline-flex align-items-center mt-3">
+            <span class="dot-danger-dash"></span> Ver alertas críticas
+          </button>
+          <i class="bi bi-shield-check hero-icon-dash" style="font-size:110px;"></i>
+        </div>
+
+        <!-- KPIs -->
+        <div class="row g-3 mb-4">
+          <div class="col-6 col-xl-3">
+            <div class="kpi-dash kpi-red-dash">
+              <i class="bi bi-bell kpi-icon-dash"></i>
+              <p class="kpi-num-dash">6</p>
+              <p class="kpi-label-dash">Alertas activas</p>
+            </div>
+          </div>
+          <div class="col-6 col-xl-3">
+            <div class="kpi-dash kpi-amber-dash">
+              <i class="bi bi-clipboard-check kpi-icon-dash"></i>
+              <p class="kpi-num-dash">2</p>
+              <p class="kpi-label-dash">Asignaciones pendientes</p>
+            </div>
+          </div>
+          <div class="col-6 col-xl-3">
+            <div class="kpi-dash kpi-green-dash">
+              <i class="bi bi-car-front kpi-icon-dash"></i>
+              <p class="kpi-num-dash">11</p>
+              <p class="kpi-label-dash">Unidades disponibles</p>
+            </div>
+          </div>
+          <div class="col-6 col-xl-3">
+            <div class="kpi-dash kpi-blue-dash">
+              <i class="bi bi-person-check kpi-icon-dash"></i>
+              <p class="kpi-num-dash">4</p>
+              <p class="kpi-label-dash">Policías disponibles</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Alertas recientes + Mapa -->
+        <div class="row g-3 mb-4">
+          <div class="col-lg-6">
+            <div class="card-panel-dash p-3 h-100">
+              <div class="d-flex align-items-center justify-content-between mb-2">
+                <p class="section-title-dash fw-bold m-0"><i class="bi bi-bell me-2"></i>Alertas recientes</p>
+                <a href="#" class="see-all-dash">Ver todas <i class="bi bi-chevron-right"></i></a>
+              </div>
+              <div id="alerts"></div>
+            </div>
+          </div>
+
+          <div class="col-lg-6">
+            <div class="card-panel-dash p-3 h-100">
+              <p class="section-title-dash fw-bold mb-2"><i class="bi bi-geo-alt me-2"></i>Mapa policial en tiempo real</p>
+              <div class="map-box-dash">
+                <svg width="100%" height="100%" viewBox="0 0 700 300" preserveAspectRatio="none">
+                  <rect width="700" height="300" fill="#EAF3EE" />
+                  <path d="M0 90 L700 60" stroke="#D6E3DD" stroke-width="8" />
+                  <path d="M0 200 L700 220" stroke="#D6E3DD" stroke-width="8" />
+                  <path d="M200 0 L240 300" stroke="#D6E3DD" stroke-width="7" />
+                  <path d="M500 0 L460 300" stroke="#D6E3DD" stroke-width="7" />
+                  <circle cx="150" cy="80" r="9" fill="#0A8F72" stroke="#fff" stroke-width="2" />
+                  <circle cx="300" cy="125" r="10" fill="#EF4444" stroke="#fff" stroke-width="2" />
+                  <circle cx="230" cy="215" r="9" fill="#0A8F72" stroke="#fff" stroke-width="2" />
+                  <circle cx="400" cy="105" r="9" fill="#EF4444" stroke="#fff" stroke-width="2" />
+                  <circle cx="450" cy="200" r="9" fill="#F59E0B" stroke="#fff" stroke-width="2" />
+                  <circle cx="520" cy="110" r="9" fill="#0A8F72" stroke="#fff" stroke-width="2" />
+                </svg>
+                <div class="map-legend-dash">
+                  <span><span class="sw-dash" style="background:#0A8F72;"></span>Unidades</span>
+                  <span><span class="sw-dash" style="background:#EF4444;"></span>Alertas activas</span>
+                  <span><span class="sw-dash" style="background:#F59E0B;"></span>En atención</span>
+                </div>
+                <button class="map-btn-dash btn btn-light"><i class="bi bi-map"></i> Ver mapa completo</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Estado operativo -->
+        <div class="card-panel-dash p-3 mb-4">
+          <p class="section-title-dash fw-bold mb-3"><i class="bi bi-activity me-2"></i>Estado operativo</p>
+          <div class="row g-3">
+            <div class="col-6 col-md-3">
+              <div class="kpi-dash kpi-green-dash">
+                <i class="bi bi-car-front kpi-icon-dash"></i>
+                <p class="kpi-num-dash">11</p>
+                <p class="kpi-label-dash">Unidades disponibles</p>
+              </div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="kpi-dash kpi-blue-dash">
+                <i class="bi bi-person-check kpi-icon-dash"></i>
+                <p class="kpi-num-dash">4</p>
+                <p class="kpi-label-dash">Policías disponibles</p>
+              </div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="kpi-dash kpi-red-dash">
+                <i class="bi bi-bell kpi-icon-dash"></i>
+                <p class="kpi-num-dash">1</p>
+                <p class="kpi-label-dash">Alertas pendientes</p>
+              </div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="kpi-dash kpi-amber-dash">
+                <i class="bi bi-clock kpi-icon-dash"></i>
+                <p class="kpi-num-dash">1</p>
+                <p class="kpi-label-dash">Alertas en atención</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Scripts al final: primero la librería del sidebar, luego la lógica propia de esta página -->
+  <script src="../js/sidebar-policia.js"></script>
+  <script src="../js/centro-operaciones.js"></script>
+</body>
+</html>

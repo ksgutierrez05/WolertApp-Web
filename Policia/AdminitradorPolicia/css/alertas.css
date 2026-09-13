@@ -1,0 +1,74 @@
+/* Piezas de Alertas que no existen en global.css
+   (chips de filtro por estado y tabla de alertas).
+   Usan las variables del rol activo para mantenerse consistentes. */
+
+.chip-filtro-dash {
+  border: 1px solid var(--line);
+  background-color: #fff;
+  color: var(--muted);
+  border-radius: 100px;
+  padding: 7px 16px;
+  font-size: 12.5px;
+  font-weight: 600;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.chip-filtro-dash:hover {
+  background-color: var(--fog);
+}
+
+.chip-filtro-dash.active {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-2));
+  color: #fff;
+  border-color: transparent;
+}
+
+.tabla-alertas-dash thead th {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.tabla-alertas-dash tbody td {
+  padding: 14px;
+  border-bottom: 1px solid var(--line);
+  font-size: 13.5px;
+}
+
+.tabla-alertas-dash tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.tabla-alertas-dash tbody tr:hover {
+  background-color: var(--fog);
+}
+
+.nombre-alerta-dash {
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.sub-alerta-dash {
+  font-size: 11.5px;
+  color: var(--muted);
+}
+
+.acciones-alerta-dash {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.acciones-alerta-dash .btn {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
