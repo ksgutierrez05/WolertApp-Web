@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WolertApp - Configuración</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="../../css/global.css" />
+  <link rel="stylesheet" href="../../css/temas.css" />
+  <link rel="stylesheet" href="../../css/transito/agente-transito/panel-configuracion.css" />
+  <script src="../../js/global.js" defer></script>
+</head>
+
+<body class="rol-transito rail-collapsed" data-rol="transito">
+
+  <div class="d-flex" id="wrapperDash">
+
+    <aside class="sidebar-dash" id="sidebarDash">
+
+    </aside>
+
+    <!-- ===================== MAIN ===================== -->
+    <main class="main-dash flex-grow-1">
+      <div class="container-fluid px-4 py-4">
+
+        <!-- topbar -->
+        <div class="row g-3 align-items-center mb-5">
+          <div class="col">
+            <div class="input-group search-dash">
+              <span class="input-group-text bg-white border-0"><i class="bi bi-search"></i></span>
+              <input type="text" class="form-control border-0" placeholder="Buscar...">
+            </div>
+          </div>
+          <div class="col-auto">
+            <button class="btn btn-light rounded-circle position-relative icon-btn-dash">
+              <i class="bi bi-bell"></i>
+              <span class="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle">2</span>
+            </button>
+          </div>
+          <div class="col-auto">
+            <span class="avatar-dash" id="railToggle" title="Mostrar/ocultar perfil">JR</span>
+          </div>
+        </div>
+
+        <!-- encabezado -->
+        <div class="mb-4">
+          <h1 class="section-title-dash">Configuración</h1>
+          <p class="section-text-dash mb-0">Tu perfil, tu grupo y tus preferencias de notificación.</p>
+        </div>
+
+        <!-- perfil -->
+        <div class="panel-card-dash mb-3">
+          <h2 class="panel-title-dash">Mi perfil</h2>
+
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="config-field-label-dash">Nombre completo</label>
+              <input type="text" class="form-control" value="Jorge Ramírez" disabled>
+            </div>
+            <div class="col-md-6">
+              <label class="config-field-label-dash">Cédula</label>
+              <input type="text" class="form-control" value="CC 1065.234.812" disabled>
+            </div>
+            <div class="col-md-6">
+              <label class="config-field-label-dash">Grupo asignado</label>
+              <input type="text" class="form-control" value="Grupo 1" disabled>
+            </div>
+            <div class="col-md-6">
+              <label class="config-field-label-dash">Zona</label>
+              <input type="text" class="form-control" value="Zona Norte" disabled>
+            </div>
+          </div>
+          <p class="config-text-dash mt-3 mb-0">¿Algún dato incorrecto? Repórtalo a tu Director de Tránsito, él es quien puede actualizarlo.</p>
+        </div>
+
+        <!-- notificaciones -->
+        <div class="panel-card-dash mb-3">
+          <h2 class="panel-title-dash">Notificaciones</h2>
+
+          <div class="config-row-dash">
+            <div>
+              <div class="config-label-dash">Sonido al recibir un caso</div>
+              <div class="config-text-dash">Suena una alerta cuando le asignan un caso nuevo a tu grupo.</div>
+            </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" role="switch" checked>
+            </div>
+          </div>
+
+          <div class="config-row-dash">
+            <div>
+              <div class="config-label-dash">Vibración</div>
+              <div class="config-text-dash">Vibra el celular junto con la alerta de caso nuevo.</div>
+            </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" role="switch" checked>
+            </div>
+          </div>
+        </div>
+
+        <!-- cuenta -->
+        <div class="panel-card-dash">
+          <h2 class="panel-title-dash">Cuenta</h2>
+
+          <div class="config-row-dash">
+            <div>
+              <div class="config-label-dash">Contraseña</div>
+              <div class="config-text-dash">Última actualización hace 2 meses.</div>
+            </div>
+            <button class="btn-secundario-dash">Cambiar contraseña</button>
+          </div>
+
+          <div class="config-row-dash">
+            <div>
+              <div class="config-label-dash">Cerrar sesión</div>
+              <div class="config-text-dash">Sal de tu cuenta en este dispositivo.</div>
+            </div>
+            <button class="btn-secundario-dash">Cerrar sesión</button>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-skAcpIdS7UcVUC05LJ9Dxay8AXcDYfBJqt1CJ85S/CFujCsTpJa/mR1LT" crossorigin="anonymous"></script>
+  <script src="../../js/transito/agente-transito/slidebar.js"></script>
+  <script>renderSidebarTransito('configuracion');</script>
+</body>
+
+</html>
