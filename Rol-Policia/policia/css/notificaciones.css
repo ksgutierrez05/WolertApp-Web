@@ -1,0 +1,122 @@
+/* ============================================================
+   NOTIFICACIONES.CSS — estilos propios (sufijo -not)
+   ============================================================ */
+
+.filtros-not {
+  display: flex;
+  gap: 8px;
+}
+
+.chip-filtro-not {
+  border: 1px solid var(--line);
+  background: #fff;
+  border-radius: 100px;
+  padding: 6px 13px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.chip-filtro-not:hover {
+  border-color: var(--color-primary-2);
+  color: var(--ink);
+}
+
+.chip-filtro-not.active {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-2));
+  border-color: transparent;
+  color: #fff;
+}
+
+/* ---------- botón "Marcar todas como leídas" ---------- */
+.btn-marcar-todas-not {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: #fff;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 9px 16px;
+  border-radius: 11px;
+  box-shadow: var(--shadow-xs);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, color 0.15s ease;
+}
+
+.btn-marcar-todas-not i {
+  font-size: 14px;
+  color: var(--color-primary-2);
+}
+
+.btn-marcar-todas-not:hover {
+  border-color: var(--color-primary-2);
+  color: var(--color-primary-2);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ---------- grupos por fecha ---------- */
+.grupo-fecha-not {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 14px 14px 6px;
+}
+
+.grupo-fecha-not:first-child {
+  padding-top: 6px;
+}
+
+/* ---------- fila de notificación ---------- */
+.fila-not {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.fila-not:hover {
+  background: var(--fog);
+}
+
+.punto-not {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-top: 6px;
+  flex-shrink: 0;
+  background: transparent;
+}
+
+.fila-not.no-leida-not .punto-not {
+  background: var(--color-blue);
+}
+
+.cuerpo-not {
+  flex: 1;
+  min-width: 0;
+}
+
+.texto-not {
+  font-size: 13.5px;
+  color: var(--ink);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.fila-not.no-leida-not .texto-not {
+  font-weight: 700;
+}
+
+.hora-not {
+  font-size: 11.5px;
+  color: var(--subtle);
+  margin-top: 3px;
+}

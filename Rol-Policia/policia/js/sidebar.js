@@ -48,8 +48,8 @@ const MENU_PATRULLERO = [
     seccion: 'Operación',
     items: [
       { id: 'misalertas',    label: 'Mis Alertas',    href: '../Alertas/alertas.html', icon: ICONOS_PATRULLERO.misalertas},
-      { id: 'misatenciones', label: 'Mis Atenciones', href: '../MisAtenciones/mis-atenciones.html', icon: ICONOS_PATRULLERO.misatenciones },
-      { id: 'miunidad',      label: 'Mi Unidad',      href: '../MiUnidad/mi-unidad.html', icon: ICONOS_PATRULLERO.miunidad },
+      { id: 'misatenciones', label: 'Mis Atenciones', href: '../Atenciones/atenciones.html', icon: ICONOS_PATRULLERO.misatenciones },
+      { id: 'miunidad',      label: 'Mi Unidad',      href: '../Unidad/unidad.html', icon: ICONOS_PATRULLERO.miunidad },
       { id: 'alarmas',       label: 'Alarmas',        href: '../Alarmas/alarmas.html', icon: ICONOS_PATRULLERO.alarmas },
       { id: 'mapas',         label: 'Mapas',          href: '../Mapas/mapas.html', icon: ICONOS_PATRULLERO.mapas },
     ],

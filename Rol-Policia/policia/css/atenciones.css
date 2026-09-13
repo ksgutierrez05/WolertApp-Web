@@ -1,0 +1,321 @@
+/* ============================================================
+   MIS-ATENCIONES.CSS
+   Estilos propios de la pantalla "Mis Atenciones" del Patrullero.
+   Solo agrega clases nuevas con sufijo "-at"; no redefine ninguna
+   clase de global.css ni de temas.css.
+   ============================================================ */
+
+.layout-at {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 992px) {
+  .layout-at {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- columna izquierda: lista de atenciones ---------- */
+.lista-at {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: calc(100vh - 260px);
+  overflow-y: auto;
+  padding-right: 4px;
+  scrollbar-width: thin;
+}
+
+.filtros-at {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.chip-filtro-at {
+  border: 1px solid var(--line);
+  background: #fff;
+  border-radius: 100px;
+  padding: 6px 13px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.chip-filtro-at:hover {
+  border-color: var(--color-primary-2);
+  color: var(--ink);
+}
+
+.chip-filtro-at.active {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-2));
+  border-color: transparent;
+  color: #fff;
+}
+
+.tarjeta-at {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 14px 16px;
+  cursor: pointer;
+  box-shadow: var(--shadow-xs);
+  transition: box-shadow 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+  position: relative;
+}
+
+.tarjeta-at:hover {
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
+}
+
+.tarjeta-at.selected {
+  border-color: var(--color-primary-2);
+  box-shadow: 0 0 0 2px rgba(21, 77, 140, 0.18);
+}
+
+.tarjeta-at .tipo-at {
+  font-weight: 700;
+  font-size: 13.5px;
+  margin-bottom: 4px;
+}
+
+.tarjeta-at .meta-at {
+  font-size: 11.5px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.tarjeta-at .meta-at i {
+  font-size: 12px;
+}
+
+.prioridad-barra-at {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 4px;
+  border-radius: 16px 0 0 16px;
+}
+
+.prioridad-alta-at { background-color: var(--color-danger); }
+.prioridad-media-at { background-color: var(--color-amber); }
+.prioridad-baja-at { background-color: var(--color-blue); }
+
+/* ---------- columna derecha: detalle de la atención ---------- */
+.panel-detalle-at {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: var(--shadow-sm);
+  padding: 24px;
+  min-height: 520px;
+}
+
+.vacio-at {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 460px;
+  color: var(--subtle);
+}
+
+.vacio-at i {
+  font-size: 40px;
+  margin-bottom: 12px;
+  opacity: 0.5;
+}
+
+.cabecera-detalle-at {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 20px;
+}
+
+.cabecera-detalle-at h2 {
+  font-size: 18px;
+  margin: 0 0 6px;
+}
+
+/* ---------- stepper de estados ---------- */
+.stepper-at {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.paso-at {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 84px;
+  position: relative;
+}
+
+.paso-at .circulo-at {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--fog);
+  border: 2px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: var(--subtle);
+  font-weight: 700;
+  z-index: 1;
+}
+
+.paso-at .txt-paso-at {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--subtle);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.paso-at.hecho-at .circulo-at {
+  background: var(--color-green);
+  border-color: var(--color-green);
+  color: #fff;
+}
+
+.paso-at.hecho-at .txt-paso-at { color: var(--ink); }
+
+.paso-at.actual-at .circulo-at {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-2));
+  border-color: var(--color-primary-2);
+  color: #fff;
+  box-shadow: 0 0 0 4px rgba(21, 77, 140, 0.16);
+}
+
+.paso-at.actual-at .txt-paso-at { color: var(--ink); }
+
+.linea-at {
+  flex: 1;
+  height: 2px;
+  background: var(--line);
+  margin: 0 -2px;
+  align-self: flex-start;
+  margin-top: 13px;
+}
+
+.linea-at.hecho-at { background: var(--color-green); }
+
+/* ---------- info y formulario ---------- */
+.fila-info-at {
+  display: flex;
+  gap: 8px;
+  font-size: 13px;
+  padding: 8px 0;
+  border-bottom: 1px dashed var(--line);
+}
+
+.fila-info-at:last-child { border-bottom: none; }
+
+.fila-info-at .label-info-at {
+  width: 130px;
+  flex-shrink: 0;
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 11.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  padding-top: 2px;
+}
+
+.form-cierre-at {
+  background: var(--fog);
+  border-radius: 14px;
+  padding: 18px;
+  margin-top: 20px;
+}
+
+.form-cierre-at label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 5px;
+}
+
+.form-cierre-at .req-at { color: var(--color-danger); }
+
+.evidencia-drop-at {
+  border: 1.5px dashed var(--line);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--muted);
+  background: #fff;
+  cursor: pointer;
+}
+
+.evidencia-drop-at:hover {
+  border-color: var(--color-primary-2);
+}
+
+.acciones-detalle-at {
+  display: flex;
+  gap: 10px;
+  margin-top: 22px;
+  flex-wrap: wrap;
+}
+
+.btn-accion-principal-at {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-2));
+  border: none;
+  color: #fff;
+  font-weight: 700;
+  font-size: 13.5px;
+  padding: 12px 22px;
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-accion-principal-at:hover { color: #fff; opacity: 0.94; }
+
+.btn-finalizar-at {
+  background: var(--color-green);
+  border: none;
+  color: #fff;
+  font-weight: 700;
+  font-size: 13.5px;
+  padding: 12px 22px;
+  border-radius: 12px;
+}
+
+.btn-finalizar-at:hover { color: #fff; opacity: 0.9; }
+
+.aviso-campos-at {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  background: #fce8e9;
+  color: var(--color-danger);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+  margin-top: 14px;
+}
