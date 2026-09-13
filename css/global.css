@@ -821,3 +821,67 @@ body:has(.sidebar-dash:hover) #wrapperDash {
   border-color: #006B5B;
   color: #fff;
 }
+
+/* ============================================================
+   AGREGADO PARA PATRULLERO — no modifica nada de lo anterior,
+   solo añade clases nuevas y una propiedad puntual donde hacía
+   falta (por selector repetido, sin tocar el bloque original).
+   ============================================================ */
+
+/* .icon-btn-dash ya existe arriba; solo le sumamos position para
+   poder anclar el punto de notificación (.icon-dot-dash) dentro. */
+.icon-btn-dash {
+  position: relative;
+}
+
+.icon-dot-dash {
+  position: absolute;
+  top: 9px;
+  right: 10px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--color-danger);
+  box-shadow: 0 0 0 2px #fff;
+}
+
+/* Insignia numérica de un ítem del menú (ej. "2" en Mis Alertas).
+   Usa margin-left:auto, así que no necesita tocar .menu-dash a. */
+.nav-badge-dash {
+  margin-left: auto;
+  background-color: var(--color-danger);
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: 100px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.sidebar-dash:hover .nav-badge-dash {
+  opacity: 1;
+}
+
+/* Chip de estado operativo del Patrullero (🟢 Disponible), usado
+   encima del hero en Centro de Operaciones. */
+.estado-chip-dash {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 100px;
+  padding: 7px 14px 7px 10px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.estado-chip-dash .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #34d399;
+  box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.28);
+}

@@ -1,0 +1,316 @@
+/* ============================================================
+   css/patrullero/centro-operaciones.css
+   Estilos propios de la página "Centro de Operaciones" del rol
+   Patrullero. Usa solo las variables ya definidas en global.css /
+   temas.css (--color-*, --ink, --muted, --line, --fog, --shadow-*)
+   para no romper el sistema al cambiar de rol.
+   Prefijo "co-" para no chocar con nada del global.
+   ============================================================ */
+
+.co-topbar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.co-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.co-hero-icon {
+  position: relative;
+  z-index: 1;
+  width: 74px;
+  height: 74px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.co-hero-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+  position: relative;
+  z-index: 1;
+}
+
+.co-hero-cta small {
+  color: #c3cade;
+  font-size: 12px;
+}
+
+.co-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 30px 0 14px;
+}
+
+.co-section-head:first-of-type { margin-top: 0; }
+
+/* --- Caso activo --- */
+.co-active {
+  position: relative;
+  padding: 22px;
+  overflow: hidden;
+}
+
+.co-active::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; bottom: 0;
+  width: 4px;
+  background: linear-gradient(180deg, var(--color-danger), var(--color-danger-2));
+}
+
+.co-active-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.co-active-title {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 4px;
+}
+
+.co-active-meta {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.co-active-meta span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.co-active-meta i { color: var(--subtle); }
+
+.co-route-box {
+  margin-top: 16px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--fog), #eef0f5);
+  border: 1px dashed var(--line);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.co-route-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.co-route-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+  background: #fff;
+  box-shadow: var(--shadow-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.co-route-info b { font-size: 13.5px; display: block; }
+.co-route-info span { font-size: 11.5px; color: var(--muted); }
+
+/* --- Lista de alertas nuevas --- */
+.co-alert-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 15px 4px;
+  border-bottom: 1px solid var(--line);
+}
+
+.co-alert-item:last-child { border-bottom: none; }
+
+.co-alert-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+
+.co-alert-dot.alta { background: var(--color-danger); }
+.co-alert-dot.media { background: var(--color-amber); }
+
+.co-alert-body { flex: 1; min-width: 0; }
+
+.co-alert-title {
+  font-weight: 700;
+  font-size: 13.5px;
+  margin-bottom: 2px;
+}
+
+.co-alert-desc {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.co-alert-foot {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 11.5px;
+  color: var(--subtle);
+}
+
+.co-alert-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+/* --- Panel lateral: resumen del día --- */
+.co-timeline { padding: 4px 4px 2px; }
+
+.co-timeline-item {
+  position: relative;
+  padding-left: 22px;
+  padding-bottom: 18px;
+}
+
+.co-timeline-item:last-child { padding-bottom: 0; }
+
+.co-timeline-item::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-green);
+}
+
+.co-timeline-item::after {
+  content: "";
+  position: absolute;
+  left: 7.5px;
+  top: 14px;
+  bottom: -2px;
+  width: 1px;
+  background: var(--line);
+}
+
+.co-timeline-item:last-child::after { display: none; }
+
+.co-timeline-time {
+  font-size: 11px;
+  color: var(--subtle);
+  font-weight: 600;
+}
+
+.co-timeline-text {
+  font-size: 12.5px;
+  color: var(--ink);
+  margin-top: 1px;
+}
+
+/* --- Panel lateral: mi unidad --- */
+.co-team-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 0;
+}
+
+.co-team-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--fog);
+  color: var(--muted);
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.co-team-name { font-size: 13px; font-weight: 600; }
+
+.co-team-status {
+  font-size: 11px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.co-team-status .dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.dot-disponible { background: var(--color-green); }
+.dot-atencion { background: var(--color-amber); }
+.dot-camino { background: var(--color-danger); }
+
+/* --- Panel lateral: alarmas --- */
+.co-alarma-item {
+  display: flex;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.co-alarma-item:last-child { border-bottom: none; }
+
+.co-alarma-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background: #fcf0da;
+  color: var(--color-amber);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.co-alarma-text { font-size: 12.5px; }
+.co-alarma-time { font-size: 11px; color: var(--subtle); }
+
+@media (max-width: 991px) {
+  .co-hero { flex-direction: column; align-items: flex-start; }
+  .co-hero-cta { align-items: flex-start; width: 100%; }
+}

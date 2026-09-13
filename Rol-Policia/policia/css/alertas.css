@@ -1,0 +1,126 @@
+/* Patrullero/css/alertas.css
+   Estilos propios de "Mis Alertas". Usa solo variables ya definidas
+   en global.css / temas.css. Prefijo "al-" para no chocar con nada
+   del global ni con "co-" de Centro de Operaciones. */
+
+.al-filterbar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.al-chip {
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--muted);
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 7px 16px;
+  border-radius: 100px;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.al-chip:hover {
+  background: var(--fog);
+  color: var(--ink);
+}
+
+.al-chip.active {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-2));
+  border-color: transparent;
+  color: #fff;
+}
+
+.al-card {
+  padding: 18px 20px;
+}
+
+.al-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.al-type-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: var(--fog);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.al-title {
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.al-meta-inline {
+  font-size: 11.5px;
+  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.al-meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin: 14px 0 12px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.al-meta span:not(.badge-dash) {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.al-desc-box {
+  display: flex;
+  gap: 10px;
+  background: var(--fog);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 13px;
+  color: var(--ink);
+  margin-bottom: 12px;
+}
+
+.al-desc-box i {
+  color: var(--subtle);
+  font-size: 15px;
+  margin-top: 1px;
+}
+
+.al-evidence {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--color-blue);
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+
+.al-card-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+@media (max-width: 575px) {
+  .al-card-actions { justify-content: stretch; }
+  .al-card-actions .btn { flex: 1; }
+}
