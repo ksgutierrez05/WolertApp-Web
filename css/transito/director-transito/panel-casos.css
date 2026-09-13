@@ -1,0 +1,188 @@
+.section-title-dash {
+   font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 26px;
+  color: #182339;
+  margin-bottom: 4px;
+}
+
+.section-text-dash {
+  color: #6b7a90;
+  font-size: 14px;
+}
+
+.hero-page-dash {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-2));
+  border-radius: 18px;
+  padding: 28px 32px;
+  color: #ffffff;
+}
+
+.hero-page-title-dash {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 28px;
+  margin: 4px 0 6px;
+}
+
+.hero-page-text-dash {
+  color: #cfd9ec;
+  font-size: 14px;
+}
+
+.kpi-card-dash {
+  position: relative;
+  overflow: hidden;
+  border-radius: 14px;
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 6px rgba(16, 30, 54, 0.06);
+}
+
+.border-blue-dash,
+.border-green-dash,
+.border-red-dash,
+.border-amber-dash {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-2));
+}
+
+.kpi-content-dash {
+  position: relative;
+  z-index: 2;
+}
+
+.kpi-value-dash {
+  font-size: 26px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.kpi-label-dash {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.456);
+}
+
+.kpi-icon-box-dash {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 50px;
+  line-height: 1;
+  z-index: 1;
+  color: rgba(255, 255, 255, 0.775);
+}
+
+.table-card-dash {
+  background-color: #ffffff;
+  border-radius: 14px;
+  padding: 18px 20px;
+  box-shadow: 0 2px 6px rgba(16, 30, 54, 0.06);
+}
+
+.tabs-dash {
+  flex-wrap: wrap;
+}
+
+.tab-dash {
+  border: none;
+  background-color: #eef1f8;
+  color: #6b7a90;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 8px 18px;
+  border-radius: 20px;
+}
+
+.tab-dash.active-dash {
+  background-color: var(--color-primary);
+  color: #ffffff;
+}
+
+.table-card-dash table th {
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #8a97ab;
+  font-weight: 600;
+  border-bottom: 1px solid #eef1f5;
+  padding: 12px 8px;
+}
+
+.table-card-dash table td {
+  padding: 14px 8px;
+  border-bottom: 1px solid #f2f4f8;
+  font-size: 14px;
+  color: #182339;
+}
+
+.avatar-icon-dash {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.avatar-amber-dash { background-color: #cf8a08; }
+.avatar-red-dash { background-color: #d9364a; }
+.avatar-blue-dash { background-color: #2f6fed; }
+
+.badge-tipo-dash {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.tipo-semaforo-dash { background-color: #fdf3e0; color: #cf8a08; }
+.tipo-accidente-dash { background-color: #fdecec; color: #d9364a; }
+
+.badge-estado-dash {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.estado-atencion-dash { background-color: #fdf3e0; color: #cf8a08; }
+.estado-critica-dash { background-color: #fdecec; color: #d9364a; }
+.estado-camino-dash { background-color: #eaf1fe; color: #2f6fed; }
+.estado-resuelta-dash { background-color: #e9f8ee; color: #2fa84f; }
+
+.link-detalle-dash {
+  color: #2f6fed;
+  font-weight: 600;
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.link-detalle-dash:hover {
+  text-decoration: underline;
+}
+
+.paginacion-dash {
+  border-top: 1px solid #eef1f5;
+}
+
+.page-btn-dash {
+  width: 32px;
+  height: 32px;
+  border: 1px solid #eef1f5;
+  background-color: #ffffff;
+  color: #6b7a90;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.page-btn-dash.active-dash {
+  background-color: var(--color-primary);
+  color: #ffffff;
+  border-color: var(--color-primary);
+}

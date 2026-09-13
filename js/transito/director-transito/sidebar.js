@@ -6,11 +6,11 @@
 const ICONOS_TRANSITO = {
   logo: 'bi-shield-check',
   panel: 'bi-house',
-  accidentes: 'bi bi-exclamation-triangle',
   agentes: 'bi bi-briefcase',
   casos: 'bi-file-earmark-text',
   mapa: 'bi-geo-alt',
-  reportes: 'bi-bar-chart',
+  catalogo: 'bi-book',
+  reportes: 'bi-bar-chart-line',
   usuarios: 'bi-people',
   configuracion: 'bi-gear',
   logout: 'bi-box-arrow-left',
@@ -20,13 +20,14 @@ const ICONOS_TRANSITO = {
 // hasta crear cada página (reemplazar por el archivo real cuando exista).
 const MENU_TRANSITO = [
   { seccion: 'General', items: [
-    { id: 'panel', label: 'Panel', href: 'panel-director.html', icon: ICONOS_TRANSITO.panel },
+    { id: 'panel', label: 'Principal', href: 'panel-principal.html', icon: ICONOS_TRANSITO.panel },
   ]},
   { seccion: 'Operación', items: [
-    { id: 'accidentes', label: 'Accidentes', href: '#', icon: ICONOS_TRANSITO.accidentes },
-    { id: 'agentes',    label: 'Agentes',    href: '#', icon: ICONOS_TRANSITO.agentes },
-    { id: 'casos',      label: 'Casos',      href: '#', icon: ICONOS_TRANSITO.casos },
-    { id: 'mapa',       label: 'Mapa',       href: '#', icon: ICONOS_TRANSITO.mapa },
+    
+    { id: 'agentes',    label: 'Agentes',    href: 'panel-agentes.html', icon: ICONOS_TRANSITO.agentes },
+    { id: 'casos',      label: 'Casos',      href: 'panel-casos.html', icon: ICONOS_TRANSITO.casos },
+    { id: 'catalogo',       label: 'Catálogo',       href: 'panel-catalogo.html', icon: ICONOS_TRANSITO.catalogo },
+    { id: 'mapa',       label: 'Mapa',       href: 'panel-mapa.html', icon: ICONOS_TRANSITO.mapa },
   ]},
   { seccion: 'Gestión', items: [
     { id: 'reportes',      label: 'Reportes',      href: '#', icon: ICONOS_TRANSITO.reportes },

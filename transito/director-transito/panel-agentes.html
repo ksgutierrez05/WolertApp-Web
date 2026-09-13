@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WolertApp - Agentes de Tránsito</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="../../css/global.css" />
+  <link rel="stylesheet" href="../../css/temas.css" />
+  <link rel="stylesheet" href="../../css/transito/director-transito/panel-agentes.css" />
+  <script src="../../js/global.js" defer></script>
+</head>
+<body class="rol-transito rail-collapsed" data-rol="transito">
+ 
+  <div class="d-flex" id="wrapperDash">
+ 
+    <aside class="sidebar-dash" id="sidebarDash">
+ 
+    </aside>
+ 
+    <!-- ===================== MAIN ===================== -->
+    <main class="main-dash flex-grow-1">
+      <div class="container-fluid px-4 py-4">
+ 
+        <!-- topbar -->
+        <div class="row g-3 align-items-center mb-5">
+          <div class="col">
+            <div class="input-group search-dash">
+              <span class="input-group-text bg-white border-0"><i class="bi bi-search"></i></span>
+              <input type="text" class="form-control border-0" placeholder="Buscar por agente, zona o placa...">
+            </div>
+          </div>
+          <div class="col-auto">
+            <button class="btn btn-light rounded-circle position-relative icon-btn-dash">
+              <i class="bi bi-bell"></i>
+              <span class="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle">9+</span>
+            </button>
+          </div>
+          <div class="col-auto">
+            <span class="avatar-dash" id="railToggle" title="Mostrar/ocultar perfil">D</span>
+          </div>
+        </div>
+ 
+        <!-- encabezado de sección -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div>
+            <h1 class="section-title-dash">Agentes de Tránsito</h1>
+            <p class="section-text-dash mb-0">Gestiona el personal de campo asignado al módulo de Tránsito.</p>
+          </div>
+          <button class="btn btn-primary rounded-pill fw-bold btn-nuevo-dash">
+            <i class="bi bi-person-plus me-2"></i>Nuevo agente
+          </button>
+        </div>
+ 
+        <!-- KPIs -->
+        <div class="row g-3 mb-4">
+          <div class="col-md-3">
+            <div class="kpi-card-dash border-blue-dash">
+              <div class="kpi-content-dash">
+                <div class="kpi-value-dash">15</div>
+                <div class="kpi-label-dash">Agentes totales</div>
+              </div>
+              <i class="bi bi-people kpi-icon-dash"></i>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="kpi-card-dash border-green-dash">
+              <div class="kpi-content-dash">
+                <div class="kpi-value-dash">11</div>
+                <div class="kpi-label-dash">Activos ahora</div>
+              </div>
+              <i class="bi bi-person-check kpi-icon-dash"></i>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="kpi-card-dash border-red-dash">
+              <div class="kpi-content-dash">
+                <div class="kpi-value-dash">4</div>
+                <div class="kpi-label-dash">Inactivos</div>
+              </div>
+              <i class="bi bi-person-dash kpi-icon-dash"></i>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="kpi-card-dash border-amber-dash">
+              <div class="kpi-content-dash">
+                <div class="kpi-value-dash">2.1 min</div>
+                <div class="kpi-label-dash">Tiempo prom. de atención</div>
+              </div>
+              <i class="bi bi-stopwatch kpi-icon-dash"></i>
+            </div>
+          </div>
+        </div>
+ 
+        <!-- tabla -->
+        <div class="table-card-dash">
+ 
+          <div class="d-flex gap-2 tabs-dash mb-3">
+            <button class="tab-dash active-dash">Todos (15)</button>
+            <button class="tab-dash">Activos (11)</button>
+            <button class="tab-dash">Inactivos (4)</button>
+          </div>
+ 
+          <table class="table align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Agente</th>
+                <th>Zona asignada</th>
+                <th>Estado</th>
+                <th>Casos atendidos (mes)</th>
+                <th>Tiempo prom. atención</th>
+                <th class="text-end">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="avatar-sm-dash">JR</div>
+                    <div>
+                      <div class="fw-semibold">Jorge Ramírez</div>
+                      <div class="text-muted small">CC 1065.234.812</div>
+                    </div>
+                  </div>
+                </td>
+                <td>Zona Norte</td>
+                <td><span class="badge-state-dash badge-active-dash">Activo</span></td>
+                <td>18</td>
+                <td>4.2 min</td>
+                <td class="text-end">
+                  <button class="btn-icon-dash" title="Ver perfil"><i class="bi bi-eye"></i></button>
+                  <button class="btn-icon-dash" title="Desactivar"><i class="bi bi-toggle-on text-green-dash"></i></button>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="avatar-sm-dash">LP</div>
+                    <div>
+                      <div class="fw-semibold">Laura Pacheco</div>
+                      <div class="text-muted small">CC 1102.556.903</div>
+                    </div>
+                  </div>
+                </td>
+                <td>Centro</td>
+                <td><span class="badge-state-dash badge-active-dash">Activo</span></td>
+                <td>22</td>
+                <td>3.8 min</td>
+                <td class="text-end">
+                  <button class="btn-icon-dash" title="Ver perfil"><i class="bi bi-eye"></i></button>
+                  <button class="btn-icon-dash" title="Desactivar"><i class="bi bi-toggle-on text-green-dash"></i></button>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="avatar-sm-dash">MC</div>
+                    <div>
+                      <div class="fw-semibold">Manuel Contreras</div>
+                      <div class="text-muted small">CC 1098.774.221</div>
+                    </div>
+                  </div>
+                </td>
+                <td>Sector La Nevada</td>
+                <td><span class="badge-state-dash badge-inactive-dash">Inactivo</span></td>
+                <td>9</td>
+                <td>5.6 min</td>
+                <td class="text-end">
+                  <button class="btn-icon-dash" title="Ver perfil"><i class="bi bi-eye"></i></button>
+                  <button class="btn-icon-dash" title="Activar"><i class="bi bi-toggle-off text-muted"></i></button>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="avatar-sm-dash">DT</div>
+                    <div>
+                      <div class="fw-semibold">Diana Torres</div>
+                      <div class="text-muted small">CC 1076.443.190</div>
+                    </div>
+                  </div>
+                </td>
+                <td>Zona Norte</td>
+                <td><span class="badge-state-dash badge-active-dash">Activo</span></td>
+                <td>15</td>
+                <td>4.9 min</td>
+                <td class="text-end">
+                  <button class="btn-icon-dash" title="Ver perfil"><i class="bi bi-eye"></i></button>
+                  <button class="btn-icon-dash" title="Desactivar"><i class="bi bi-toggle-on text-green-dash"></i></button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+ 
+          <div class="d-flex justify-content-between align-items-center pt-3 paginacion-dash">
+            <span class="text-muted small">Mostrando 1–4 de 15 agentes</span>
+            <div class="d-flex gap-1">
+              <button class="page-btn-dash active-dash">1</button>
+              <button class="page-btn-dash">2</button>
+              <button class="page-btn-dash">3</button>
+              <button class="page-btn-dash"><i class="bi bi-chevron-right"></i></button>
+            </div>
+          </div>
+ 
+        </div>
+ 
+      </div>
+    </main>
+ 
+  </div>
+ 
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-skAcpIdS7UcVUC05LJ9Dxay8AXcDYfBJqt1CJ85S/CFujCsTpJa/mR1LT" crossorigin="anonymous"></script>
+  <script src="/js/transito/director-transito/sidebar.js"></script>
+  <script>renderSidebarTransito('agentes');</script>
+</body>
+ 
+</html>
+ 
