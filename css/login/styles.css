@@ -81,7 +81,7 @@ body {
 
 .login-panel-der h2 {
     font-family: 'Space Grotesk', sans-serif;
-    font-size: 32px;
+    font-size: 52px;
     font-weight: 700;
     margin-bottom: 28px;
 }
@@ -89,7 +89,7 @@ body {
 .login-input {
     width: 100%;
     padding: 20px 18px;
-    border: 1px solid #e0e0e0;
+    border: 1px solid black;
     border-radius: 30px;
     margin-bottom: 16px;
     font-size: 15px;
@@ -117,11 +117,15 @@ body {
 .btn-login {
     background: var(--azul-oscuro);
     color: #ffffff;
-    border: none;
-    padding: 14px;
-    border-radius: 30px;
+    font-size: 15px;
     font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: none;
+    padding: 10px;
+    border-radius: 30px;
     cursor: pointer;
+    width: 100%;
     margin-top: 8px;
 }
 
@@ -134,4 +138,36 @@ body {
     color: var(--muted);
     font-size: 15px;
     cursor: pointer;
+}
+
+.btn-volver {
+    position: fixed;
+    top: 24px;
+    left: 24px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 10;
+}
+
+.btn-volver:hover {
+    text-decoration: underline;
+}
+
+.link-olvide {
+    display: block;
+    text-align: center;
+    margin-top: 16px;
+    font-size: 14px;
+    color: var(--muted);
+    text-decoration: none;
+}
+
+.link-olvide:hover {
+    text-decoration: underline;
+    color: var(--azul-oscuro);
 }
