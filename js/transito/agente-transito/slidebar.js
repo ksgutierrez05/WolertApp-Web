@@ -13,7 +13,7 @@ const ICONOS_TRANSITO = {
   mapa: 'bi-geo-alt',
   catalogo: 'bi-book',
   reportes: 'bi-bar-chart-line',
-  usuarios: 'bi-people',
+  perfil: 'bi bi-person',
   configuracion: 'bi-gear',
   logout: 'bi-box-arrow-left',
 };
@@ -26,8 +26,9 @@ const MENU_TRANSITO = [
   ]},
   { seccion: 'Operación', items: [
     
-    { id: 'grupo',    label: 'Mi grupo',    href: 'panel-casos.html', icon: ICONOS_TRANSITO.casos },
+    { id: 'grupo',    label: 'Mi grupo',    href: 'panel-grupo.html', icon: ICONOS_TRANSITO.casos },
     { id: 'historial',       label: 'Historial de casos',       href: 'panel-historial.html', icon: ICONOS_TRANSITO.catalogo },
+     { id: 'perfil',       label: 'Perfil',       href: 'panel-perfil.html', icon: ICONOS_TRANSITO.perfil },
     { id: 'mapa',       label: 'Mapa',       href: 'panel-mapa.html', icon: ICONOS_TRANSITO.mapa },
   ]},
   { seccion: 'Gestión', items: [
