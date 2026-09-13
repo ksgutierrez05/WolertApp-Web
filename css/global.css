@@ -128,9 +128,9 @@ a {
 }
 
 .brand-name-dash {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Inter", sans-serif;
   font-weight: 700;
-  font-size: 16.5px;
+  font-size: 15px;
   margin-left: 12px;
   white-space: nowrap;
   opacity: 0;
