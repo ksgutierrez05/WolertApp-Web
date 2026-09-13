@@ -31,8 +31,7 @@ const MENU_TRANSITO = [
   ]},
   { seccion: 'Gestión', items: [
     { id: 'reportes',      label: 'Reportes',      href: '#', icon: ICONOS_TRANSITO.reportes },
-    { id: 'usuarios',      label: 'Usuarios',      href: '#', icon: ICONOS_TRANSITO.usuarios },
-    { id: 'configuracion', label: 'Configuración', href: '#', icon: ICONOS_TRANSITO.configuracion },
+    { id: 'configuracion', label: 'Configuración', href: 'panel-configuracion.html', icon: ICONOS_TRANSITO.configuracion },
   ]},
 ];
 
