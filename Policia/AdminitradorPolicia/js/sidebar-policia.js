@@ -54,7 +54,7 @@ const MENU_POLICIA = [
       { id: 'alarmas',      label: 'Alarmas',      href: '../Alarmas/alarmas.html', icon: ICONOS_POLICIA.alarmas },
       { id: 'asignaciones', label: 'Asignaciones', href: '../Asignaciones/asignaciones.html', icon: ICONOS_POLICIA.asignaciones },
       { id: 'unidades',     label: 'Unidades',     href: '../Unidades/unidades.html', icon: ICONOS_POLICIA.unidades },
-      { id: 'policias',     label: 'Policías',     href: '#', icon: ICONOS_POLICIA.policias },
+      { id: 'policias',     label: 'Policías',     href: '../Policias/policias.html', icon: ICONOS_POLICIA.policias },
     ],
   },
   {
