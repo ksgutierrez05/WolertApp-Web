@@ -1,0 +1,152 @@
+.section-title-dash {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 26px;
+  color: #182339;
+  margin-bottom: 4px;
+}
+
+.section-text-dash {
+  color: #6b7a90;
+  font-size: 14px;
+}
+
+.btn-nuevo-dash {
+  background-color: rgb(142, 61, 61);
+  border-color: rgb(142, 61, 61);
+  padding: 6px 16px;
+  font-size: 14px;
+}
+
+.btn-nuevo-dash:hover {
+  background-color: var(--color-primary-2);
+  border-color: var(--color-primary-2);
+}
+
+.table-card-dash {
+  background-color: #ffffff;
+  border-radius: 14px;
+  padding: 18px 20px;
+  box-shadow: 0 2px 6px rgba(16, 30, 54, 0.06);
+}
+
+.tabs-dash {
+  flex-wrap: wrap;
+}
+
+.tab-dash {
+  border: none;
+  background-color: #eef1f8;
+  color: #6b7a90;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 8px 18px;
+  border-radius: 20px;
+}
+
+.tab-dash.active-dash {
+  background-color: var(--color-primary);
+  color: #ffffff;
+}
+
+.table-card-dash table th {
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #8a97ab;
+  font-weight: 600;
+  border-bottom: 1px solid #eef1f5;
+  padding: 12px 8px;
+}
+
+.table-card-dash table td {
+  padding: 14px 8px;
+  border-bottom: 1px solid #f2f4f8;
+  font-size: 14px;
+  color: #182339;
+}
+
+.btn-icon-dash {
+  border: none;
+  background: none;
+  font-size: 16px;
+  color: #6b7a90;
+  padding: 4px 6px;
+}
+
+.btn-icon-dash:hover {
+  color: var(--color-primary);
+}
+
+/* ---------- Específico de Reportes: KPIs ---------- */
+
+.kpi-card-dash {
+  position: relative;
+  overflow: hidden;
+  border-radius: 14px;
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 6px rgba(16, 30, 54, 0.06);
+  height: 100%;
+}
+
+.border-red-dash,
+.border-blue-dash,
+.border-green-dash,
+.border-amber-dash {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-2));
+}
+
+.kpi-content-dash {
+  position: relative;
+  z-index: 2;
+}
+
+.kpi-value-dash {
+  font-size: 26px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.kpi-label-dash {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.kpi-icon-box-dash {
+  position: absolute;
+  right: 17px;
+  top: 44%;
+  transform: translateY(-50%);
+  font-size: 50px;
+  line-height: 1;
+  z-index: 1;
+  color: rgba(255, 255, 255, 0.633);
+}
+
+.input-dash {
+  border: 1px solid #eef1f5;
+  background-color: #f7f8fb;
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-size: 13px;
+  color: #182339;
+}
+
+.select-filtro-dash {
+  min-width: 160px;
+}
+
+.badge-estado-dash {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.badge-critico-dash  { background-color: #fdecec; color: #dc2626; }
+.badge-proceso-dash  { background-color: #fef6e7; color: #d97706; }
+.badge-resuelto-dash { background-color: #eafaf1; color: #16a34a; }

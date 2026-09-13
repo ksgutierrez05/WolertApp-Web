@@ -97,6 +97,19 @@ a {
   box-shadow: 16px 0 36px -18px rgba(23, 43, 65, 0.35);
 }
 
+.brand-logo-img-dash {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+}
+
+.rol-transito .brand-logo-img-dash {
+  width: 40px;
+  height: 37px;
+}
+
+
+
 .brand-dash {
   padding: 2px 24px 26px;
 }

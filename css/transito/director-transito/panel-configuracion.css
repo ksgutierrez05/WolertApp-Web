@@ -12,8 +12,8 @@
 }
 
 .btn-nuevo-dash {
-  background-color: var(--color-primary);
-  border-color: var(--color-primary);
+  background-color: rgb(56, 120, 79);
+  border-color:   rgb(56, 120, 79);
   font-size: 14px;
   padding: 6px 16px;
 }

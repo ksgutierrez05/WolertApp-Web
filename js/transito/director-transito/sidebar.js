@@ -3,6 +3,8 @@
 // Uso: <aside id="sidebarDash"></aside> + renderSidebarTransito('panel')
 // El id pasado debe coincidir con un "id" de MENU_TRANSITO.
 
+const LOGO_TRANSITO_PNG ='../../../img/secretaria transito.png';
+
 const ICONOS_TRANSITO = {
   logo: 'bi-shield-check',
   panel: 'bi-house',
@@ -30,7 +32,7 @@ const MENU_TRANSITO = [
     { id: 'mapa',       label: 'Mapa',       href: 'panel-mapa.html', icon: ICONOS_TRANSITO.mapa },
   ]},
   { seccion: 'Gestión', items: [
-    { id: 'reportes',      label: 'Reportes',      href: '#', icon: ICONOS_TRANSITO.reportes },
+    { id: 'reportes',      label: 'Reportes',      href: 'panel-reportes.html', icon: ICONOS_TRANSITO.reportes },
     { id: 'configuracion', label: 'Configuración', href: 'panel-configuracion.html', icon: ICONOS_TRANSITO.configuracion },
   ]},
 ];
@@ -39,7 +41,7 @@ function renderSidebarTransito(paginaActiva) {
   const el = document.getElementById('sidebarDash');
   if (!el) return;
 
-  const secciones = MENU_TRANSITO.map(sec => `
+   const secciones = MENU_TRANSITO.map(sec => `
     <p class="glabel-dash">${sec.seccion}</p>
     <nav class="nav flex-column menu-dash">
       ${sec.items.map(item => `
@@ -50,23 +52,26 @@ function renderSidebarTransito(paginaActiva) {
       `).join('')}
     </nav>
   `).join('');
-
+ 
   el.innerHTML = `
     <div class="d-flex align-items-center brand-dash">
-      <span class="brand-icon-dash"><i class="bi ${ICONOS_TRANSITO.logo}"></i></span>
+      <span class="brand-icon-dash">
+        <img src="${LOGO_TRANSITO_PNG}" alt="Logo Tránsito" class="brand-logo-img-dash">
+      </span>
        <span class="brand-name-dash">
         <span class="d-block">Secretaria de</span>
         <span class="d-block">Tránsito</span>
       </span>
     </div>
-
+ 
     ${secciones}
-
+ 
     <div class="flex-grow-1"></div>
-
+ 
     <a href="#" class="logout-dash">
       <span class="ic-dash"><i class="bi ${ICONOS_TRANSITO.logout}"></i></span>
       <span class="lbl-dash">Cerrar sesión</span>
     </a>
   `;
 }
+ 
