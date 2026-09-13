@@ -1,0 +1,195 @@
+/* Piezas del Centro de Notificaciones que no existen en global.css.
+   Usan las variables del rol activo (rol-policia en temas.css) para
+   mantenerse consistentes con el resto del panel de Policía. */
+
+/* ---------- encabezado de la vista ---------- */
+.notif-header-dash {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.notif-jurisdiccion-dash {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-primary);
+  background: var(--fog);
+  border-radius: 100px;
+  padding: 5px 12px;
+  margin-top: 6px;
+}
+
+/* ---------- filtros (chips) ---------- */
+.filtros-notif-dash {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 18px 0 16px;
+}
+
+.chip-notif-dash {
+  border: 1px solid var(--line);
+  background: #fff;
+  border-radius: 100px;
+  padding: 8px 16px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.chip-notif-dash:hover {
+  background: var(--fog);
+  color: var(--ink);
+}
+
+.chip-notif-dash.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+
+/* ---------- fila de notificación ---------- */
+.notif-item-dash {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px 10px;
+  border-bottom: 1px solid var(--line);
+  border-radius: 12px;
+  position: relative;
+  transition: background 0.15s ease;
+}
+
+.notif-item-dash:last-child {
+  border-bottom: none;
+}
+
+.notif-item-dash.no-leida {
+  background: rgba(21, 95, 168, 0.04);
+}
+
+.notif-item-dash.no-leida .notif-title-dash {
+  font-weight: 800;
+}
+
+.unread-dot-dash {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-blue);
+  position: absolute;
+  top: 18px;
+  left: -2px;
+}
+
+/* El ícono redondo por categoría (.notif-icon-dash + .cat-*) ahora
+   vive en css/global.css (sección 14), porque lo reutiliza también
+   el dropdown de la campanita en el resto de los dashboards. Aquí
+   solo lo agrandamos un poco para la lista completa de esta vista. */
+.notif-item-dash .notif-icon-dash {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  font-size: 18px;
+}
+
+/* -- cuerpo -- */
+.notif-body-dash {
+  flex: 1;
+  min-width: 0;
+}
+
+.notif-title-dash {
+  font-size: 13.5px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--ink);
+}
+
+.notif-desc-dash {
+  font-size: 12.5px;
+  color: var(--muted);
+  margin: 3px 0 0;
+}
+
+.notif-meta-dash {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 9px;
+  flex-wrap: wrap;
+}
+
+.notif-time-dash {
+  font-size: 11px;
+  color: var(--subtle);
+  white-space: nowrap;
+}
+
+.notif-cat-label-dash {
+  font-size: 11px;
+  color: var(--subtle);
+  font-weight: 600;
+}
+
+/* -- panel de detalle expandible -- */
+.notif-detail-dash {
+  display: none;
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: var(--fog);
+  border-radius: 10px;
+  font-size: 12.5px;
+  color: var(--ink);
+}
+
+.notif-detail-dash.abierto {
+  display: block;
+}
+
+.notif-detail-dash a {
+  font-weight: 700;
+  color: var(--color-blue);
+}
+
+/* -- columna de acciones -- */
+.notif-actions-dash {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.btn-ver-detalle-dash {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--color-blue);
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.btn-ver-detalle-dash:hover {
+  text-decoration: underline;
+}
+
+/* -- estado vacío -- */
+.notif-empty-dash {
+  text-align: center;
+  padding: 40px 12px;
+  color: var(--subtle);
+}
+
+.notif-empty-dash i {
+  font-size: 34px;
+  display: block;
+  margin-bottom: 8px;
+}

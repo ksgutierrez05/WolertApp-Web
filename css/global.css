@@ -52,6 +52,8 @@
 /* [SECCIÓN 02] SCROLL BASE ---------------------------------------- */
 html {
   height: 100%;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(16, 24, 40, 0.18) transparent;
 }
 
 body {
@@ -61,6 +63,39 @@ body {
   background-color: var(--page);
   font-family: "Inter", sans-serif;
   color: var(--ink);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(16, 24, 40, 0.18) transparent;
+}
+
+/* Scroll de toda la página: fino, casi transparente y sin flechas
+   (Chrome/Edge/Safari). Antes se veía la barra clásica del sistema
+   operativo porque html/body no tenían ningún estilo propio. */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  width: 6px;
+}
+
+html::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+html::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb {
+  background-color: rgba(16, 24, 40, 0.16);
+  border-radius: 10px;
+}
+
+html::-webkit-scrollbar-thumb:hover,
+body::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(16, 24, 40, 0.3);
+}
+
+html::-webkit-scrollbar-button,
+body::-webkit-scrollbar-button {
+  display: none;
+  height: 0;
+  width: 0;
 }
 
 h1, h2, h3 {
@@ -95,10 +130,43 @@ a {
   width: 250px;
   overflow-y: auto;
   box-shadow: 16px 0 36px -18px rgba(23, 43, 65, 0.35);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(16, 24, 40, 0.16) transparent;
+}
+
+/* Scrollbar del sidebar: fina y casi transparente (Chrome/Edge/Safari) */
+.sidebar-dash::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar-dash::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar-dash::-webkit-scrollbar-thumb {
+  background-color: rgba(16, 24, 40, 0.14);
+  border-radius: 10px;
+}
+
+.sidebar-dash::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(16, 24, 40, 0.28);
+}
+
+.sidebar-dash::-webkit-scrollbar-button {
+  display: none;
+  height: 0;
+  width: 0;
 }
 
 .brand-dash {
+  display: flex;
+  align-items: center;
   padding: 2px 24px 26px;
+  justify-content: center;
+}
+
+.sidebar-dash:hover .brand-dash {
+  justify-content: flex-start;
 }
 
 .brand-icon-dash {
@@ -114,18 +182,57 @@ a {
   flex-shrink: 0;
 }
 
+/* Variante para logos-imagen (ej. escudo de Policía): sin fondo de
+   color, un poco más grande y con la imagen bien centrada/ajustada. */
+.brand-icon-dash.brand-icon-dash--logo {
+  width: 66px;
+  height: 66px;
+  background: transparent;
+  border-radius: 0;
+}
+
+.brand-icon-dash.brand-icon-dash--logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
 .brand-name-dash {
   font-family: "Space Grotesk", sans-serif;
   font-weight: 700;
   font-size: 16.5px;
-  margin-left: 12px;
+  line-height: 1.15;
   white-space: nowrap;
-  opacity: 0;
-  transition: opacity 0.2s ease;
 }
 
-.sidebar-dash:hover .brand-name-dash {
+.brand-role-dash {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--subtle);
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+/* Envuelve nombre + rol. En estado cerrado mide 0 (no solo opacidad)
+   para que NO empuje ni recorte el logo — antes el texto invisible
+   seguía ocupando espacio y por eso el ícono se veía cortado. */
+.brand-text-dash {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  width: 0;
+  margin-left: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.sidebar-dash:hover .brand-text-dash {
+  width: auto;
+  margin-left: 12px;
   opacity: 1;
+  transition: opacity 0.25s ease 0.08s;
 }
 
 .glabel-dash {
@@ -604,15 +711,11 @@ body:has(.sidebar-dash:hover) #wrapperDash {
   margin-top: 7px;
 }
 
-/* ---------- encabezados de sección y tarjetas contenedoras ---------- */
 .section-title-dash {
   font-size: 16px;
   margin: 0;
 }
 
-/* Título grande de cada vista (ej. "Alarmas", "Alertas") — distinto
-   de .section-title-dash, que es para subtítulos de panel más chicos
-   (ej. "Alertas recientes" dentro de Centro de Operaciones). */
 .page-title-dash {
   font-size: 24px;
   margin: 0;

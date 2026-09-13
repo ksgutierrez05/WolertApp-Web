@@ -20,19 +20,18 @@
 const ICONOS_POLICIA = {
   logo: 'bi-shield-check',
   centrooperaciones: 'bi-house',
-  alertas: 'bi-bell',
+  alertas: 'bi-exclamation-triangle',
   alarmas: 'bi-megaphone',
-  asignaciones: 'bi-clipboard-check',
-  policias: 'bi-people',
+  tiposalertas: 'bi-list-check',
+  policias: 'bi-person-badge',
   unidades: 'bi-car-front',
   historial: 'bi-clock-history',
-  estadisticas: 'bi-bar-chart',
-  reportes: 'bi-file-earmark-text',
-  notificaciones: 'bi-bell-fill',
-  configuracion: 'bi-gear',
-  logout: 'bi-box-arrow-left',
+  estadisticas: 'bi-bar-chart-line',
+  reportes: 'bi-file-earmark-bar-graph',
+  notificaciones: 'bi-bell',
+  configuracion: 'bi-sliders',
+  logout: 'bi-box-arrow-right',
 };
-
 // Estructura del menú de Policía. Para agregar/quitar una opción,
 // se edita SOLO este arreglo — no hay que tocar ningún HTML.
 //
@@ -52,7 +51,7 @@ const MENU_POLICIA = [
     items: [
       { id: 'alertas',      label: 'Alertas',      href: '../Alertas/alertas.html', icon: ICONOS_POLICIA.alertas },
       { id: 'alarmas',      label: 'Alarmas',      href: '../Alarmas/alarmas.html', icon: ICONOS_POLICIA.alarmas },
-      { id: 'asignaciones', label: 'Asignaciones', href: '../Asignaciones/asignaciones.html', icon: ICONOS_POLICIA.asignaciones },
+      {id:  'tiposalertas', label: 'Tipos de Alertas', href: '../tipos-alertas/tipos-alertas.html', icon: ICONOS_POLICIA.tiposalertas},
       { id: 'unidades',     label: 'Unidades',     href: '../Unidades/unidades.html', icon: ICONOS_POLICIA.unidades },
       { id: 'policias',     label: 'Policías',     href: '../Policias/policias.html', icon: ICONOS_POLICIA.policias },
     ],
@@ -63,8 +62,8 @@ const MENU_POLICIA = [
       { id: 'historial',      label: 'Historial',      href: '../Historial/historial.html', icon: ICONOS_POLICIA.historial },
       { id: 'estadisticas',   label: 'Estadísticas',   href: '../Estadisticas/estadisticas.html', icon: ICONOS_POLICIA.estadisticas },
       { id: 'reportes',       label: 'Reportes',       href: '../Reportes/reportes.html', icon: ICONOS_POLICIA.reportes },
-      { id: 'notificaciones', label: 'Notificaciones', href: '#', icon: ICONOS_POLICIA.notificaciones },
-      { id: 'configuracion',  label: 'Configuración',  href: '#', icon: ICONOS_POLICIA.configuracion },
+      { id: 'notificaciones', label: 'Notificaciones', href: '../Notificaciones/notificaciones.html', icon: ICONOS_POLICIA.notificaciones },
+      { id: 'configuracion',  label: 'Configuración',  href: '../Configuracion/configuracion.html', icon: ICONOS_POLICIA.configuracion },
     ],
   },
 ];
@@ -98,9 +97,12 @@ function renderSidebarPolicia(paginaActiva) {
 
   el.innerHTML = `
     <div class="d-flex align-items-center brand-dash">
-      <span class="brand-icon-dash"><img src="../../../img/LogoWolertApp.png" alt="Policía Nacional" style="width:100%;height:100%;object-fit:contain;"></span>
-      <span class="brand-name-dash">WolertApp</span>
-    </div>
+  <span class="brand-icon-dash brand-icon-dash--logo"><img src="../../../img/logopolicia.png" alt="Policía Nacional"></span>
+  <span class="brand-text-dash">
+    <span class="brand-name-dash">WolertApp</span>
+    <span class="brand-role-dash">Administrador Policía</span>
+  </span>
+</div>
 
     ${secciones}
 

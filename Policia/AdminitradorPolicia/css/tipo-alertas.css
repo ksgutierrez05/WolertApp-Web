@@ -1,0 +1,392 @@
+/* Piezas de Tipo de Alertas que no existen en global.css: encabezado
+   con acción, filtros, tabla de datos y modales de crear/editar. */
+
+.header-vista-dash {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.header-vista-dash h1 {
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 700;
+  font-size: 24px;
+  margin: 0 0 4px;
+  color: var(--ink);
+}
+
+.header-vista-dash p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13.5px;
+}
+
+.btn-cv-verde {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-2));
+  border: none;
+  color: #fff;
+  font-weight: 700;
+  font-size: 13.5px;
+  padding: 11px 20px;
+  border-radius: 100px;
+  box-shadow: var(--shadow-sm);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.btn-cv-verde:hover {
+  color: #fff;
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+/* ---------- Barra de filtros ---------- */
+.filtros-toolbar-dash {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 12px 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+.filtros-toolbar-dash .search-dash {
+  flex: 1 1 260px;
+}
+
+.filtros-toolbar-dash select.form-select {
+  border-radius: 10px;
+  border-color: var(--line);
+  background-color: var(--fog);
+  font-size: 13px;
+  min-width: 170px;
+  padding: 10px 14px;
+}
+
+.filtros-toolbar-dash select.form-select:focus {
+  box-shadow: 0 0 0 3px rgba(28, 120, 30, 0.15);
+  border-color: var(--color-primary);
+}
+
+/* ---------- Chips de prioridad (accesos rápidos) ---------- */
+.chips-prioridad-dash {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.chip-prioridad-dash {
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--muted);
+  border-radius: 100px;
+  padding: 7px 16px;
+  font-size: 12.5px;
+  font-weight: 600;
+  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+}
+
+.chip-prioridad-dash:hover {
+  background: var(--fog);
+}
+
+.chip-prioridad-dash.activo {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+
+/* ---------- Tabla ---------- */
+.tabla-header-dash {
+  display: flex;
+  align-items: center;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--line);
+  gap: 12px;
+}
+
+.tabla-header-dash span {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--subtle);
+}
+
+.tabla-dash {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+
+.tabla-dash tbody tr {
+  border-bottom: 1px solid var(--line);
+  transition: background 0.12s ease;
+}
+
+.tabla-dash tbody tr:last-child {
+  border-bottom: none;
+}
+
+.tabla-dash tbody tr:hover {
+  background: var(--fog);
+}
+
+.tabla-dash td {
+  padding: 13px 20px 13px 0;
+  vertical-align: middle;
+  color: var(--ink);
+}
+
+.tabla-dash td:first-child {
+  padding-left: 20px;
+}
+
+.celda-persona-dash {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar-sm-dash {
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  border-radius: 12px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+}
+
+.celda-titulo-dash {
+  font-weight: 700;
+  font-size: 13.5px;
+  color: var(--ink);
+  line-height: 1.25;
+}
+
+.celda-sub-dash {
+  font-size: 11.5px;
+  color: var(--muted);
+}
+
+.prioridad-barra-dash {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.prioridad-punto-dash {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.categoria-chip-dash {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px 5px 8px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.categoria-chip-dash i {
+  font-size: 12px;
+}
+
+.tabla-acciones-dash {
+  display: flex;
+  gap: 6px;
+}
+
+.btn-icono-dash {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: var(--fog);
+  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+}
+
+.btn-icono-dash:hover {
+  color: var(--ink);
+  transform: translateY(-1px);
+}
+
+.btn-icono-dash.editar-dash:hover {
+  background: #fcf0da;
+  color: var(--color-amber);
+}
+
+.btn-icono-dash.borrar-dash:hover {
+  background: #fce8e9;
+  color: var(--color-danger);
+}
+
+.tabla-vacio-dash {
+  text-align: center;
+  padding: 48px 20px;
+  color: var(--muted);
+  font-size: 13.5px;
+}
+
+/* ---------- Modal crear/editar ---------- */
+.modal-content {
+  border: none;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+
+.modal-header-dash {
+  background: linear-gradient(120deg, var(--color-primary) 0%, var(--color-primary-2) 100%);
+  color: #fff;
+  padding: 22px 26px;
+  border: none;
+}
+
+.modal-header-dash .modal-title {
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.modal-header-dash .modal-subtitle {
+  font-size: 12.5px;
+  color: #d7ddec;
+  margin-top: 2px;
+}
+
+.modal-header-dash .btn-close {
+  filter: invert(1) brightness(2);
+}
+
+.modal-body-dash {
+  padding: 24px 26px;
+  background: #fff;
+}
+
+.form-field-dash label {
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--muted);
+  margin-bottom: 6px;
+  display: block;
+}
+
+.form-field-dash .form-control,
+.form-field-dash .form-select {
+  border-radius: 10px;
+  border-color: var(--line);
+  font-size: 13.5px;
+  padding: 10px 12px;
+}
+
+.form-field-dash .form-control:focus,
+.form-field-dash .form-select:focus {
+  box-shadow: 0 0 0 3px rgba(28, 120, 30, 0.15);
+  border-color: var(--color-primary);
+}
+
+/* ---------- Selector visual de prioridad dentro del modal ---------- */
+.prioridad-picker-dash {
+  display: flex;
+  gap: 10px;
+}
+
+.prioridad-opcion-dash {
+  flex: 1;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.12s ease, background 0.12s ease;
+}
+
+.prioridad-opcion-dash input {
+  display: none;
+}
+
+.prioridad-opcion-dash .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin: 0 auto 6px;
+}
+
+.prioridad-opcion-dash span.txt {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.prioridad-opcion-dash.alta.seleccionada {
+  border-color: var(--color-danger);
+  background: #fce8e9;
+}
+
+.prioridad-opcion-dash.alta.seleccionada span.txt { color: var(--color-danger); }
+
+.prioridad-opcion-dash.media.seleccionada {
+  border-color: var(--color-amber);
+  background: #fcf0da;
+}
+
+.prioridad-opcion-dash.media.seleccionada span.txt { color: var(--color-amber); }
+
+.prioridad-opcion-dash.baja.seleccionada {
+  border-color: var(--color-green);
+  background: #e3f8ec;
+}
+
+.prioridad-opcion-dash.baja.seleccionada span.txt { color: var(--color-green); }
+
+.modal-footer-dash {
+  padding: 16px 26px 24px;
+  border: none;
+  background: #fff;
+  gap: 10px;
+}
+
+.btn-secundario-dash {
+  background: var(--fog);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  font-weight: 600;
+  font-size: 13.5px;
+  border-radius: 100px;
+  padding: 10px 20px;
+}
+
+.btn-secundario-dash:hover {
+  background: var(--line);
+  color: var(--ink);
+}
+
+@media (max-width: 640px) {
+  .filtros-toolbar-dash select.form-select {
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+}
