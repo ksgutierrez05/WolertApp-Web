@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>WolertApp — Reportes</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+<link rel="stylesheet" href="../../../css/global.css">
+<link rel="stylesheet" href="../../../css/temas.css">
+<link rel="stylesheet" href="../css/reportes.css">
+</head>
+<body class="rol-policia">
+
+  <aside class="sidebar-dash" id="sidebarDash"></aside>
+
+  <div id="wrapperDash">
+    <main class="main-dash">
+      <div class="container-fluid">
+
+        <!-- Topbar -->
+        <div class="d-flex align-items-center gap-3 mb-4">
+          <div class="search-dash flex-grow-1 d-flex align-items-center input-group">
+            <span class="input-group-text bg-transparent border-0"><i class="bi bi-search"></i></span>
+            <input type="text" class="form-control border-0 bg-transparent" placeholder="Buscar por alerta, barrio, unidad, policía…">
+          </div>
+          <button class="icon-btn-dash btn btn-light rounded-circle position-relative">
+            <i class="bi bi-bell"></i>
+            <span class="dot-danger-dash position-absolute top-0 end-0"></span>
+          </button>
+          <span class="avatar-dash">SG</span>
+        </div>
+
+        <!-- Encabezado -->
+        <div class="header-vista-dash mb-4">
+          <div>
+            <h1>Reportes del Sistema</h1>
+            <p>Resumen general de actividad operativa.</p>
+          </div>
+          <button class="btn-cv-verde" id="btnExportarCsv">
+            <i class="bi bi-download"></i> Exportar CSV
+          </button>
+        </div>
+
+        <!-- KPIs -->
+        <div class="row g-3 mb-4" id="kpisReportes"></div>
+
+        <!-- Filtros -->
+        <div class="filtros-toolbar-dash mb-3">
+          <div class="search-dash flex-grow-1 d-flex align-items-center input-group">
+            <span class="input-group-text bg-transparent border-0"><i class="bi bi-search"></i></span>
+            <input type="text" id="filtroBuscarReporte" class="form-control border-0 bg-transparent" placeholder="Buscar en la descripción de las alertas…">
+          </div>
+          <select id="filtroTipo" class="form-select">
+            <option value="">Todos los tipos</option>
+          </select>
+          <select id="filtroEstadoReporte" class="form-select">
+            <option value="">Todos los estados</option>
+          </select>
+          <select id="filtroBarrioReporte" class="form-select">
+            <option value="">Todos los barrios</option>
+          </select>
+          <div class="rango-fechas-dash">
+            <input type="date" id="filtroDesde" title="Desde">
+            <span>—</span>
+            <input type="date" id="filtroHasta" title="Hasta">
+          </div>
+          <button class="btn-limpiar-link-dash d-none" id="btnLimpiarFiltros"><i class="bi bi-x-circle me-1"></i>Limpiar filtros</button>
+        </div>
+
+        <!-- Tabla de alertas -->
+        <div class="card-panel-dash mb-4">
+          <div class="tabla-header-dash">
+            <span style="width:36px;">#</span>
+            <span style="width:110px;">Tipo</span>
+            <span style="width:110px;">Barrio</span>
+            <span style="width:130px;">Estado</span>
+            <span style="width:130px;">Fecha y hora</span>
+            <span class="flex-grow-1">Descripción</span>
+            <span style="width:110px;">Unidad</span>
+            <span style="width:130px;">Atendida por</span>
+          </div>
+          <table class="tabla-dash">
+            <tbody id="tablaReportes"></tbody>
+          </table>
+          <div class="tabla-vacio-dash d-none" id="reportesVacio">No hay alertas que coincidan con los filtros.</div>
+          <div class="tabla-footer-dash">
+            <span class="celda-sub-dash" id="reportesMostrando"></span>
+            <div class="paginacion-dash" id="reportesPaginacion"></div>
+          </div>
+        </div>
+
+        <!-- Estadísticas adicionales -->
+        <p class="section-title-dash fw-bold mb-3"><i class="bi bi-megaphone me-2"></i>Estadísticas adicionales</p>
+        <div class="row g-3 mb-4">
+          <div class="col-sm-6 col-lg-3">
+            <div class="kpi-dash kpi-purple-dash">
+              <i class="bi bi-bell-fill kpi-icon-dash"></i>
+              <p class="kpi-num-dash" id="valNotificaciones">—</p>
+              <p class="kpi-label-dash">Notificaciones enviadas</p>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-3">
+            <div class="kpi-dash kpi-amber-dash">
+              <i class="bi bi-clipboard-check kpi-icon-dash"></i>
+              <p class="kpi-num-dash" id="valAsignaciones">—</p>
+              <p class="kpi-label-dash">Total de asignaciones</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="../js/sidebar-policia.js"></script>
+  <script src="../js/reportes.js"></script>
+</body>
+</html>
