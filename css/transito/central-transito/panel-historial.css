@@ -93,3 +93,70 @@
   color: #ffffff;
   border-color: var(--color-primary);
 }
+
+.search-panel-dash {
+  background-color: #f4f6f9;
+  border-radius: 20px;
+  padding: 4px 14px;
+  max-width: 260px;
+  color: #6b7a90;
+}
+
+.search-panel-dash input::placeholder {
+  color: #8a97ab;
+}
+
+/* ===================== MODAL: DETALLE DEL CASO ===================== */
+
+.modal-dash {
+  border-radius: 16px;
+  border: none;
+  padding: 8px;
+}
+
+
+.panel-title-dash {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  color: #182339;
+}
+
+.perfil-datos-dash {
+  border-top: 1px solid #f2f4f8;
+}
+
+.perfil-fila-dash {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid #f2f4f8;
+  font-size: 14px;
+}
+
+.perfil-label-dash {
+  color: #6b7a90;
+  font-weight: 600;
+}
+
+.perfil-valor-dash {
+  color: #182339;
+  font-weight: 600;
+  text-align: right;
+}
+
+.config-field-label-dash {
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7a90;
+  display: block;
+}
+
+.detalle-descripcion-dash {
+  font-size: 14px;
+  color: #182339;
+  background-color: #f8f9fb;
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 0;
+}
