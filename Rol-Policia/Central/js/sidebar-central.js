@@ -27,7 +27,6 @@ const ICONOS_CENTRAL = {
   informes: 'bi-clipboard-check',
   historial: 'bi-clock-history',
   notificaciones: 'bi-bell',
-  miperfil: 'bi-person-circle',
   configuracion: 'bi-gear',
   logout: 'bi-box-arrow-right',
 };
@@ -60,7 +59,6 @@ const MENU_CENTRAL = [
     items: [
       { id: 'historial',      label: 'Historial',      href: '../Historial/historial.html', icon: ICONOS_CENTRAL.historial },
       { id: 'notificaciones', label: 'Notificaciones', href: '../Notificaciones/notificaciones.html', icon: ICONOS_CENTRAL.notificaciones, badge: null },
-      { id: 'miperfil',       label: 'Mi Perfil',      href: '../Perfil/perfil.html', icon: ICONOS_CENTRAL.miperfil },
       { id: 'configuracion',  label: 'Configuración',  href: '../Configuracion/configuracion.html', icon: ICONOS_CENTRAL.configuracion },
     ],
   },

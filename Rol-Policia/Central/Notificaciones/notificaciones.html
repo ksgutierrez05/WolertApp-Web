@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notificaciones — WolertApp Central de Radio</title>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+
+<!-- Sistema de diseño existente: variables, sidebar, layout -->
+<link rel="stylesheet" href="../../../css/global.css">
+<link rel="stylesheet" href="../../../css/temas.css">
+<!-- Estilos propios de esta pantalla -->
+<link rel="stylesheet" href="../css/notificaciones.css">
+</head>
+<body class="rol-policia">
+
+  <aside class="sidebar-dash" id="sidebarDash"></aside>
+
+  <div id="wrapperDash">
+    <main class="main-dash">
+      <div class="container-fluid">
+
+        <!-- TOPBAR -->
+        <div class="d-flex align-items-center justify-content-between gap-3 mb-4">
+          <div class="search-dash flex-grow-1" style="max-width:360px;">
+            <div class="input-group">
+              <span class="input-group-text bg-white border-0"><i class="bi bi-search"></i></span>
+              <input type="text" class="form-control border-0" placeholder="Buscar notificación o caso...">
+            </div>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <button class="btn icon-btn-dash bg-white rounded-circle border-0" type="button" aria-label="Notificaciones">
+              <i class="bi bi-bell"></i>
+              <span class="icon-dot-dash"></span>
+            </button>
+            <div class="avatar-dash">CR</div>
+          </div>
+        </div>
+
+        <!-- ENCABEZADO -->
+        <div class="d-flex align-items-start justify-content-between flex-wrap gap-3 mb-4">
+          <div>
+            <h1 class="page-title-dash"><i class="bi bi-bell me-2"></i>Notificaciones</h1>
+            <p class="notif-subtitle-dash">Todo lo que necesitas saber sobre alertas, unidades e informes, en un solo lugar.</p>
+          </div>
+          <button class="btn btn-cv-azul rounded-pill px-3" id="btnMarcarTodas" type="button">
+            <i class="bi bi-check2-all me-1"></i> Marcar todas como leídas
+          </button>
+        </div>
+
+        <!-- RESUMEN -->
+        <div class="row g-3 mb-4">
+          <div class="col-6 col-md-3">
+            <div class="kpi-dash kpi-blue-dash">
+              <i class="bi bi-bell-fill kpi-icon-dash"></i>
+              <div class="kpi-num-dash" id="kpiTotal">0</div>
+              <div class="kpi-label-dash">Total</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="kpi-dash kpi-red-dash">
+              <i class="bi bi-exclamation-octagon-fill kpi-icon-dash"></i>
+              <div class="kpi-num-dash" id="kpiNoLeidas">0</div>
+              <div class="kpi-label-dash">Sin leer</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="kpi-dash kpi-amber-dash">
+              <i class="bi bi-clock-history kpi-icon-dash"></i>
+              <div class="kpi-num-dash" id="kpiUrgentes">0</div>
+              <div class="kpi-label-dash">Requieren acción</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="kpi-dash kpi-green-dash">
+              <i class="bi bi-check2-circle kpi-icon-dash"></i>
+              <div class="kpi-num-dash" id="kpiResueltas">0</div>
+              <div class="kpi-label-dash">Resueltas hoy</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FILTROS -->
+        <div class="notif-tabs-dash mb-3" id="notifTabs">
+          <button class="notif-tab-dash active" data-filtro="todas" type="button">Todas</button>
+          <button class="notif-tab-dash" data-filtro="no-leidas" type="button">No leídas</button>
+          <button class="notif-tab-dash" data-filtro="alertas" type="button">Alertas</button>
+          <button class="notif-tab-dash" data-filtro="unidades" type="button">Unidades</button>
+          <button class="notif-tab-dash" data-filtro="informes" type="button">Informes y cierre</button>
+        </div>
+
+        <!-- LISTA DE NOTIFICACIONES -->
+        <div class="card-panel-dash p-2 p-md-3">
+          <div id="listaNotificaciones"></div>
+
+          <div class="notif-empty-dash d-none" id="estadoVacio">
+            <i class="bi bi-bell-slash"></i>
+            <p class="mb-0">No hay notificaciones en esta categoría.</p>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../js/sidebar-central.js"></script>
+  <script>renderSidebarCentral('notificaciones');</script>
+  <script src="../js/notificaciones.js"></script>
+</body>
+</html>

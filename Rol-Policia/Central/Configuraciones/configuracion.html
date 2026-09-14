@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Configuración de perfil — WolertApp Central de Radio</title>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+
+<!-- Sistema de diseño existente: variables, sidebar, layout -->
+<link rel="stylesheet" href="../../../css/global.css">
+<link rel="stylesheet" href="../../../css/temas.css">
+<!-- Estilos propios de esta pantalla -->
+<link rel="stylesheet" href="../css/configuracion.css">
+</head>
+<body class="rol-policia">
+
+  <aside class="sidebar-dash" id="sidebarDash"></aside>
+
+  <div id="wrapperDash">
+    <main class="main-dash">
+      <div class="container-fluid">
+
+        <!-- TOPBAR -->
+        <div class="d-flex align-items-center justify-content-between gap-3 mb-4">
+          <div class="search-dash flex-grow-1" style="max-width:360px;">
+            <div class="input-group">
+              <span class="input-group-text bg-white border-0"><i class="bi bi-search"></i></span>
+              <input type="text" class="form-control border-0" placeholder="Buscar en configuración...">
+            </div>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <button class="btn icon-btn-dash bg-white rounded-circle border-0" type="button" aria-label="Notificaciones">
+              <i class="bi bi-bell"></i>
+              <span class="icon-dot-dash"></span>
+            </button>
+            <div class="avatar-dash">CR</div>
+          </div>
+        </div>
+
+        <!-- ENCABEZADO -->
+        <div class="d-flex align-items-start justify-content-between flex-wrap gap-3 mb-4">
+          <div>
+            <h1 class="page-title-dash"><i class="bi bi-person-gear me-2"></i>Configuración de perfil</h1>
+            <p class="cfg-subtitle-dash">Actualiza tus datos personales y tu contraseña. Esta información identifica tu cuenta como operador.</p>
+          </div>
+          <button class="btn btn-cv-azul rounded-pill px-3" id="btnGuardar" type="button">
+            <i class="bi bi-check2 me-1"></i> Guardar cambios
+          </button>
+        </div>
+
+        <div class="row g-4 justify-content-center">
+          <div class="col-12 col-lg-8">
+
+            <!-- FOTO DE PERFIL -->
+            <section class="card-panel-dash p-4 mb-4">
+              <div class="cfg-section-head-dash">
+                <i class="bi bi-image cfg-section-icon-dash"></i>
+                <div>
+                  <h2 class="cfg-section-title-dash">Foto de perfil</h2>
+                  <p class="cfg-section-sub-dash">Se muestra en tu avatar dentro de Central de Radio.</p>
+                </div>
+              </div>
+
+              <div class="d-flex align-items-center gap-3 flex-wrap">
+                <div class="cfg-avatar-preview-dash" id="fotoPreview">CR</div>
+                <div class="d-flex flex-column gap-2">
+                  <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-sm btn-cv-azul rounded-pill px-3" id="btnCambiarFoto">
+                      <i class="bi bi-upload me-1"></i> Cambiar foto
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3" id="btnQuitarFoto">
+                      Quitar
+                    </button>
+                  </div>
+                  <span class="cfg-row-desc-dash mb-0">JPG o PNG, máximo 2 MB.</span>
+                  <input type="file" id="inputFoto" accept="image/png, image/jpeg" hidden>
+                </div>
+              </div>
+            </section>
+
+            <!-- DATOS PERSONALES -->
+            <section class="card-panel-dash p-4 mb-4">
+              <div class="cfg-section-head-dash">
+                <i class="bi bi-person-vcard cfg-section-icon-dash"></i>
+                <div>
+                  <h2 class="cfg-section-title-dash">Datos personales</h2>
+                  <p class="cfg-section-sub-dash">Información con la que te identificamos en el sistema.</p>
+                </div>
+              </div>
+
+              <div class="row g-3">
+                <div class="col-12 col-md-6">
+                  <label class="cfg-label-dash" for="perfilNombre">Nombre completo</label>
+                  <input type="text" class="form-control cfg-input-dash" id="perfilNombre" placeholder="Nombre y apellidos">
+                </div>
+                <div class="col-12 col-md-6">
+                  <label class="cfg-label-dash" for="perfilCargo">Cargo</label>
+                  <input type="text" class="form-control cfg-input-dash" id="perfilCargo" placeholder="Ej. Operador de radio" disabled>
+                </div>
+                <div class="col-12 col-md-6">
+                  <label class="cfg-label-dash" for="perfilCorreo">Correo electrónico</label>
+                  <input type="email" class="form-control cfg-input-dash" id="perfilCorreo" placeholder="correo@ejemplo.com">
+                </div>
+                <div class="col-12 col-md-6">
+                  <label class="cfg-label-dash" for="perfilTelefono">Teléfono</label>
+                  <input type="tel" class="form-control cfg-input-dash" id="perfilTelefono" placeholder="Ej. 300 000 0000">
+                </div>
+              </div>
+            </section>
+
+            <!-- CONTRASEÑA -->
+            <section class="card-panel-dash p-4">
+              <div class="cfg-section-head-dash">
+                <i class="bi bi-shield-lock cfg-section-icon-dash"></i>
+                <div>
+                  <h2 class="cfg-section-title-dash">Contraseña</h2>
+                  <p class="cfg-section-sub-dash">Déjala en blanco si no quieres cambiarla.</p>
+                </div>
+              </div>
+
+              <div class="row g-3">
+                <div class="col-12">
+                  <label class="cfg-label-dash" for="perfilPassActual">Contraseña actual</label>
+                  <input type="password" class="form-control cfg-input-dash" id="perfilPassActual" placeholder="••••••••" autocomplete="current-password">
+                </div>
+                <div class="col-12 col-md-6">
+                  <label class="cfg-label-dash" for="perfilPassNueva">Nueva contraseña</label>
+                  <input type="password" class="form-control cfg-input-dash" id="perfilPassNueva" placeholder="••••••••" autocomplete="new-password">
+                </div>
+                <div class="col-12 col-md-6">
+                  <label class="cfg-label-dash" for="perfilPassConfirmar">Confirmar nueva contraseña</label>
+                  <input type="password" class="form-control cfg-input-dash" id="perfilPassConfirmar" placeholder="••••••••" autocomplete="new-password">
+                </div>
+              </div>
+              <div class="cfg-error-dash d-none" id="perfilPassError">
+                <i class="bi bi-exclamation-circle"></i>
+                <span>Las contraseñas nuevas no coinciden.</span>
+              </div>
+            </section>
+
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <div class="cfg-toast-dash" id="cfgToast">
+    <i class="bi bi-check2-circle"></i> Perfil guardado
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../js/sidebar-central.js"></script>
+  <script>renderSidebarCentral('configuracion');</script>
+  <script src="../js/configuracion.js"></script>
+</body>
+</html>
