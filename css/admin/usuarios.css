@@ -96,3 +96,65 @@
     color: var(--ink);
     box-shadow: var(--shadow-xs);
 }
+
+/* Modal "Nuevo usuario" — estilo simple con secciones */
+.modal-dash {
+    border-radius: 16px;
+    border: none;
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+}
+
+.seccion-titulo-dash {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: 0.03em;
+    margin: 18px 0 12px;
+}
+
+.seccion-titulo-dash:first-child {
+    margin-top: 4px;
+}
+
+.input-dash {
+    background-color: var(--fog);
+    border: 1px solid var(--fog);
+    border-radius: 10px;
+    padding: 13px 16px;
+    font-size: 13.5px;
+    color: var(--ink);
+}
+
+.input-dash::placeholder {
+    color: var(--subtle);
+}
+
+.input-dash:focus {
+    background-color: #fff;
+    box-shadow: 0 0 0 3px rgba(31, 95, 168, 0.15);
+    border-color: var(--color-blue);
+}
+
+.modal-footer-dash {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 16px 24px;
+    background-color: var(--fog);
+    border-top: 1px solid var(--line);
+}
+
+.btn-cancelar-dash {
+    background-color: #fff;
+    color: var(--ink);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    font-weight: 700;
+    padding: 9px 18px;
+    font-size: 13.5px;
+}
+
+.btn-cancelar-dash:hover {
+    background-color: var(--line);
+}
