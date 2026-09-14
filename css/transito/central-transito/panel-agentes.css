@@ -135,3 +135,85 @@
 .link-detalle-dash:hover {
   text-decoration: underline;
 }
+
+.search-panel-dash {
+  background-color: #f4f6f9;
+  border-radius: 20px;
+  padding: 4px 14px;
+  max-width: 260px;
+  color: #6b7a90;
+}
+
+.search-panel-dash input::placeholder {
+  color: #8a97ab;
+}
+
+/* ===================== MODAL: PERFIL DEL AGENTE ===================== */
+
+.modal-dash {
+  border-radius: 16px;
+  border: none;
+  padding: 8px;
+}
+
+.panel-title-dash {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  color: #182339;
+}
+
+.perfil-header-dash {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.avatar-grande-dash {
+  width: 56px;
+  height: 56px;
+  font-size: 18px;
+}
+
+.perfil-nombre-dash {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 17px;
+  color: #182339;
+}
+
+.perfil-cedula-dash {
+  font-size: 13px;
+  color: #6b7a90;
+}
+
+.perfil-datos-dash {
+  border-top: 1px solid #f2f4f8;
+}
+
+.perfil-fila-dash {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid #f2f4f8;
+  font-size: 14px;
+}
+
+.perfil-label-dash {
+  color: #6b7a90;
+  font-weight: 600;
+}
+
+.perfil-valor-dash {
+  color: #182339;
+  font-weight: 600;
+  text-align: right;
+}
+
+.perfil-nota-dash {
+  font-size: 12px;
+  color: #8a97ab;
+  margin-top: 14px;
+  margin-bottom: 0;
+}
