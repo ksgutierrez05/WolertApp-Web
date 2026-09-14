@@ -42,11 +42,22 @@
   font-size: 13px;
   padding: 8px 18px;
   border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 .tab-dash.active-dash {
   background-color: var(--color-primary);
   color: #ffffff;
+}
+
+.tab-panel-dash {
+  animation: fadeInPanel 0.15s ease;
+}
+
+@keyframes fadeInPanel {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .table-card-dash table th {
@@ -71,8 +82,40 @@
   font-size: 16px;
   color: #6b7a90;
   padding: 4px 6px;
+  cursor: pointer;
 }
 
 .btn-icon-dash:hover {
   color: var(--color-primary);
+}
+
+/* ===================== MODAL CATÁLOGO ===================== */
+#modalCatalogo .modal-content {
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 12px 32px rgba(16, 30, 54, 0.18);
+}
+
+#modalCatalogo .modal-title {
+  color: #182339;
+  font-family: 'Inter', sans-serif;
+}
+
+#modalCatalogo .form-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7a90;
+}
+
+#modalCatalogo .form-control,
+#modalCatalogo .form-select {
+  border-radius: 10px;
+  border: 1px solid #e3e7ef;
+  font-size: 14px;
+}
+
+#modalCatalogo .form-control:focus,
+#modalCatalogo .form-select:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(142, 61, 61, 0.12);
 }
