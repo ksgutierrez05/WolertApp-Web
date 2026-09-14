@@ -1,0 +1,51 @@
+/* ============================================================
+   ALERTAS.CSS — estilos propios de admin/alertas.html
+   ============================================================
+   Reutiliza las variables y clases de css/global.css
+   (--subtle, --line, --fog, --ink, .card-panel-dash, .badge-dash
+   y sus variantes de color), así que este archivo siempre debe
+   cargarse DESPUÉS de global.css en el <head>.
+
+   La tabla es prácticamente igual a la de usuarios.css. Si vas a
+   tener 2 o 3 tablas más así en el sistema (alarmas, incidentes,
+   etc.), conviene mover este bloque a global.css como una sola
+   clase reutilizable ".tabla-dash" en vez de repetirlo por vista.
+   ============================================================ */
+
+.tabla-alertas-dash { width: 100%; border-collapse: collapse; }
+
+.tabla-alertas-dash thead th {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--subtle);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    text-align: left;
+    padding: 0 14px 12px;
+    white-space: nowrap;
+}
+
+.tabla-alertas-dash tbody tr {
+    border-top: 1px solid var(--line);
+    transition: background 0.12s ease;
+}
+
+.tabla-alertas-dash tbody tr:hover { background-color: var(--fog); }
+
+.tabla-alertas-dash td {
+    padding: 14px;
+    vertical-align: middle;
+    font-size: 13px;
+}
+
+.tabla-alertas-dash td.celda-tipo {
+    font-weight: 700;
+}
+
+.tabla-alertas-dash td.celda-desc {
+    color: var(--muted);
+    max-width: 320px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

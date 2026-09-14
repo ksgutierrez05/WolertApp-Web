@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WolertApp - Gestión de Alertas</title>
+    <script src="../js/admin/script.js" defer></script>
+    <script src="../js/admin/alertas.js" defer></script>
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/admin/alertas.css">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="rol-admin">
+
+    <!-- El sidebar ya no vive aquí: script.js lo trae de sidebar.html -->
+    <div id="sidebar-placeholder"></div>
+
+    <div id="wrapperDash">
+        <main class="main-dash">
+            <div class="container-fluid">
+
+                <!-- Encabezado -->
+                <div class="mb-4">
+                    <h1 class="hero-title-dash" style="color: var(--ink); font-size: 26px;">Gestión de Alertas</h1>
+                </div>
+
+                <!-- Tabla de alertas -->
+                <div class="card-panel-dash p-3">
+                    <div class="table-responsive">
+                        <table class="tabla-alertas-dash">
+                            <thead>
+                                <tr>
+                                    <th>Tipo</th>
+                                    <th>Barrio</th>
+                                    <th>Usuario</th>
+                                    <th>Estado</th>
+                                    <th>Fecha</th>
+                                    <th>Descripción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-alertas-body">
+                                <!-- Las filas se pintan dinámicamente desde js/admin/alertas.js -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>
