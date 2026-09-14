@@ -1,0 +1,14 @@
+/* Buscador más grande que el del topbar */
+.search-dash-comunas {
+    border-radius: 16px;
+}
+
+.search-dash-comunas .input-group-text {
+    padding: 16px 8px 16px 20px;
+    font-size: 17px;
+}
+
+.search-dash-comunas .form-control {
+    padding: 16px 20px 16px 8px;
+    font-size: 14px;
+}
