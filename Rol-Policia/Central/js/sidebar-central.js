@@ -49,7 +49,7 @@ const MENU_CENTRAL = [
     seccion: 'Operación',
     items: [
       { id: 'alertas',       label: 'Alertas',        href: '../Alertas/alertas.html', icon: ICONOS_CENTRAL.alertas, badge: null },
-      { id: 'asignacion',    label: 'Asignación',     href: '../Asignacion/asignacion.html', icon: ICONOS_CENTRAL.asignacion },
+      { id: 'asignacion',    label: 'Asignación',     href: '../Asignaciones/asignaciones.html', icon: ICONOS_CENTRAL.asignacion },
       { id: 'unidad',        label: 'Unidad',         href: '../Unidad/unidad.html', icon: ICONOS_CENTRAL.unidad },
       { id: 'mapaoperativo', label: 'Mapa Operativo', href: '../Mapas/mapas.html', icon: ICONOS_CENTRAL.mapaoperativo },
       { id: 'informes',      label: 'Informes',       href: '../Informes/informes.html', icon: ICONOS_CENTRAL.informes, badge: null },
