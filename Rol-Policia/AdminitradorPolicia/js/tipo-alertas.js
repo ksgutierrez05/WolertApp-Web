@@ -2,9 +2,40 @@ renderSidebarPolicia('tipoalertas');
 
 const modalTipo = new bootstrap.Modal(document.getElementById('modalTipo'));
 
-// ---------- Datos de ejemplo (en memoria) ----------
+// ---------- Persistencia en localStorage ----------
+// Solo se guardan los campos que el formulario realmente captura:
+// nombre del tipo de alerta y prioridad (el id se conserva para poder
+// editar/eliminar, pero no es un dato "de negocio" adicional).
+const STORAGE_KEY_TIPOS = 'wolertapp_tipos_alerta';
+
+function guardarTiposEnStorage() {
+  try {
+    const datos = TIPOS.map(t => ({ id: t.id, nombre: t.nombre, prioridad: t.prioridad }));
+    localStorage.setItem(STORAGE_KEY_TIPOS, JSON.stringify(datos));
+  } catch (err) {
+    console.error('No se pudo guardar en localStorage:', err);
+  }
+}
+
+function cargarTiposDesdeStorage() {
+  try {
+    const guardado = localStorage.getItem(STORAGE_KEY_TIPOS);
+    if (!guardado) return null;
+    const datos = JSON.parse(guardado);
+    if (Array.isArray(datos) && datos.length) {
+      return datos.map(d => ({ id: d.id, nombre: d.nombre, prioridad: d.prioridad }));
+    }
+  } catch (err) {
+    console.error('No se pudo leer localStorage:', err);
+  }
+  return null;
+}
+
+// ---------- Datos ----------
 // Simula lo que hoy trae TipoAlertaService.listar() desde MySQL.
 // TipoAlerta: { id, nombre, prioridad } — prioridad: ALTA | MEDIA | BAJA
+// Si ya hay datos guardados en localStorage (creados/editados por el
+// usuario), se usan esos; si no, se parte de este set de ejemplo.
 
 const PRIORIDADES = {
   ALTA: { label: 'Alta', badge: 'badge-red-dash', color: 'var(--color-danger)' },
@@ -12,7 +43,7 @@ const PRIORIDADES = {
   BAJA: { label: 'Baja', badge: 'badge-green-dash', color: 'var(--color-green)' },
 };
 
-let TIPOS = [
+const TIPOS_SEMILLA = [
   { id: 1, nombre: 'Robo / Asalto', prioridad: 'ALTA' },
   { id: 2, nombre: 'Incendio', prioridad: 'ALTA' },
   { id: 3, nombre: 'Accidente de tránsito', prioridad: 'ALTA' },
@@ -24,7 +55,13 @@ let TIPOS = [
   { id: 9, nombre: 'Ruido excesivo', prioridad: 'BAJA' },
 ];
 
-let nextTipoId = TIPOS.length + 1;
+let TIPOS = cargarTiposDesdeStorage();
+if (!TIPOS) {
+  TIPOS = TIPOS_SEMILLA.map(t => ({ ...t }));
+  guardarTiposEnStorage();
+}
+
+let nextTipoId = TIPOS.reduce((max, t) => Math.max(max, t.id), 0) + 1;
 
 function tipoPorId(id) {
   return TIPOS.find(t => t.id === id);
@@ -67,6 +104,8 @@ function colorSuaveTipo(t) {
   for (let i = 0; i < clave.length; i++) hash = clave.charCodeAt(i) + ((hash << 5) - hash);
   return PALETA_SUAVE[Math.abs(hash) % PALETA_SUAVE.length];
 }
+
+// ---------- KPIs (tarjetas verdes) ----------
 function renderKpisTipos() {
   const total = TIPOS.length;
   const alta = TIPOS.filter(t => t.prioridad === 'ALTA').length;
@@ -74,18 +113,18 @@ function renderKpisTipos() {
   const baja = TIPOS.filter(t => t.prioridad === 'BAJA').length;
 
   const kpis = [
-    { color: 'blue', icon: 'bi-tags', num: total, label: 'Tipos registrados' },
-    { color: 'red', icon: 'bi-exclamation-triangle', num: alta, label: 'Prioridad alta' },
-    { color: 'amber', icon: 'bi-clock', num: media, label: 'Prioridad media' },
-    { color: 'green', icon: 'bi-shield-check', num: baja, label: 'Prioridad baja' },
+    { icon: 'bi-tags-fill', num: total, label: 'Tipos registrados' },
+    { icon: 'bi-exclamation-triangle-fill', num: alta, label: 'Prioridad alta' },
+    { icon: 'bi-clock-fill', num: media, label: 'Prioridad media' },
+    { icon: 'bi-shield-fill-check', num: baja, label: 'Prioridad baja' },
   ];
 
   document.getElementById('kpisTipoAlertas').innerHTML = kpis.map(k => `
     <div class="col-6 col-xl-3">
-      <div class="kpi-dash kpi-${k.color}-dash">
-        <i class="bi ${k.icon} kpi-icon-dash"></i>
-        <p class="kpi-num-dash">${k.num}</p>
-        <p class="kpi-label-dash">${k.label}</p>
+      <div class="kpi-tipo-dash">
+        <div class="kpi-icon-circle-dash"><i class="bi ${k.icon}"></i></div>
+        <p class="kpi-num-tipo-dash">${k.num}</p>
+        <p class="kpi-label-tipo-dash">${k.label}</p>
       </div>
     </div>`).join('');
 }
@@ -202,6 +241,7 @@ document.getElementById('formTipo').addEventListener('submit', (e) => {
     TIPOS.push({ id: nextTipoId++, nombre, prioridad });
   }
 
+  guardarTiposEnStorage();
   modalTipo.hide();
   refrescarTipos();
 });
@@ -212,6 +252,7 @@ function eliminarTipo(id) {
   if (!t) return;
   if (!confirm(`¿Eliminar el tipo de alerta "${t.nombre}"? Esta acción no se puede deshacer.`)) return;
   TIPOS = TIPOS.filter(x => x.id !== id);
+  guardarTiposEnStorage();
   refrescarTipos();
 }
 

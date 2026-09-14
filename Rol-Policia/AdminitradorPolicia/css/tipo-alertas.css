@@ -1,5 +1,5 @@
 /* Piezas de Tipo de Alertas que no existen en global.css: encabezado
-   con acción, filtros, tabla de datos y modales de crear/editar. */
+   con acción, KPIs, filtros, tabla de datos y modales de crear/editar. */
 
 .header-vista-dash {
   display: flex;
@@ -42,6 +42,70 @@
   color: #fff;
   box-shadow: var(--shadow-md);
   transform: translateY(-1px);
+}
+
+/* ---------- KPIs verdes (tipo de alerta) ---------- */
+.kpi-tipo-dash {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-2));
+  border-radius: 18px;
+  padding: 20px 22px;
+  color: #fff;
+  min-height: 108px;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.kpi-tipo-dash:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.kpi-tipo-dash::after {
+  content: "";
+  position: absolute;
+  top: -34px;
+  right: -34px;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.07);
+  pointer-events: none;
+}
+
+.kpi-icon-circle-dash {
+  position: relative;
+  z-index: 1;
+  margin-left: auto;
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: #fff;
+}
+
+.kpi-num-tipo-dash {
+  position: relative;
+  z-index: 1;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1;
+  margin: 18px 0 4px;
+}
+
+.kpi-label-tipo-dash {
+  position: relative;
+  z-index: 1;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.92);
+  margin: 0;
 }
 
 /* ---------- Barra de filtros ---------- */
@@ -388,5 +452,9 @@
   .filtros-toolbar-dash select.form-select {
     min-width: 0;
     flex: 1 1 auto;
+  }
+
+  .kpi-num-tipo-dash {
+    margin-top: 14px;
   }
 }
