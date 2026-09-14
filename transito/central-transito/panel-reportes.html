@@ -16,20 +16,22 @@
   <link rel="stylesheet" href="../../css/temas.css" />
   <link rel="stylesheet" href="../../css/transito/central-transito/panel-reportes.css" />
   <script src="../../js/global.js" defer></script>
+  <script src="../../js/transito/central-transito/panel-reportes.js" defer></script>
+
 </head>
 
 <body class="rol-transito rail-collapsed" data-rol="transito">
-
+ 
   <div class="d-flex" id="wrapperDash">
-
+ 
     <aside class="sidebar-dash" id="sidebarDash">
-
+ 
     </aside>
-
+ 
     <!-- ===================== MAIN ===================== -->
     <main class="main-dash flex-grow-1">
       <div class="container-fluid px-4 py-4">
-
+ 
         <!-- topbar -->
         <div class="row g-3 align-items-center mb-5">
           <div class="col">
@@ -48,21 +50,21 @@
             <span class="avatar-dash" id="railToggle" title="Mostrar/ocultar perfil">D</span>
           </div>
         </div>
-
+ 
         <!-- encabezado -->
         <div class="mb-4">
           <h1 class="section-title-dash">Informes de casos</h1>
           <p class="section-text-dash mb-0">Registra lo que el agente reportó por radio en cada caso ya atendido.</p>
         </div>
-
+ 
         <!-- tabla -->
         <div class="table-card-dash">
-
+ 
           <div class="d-flex gap-2 tabs-dash mb-3">
-            <button class="tab-dash active-dash">Pendientes de informe (3)</button>
-            <button class="tab-dash">Completados hoy (24)</button>
+            <button class="tab-dash active-dash" data-pestania="pendiente" id="tabPendientes">Pendientes de informe (0)</button>
+            <button class="tab-dash" data-pestania="completado" id="tabCompletados">Completados hoy (0)</button>
           </div>
-
+ 
           <table class="table align-middle mb-0">
             <thead>
               <tr>
@@ -73,45 +75,25 @@
                 <th class="text-end">&nbsp;</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td><span class="badge-tipo-dash tipo-accidente-dash">Accidente</span></td>
-                <td>Casimiro Raúl Maestre</td>
-                <td>Laura Pacheco</td>
-                <td class="text-muted small">Hoy · 09:40 a.m.</td>
-                <td class="text-end"><button class="btn-asignar-dash">Completar informe</button></td>
-              </tr>
-              <tr>
-                <td><span class="badge-tipo-dash tipo-semaforo-dash">Semáforo dañado</span></td>
-                <td>Barrio La Nevada</td>
-                <td>Diana Torres</td>
-                <td class="text-muted small">Hoy · 10:15 a.m.</td>
-                <td class="text-end"><button class="btn-asignar-dash">Completar informe</button></td>
-              </tr>
-              <tr>
-                <td><span class="badge-tipo-dash tipo-accidente-dash">Accidente</span></td>
-                <td>Los Fundadores</td>
-                <td>Jorge Ramírez</td>
-                <td class="text-muted small">Hoy · 11:02 a.m.</td>
-                <td class="text-end"><button class="btn-asignar-dash">Completar informe</button></td>
-              </tr>
+            <tbody id="tablaCasosBody">
+              <!-- filas generadas por JS -->
             </tbody>
           </table>
-
+ 
         </div>
-
-        <!-- formulario de informe -->
-        <div class="panel-card-dash mt-4">
-          <h2 class="panel-title-dash">Completar informe · Accidente · Casimiro Raúl Maestre</h2>
-
+ 
+        <!-- formulario de informe (oculto hasta pulsar "Completar informe") -->
+        <div class="panel-card-dash mt-4 d-none" id="panelInforme">
+          <h2 class="panel-title-dash" id="panelInformeTitulo">Completar informe</h2>
+ 
           <div class="row g-3">
             <div class="col-md-6">
               <label class="config-field-label-dash">Agente que atendió</label>
-              <input type="text" class="form-control" value="Laura Pacheco" disabled>
+              <input type="text" class="form-control" id="inputAgente" disabled>
             </div>
             <div class="col-md-6">
               <label class="config-field-label-dash">Estado final del caso</label>
-              <select class="form-select">
+              <select class="form-select" id="selectEstadoFinal">
                 <option>Resuelta</option>
                 <option>Remitida a otra entidad</option>
                 <option>Falsa alarma</option>
@@ -119,22 +101,23 @@
             </div>
             <div class="col-12">
               <label class="config-field-label-dash">Lo reportado por el agente (vía radio)</label>
-              <textarea class="form-control" rows="4" placeholder="Ej: Choque leve entre dos vehículos, sin heridos, tránsito restablecido a las 09:35 a.m."></textarea>
+              <textarea class="form-control" rows="4" id="textareaReporte"
+                placeholder="Ej: Choque leve entre dos vehículos, sin heridos, tránsito restablecido a las 09:35 a.m."></textarea>
             </div>
             <div class="col-12 d-flex justify-content-end gap-2">
-              <button class="btn-secundario-dash">Cancelar</button>
-              <button class="btn-asignar-dash">Guardar informe</button>
+              <button class="btn-secundario-dash" id="btnCancelarInforme">Cancelar</button>
+              <button class="btn-asignar-dash" id="btnGuardarInforme">Guardar informe</button>
             </div>
           </div>
         </div>
-
+ 
       </div>
     </main>
-
+ 
   </div>
+ 
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-skAcpIdS7UcVUC05LJ9Dxay8AXcDYfBJqt1CJ85S/CFujCsTpJa/mR1LT" crossorigin="anonymous"></script>
+ <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
   <script src="../../js/transito/central-transito/slidebar.js"></script>
   <script>renderSidebarTransito('reportes');</script>
 </body>

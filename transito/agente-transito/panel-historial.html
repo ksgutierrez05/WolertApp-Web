@@ -17,131 +17,118 @@
  
   <link rel="stylesheet" href="../../css/transito/agente-transito/panel-historial.css" />
   <script src="../../js/global.js" defer></script>
-  <script src="../../js/transito/agente-transito/panel-historial.js" defer></script>
-
 </head>
 
 <body class="rol-transito rail-collapsed" data-rol="transito">
- 
+
   <div class="d-flex" id="wrapperDash">
- 
-    <aside class="sidebar-dash" id="sidebarDash">
- 
-    </aside>
- 
+
+    <aside class="sidebar-dash" id="sidebarDash"></aside>
+
     <!-- ===================== MAIN ===================== -->
     <main class="main-dash flex-grow-1">
       <div class="container-fluid px-4 py-4">
- 
+
         <!-- topbar -->
         <div class="row g-3 align-items-center mb-5">
           <div class="col">
             <div class="input-group search-dash">
               <span class="input-group-text bg-white border-0"><i class="bi bi-search"></i></span>
-              <input type="text" class="form-control border-0" placeholder="Buscar por caso, barrio o agente...">
+              <input type="text" class="form-control border-0" placeholder="Buscar por caso o barrio...">
             </div>
           </div>
           <div class="col-auto">
             <button class="btn btn-light rounded-circle position-relative icon-btn-dash">
               <i class="bi bi-bell"></i>
-              <span class="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle">9+</span>
+              <span class="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle">2</span>
             </button>
           </div>
           <div class="col-auto">
             <span class="avatar-dash" id="railToggle" title="Mostrar/ocultar perfil">D</span>
           </div>
         </div>
- 
+
         <!-- encabezado -->
         <div class="mb-4">
-          <h1 class="section-title-dash">Historial de casos</h1>
-          <p class="section-text-dash mb-0">Consulta los casos de tránsito ya despachados y cerrados.</p>
+          <h1 class="section-title-dash">Historial</h1>
+          <p class="section-text-dash mb-0">Casos que tu grupo ya atendió.</p>
         </div>
- 
-        <!-- tabla -->
+
+        <!-- tabla con tabs -->
         <div class="table-card-dash">
- 
-          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-            <div class="d-flex gap-2 tabs-dash">
-              <button class="tab-dash active-dash" id="tabTodos" onclick="FiltrarHistorial('todos')">Todos (0)</button>
-              <button class="tab-dash" id="tabAccidente" onclick="FiltrarHistorial('accidente')">Accidente (0)</button>
-              <button class="tab-dash" id="tabSemaforo" onclick="FiltrarHistorial('semaforo')">Semáforo dañado (0)</button>
-            </div>
-            <div class="input-group search-panel-dash">
-              <span class="input-group-text bg-white border-0"><i class="bi bi-search"></i></span>
-              <input type="text" class="form-control border-0" id="buscarHistorial" placeholder="Buscar por barrio o agente..." oninput="BuscarHistorial(this.value)">
-            </div>
+
+          <div class="d-flex gap-2 tabs-dash mb-3">
+            <button class="tab-dash active-dash">Todas (18)</button>
+            <button class="tab-dash">Accidente (11)</button>
+            <button class="tab-dash">Semáforo dañado (7)</button>
           </div>
- 
+
           <table class="table align-middle mb-0">
             <thead>
               <tr>
-                <th>Reportado por</th>
+                <th>Fecha</th>
                 <th>Tipo</th>
                 <th>Barrio</th>
-                <th>Agente asignado</th>
-                <th>Cierre</th>
+                <th>Reportado por</th>
+                <th>Estado</th>
                 <th class="text-end">&nbsp;</th>
               </tr>
             </thead>
-            <tbody id="tablaHistorialBody">
-              <!-- Se llena dinámicamente desde panel-historial.js -->
+            <tbody>
+              <tr>
+                <td class="text-muted small">10/9/2026 · 19:05 p.m.</td>
+                <td><span class="badge-tipo-dash tipo-semaforo-dash">Semáforo dañado</span></td>
+                <td>Los Fundadores</td>
+                <td>Diego Torres</td>
+                <td><span class="badge-estado-dash estado-resuelta-dash">Resuelta</span></td>
+                <td class="text-end"><a href="#" class="link-detalle-dash">Ver detalle</a></td>
+              </tr>
+              <tr>
+                <td class="text-muted small">9/9/2026 · 14:20 p.m.</td>
+                <td><span class="badge-tipo-dash tipo-accidente-dash">Accidente</span></td>
+                <td>Casimiro Raúl Maestre</td>
+                <td>Laura Peña</td>
+                <td><span class="badge-estado-dash estado-resuelta-dash">Resuelta</span></td>
+                <td class="text-end"><a href="#" class="link-detalle-dash">Ver detalle</a></td>
+              </tr>
+              <tr>
+                <td class="text-muted small">8/9/2026 · 09:40 a.m.</td>
+                <td><span class="badge-tipo-dash tipo-accidente-dash">Accidente</span></td>
+                <td>Los Fundadores</td>
+                <td>Jorge Martínez</td>
+                <td><span class="badge-estado-dash estado-resuelta-dash">Resuelta</span></td>
+                <td class="text-end"><a href="#" class="link-detalle-dash">Ver detalle</a></td>
+              </tr>
+              <tr>
+                <td class="text-muted small">7/9/2026 · 17:12 p.m.</td>
+                <td><span class="badge-tipo-dash tipo-semaforo-dash">Semáforo dañado</span></td>
+                <td>Casimiro Raúl Maestre</td>
+                <td>Diego Torres</td>
+                <td><span class="badge-estado-dash estado-resuelta-dash">Resuelta</span></td>
+                <td class="text-end"><a href="#" class="link-detalle-dash">Ver detalle</a></td>
+              </tr>
             </tbody>
           </table>
- 
+
           <div class="d-flex justify-content-between align-items-center pt-3 paginacion-dash">
-            <span class="text-muted small" id="resumenPaginacion">Mostrando 0 casos cerrados</span>
-            <div class="d-flex gap-1" id="botonesPaginacion">
-              <!-- Se llena dinámicamente desde panel-historial.js -->
+            <span class="text-muted small">Mostrando 1–4 de 18 reportes</span>
+            <div class="d-flex gap-1">
+              <button class="page-btn-dash active-dash">1</button>
+              <button class="page-btn-dash">2</button>
+              <button class="page-btn-dash">3</button>
+              <button class="page-btn-dash"><i class="bi bi-chevron-right"></i></button>
             </div>
           </div>
- 
+
         </div>
- 
+
       </div>
     </main>
- 
+
   </div>
- 
-  <!-- ===================== MODAL: DETALLE DEL CASO (SOLO LECTURA) ===================== -->
-  <div class="modal fade" id="modalDetalle" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content modal-dash">
-        <div class="modal-header border-0 pb-0">
-          <h5 class="panel-title-dash mb-0">Detalle del caso</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
-        <div class="modal-body">
- 
-          <span class="badge-tipo-dash mb-2 d-inline-block" id="detalleTipoBadge">—</span>
- 
-          <div class="perfil-datos-dash">
-            <div class="perfil-fila-dash">
-              <span class="perfil-label-dash">Barrio</span>
-              <span class="perfil-valor-dash" id="detalleBarrio">—</span>
-            </div>
-            <div class="perfil-fila-dash">
-              <span class="perfil-label-dash">Reportado por</span>
-              <span class="perfil-valor-dash" id="detalleReportante">—</span>
-            </div>
-            <div class="perfil-fila-dash">
-              <span class="perfil-label-dash">Agente asignado</span>
-              <span class="perfil-valor-dash" id="detalleAgente">—</span>
-            </div>
-            <div class="perfil-fila-dash">
-              <span class="perfil-label-dash">Cierre</span>
-              <span class="perfil-valor-dash" id="detalleCierre">—</span>
-            </div>
-          </div>
- 
-          <p class="config-field-label-dash mt-3 mb-1">Informe</p>
-          <p class="detalle-descripcion-dash" id="detalleDescripcion">—</p>
- 
-        </div>
-      </div>
-    </div>
-  </div>
- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-skAcpIdS7UcVUC05LJ9Dxay8AXcDYfBJqt1CJ85S/CFujCsTpJa/mR1LT" crossorigin="anonymous"></script>
   <script src="/js/transito/agente-transito/slidebar.js"></script>
   <script>renderSidebarTransito('historial');</script>
 </body>
