@@ -1,0 +1,98 @@
+/* ============================================================
+   USUARIOS.CSS — estilos propios de admin/usuarios.html
+   ============================================================
+   Reutilizan las mismas variables de color definidas en
+   css/global.css (--color-primary, --color-blue, --color-danger,
+   --fog, --muted, --line, --ink, --shadow-xs, etc.), así que este
+   archivo SIEMPRE debe cargarse después de global.css en el <head>.
+
+   Cuando confirmes que te gustan estos estilos, considera mover
+   las clases reutilizables (badge-gray-dash, action-btn-dash) a
+   global.css (secciones 07/09) para que estén disponibles también
+   en otras vistas del admin que las necesiten.
+   ============================================================ */
+
+/* variante morada para KPIs (roles configurados) */
+.kpi-purple-dash::before { background-color: #7c4fd1; }
+.kpi-purple-dash .kpi-icon-dash,
+.kpi-purple-dash .kpi-num-dash { color: #7c4fd1; }
+
+/* badge gris neutro para roles/estados sin color semántico fuerte */
+.badge-gray-dash { background-color: var(--fog); color: var(--muted); }
+
+/* fila de estado con punto de color, sin fondo (como "En línea") */
+.status-dot-dash {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 700;
+}
+.status-dot-dash .dot { width: 7px; height: 7px; border-radius: 50%; }
+.status-active-dash .dot { background-color: var(--color-green); }
+.status-active-dash { color: var(--color-green); }
+.status-inactive-dash .dot { background-color: var(--subtle); }
+.status-inactive-dash { color: var(--muted); }
+
+/* botones de acción pequeños y redondeados, con fondo pastel */
+.action-btn-dash {
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    font-size: 13px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.action-btn-dash:hover { transform: translateY(-1px); box-shadow: var(--shadow-xs); }
+.action-view-dash { background-color: #e8f0fb; color: var(--color-blue); }
+.action-edit-dash { background-color: #fcf0da; color: var(--color-amber); }
+.action-delete-dash { background-color: #fce8e9; color: var(--color-danger); }
+
+/* tabla de usuarios */
+.tabla-usuarios-dash { width: 100%; border-collapse: collapse; }
+.tabla-usuarios-dash thead th {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--subtle);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    text-align: left;
+    padding: 0 14px 12px;
+    white-space: nowrap;
+}
+.tabla-usuarios-dash tbody tr {
+    border-top: 1px solid var(--line);
+    transition: background 0.12s ease;
+}
+.tabla-usuarios-dash tbody tr:hover { background-color: var(--fog); }
+.tabla-usuarios-dash td { padding: 14px; vertical-align: middle; }
+
+.avatar-usuario-dash {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    flex-shrink: 0;
+}
+
+.usuario-nombre-dash { font-size: 13.5px; font-weight: 700; }
+.usuario-arroba-dash { font-size: 11.5px; color: var(--muted); }
+
+.filtro-select-dash {
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background-color: #fff;
+    font-size: 13px;
+    padding: 10px 14px;
+    color: var(--ink);
+    box-shadow: var(--shadow-xs);
+}
