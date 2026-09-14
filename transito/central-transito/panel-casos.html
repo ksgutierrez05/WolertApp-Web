@@ -1,12 +1,12 @@
 <!doctype html>
 <html lang="es">
- 
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>WolertApp - Casos sin asignar</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous" />
+  <link rel="icon" type="image/png" href="../../img/secretaria transito.png" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -15,21 +15,24 @@
   <link rel="stylesheet" href="../../css/global.css" />
   <link rel="stylesheet" href="../../css/temas.css" />
   <link rel="stylesheet" href="../../css/transito/central-transito/panel-casos.css" />
+  
   <script src="../../js/global.js" defer></script>
+  <script src="../../js/transito/central-transito/panel-casos.js" defer></script>
+  
 </head>
- 
+
 <body class="rol-transito rail-collapsed" data-rol="transito">
- 
+
   <div class="d-flex" id="wrapperDash">
- 
+
     <aside class="sidebar-dash" id="sidebarDash">
- 
+
     </aside>
- 
+
     <!-- ===================== MAIN ===================== -->
     <main class="main-dash flex-grow-1">
       <div class="container-fluid px-4 py-4">
- 
+
         <!-- topbar -->
         <div class="row g-3 align-items-center mb-5">
           <div class="col">
@@ -48,19 +51,19 @@
             <span class="avatar-dash" id="railToggle" title="Mostrar/ocultar perfil">D</span>
           </div>
         </div>
- 
+
         <!-- encabezado -->
         <div class="mb-4">
           <h1 class="section-title-dash">Casos sin asignar</h1>
-          <p class="section-text-dash mb-0">Asigna cada caso reportado al agente de tránsito disponible más cercano.</p>
+          <p class="section-text-dash mb-0">Asigna cada caso reportado al grupo de tránsito disponible más cercano.</p>
         </div>
- 
+
         <!-- KPIs -->
         <div class="row g-3 mb-5">
           <div class="col-md-3">
             <div class="kpi-card-dash border-red-dash">
               <div class="kpi-content-dash">
-                <div class="kpi-value-dash">6</div>
+                <div class="kpi-value-dash" id="kpiCasosActivos">6</div>
                 <div class="kpi-label-dash">Casos activos</div>
               </div>
               <span class="kpi-icon-box-dash bg-red-dash"><i class="bi bi-geo-alt"></i></span>
@@ -78,7 +81,7 @@
           <div class="col-md-3">
             <div class="kpi-card-dash border-green-dash">
               <div class="kpi-content-dash">
-                <div class="kpi-value-dash">27</div>
+                <div class="kpi-value-dash" id="kpiCerradosHoy">27</div>
                 <div class="kpi-label-dash">Casos cerrados hoy</div>
               </div>
               <span class="kpi-icon-box-dash bg-green-dash"><i class="bi bi-check2"></i></span>
@@ -87,17 +90,17 @@
           <div class="col-md-3">
             <div class="kpi-card-dash border-amber-dash">
               <div class="kpi-content-dash">
-                <div class="kpi-value-dash">11/15</div>
-                <div class="kpi-label-dash">Agentes disponibles</div>
+                <div class="kpi-value-dash" id="kpiGruposDisponibles">4/5</div>
+                <div class="kpi-label-dash">Grupos disponibles</div>
               </div>
               <span class="kpi-icon-box-dash bg-amber-dash"><i class="bi bi-truck"></i></span>
             </div>
           </div>
         </div>
- 
+
         <!-- casos sin asignar -->
         <div class="table-card-dash">
- 
+
           <table class="table align-middle mb-0">
             <thead>
               <tr>
@@ -107,57 +110,68 @@
                 <th class="text-end">&nbsp;</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td><span class="badge-tipo-dash tipo-semaforo-dash">Semáforo dañado</span></td>
-                <td>
-                  <div class="fw-semibold">Barrio La Nevada</div>
-                  <div class="text-muted small">Reportado por Laura Peña</div>
-                </td>
-                <td><span class="badge-espera-dash espera-alta-dash">12 min</span></td>
-                <td class="text-end"><button class="btn-asignar-dash">Asignar agente</button></td>
-              </tr>
-              <tr>
-                <td><span class="badge-tipo-dash tipo-accidente-dash">Accidente</span></td>
-                <td>
-                  <div class="fw-semibold">Casimiro Raúl Maestre</div>
-                  <div class="text-muted small">Reportado por Katherine Gutiérrez</div>
-                </td>
-                <td><span class="badge-espera-dash espera-alta-dash">8 min</span></td>
-                <td class="text-end"><button class="btn-asignar-dash">Asignar agente</button></td>
-              </tr>
-              <tr>
-                <td><span class="badge-tipo-dash tipo-accidente-dash">Accidente</span></td>
-                <td>
-                  <div class="fw-semibold">Los Fundadores</div>
-                  <div class="text-muted small">Reportado por Diego Torres</div>
-                </td>
-                <td><span class="badge-espera-dash espera-media-dash">5 min</span></td>
-                <td class="text-end"><button class="btn-asignar-dash">Asignar agente</button></td>
-              </tr>
-              <tr>
-                <td><span class="badge-tipo-dash tipo-semaforo-dash">Semáforo dañado</span></td>
-                <td>
-                  <div class="fw-semibold">El Centro</div>
-                  <div class="text-muted small">Reportado por Ravi Kumar</div>
-                </td>
-                <td><span class="badge-espera-dash espera-media-dash">3 min</span></td>
-                <td class="text-end"><button class="btn-asignar-dash">Asignar agente</button></td>
-              </tr>
+            <tbody id="tablaCasosBody">
+              <!-- Se llena dinámicamente desde panel-casos.js -->
             </tbody>
           </table>
- 
+
         </div>
- 
+
       </div>
     </main>
- 
+
   </div>
- 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-skAcpIdS7UcVUC05LJ9Dxay8AXcDYfBJqt1CJ85S/CFujCsTpJa/mR1LT" crossorigin="anonymous"></script>
-  <script src="/js/transito/central-transito/slidebar.js"></script>
+
+  <!-- ===================== MODAL: ASIGNAR GRUPO ===================== -->
+  <div class="modal fade" id="modalAsignar" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content modal-dash">
+        <div class="modal-header border-0 pb-0">
+          <div>
+            <h5 class="panel-title-dash mb-0">Asignar grupo</h5>
+            <p class="modal-subtitulo-dash mb-0" id="modalCasoInfo">Caso · Ubicación</p>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+            <div class="d-flex gap-2 tabs-dash" id="tabsGrupoModal">
+              <button class="tab-dash active-dash" data-filtro="todos">Todos</button>
+              <button class="tab-dash" data-filtro="disponible">Disponibles</button>
+              <button class="tab-dash" data-filtro="no-disponible">No disponibles</button>
+            </div>
+            <div class="input-group search-panel-dash">
+              <span class="input-group-text bg-white border-0"><i class="bi bi-search"></i></span>
+              <input type="text" class="form-control border-0" id="buscarGrupoModal" placeholder="Buscar grupo...">
+            </div>
+          </div>
+
+          <div class="tabla-grupos-modal-dash">
+            <table class="table align-middle mb-0">
+              <thead>
+                <tr>
+                  <th>Grupo</th>
+                  <th>Distancia</th>
+                  <th>Estado</th>
+                  <th class="text-end">&nbsp;</th>
+                </tr>
+              </thead>
+              <tbody id="listaGruposDisponibles">
+                <!-- Se llena dinámicamente desde panel-casos.js -->
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../../js/transito/central-transito/slidebar.js"></script>
   <script>renderSidebarTransito('asignar');</script>
+
 </body>
 
 </html>
