@@ -1,0 +1,477 @@
+/* ============================================================
+   CENTRO-OPERACIONES.CSS — Central de Radio
+
+   Este archivo NO cambia la paleta de colores.
+   Los colores compartidos siguen viniendo de global.css
+   y temas.css mediante .rol-policia.
+   ============================================================ */
+
+
+/* ============================================================
+   TARJETA DE ESTADÍSTICA PRINCIPAL
+   ============================================================ */
+
+.kpi-hero-dash {
+  min-height: 226px;
+
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  background: linear-gradient(135deg, #c85c5c, #d97a7a);
+}
+
+.kpi-hero-dash .kpi-solid-num-dash {
+  font-size: 42px;
+  margin-top: 6px;
+}
+
+.kpi-hero-dash .kpi-solid-icon-dash {
+  width: 52px;
+  height: 52px;
+  font-size: 22px;
+}
+
+
+/* ============================================================
+   TABLAS
+   ============================================================ */
+
+.tabla-dash {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 0;
+}
+
+.tabla-dash thead th {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+
+  color: var(--muted);
+
+  border-bottom: 1px solid var(--line);
+
+  padding: 0 10px 11px;
+
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.tabla-dash tbody td {
+  padding: 12px 10px;
+
+  border-bottom: 1px solid var(--line);
+
+  font-size: 12.5px;
+
+  vertical-align: middle;
+
+  overflow: hidden;
+}
+
+.tabla-dash tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.tabla-dash tbody tr:hover td {
+  background-color: var(--fog);
+}
+
+
+/* ============================================================
+   ALERTAS RECIENTES
+   Ocupa todo el ancho.
+   ============================================================ */
+
+.tabla-alertas-dash {
+  table-layout: fixed;
+}
+
+
+/* Caso */
+
+.tabla-alertas-dash .col-caso {
+  width: 11%;
+}
+
+
+/* Tipo */
+
+.tabla-alertas-dash .col-tipo {
+  width: 18%;
+}
+
+
+/* Prioridad */
+
+.tabla-alertas-dash .col-prioridad {
+  width: 13%;
+}
+
+
+/* Ubicación */
+
+.tabla-alertas-dash .col-ubicacion {
+  width: 23%;
+}
+
+
+/* Hora */
+
+.tabla-alertas-dash .col-hora {
+  width: 9%;
+}
+
+
+/* Estado */
+
+.tabla-alertas-dash .col-estado {
+  width: 17%;
+}
+
+
+/* Acción */
+
+.tabla-alertas-dash .col-accion {
+  width: 9%;
+}
+
+
+/* Caso */
+
+.tabla-alertas-dash .caso-dash {
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+
+/* Tipo */
+
+.tabla-alertas-dash .tipo-cell-dash {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  min-width: 0;
+
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.tabla-alertas-dash .tipo-cell-dash i {
+  color: var(--subtle);
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.tabla-alertas-dash .tipo-cell-dash span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+/* Ubicación */
+
+.tabla-alertas-dash td.meta-muted-dash {
+  color: var(--muted);
+
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+
+/* Hora */
+
+.tabla-alertas-dash td:nth-child(5) {
+  white-space: nowrap;
+  color: var(--muted);
+}
+
+
+/* Estado */
+
+.tabla-alertas-dash td:nth-child(6) {
+  white-space: nowrap;
+}
+
+
+/* Badges */
+
+.tabla-alertas-dash .badge-dash {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 10px;
+  padding: 4px 8px;
+
+  white-space: nowrap;
+}
+
+
+/* Botón de acción */
+
+.tabla-alertas-dash .btn-cv-azul {
+  width: 30px;
+  height: 30px;
+
+  padding: 0;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 12px;
+  line-height: 1;
+}
+
+
+/* ============================================================
+   ATENCIONES ACTIVAS
+   Queda nivelada con el mapa mediante h-100 en el HTML.
+   ============================================================ */
+
+.tabla-atenciones-dash {
+  table-layout: fixed;
+}
+
+
+/* Caso */
+
+.tabla-atenciones-dash th:nth-child(1),
+.tabla-atenciones-dash td:nth-child(1) {
+  width: 18%;
+}
+
+
+/* Tipo */
+
+.tabla-atenciones-dash th:nth-child(2),
+.tabla-atenciones-dash td:nth-child(2) {
+  width: 27%;
+}
+
+
+/* Unidad */
+
+.tabla-atenciones-dash th:nth-child(3),
+.tabla-atenciones-dash td:nth-child(3) {
+  width: 17%;
+}
+
+
+/* Estado */
+
+.tabla-atenciones-dash th:nth-child(4),
+.tabla-atenciones-dash td:nth-child(4) {
+  width: 21%;
+}
+
+
+/* ETA / Tiempo */
+
+.tabla-atenciones-dash th:nth-child(5),
+.tabla-atenciones-dash td:nth-child(5) {
+  width: 17%;
+}
+
+
+/* Contenido */
+
+.tabla-atenciones-dash td {
+  white-space: nowrap;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+/* Caso */
+
+.tabla-atenciones-dash .caso-dash {
+  font-weight: 700;
+  color: var(--ink);
+}
+
+
+/* Unidad */
+
+.tabla-atenciones-dash td:nth-child(3) {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+
+/* ETA */
+
+.tabla-atenciones-dash td:nth-child(5) {
+  color: var(--muted);
+}
+
+
+/* Badges */
+
+.tabla-atenciones-dash .badge-dash {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 10px;
+  padding: 4px 9px;
+
+  white-space: nowrap;
+}
+
+
+/* ============================================================
+   MAPA OPERATIVO
+   ============================================================ */
+
+.mapa-placeholder-dash {
+  position: relative;
+
+  height: 190px;
+
+  border-radius: 14px;
+
+  background-color: var(--fog);
+
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+
+  background-size: 24px 24px;
+
+  overflow: hidden;
+}
+
+.pin-dash {
+  position: absolute;
+
+  font-size: 22px;
+
+  transform: translate(-50%, -100%);
+}
+
+.pin-red {
+  color: var(--color-danger);
+}
+
+.pin-amber {
+  color: var(--color-amber);
+}
+
+.pin-blue {
+  color: var(--color-blue);
+}
+
+.pin-green {
+  color: var(--color-green);
+}
+
+
+/* Leyenda */
+
+.mapa-grupo-dash {
+  font-size: 11px;
+  font-weight: 700;
+
+  text-transform: uppercase;
+  letter-spacing: .03em;
+
+  color: var(--muted);
+
+  margin: 14px 0 6px;
+}
+
+.mapa-fila-dash {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  padding: 6px 0;
+
+  font-size: 13px;
+}
+
+.mapa-fila-dash .dot {
+  width: 8px;
+  height: 8px;
+
+  border-radius: 50%;
+
+  flex-shrink: 0;
+}
+
+.mapa-fila-dash .lbl-dash {
+  flex-grow: 1;
+  color: var(--ink);
+}
+
+.mapa-fila-dash .num-dash {
+  font-weight: 700;
+}
+
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 1200px) {
+
+  .tabla-dash thead th {
+    padding-left: 7px;
+    padding-right: 7px;
+  }
+
+  .tabla-dash tbody td {
+    padding-left: 7px;
+    padding-right: 7px;
+  }
+
+  .tabla-dash {
+    font-size: 12px;
+  }
+
+  .tabla-alertas-dash .badge-dash,
+  .tabla-atenciones-dash .badge-dash {
+    font-size: 9px;
+    padding: 3px 6px;
+  }
+}
+
+
+@media (max-width: 992px) {
+
+  .tabla-alertas-dash .col-ubicacion {
+    width: 20%;
+  }
+
+  .tabla-alertas-dash .col-tipo {
+    width: 17%;
+  }
+
+  .tabla-alertas-dash .col-estado {
+    width: 18%;
+  }
+}
+
+
+@media (max-width: 768px) {
+
+  .tabla-dash {
+    min-width: 650px;
+  }
+
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
