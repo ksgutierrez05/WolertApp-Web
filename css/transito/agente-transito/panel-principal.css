@@ -1,0 +1,385 @@
+/* ============================================================
+   WOLERTAPP · TRÁNSITO · AGENTE — Panel principal
+   Inspirado en el estilo de panel-despacho (clases -pd)
+   ============================================================ */
+
+/* [01] Encabezados de sección --------------------------------- */
+.sec-head-ag {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.sec-head-ag h2,
+.titulos-ag {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--ink);
+  margin: 0 0 4px 0;
+}
+
+/* [02] Panel base ----------------------------------------------- */
+.panel-ag {
+  position: relative;
+  background-color: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+/* [03] Tabla genérica --------------------------------------------- */
+.tabla-ag {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabla-ag th {
+  text-align: left;
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 600;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.tabla-ag td {
+  padding: 13px 20px;
+  border-bottom: 1px solid var(--fog);
+  font-size: 13px;
+  vertical-align: middle;
+}
+
+.tabla-ag tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.tabla-ag tbody tr.d-none {
+  display: none;
+}
+
+.tabla-ag tbody tr.caso-row-ag {
+  transition: background-color 0.15s ease, opacity 0.3s ease;
+}
+
+.tabla-ag tbody tr.caso-row-ag:hover {
+  background-color: var(--fog);
+}
+
+.tabla-ag tbody tr.resuelto-ag {
+  opacity: 0;
+}
+
+/* [04] Badges de estado (mis casos) -------------------------------- */
+.estado-badge-ag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 100px;
+  white-space: nowrap;
+}
+
+.estado-badge-ag::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.estado-pendiente-ag {
+  background-color: rgba(217, 155, 44, 0.12);
+  color: #b9791f;
+}
+.estado-pendiente-ag::before { background-color: var(--color-amber); }
+
+.estado-en_camino-ag {
+  background-color: rgba(47, 111, 237, 0.12);
+  color: #2f6fed;
+}
+.estado-en_camino-ag::before { background-color: var(--color-blue); }
+
+.estado-en_sitio-ag {
+  background-color: rgba(124, 79, 201, 0.12);
+  color: #7c4fc9;
+}
+.estado-en_sitio-ag::before { background-color: #7c4fc9; }
+
+.estado-resuelto-ag {
+  background-color: rgba(46, 158, 91, 0.12);
+  color: #2e9e5b;
+}
+.estado-resuelto-ag::before { background-color: var(--color-green); }
+
+/* [05] Botón "Avanzar estado" -------------------------------------- */
+.avanzar-btn-ag {
+  background-color: var(--color-primary);
+  color: #ffffff;
+  border: none;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 9px 16px;
+  border-radius: 100px;
+  white-space: nowrap;
+  transition: background-color 0.15s ease;
+}
+
+.avanzar-btn-ag:hover {
+  background-color: var(--color-primary-2);
+}
+
+.avanzar-btn-ag:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* [06] Mapa en tiempo real ------------------------------------------ */
+.mapa-canvas-ag {
+  position: relative;
+  height: 320px;
+  overflow: hidden;
+  background-color: #eef2e6;
+}
+
+.mapa-canvas-ag svg.base-ag {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.map-pin-ag {
+  position: absolute;
+  transform: translate(-50%, -100%);
+}
+
+.map-pin-ag .dot-ag {
+  position: relative;
+  display: block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 3px solid #fff;
+  box-shadow: var(--shadow-xs);
+}
+
+.dot-ag.amber { background-color: var(--color-amber); }
+.dot-ag.red { background-color: var(--color-danger); }
+.dot-ag.blue { background-color: var(--color-blue); }
+.dot-ag.green { background-color: var(--color-green); }
+.dot-ag.purple { background-color: #7c4fc9; }
+.dot-ag.gray { background-color: #8a94a6; }
+
+.map-legend-ag {
+  position: absolute;
+  left: 16px;
+  top: 16px;
+  max-width: 190px;
+  background-color: rgba(255, 255, 255, 0.96);
+  border-radius: 14px;
+  padding: 14px 18px;
+  box-shadow: var(--shadow-sm);
+}
+
+.map-legend-ag b {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 10px;
+}
+
+.map-legend-ag ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.map-legend-ag li {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.map-legend-ag .sw-ag {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.map-cta-ag {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--color-primary);
+  color: #ffffff;
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 11px 18px;
+  border-radius: 100px;
+  box-shadow: 0 8px 18px -8px rgba(10, 47, 92, 0.55);
+}
+
+.map-cta-ag:hover {
+  background-color: var(--color-primary-2);
+  color: #ffffff;
+}
+
+/* [07] Mi grupo ------------------------------------------------------ */
+.grupo-ag {
+  background-color: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 6px 20px;
+  box-shadow: var(--shadow-sm);
+}
+
+.companero-row-ag {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--fog);
+}
+
+.companero-row-ag:last-child {
+  border-bottom: none;
+}
+
+.nombre-ag {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.estado-mini-ag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 100px;
+  white-space: nowrap;
+}
+
+.estado-mini-ag::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.estado-verde-ag { background-color: rgba(46, 158, 91, 0.12); color: #2e9e5b; }
+.estado-verde-ag::before { background-color: var(--color-green); }
+
+.estado-azul-ag { background-color: rgba(47, 111, 237, 0.12); color: #2f6fed; }
+.estado-azul-ag::before { background-color: var(--color-blue); }
+
+.estado-morado-ag { background-color: rgba(124, 79, 201, 0.12); color: #7c4fc9; }
+.estado-morado-ag::before { background-color: #7c4fc9; }
+
+.estado-gris-ag { background-color: rgba(138, 148, 166, 0.14); color: #6b7383; }
+.estado-gris-ag::before { background-color: #8a94a6; }
+
+/* [08] Tabs de filtro (historial) ------------------------------------ */
+.tabs-ag {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.tab-ag {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 8px 15px;
+  border-radius: 100px;
+  border: 1px solid var(--line);
+  background-color: #ffffff;
+  color: var(--muted);
+  box-shadow: var(--shadow-xs);
+  transition: box-shadow 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+
+.tab-ag:hover {
+  box-shadow: var(--shadow-sm);
+}
+
+.tab-ag.active-ag {
+  background-color: var(--color-primary);
+  color: #ffffff;
+  border-color: var(--color-primary);
+}
+
+/* [09] Paginación ------------------------------------------------------ */
+.paginacion-ag {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-top: 1px solid var(--line);
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.paginacion-ag .paginas-ag {
+  display: flex;
+  gap: 6px;
+}
+
+.paginacion-ag .paginas-ag button {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background-color: #ffffff;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  transition: box-shadow 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+
+.paginacion-ag .paginas-ag button:hover {
+  box-shadow: var(--shadow-xs);
+}
+
+.paginacion-ag .paginas-ag button.active-ag {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #ffffff;
+}
+
+/* [10] Responsive -------------------------------------------------------- */
+@media (max-width: 768px) {
+  .tabla-ag th,
+  .tabla-ag td {
+    padding: 12px 14px;
+  }
+
+  .map-legend-ag {
+    max-width: 150px;
+    padding: 12px 14px;
+  }
+
+  .companero-row-ag {
+    gap: 10px;
+  }
+}

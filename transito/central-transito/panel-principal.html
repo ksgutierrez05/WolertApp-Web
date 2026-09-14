@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WolertApp - Panel Director de Tránsito</title>
+  <title>WolertApp - Panel Central de Despacho</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
@@ -14,18 +14,19 @@
     rel="stylesheet" />
   <link rel="stylesheet" href="../../css/global.css" />
   <link rel="stylesheet" href="../../css/temas.css" />
-  <link rel="stylesheet" href="../../css/transito/director-transito/panel-director.css" />
+  <link rel="stylesheet" href="../../css/transito/central-transito/panel-principal.css" />
   <script src="../../js/global.js" defer></script>
-  <script src="../../js/transito/panel-director.js" defer></script>
+  <script src="../../js/transito/central-transito/panel-principal.js" defer></script>
 
 </head>
+
 
 <body class="rol-transito rail-collapsed" data-rol="transito">
 
   <div class="d-flex" id="wrapperDash">
- 
+
     <aside class="sidebar-dash" id="sidebarDash">
-     
+
     </aside>
 
     <!-- ===================== MAIN ===================== -->
@@ -37,7 +38,7 @@
           <div class="col">
             <div class="input-group search-dash">
               <span class="input-group-text bg-white border-0"><i class="bi bi-search"></i></span>
-              <input type="text" class="form-control border-0" placeholder="Buscar por caso, barrio o agente...">
+              <input type="text" class="form-control border-0" placeholder="Buscar por caso, agente o barrio...">
             </div>
           </div>
           <div class="col-auto">
@@ -53,17 +54,312 @@
 
         <!-- hero (en global.css se llama: .hero-dash) -->
         <div class="hero-dash mb-4">
-         
-          <div class="eyebrow-dash">11 de septiembre de 2026 · 08:14 a. m.</div>
+
+          <div class="eyebrow-dash">14 de septiembre de 2026 · 09:02 a. m.</div>
           <h1 class="hero-title-dash">Buenos días, Central de Despacho</h1>
-          <p class="hero-text-dash">Hay 6 casos de tránsito activos y 20 reportes registrados en las últimas 24
-            horas. El sistema sigue monitoreando las vías de la ciudad en tiempo real.</p>
+          <p class="hero-text-dash">Hay 9 reportes en cola de despacho y 5 agentes en ruta en este momento. El
+            sistema sigue monitoreando las solicitudes entrantes en tiempo real.</p>
           <a href="#" class="btn btn-light rounded-pill fw-bold mt-3 hero-cta-dash">
-            <span class="dot-danger-dash"></span> Ver casos críticos
+            <span class="dot-danger-dash"></span> Ver cola de despacho
           </a>
           <svg class="hero-icon-dash" width="110" height="110" viewBox="0 0 24 24" fill="none"><path d="M12 2l8 3v6c0 5-3.4 8.7-8 11-4.6-2.3-8-6-8-11V5l8-3z" stroke="#fff" stroke-width="1" stroke-linejoin="round"/></svg>
         </div>
 
+        <!-- KPI -->
+        <div class="row g-3 mb-4">
+          <div class="col-6 col-lg-3">
+            <div class="kpi-dash kpi-red-dash">
+              <i class="bi bi-inboxes kpi-icon-dash"></i>
+              <div class="kpi-num-dash">9</div>
+              <div class="kpi-label-dash">Reportes en cola</div>
+            </div>
+          </div>
+          <div class="col-6 col-lg-3">
+            <div class="kpi-dash kpi-blue-dash">
+              <i class="bi bi-stopwatch kpi-icon-dash"></i>
+              <div class="kpi-num-dash">1.4 min</div>
+              <div class="kpi-label-dash">Tiempo prom. de despacho</div>
+            </div>
+          </div>
+          <div class="col-6 col-lg-3">
+            <div class="kpi-dash kpi-green-dash">
+              <i class="bi bi-check2-circle kpi-icon-dash"></i>
+              <div class="kpi-num-dash">32</div>
+              <div class="kpi-label-dash">Despachos completados hoy</div>
+            </div>
+          </div>
+          <div class="col-6 col-lg-3">
+            <div class="kpi-dash kpi-amber-dash">
+              <i class="bi bi-shield-check kpi-icon-dash"></i>
+              <div class="kpi-num-dash">13/15</div>
+              <div class="kpi-label-dash">Agentes en servicio</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- COLA DE DESPACHO -->
+        <div class="sec-head-pd">
+          <h2 id="tituloSinAsignar">Cola de despacho</h2>
+          <a class="see-all-dash" href="#">Ver todos <i class="bi bi-chevron-right"></i></a>
+        </div>
+        <div class="panel-pd mb-4">
+          <table class="tabla-pd" id="tablaSinAsignar">
+            <thead>
+              <tr>
+                <th>Tipo</th>
+                <th>Ubicación / reportante</th>
+                <th>Espera</th>
+                <th class="text-end">&nbsp;</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="unassigned-row-pd" data-id="101">
+                <td><span class="badge-dash badge-amber-dash">SEMÁFORO DAÑADO</span></td>
+                <td>
+                  <div class="info-title-dash">Barrio El Poblado</div>
+                  <div class="info-sub-dash">Reportado por Camila Restrepo</div>
+                </td>
+                <td><span class="wait-dash wait-urgent-dash">15 min</span></td>
+                <td class="text-end"><button class="assign-btn-pd" data-id="101">Despachar agente</button></td>
+              </tr>
+              <tr class="unassigned-row-pd" data-id="102">
+                <td><span class="badge-dash badge-red-dash">ACCIDENTE</span></td>
+                <td>
+                  <div class="info-title-dash">Calle 33 con Av. Regional</div>
+                  <div class="info-sub-dash">Reportado por Andrés Salazar</div>
+                </td>
+                <td><span class="wait-dash wait-urgent-dash">6 min</span></td>
+                <td class="text-end"><button class="assign-btn-pd" data-id="102">Despachar agente</button></td>
+              </tr>
+              <tr class="unassigned-row-pd" data-id="103">
+                <td><span class="badge-dash badge-blue-dash">CHOQUE</span></td>
+                <td>
+                  <div class="info-title-dash">Barrio Belén</div>
+                  <div class="info-sub-dash">Reportado por Mariana Ríos</div>
+                </td>
+                <td><span class="wait-dash wait-warn-dash">4 min</span></td>
+                <td class="text-end"><button class="assign-btn-pd" data-id="103">Despachar agente</button></td>
+              </tr>
+              <tr class="unassigned-row-pd" data-id="104">
+                <td><span class="badge-dash badge-amber-dash">EMBOTELLAMIENTO</span></td>
+                <td>
+                  <div class="info-title-dash">Barrio Laureles</div>
+                  <div class="info-sub-dash">Reportado por Julián Herrera</div>
+                </td>
+                <td><span class="wait-dash wait-warn-dash">2 min</span></td>
+                <td class="text-end"><button class="assign-btn-pd" data-id="104">Despachar agente</button></td>
+              </tr>
+              <tr class="unassigned-row-pd" data-id="105">
+                <td><span class="badge-dash badge-blue-dash">VÍA OBSTRUIDA</span></td>
+                <td>
+                  <div class="info-title-dash">Barrio Manrique</div>
+                  <div class="info-sub-dash">Reportado por Sofía Londoño</div>
+                </td>
+                <td><span class="wait-dash wait-warn-dash">1 min</span></td>
+                <td class="text-end"><button class="assign-btn-pd" data-id="105">Despachar agente</button></td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="text-center text-muted small mb-0 d-none" id="mensajeSinAsignarVacio" style="padding: 20px;">
+            No quedan reportes en la cola de despacho por ahora.
+          </p>
+        </div>
+
+        <!-- MAPA DE DESPACHO EN TIEMPO REAL -->
+        <div class="sec-head-pd">
+          <h2 class="titulos titulos">Mapa de despacho en tiempo real</h2>
+        </div>
+        <div class="panel-pd mb-4">
+          <div class="mapa-canvas-pd">
+            <svg class="base-pd" viewBox="0 0 600 320" preserveAspectRatio="none">
+              <rect width="600" height="320" fill="#eef2e6" />
+              <ellipse cx="470" cy="70" rx="110" ry="80" fill="#dcead2" />
+              <ellipse cx="90" cy="240" rx="100" ry="90" fill="#dcead2" />
+              <path d="M560,0 C500,60 520,140 470,200 C430,250 460,300 420,320 L600,320 L600,0 Z" fill="#cfe6f0" />
+              <g stroke="#d7d2c2" stroke-width="6">
+                <line x1="0" y1="80" x2="600" y2="80" />
+                <line x1="0" y1="170" x2="600" y2="170" />
+                <line x1="0" y1="250" x2="600" y2="250" />
+                <line x1="120" y1="0" x2="120" y2="320" />
+                <line x1="260" y1="0" x2="260" y2="320" />
+                <line x1="400" y1="0" x2="400" y2="320" />
+              </g>
+              <line x1="0" y1="130" x2="600" y2="200" stroke="#e7c98a" stroke-width="9" />
+            </svg>
+
+            <div class="map-pin-pd" style="left:22%;top:26%;">
+              <span class="dot-pd green"></span>
+            </div>
+            <div class="map-pin-pd" style="left:41%;top:18%;">
+              <span class="dot-pd blue"></span>
+            </div>
+            <div class="map-pin-pd" style="left:63%;top:38%;">
+              <span class="dot-pd purple"></span>
+            </div>
+            <div class="map-pin-pd" style="left:33%;top:64%;">
+              <span class="dot-pd green"></span>
+            </div>
+            <div class="map-pin-pd" style="left:78%;top:68%;">
+              <span class="dot-pd amber"></span>
+            </div>
+            <div class="map-pin-pd" style="left:17%;top:83%;">
+              <span class="dot-pd gray"></span>
+            </div>
+          </div>
+
+          <div class="map-legend-pd">
+            <b>Estado de agentes</b>
+            <ul>
+              <li><span class="sw-pd" style="background-color: var(--color-green);"></span>Disponible</li>
+              <li><span class="sw-pd" style="background-color: var(--color-blue);"></span>En ruta</li>
+              <li><span class="sw-pd" style="background-color: #7c4fc9;"></span>En atención</li>
+              <li><span class="sw-pd" style="background-color: var(--color-amber);"></span>En pausa</li>
+              <li><span class="sw-pd" style="background-color: #8a94a6;"></span>Fuera de servicio</li>
+            </ul>
+          </div>
+
+          <a href="#" class="map-cta-pd">
+            <i class="bi bi-map"></i> Ver mapa completo
+          </a>
+        </div>
+
+        <!-- AGENTES EN SERVICIO -->
+        <div class="sec-head-pd">
+          <h2 class="titulos titulos">Agentes en servicio</h2>
+          <span class="text-muted small">Actualizado hace 1 min</span>
+        </div>
+        <div class="agentes-pd mb-4">
+          <div class="agente-row-pd">
+            <div class="agente-info-pd">
+              <span class="agente-avatar-pd">AC</span>
+              <div>
+                <div class="agente-nombre-pd">Andrea Cárdenas</div>
+                <div class="agente-zona-pd">Zona Norte · Moto 14</div>
+              </div>
+            </div>
+            <span class="badge-dash badge-green-dash">Disponible</span>
+          </div>
+          <div class="agente-row-pd">
+            <div class="agente-info-pd">
+              <span class="agente-avatar-pd">FO</span>
+              <div>
+                <div class="agente-nombre-pd">Felipe Ossa</div>
+                <div class="agente-zona-pd">Zona Centro · Moto 07</div>
+              </div>
+            </div>
+            <span class="badge-dash badge-blue-dash">En ruta</span>
+          </div>
+          <div class="agente-row-pd">
+            <div class="agente-info-pd">
+              <span class="agente-avatar-pd">MZ</span>
+              <div>
+                <div class="agente-nombre-pd">Manuela Zapata</div>
+                <div class="agente-zona-pd">Zona Sur · Moto 22</div>
+              </div>
+            </div>
+            <span class="badge-dash badge-purple-dash">En atención</span>
+          </div>
+          <div class="agente-row-pd">
+            <div class="agente-info-pd">
+              <span class="agente-avatar-pd">JR</span>
+              <div>
+                <div class="agente-nombre-pd">Jorge Iván Ruiz</div>
+                <div class="agente-zona-pd">Zona Oriente · Moto 11</div>
+              </div>
+            </div>
+            <span class="badge-dash badge-green-dash">Disponible</span>
+          </div>
+          <div class="agente-row-pd">
+            <div class="agente-info-pd">
+              <span class="agente-avatar-pd">PG</span>
+              <div>
+                <div class="agente-nombre-pd">Paula Andrea Gómez</div>
+                <div class="agente-zona-pd">Zona Norte · Moto 03</div>
+              </div>
+            </div>
+            <span class="badge-dash badge-gray-dash">Fuera de servicio</span>
+          </div>
+        </div>
+
+        <!-- ÚLTIMOS DESPACHOS -->
+        <div class="sec-head-pd">
+          <h2 class="titulos titulos">Últimos despachos</h2>
+          <a class="see-all-dash" href="#">Ver todos <i class="bi bi-chevron-right"></i></a>
+        </div>
+        <div class="tabs-pd" id="tabsCasos">
+          <button class="tab-pd active-pd" data-tipo="todas">Todas (32)</button>
+          <button class="tab-pd" data-tipo="semaforo">Semáforo dañado (11)</button>
+          <button class="tab-pd" data-tipo="accidente">Accidente (8)</button>
+          <button class="tab-pd" data-tipo="choque">Choque (7)</button>
+          <button class="tab-pd" data-tipo="otras">Otras (6)</button>
+        </div>
+        <div class="panel-pd">
+          <table class="tabla-pd" id="tablaCasosRecientes">
+            <thead>
+              <tr>
+                <th>Agente asignado</th>
+                <th>Tipo</th>
+                <th>Barrio</th>
+                <th>Estado</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-tipo="semaforo">
+                <td>
+                  <div class="info-title-dash">Andrea Cárdenas</div>
+                  <div class="info-sub-dash">14/9/2026 · 08:50 a.m.</div>
+                </td>
+                <td><span class="badge-dash badge-amber-dash">SEMÁFORO DAÑADO</span></td>
+                <td>El Poblado</td>
+                <td><span class="badge-dash badge-amber-dash">En atención</span></td>
+                <td class="text-end"><a href="#" class="link-btn-dash">Ver detalle</a></td>
+              </tr>
+              <tr data-tipo="accidente">
+                <td>
+                  <div class="info-title-dash">Felipe Ossa</div>
+                  <div class="info-sub-dash">14/9/2026 · 08:20 a.m.</div>
+                </td>
+                <td><span class="badge-dash badge-red-dash">ACCIDENTE</span></td>
+                <td>Calle 33 con Av. Regional</td>
+                <td><span class="badge-dash badge-red-dash">Crítica</span></td>
+                <td class="text-end"><a href="#" class="link-btn-dash">Ver detalle</a></td>
+              </tr>
+              <tr data-tipo="choque">
+                <td>
+                  <div class="info-title-dash">Manuela Zapata</div>
+                  <div class="info-sub-dash">13/9/2026 · 09:40 p.m.</div>
+                </td>
+                <td><span class="badge-dash badge-blue-dash">CHOQUE</span></td>
+                <td>Belén</td>
+                <td><span class="badge-dash badge-blue-dash">En camino</span></td>
+                <td class="text-end"><a href="#" class="link-btn-dash">Ver detalle</a></td>
+              </tr>
+              <tr data-tipo="otras">
+                <td>
+                  <div class="info-title-dash">Jorge Iván Ruiz</div>
+                  <div class="info-sub-dash">13/9/2026 · 07:10 p.m.</div>
+                </td>
+                <td><span class="badge-dash badge-amber-dash">EMBOTELLAMIENTO</span></td>
+                <td>Laureles</td>
+                <td><span class="badge-dash badge-green-dash">Resuelta</span></td>
+                <td class="text-end"><a href="#" class="link-btn-dash">Ver detalle</a></td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="text-center text-muted small mb-0 d-none" id="mensajeCasosVacio" style="padding: 20px;">
+            Ningún despacho coincide con este filtro.
+          </p>
+          <div class="paginacion-pd">
+            <span>Mostrando 1–4 de 32 despachos</span>
+            <div class="paginas-pd">
+              <button class="active-pd">1</button>
+              <button>2</button>
+              <button>3</button>
+              <button><i class="bi bi-chevron-right"></i></button>
+            </div>
+          </div>
+        </div>
 
       </div>
     </main>
@@ -72,8 +368,8 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-skAcpIdS7UcVUC05LJ9Dxay8AXcDYfBJqt1CJ85S/CFujCsTpJa/mR1LT" crossorigin="anonymous"></script>
-    <script src="/js/transito/central-transito/slidebar.js"></script>
+  <script src="/js/transito/central-transito/slidebar.js"></script>
   <script>renderSidebarTransito('panel');</script>
-  </body>
+</body>
 
 </html>

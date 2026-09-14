@@ -1,0 +1,386 @@
+.sec-head-pd {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.sec-head-pd h2 {
+  font-size: 16px;
+  margin: 0;
+}
+
+/* [02] Panel base ------------------------------------------------ */
+.panel-pd {
+  position: relative;
+  background-color: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+
+#tituloSinAsignar {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  color: #182339;
+  margin-bottom: 4px;
+}
+
+.titulos {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 19px;
+  color: #182339;
+  margin-bottom: 4px;
+}
+/* [03] Tabla genérica ---------------------------------------------- */
+.tabla-pd {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabla-pd th {
+  text-align: left;
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 600;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.tabla-pd td {
+  padding: 13px 20px;
+  border-bottom: 1px solid var(--fog);
+  font-size: 13px;
+  vertical-align: middle;
+}
+
+.tabla-pd tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.tabla-pd tbody tr.d-none {
+  display: none;
+}
+
+/* [04] Botón "Despachar agente" ---------------------------------------- */
+.assign-btn-pd {
+  background-color: var(--color-primary);
+  color: #ffffff;
+  border: none;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 9px 16px;
+  border-radius: 100px;
+  white-space: nowrap;
+  transition: background-color 0.15s ease;
+}
+
+.assign-btn-pd:hover {
+  background-color: var(--color-primary-2);
+}
+
+.tabla-pd tr.asignado-pd {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+/* [05] Paginación --------------------------------------------------- */
+.paginacion-pd {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-top: 1px solid var(--line);
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.paginacion-pd .paginas-pd {
+  display: flex;
+  gap: 6px;
+}
+
+.paginacion-pd .paginas-pd button {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background-color: #ffffff;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  transition: box-shadow 0.15s ease;
+}
+
+.paginacion-pd .paginas-pd button:hover {
+  box-shadow: var(--shadow-xs);
+}
+
+.paginacion-pd .paginas-pd button.active-pd {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #ffffff;
+}
+
+/* [06] Mapa de despacho ------------------------------------------ */
+.mapa-canvas-pd {
+  position: relative;
+  height: 320px;
+  overflow: hidden;
+  background-color: #eef2e6;
+}
+
+.mapa-canvas-pd svg.base-pd {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.map-pin-pd {
+  position: absolute;
+  transform: translate(-50%, -100%);
+}
+
+.map-pin-pd .dot-pd {
+  position: absolute;
+  top: -2px;
+  right: -3px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+}
+
+.dot-pd.amber { background-color: var(--color-amber); }
+.dot-pd.red { background-color: var(--color-danger); }
+.dot-pd.blue { background-color: var(--color-blue); }
+.dot-pd.green { background-color: var(--color-green); }
+.dot-pd.purple { background-color: #7c4fc9; }
+.dot-pd.gray { background-color: #8a94a6; }
+
+.map-legend-pd {
+  position: absolute;
+  left: 16px;
+  top: 16px;
+  max-width: 190px;
+  background-color: rgba(255, 255, 255, 0.96);
+  border-radius: 14px;
+  padding: 14px 18px;
+  box-shadow: var(--shadow-sm);
+}
+
+.map-legend-pd b {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 10px;
+}
+
+.map-legend-pd ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.map-legend-pd li {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.map-legend-pd .sw-pd {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.map-cta-pd {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--color-primary);
+  color: #ffffff;
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 11px 18px;
+  border-radius: 100px;
+  box-shadow: 0 8px 18px -8px rgba(10, 47, 92, 0.55);
+}
+
+.map-cta-pd:hover {
+  background-color: var(--color-primary-2);
+  color: #ffffff;
+}
+
+/* [07] Badges de estado adicionales (agentes) ----------------------- */
+.badge-purple-dash {
+  background-color: rgba(124, 79, 201, 0.12);
+  color: #7c4fc9;
+}
+
+.badge-gray-dash {
+  background-color: rgba(138, 148, 166, 0.14);
+  color: #6b7383;
+}
+
+/* [08] Agentes en servicio ------------------------------------------ */
+.agentes-pd {
+  background-color: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 6px 20px;
+  box-shadow: var(--shadow-sm);
+}
+
+.agente-row-pd {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--fog);
+}
+
+.agente-row-pd:last-child {
+  border-bottom: none;
+}
+
+.agente-info-pd {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.agente-avatar-pd {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--fog);
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.agente-nombre-pd {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.agente-zona-pd {
+  font-size: 11.5px;
+  color: var(--muted);
+}
+
+/* [09] Distribución por comuna (heredado, disponible si se reutiliza) */
+.comunas-pd {
+  background-color: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 18px 20px;
+  box-shadow: var(--shadow-sm);
+}
+
+.comuna-row-pd {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 9px 0;
+}
+
+.comuna-row-pd .nombre-pd {
+  width: 160px;
+  flex-shrink: 0;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.comuna-row-pd .pista-pd {
+  flex: 1;
+  height: 8px;
+  border-radius: 6px;
+  background-color: var(--fog);
+  overflow: hidden;
+}
+
+.comuna-row-pd .pista-pd span {
+  display: block;
+  height: 100%;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #dd4048, var(--color-danger));
+}
+
+.comuna-row-pd .valor-pd {
+  width: 30px;
+  flex-shrink: 0;
+  text-align: right;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+/* [10] Tabs de filtro ------------------------------------------------ */
+.tabs-pd {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.tab-pd {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 8px 15px;
+  border-radius: 100px;
+  border: 1px solid var(--line);
+  background-color: #ffffff;
+  color: var(--muted);
+  box-shadow: var(--shadow-xs);
+  transition: box-shadow 0.15s ease;
+}
+
+.tab-pd:hover {
+  box-shadow: var(--shadow-sm);
+}
+
+.tab-pd.active-pd {
+  background-color: var(--color-primary);
+  color: #ffffff;
+  border-color: var(--color-primary);
+}
+
+@media (max-width: 768px) {
+  .comuna-row-pd .nombre-pd {
+    width: 110px;
+  }
+
+  .agente-info-pd {
+    gap: 9px;
+  }
+
+  .tabla-pd th,
+  .tabla-pd td {
+    padding: 12px 14px;
+  }
+}

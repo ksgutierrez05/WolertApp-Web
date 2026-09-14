@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WolertApp - Panel Director de Tránsito</title>
+  <title>WolertApp - Panel Agente de Tránsito</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
@@ -14,18 +14,19 @@
     rel="stylesheet" />
   <link rel="stylesheet" href="../../css/global.css" />
   <link rel="stylesheet" href="../../css/temas.css" />
-  <link rel="stylesheet" href="../../css/transito/agente-transito/panel-agente.css" />
+  <link rel="stylesheet" href="../../css/transito/agente-transito/panel-principal.css" />
   <script src="../../js/global.js" defer></script>
- 
+  <script src="../../js/transito/agente-transito/panel-principal.js" defer></script>
 
 </head>
 
-<body class="rol-transito rail-collapsed" data-rol="transito">
+
+<body class="rol-transito rail-collapsed" data-rol="agente">
 
   <div class="d-flex" id="wrapperDash">
- 
+
     <aside class="sidebar-dash" id="sidebarDash">
-     
+
     </aside>
 
     <!-- ===================== MAIN ===================== -->
@@ -37,43 +38,278 @@
           <div class="col">
             <div class="input-group search-dash">
               <span class="input-group-text bg-white border-0"><i class="bi bi-search"></i></span>
-              <input type="text" class="form-control border-0" placeholder="Buscar por caso, barrio o agente...">
+              <input type="text" class="form-control border-0" placeholder="Buscar por caso o barrio...">
             </div>
           </div>
           <div class="col-auto">
             <button class="btn btn-light rounded-circle position-relative icon-btn-dash">
               <i class="bi bi-bell"></i>
-              <span class="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle">9+</span>
+              <span class="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle">3</span>
             </button>
           </div>
           <div class="col-auto">
-            <span class="avatar-dash" id="railToggle" title="Mostrar/ocultar perfil">D</span>
+            <span class="avatar-dash" id="railToggle" title="Mostrar/ocultar perfil">A</span>
           </div>
         </div>
 
         <!-- hero (en global.css se llama: .hero-dash) -->
         <div class="hero-dash mb-4">
-         
+
           <div class="eyebrow-dash">11 de septiembre de 2026 · 08:14 a. m.</div>
-          <h1 class="hero-title-dash">Buenos días, Agente de Transito</h1>
-          <p class="hero-text-dash">Hay 6 casos de tránsito activos y 20 reportes registrados en las últimas 24
-            horas. El sistema sigue monitoreando las vías de la ciudad en tiempo real.</p>
+          <h1 class="hero-title-dash">Buenos días, Agente Carlos Ríos</h1>
+          <p class="hero-text-dash">Tienes 3 casos asignados y 1 en camino en este momento. Este es el resumen de
+            tu turno.</p>
           <a href="#" class="btn btn-light rounded-pill fw-bold mt-3 hero-cta-dash">
-            <span class="dot-danger-dash"></span> Ver casos críticos
+            <span class="dot-danger-dash"></span> Ver mis casos
           </a>
           <svg class="hero-icon-dash" width="110" height="110" viewBox="0 0 24 24" fill="none"><path d="M12 2l8 3v6c0 5-3.4 8.7-8 11-4.6-2.3-8-6-8-11V5l8-3z" stroke="#fff" stroke-width="1" stroke-linejoin="round"/></svg>
         </div>
 
+        <!-- KPI -->
+        <div class="row g-3 mb-4">
+          <div class="col-6 col-lg-3">
+            <div class="kpi-dash kpi-red-dash">
+              <i class="bi bi-file-earmark-text kpi-icon-dash"></i>
+              <div class="kpi-num-dash">3</div>
+              <div class="kpi-label-dash">Casos asignados</div>
+            </div>
+          </div>
+          <div class="col-6 col-lg-3">
+            <div class="kpi-dash kpi-blue-dash">
+              <i class="bi bi-stopwatch kpi-icon-dash"></i>
+              <div class="kpi-num-dash">18 min</div>
+              <div class="kpi-label-dash">Tiempo promedio de atención</div>
+            </div>
+          </div>
+          <div class="col-6 col-lg-3">
+            <div class="kpi-dash kpi-green-dash">
+              <i class="bi bi-check2-circle kpi-icon-dash"></i>
+              <div class="kpi-num-dash">5</div>
+              <div class="kpi-label-dash">Casos resueltos hoy</div>
+            </div>
+          </div>
+          <div class="col-6 col-lg-3">
+            <div class="kpi-dash kpi-amber-dash">
+              <i class="bi bi-shield-check kpi-icon-dash"></i>
+              <div class="kpi-num-dash">Disponible</div>
+              <div class="kpi-label-dash">Mi estado</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MIS CASOS ASIGNADOS -->
+        <div class="sec-head-ag">
+          <h2 id="tituloMisCasos">Mis casos asignados</h2>
+          <a class="see-all-dash" href="#">Ver todos <i class="bi bi-chevron-right"></i></a>
+        </div>
+        <div class="panel-ag mb-4">
+          <table class="tabla-ag" id="tablaMisCasos">
+            <thead>
+              <tr>
+                <th>Tipo</th>
+                <th>Ubicación / reportante</th>
+                <th>Estado</th>
+                <th class="text-end">&nbsp;</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="caso-row-ag" data-id="1" data-estado="pendiente">
+                <td><span class="badge-dash badge-amber-dash">SEMÁFORO DAÑADO</span></td>
+                <td>
+                  <div class="info-title-dash">Barrio La Nevada</div>
+                  <div class="info-sub-dash">Reportado por Laura Peña</div>
+                </td>
+                <td><span class="estado-badge-ag estado-pendiente-ag" data-estado-label>Pendiente</span></td>
+                <td class="text-end"><button class="avanzar-btn-ag" data-id="1" data-accion>Marcar en camino</button></td>
+              </tr>
+              <tr class="caso-row-ag" data-id="2" data-estado="en_camino">
+                <td><span class="badge-dash badge-red-dash">ACCIDENTE</span></td>
+                <td>
+                  <div class="info-title-dash">Casimiro Raúl Maestre</div>
+                  <div class="info-sub-dash">Reportado por Katherine Gutiérrez</div>
+                </td>
+                <td><span class="estado-badge-ag estado-en_camino-ag" data-estado-label>En camino</span></td>
+                <td class="text-end"><button class="avanzar-btn-ag" data-id="2" data-accion>Marcar en sitio</button></td>
+              </tr>
+              <tr class="caso-row-ag" data-id="3" data-estado="en_sitio">
+                <td><span class="badge-dash badge-blue-dash">CHOQUE</span></td>
+                <td>
+                  <div class="info-title-dash">Los Fundadores</div>
+                  <div class="info-sub-dash">Reportado por Diego Torres</div>
+                </td>
+                <td><span class="estado-badge-ag estado-en_sitio-ag" data-estado-label>En sitio</span></td>
+                <td class="text-end"><button class="avanzar-btn-ag" data-id="3" data-accion>Marcar resuelto</button></td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="text-center text-muted small mb-0 d-none" id="mensajeMisCasosVacio" style="padding: 20px;">
+            No tienes casos pendientes por ahora.
+          </p>
+        </div>
+
+        <!-- MAPA EN TIEMPO REAL -->
+        <div class="sec-head-ag">
+          <h2 class="titulos-ag">Mapa en tiempo real</h2>
+        </div>
+        <div class="panel-ag mb-4">
+          <div class="mapa-canvas-ag">
+            <svg class="base-ag" viewBox="0 0 600 320" preserveAspectRatio="none">
+              <rect width="600" height="320" fill="#eef2e6" />
+              <ellipse cx="470" cy="70" rx="110" ry="80" fill="#dcead2" />
+              <ellipse cx="90" cy="240" rx="100" ry="90" fill="#dcead2" />
+              <path d="M560,0 C500,60 520,140 470,200 C430,250 460,300 420,320 L600,320 L600,0 Z" fill="#cfe6f0" />
+              <g stroke="#d7d2c2" stroke-width="6">
+                <line x1="0" y1="80" x2="600" y2="80" />
+                <line x1="0" y1="170" x2="600" y2="170" />
+                <line x1="0" y1="250" x2="600" y2="250" />
+                <line x1="120" y1="0" x2="120" y2="320" />
+                <line x1="260" y1="0" x2="260" y2="320" />
+                <line x1="400" y1="0" x2="400" y2="320" />
+              </g>
+              <line x1="0" y1="130" x2="600" y2="200" stroke="#e7c98a" stroke-width="9" />
+            </svg>
+
+            <div class="map-pin-ag" style="left:20%;top:28%;">
+              <span class="dot-ag amber"></span>
+            </div>
+            <div class="map-pin-ag" style="left:44%;top:20%;">
+              <span class="dot-ag blue"></span>
+            </div>
+            <div class="map-pin-ag" style="left:66%;top:35%;">
+              <span class="dot-ag purple"></span>
+            </div>
+            <div class="map-pin-ag" style="left:35%;top:62%;">
+              <span class="dot-ag green"></span>
+            </div>
+          </div>
+
+          <div class="map-legend-ag">
+            <b>Mis casos</b>
+            <ul>
+              <li><span class="sw-ag" style="background-color: var(--color-amber);"></span>Pendiente</li>
+              <li><span class="sw-ag" style="background-color: var(--color-blue);"></span>En camino</li>
+              <li><span class="sw-ag" style="background-color: #7c4fc9;"></span>En sitio</li>
+              <li><span class="sw-ag" style="background-color: var(--color-green);"></span>Resuelto</li>
+            </ul>
+          </div>
+
+          <a href="#" class="map-cta-ag">
+            <i class="bi bi-map"></i> Ver mapa completo
+          </a>
+        </div>
+
+        <!-- MI GRUPO -->
+        <div class="sec-head-ag">
+          <h2 class="titulos-ag">Mi grupo</h2>
+          <a class="see-all-dash" href="#">Ver grupo <i class="bi bi-chevron-right"></i></a>
+        </div>
+        <div class="grupo-ag mb-4">
+          <div class="companero-row-ag">
+            <span class="nombre-ag">Ana Salcedo</span>
+            <span class="estado-mini-ag estado-verde-ag">Disponible</span>
+          </div>
+          <div class="companero-row-ag">
+            <span class="nombre-ag">Jorge Rueda</span>
+            <span class="estado-mini-ag estado-azul-ag">En camino</span>
+          </div>
+          <div class="companero-row-ag">
+            <span class="nombre-ag">Marta Correa</span>
+            <span class="estado-mini-ag estado-morado-ag">En sitio</span>
+          </div>
+          <div class="companero-row-ag">
+            <span class="nombre-ag">Ravi Kumar</span>
+            <span class="estado-mini-ag estado-gris-ag">Fuera de servicio</span>
+          </div>
+        </div>
+
+        <!-- HISTORIAL DE CASOS -->
+        <div class="sec-head-ag">
+          <h2 class="titulos-ag">Historial de casos</h2>
+          <a class="see-all-dash" href="#">Ver todos <i class="bi bi-chevron-right"></i></a>
+        </div>
+        <div class="tabs-ag" id="tabsHistorial">
+          <button class="tab-ag active-ag" data-tipo="todas">Todas (12)</button>
+          <button class="tab-ag" data-tipo="semaforo">Semáforo dañado (4)</button>
+          <button class="tab-ag" data-tipo="accidente">Accidente (3)</button>
+          <button class="tab-ag" data-tipo="choque">Choque (3)</button>
+          <button class="tab-ag" data-tipo="otras">Otras (2)</button>
+        </div>
+        <div class="panel-ag">
+          <table class="tabla-ag" id="tablaHistorial">
+            <thead>
+              <tr>
+                <th>Reportado por</th>
+                <th>Tipo</th>
+                <th>Barrio</th>
+                <th>Estado</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-tipo="semaforo">
+                <td>
+                  <div class="info-title-dash">Katherine Gutiérrez</div>
+                  <div class="info-sub-dash">11/9/2026 · 08:12 a.m.</div>
+                </td>
+                <td><span class="badge-dash badge-amber-dash">SEMÁFORO DAÑADO</span></td>
+                <td>Casimiro Raúl Maestre</td>
+                <td><span class="badge-dash badge-green-dash">Resuelto</span></td>
+                <td class="text-end"><a href="#" class="link-btn-dash">Ver detalle</a></td>
+              </tr>
+              <tr data-tipo="accidente">
+                <td>
+                  <div class="info-title-dash">Katherine Gutiérrez</div>
+                  <div class="info-sub-dash">11/9/2026 · 07:47 a.m.</div>
+                </td>
+                <td><span class="badge-dash badge-red-dash">ACCIDENTE</span></td>
+                <td>Casimiro Raúl Maestre</td>
+                <td><span class="badge-dash badge-red-dash">Crítica</span></td>
+                <td class="text-end"><a href="#" class="link-btn-dash">Ver detalle</a></td>
+              </tr>
+              <tr data-tipo="choque">
+                <td>
+                  <div class="info-title-dash">Laura Peña</div>
+                  <div class="info-sub-dash">10/9/2026 · 10:30 p.m.</div>
+                </td>
+                <td><span class="badge-dash badge-blue-dash">CHOQUE</span></td>
+                <td>Casimiro Raúl Maestre</td>
+                <td><span class="badge-dash badge-green-dash">Resuelto</span></td>
+                <td class="text-end"><a href="#" class="link-btn-dash">Ver detalle</a></td>
+              </tr>
+              <tr data-tipo="otras">
+                <td>
+                  <div class="info-title-dash">Diego Torres</div>
+                  <div class="info-sub-dash">10/9/2026 · 07:05 p.m.</div>
+                </td>
+                <td><span class="badge-dash badge-amber-dash">EMBOTELLAMIENTO</span></td>
+                <td>Los Fundadores</td>
+                <td><span class="badge-dash badge-green-dash">Resuelto</span></td>
+                <td class="text-end"><a href="#" class="link-btn-dash">Ver detalle</a></td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="text-center text-muted small mb-0 d-none" id="mensajeHistorialVacio" style="padding: 20px;">
+            Ningún caso coincide con este filtro.
+          </p>
+          <div class="paginacion-ag">
+            <span>Mostrando 1–4 de 12 casos</span>
+            <div class="paginas-ag">
+              <button class="active-ag">1</button>
+              <button>2</button>
+              <button>3</button>
+              <button><i class="bi bi-chevron-right"></i></button>
+            </div>
+          </div>
+        </div>
 
       </div>
     </main>
 
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-skAcpIdS7UcVUC05LJ9Dxay8AXcDYfBJqt1CJ85S/CFujCsTpJa/mR1LT" crossorigin="anonymous"></script>
-    <script src="/js/transito/agente-transito/slidebar.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/transito/agente-transito/slidebar.js"></script>
   <script>renderSidebarTransito('panel');</script>
-  </body>
+</body>
 
 </html>
