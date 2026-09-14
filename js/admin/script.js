@@ -15,7 +15,7 @@
 async function cargarSidebar() {
     const contenedor = document.getElementById("sidebar-placeholder");
     if (!contenedor) return; // esta página no usa sidebar compartido
-
+    
     try {
         const respuesta = await fetch("sidebar.html");
         if (!respuesta.ok) throw new Error("No se pudo cargar sidebar.html");
