@@ -1,0 +1,343 @@
+
+
+/* ---------- filtros ---------- */
+.al-filterbar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.al-chip {
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--muted);
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 7px 16px;
+  border-radius: 100px;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.al-chip:hover {
+  background: var(--fog);
+  color: var(--ink);
+}
+
+.al-chip.active {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-2));
+  border-color: transparent;
+  color: #fff;
+}
+
+.al-chip-danger.active {
+  background: linear-gradient(135deg, var(--color-danger-2), var(--color-danger));
+}
+
+/* ---------- tarjeta de alerta ---------- */
+.al-card {
+  padding: 18px 20px;
+}
+
+.al-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.al-type-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: var(--fog);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.al-title {
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.al-meta-inline {
+  font-size: 11.5px;
+  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.al-meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin: 14px 0 12px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.al-meta span:not(.badge-dash) {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.al-desc-box {
+  display: flex;
+  gap: 10px;
+  background: var(--fog);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 13px;
+  color: var(--ink);
+  margin-bottom: 12px;
+}
+
+.al-desc-box i {
+  color: var(--subtle);
+  font-size: 15px;
+  margin-top: 1px;
+}
+
+.al-evidence {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--color-blue);
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+
+.al-card-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.al-card.is-critica {
+  border-color: rgba(200, 30, 44, 0.35);
+  box-shadow: 0 0 0 1px rgba(200, 30, 44, 0.08);
+}
+
+.al-card.is-sinrespuesta {
+  border-color: rgba(201, 130, 28, 0.4);
+}
+
+.al-empty {
+  text-align: center;
+  color: var(--subtle);
+  padding: 60px 20px;
+}
+
+.al-empty i {
+  font-size: 34px;
+  display: block;
+  margin-bottom: 10px;
+}
+
+@media (max-width: 575px) {
+  .al-card-actions { justify-content: stretch; }
+  .al-card-actions .btn { flex: 1; }
+}
+
+/* ---------- modal de gestión ---------- */
+.al-modal-header {
+  border-bottom: 1px solid var(--line);
+  align-items: flex-start;
+}
+
+.al-modal-caso {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+
+.al-modal-title {
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.al-alert-warning {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fcf0da;
+  color: var(--color-amber);
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.al-alert-warning i {
+  font-size: 16px;
+}
+
+.al-section {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.al-section:last-of-type {
+  border-bottom: none;
+  padding-bottom: 4px;
+}
+
+.al-section-title {
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 700;
+  font-size: 13.5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.al-section-title i {
+  color: var(--color-primary);
+}
+
+.al-locked {
+  margin-left: auto;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--subtle);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.al-report-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px 20px;
+  font-size: 13px;
+}
+
+.al-label {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.al-hint {
+  font-size: 12px;
+  color: var(--subtle);
+  margin-bottom: 8px;
+}
+
+.al-saved-hint {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-green);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.al-notas {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.al-notas:empty::before {
+  content: "Aún no hay observaciones registradas por Central.";
+  font-size: 12.5px;
+  color: var(--subtle);
+  font-style: italic;
+}
+
+.al-nota-item {
+  background: var(--fog);
+  border-radius: 10px;
+  padding: 9px 12px;
+  font-size: 13px;
+}
+
+.al-nota-item .al-nota-time {
+  display: block;
+  font-size: 11px;
+  color: var(--subtle);
+  font-weight: 600;
+  margin-top: 3px;
+}
+
+.al-asignado-actual {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--fog);
+  border-radius: 12px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+}
+
+.al-asignado-actual i {
+  font-size: 22px;
+  color: var(--color-primary);
+}
+
+.al-patrulleros {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.al-patrullero-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.al-patrullero-item:hover {
+  border-color: var(--color-primary);
+}
+
+.al-patrullero-item.selected {
+  border-color: var(--color-primary);
+  background: var(--fog);
+}
+
+.al-patrullero-item.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.al-patrullero-info {
+  flex-grow: 1;
+}
+
+.al-patrullero-nombre {
+  font-weight: 700;
+  font-size: 13.5px;
+}
+
+.al-patrullero-meta {
+  font-size: 11.5px;
+  color: var(--muted);
+}
