@@ -56,4 +56,11 @@ function renderComunas(lista) {
 
 renderComunas(comunas);
 
+// Filtro de búsqueda en vivo
+inputBuscar.addEventListener("input", () => {
+    const termino = inputBuscar.value.trim().toLowerCase();
+    const filtradas = comunas.filter(c => c.nombre.toLowerCase().includes(termino));
+    renderComunas(filtradas);
+});
+
 });
