@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Reportes — Central de Radio | WolertApp</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Fuentes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap"
+        rel="stylesheet">
+
+    <!-- CSS global -->
+    <link rel="stylesheet" href="../../../css/global.css">
+    <link rel="stylesheet" href="../../../css/temas.css">
+
+    <!-- CSS propio -->
+    <link rel="stylesheet" href="../css/reportes.css">
+</head>
+
+<body class="rol-policia">
+
+    <div id="wrapperDash">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar-dash" id="sidebarDash"></aside>
+
+        <!-- CONTENIDO -->
+        <main class="main-dash">
+            <div class="container-fluid">
+
+                <!-- TOPBAR -->
+                <div class="reportes-topbar">
+
+                    <div class="search-dash reportes-busqueda">
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="bi bi-search"></i>
+                            </span>
+
+                            <input type="text" id="buscarReporte" class="form-control"
+                                placeholder="Buscar caso, patrullero o zona...">
+                        </div>
+                    </div>
+
+                    <div class="reportes-usuario">
+                        <button class="btn icon-btn-dash rounded-circle bg-white border" type="button"
+                            aria-label="Notificaciones">
+                            <i class="bi bi-bell"></i>
+                            <span class="icon-dot-dash"></span>
+                        </button>
+
+                        <div class="avatar-dash" title="Operador de Central">
+                            OC
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- ENCABEZADO -->
+                <div class="reportes-header">
+                    <div>
+                        <h1 class="page-title-dash">
+                            <i class="bi bi-file-earmark-bar-graph me-2"></i>
+                            Reportes
+                        </h1>
+
+                        <p class="text-muted mb-0">
+                            Consulta, analiza y genera informes de los casos gestionados por Central.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- KPIs -->
+                <div class="row g-3 mb-4" id="kpisReportes"></div>
+
+                <!-- FILTROS -->
+                <section class="card-panel-dash reportes-filtros">
+
+                    <div class="reportes-filtros-titulo">
+                        <div>
+                            <i class="bi bi-funnel me-2"></i>
+                            Filtros de búsqueda
+                        </div>
+
+                        <button type="button" class="btn btn-sm btn-light" id="btnLimpiarFiltros">
+                            <i class="bi bi-arrow-counterclockwise me-1"></i>
+                            Limpiar
+                        </button>
+                    </div>
+
+                    <div class="reportes-filtros-grid">
+
+                        <div>
+                            <label for="filtroTipo">Tipo</label>
+                            <select id="filtroTipo" class="form-select">
+                                <option value="todos">Todos los tipos</option>
+                                <option value="robo">Robo</option>
+                                <option value="violencia">Violencia</option>
+                                <option value="accidente">Accidente</option>
+                                <option value="persona_sospechosa">Persona sospechosa</option>
+                                <option value="emergencia">Emergencia</option>
+                                <option value="orden_publico">Alteración del orden público</option>
+                                <option value="otro">Otro</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="filtroPrioridad">Prioridad</label>
+                            <select id="filtroPrioridad" class="form-select">
+                                <option value="todos">Todas</option>
+                                <option value="critica">Crítica</option>
+                                <option value="alta">Alta</option>
+                                <option value="media">Media</option>
+                                <option value="baja">Baja</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="filtroEstado">Estado</label>
+                            <select id="filtroEstado" class="form-select">
+                                <option value="todos">Todos</option>
+                                <option value="recibida">Recibida</option>
+                                <option value="clasificada">Clasificada</option>
+                                <option value="asignada">Asignada</option>
+                                <option value="en_atencion">En atención</option>
+                                <option value="resuelta">Resuelta</option>
+                                <option value="informe">Informe</option>
+                                <option value="cerrada">Cerrada</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="filtroResultado">Resultado</label>
+                            <select id="filtroResultado" class="form-select">
+                                <option value="todos">Todos</option>
+                                <option value="resuelto">Resuelto</option>
+                                <option value="sin_novedad">Sin novedad</option>
+                                <option value="atencion_realizada">Atención realizada</option>
+                                <option value="seguimiento">Requiere seguimiento</option>
+                                <option value="remitido">Remitido a otra entidad</option>
+                                <option value="otro">Otro</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="filtroPatrullero">Patrullero</label>
+                            <select id="filtroPatrullero" class="form-select">
+                                <option value="todos">Todos</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="filtroZona">Zona</label>
+                            <select id="filtroZona" class="form-select">
+                                <option value="todos">Todas</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="filtroDesde">Desde</label>
+                            <input type="date" id="filtroDesde" class="form-control">
+                        </div>
+
+                        <div>
+                            <label for="filtroHasta">Hasta</label>
+                            <input type="date" id="filtroHasta" class="form-control">
+                        </div>
+
+                    </div>
+
+                </section>
+
+                <!-- TABLA -->
+                <section class="card-panel-dash reportes-tabla-panel">
+
+                    <div class="reportes-tabla-header">
+
+                        <div>
+                            <h2>
+                                Casos gestionados
+                            </h2>
+
+                            <span id="contadorResultados">
+                                0 casos encontrados
+                            </span>
+                        </div>
+
+                        <button type="button" class="btn btn-cv-azul" id="btnExportar">
+                            <i class="bi bi-file-earmark-pdf me-1"></i>
+                            Generar reporte
+                        </button>
+
+                    </div>
+
+                    <div class="table-responsive">
+
+                        <table class="table reportes-tabla">
+
+                            <thead>
+                                <tr>
+                                    <th>Caso</th>
+                                    <th>Tipo</th>
+                                    <th>Prioridad</th>
+                                    <th>Zona</th>
+                                    <th>Patrullero</th>
+                                    <th>Resultado</th>
+                                    <th>Estado</th>
+                                    <th class="text-end">Acciones</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="tablaReportes"></tbody>
+
+                        </table>
+
+                    </div>
+
+                    <div id="reportesVacio" class="reportes-vacio d-none">
+                        <i class="bi bi-file-earmark-x"></i>
+                        <strong>No se encontraron casos</strong>
+                        <span>Prueba cambiando los filtros de búsqueda.</span>
+                    </div>
+
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+
+    <!-- MODAL INFORME -->
+    <div class="modal fade" id="modalInforme" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <div>
+                        <h5 class="modal-title">
+                            <i class="bi bi-file-earmark-text me-2"></i>
+                            Informe del caso
+                        </h5>
+
+                        <small id="modalCasoNumero"></small>
+                    </div>
+
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+
+                <div class="modal-body" id="modalInformeBody"></div>
+
+                <div class="modal-footer">
+
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                        Cerrar
+                    </button>
+
+                    <button type="button" class="btn btn-cv-azul" id="btnImprimirInforme">
+                        <i class="bi bi-printer me-1"></i>
+                        Imprimir
+                    </button>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Sidebar -->
+    <script src="../js/sidebar-central.js"></script>
+    <script>
+        renderSidebarCentral('informes');
+    </script>
+
+    <!-- JS propio -->
+    <script src="../js/reportes.js"></script>
+
+</body>
+
+</html>

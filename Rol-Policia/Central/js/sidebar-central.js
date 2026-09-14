@@ -52,7 +52,7 @@ const MENU_CENTRAL = [
       { id: 'asignacion',    label: 'Asignación',     href: '../Asignaciones/asignaciones.html', icon: ICONOS_CENTRAL.asignacion },
       { id: 'unidad',        label: 'Unidad',         href: '../Unidad/unidad.html', icon: ICONOS_CENTRAL.unidad },
       { id: 'mapaoperativo', label: 'Mapa Operativo', href: '../Mapas/mapas.html', icon: ICONOS_CENTRAL.mapaoperativo },
-      { id: 'informes',      label: 'Informes',       href: '../Informes/informes.html', icon: ICONOS_CENTRAL.informes, badge: null },
+      { id: 'reportes',      label: 'Reportes',       href: '../Informe/reportes.html', icon: ICONOS_CENTRAL.informes, badge: null },
     ],
   },
   {
