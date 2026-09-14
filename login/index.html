@@ -24,13 +24,15 @@
                 <form id="form-login">
                     <h2>Iniciar sesión</h2>
 
-                    <input type="text" placeholder="Usuario" class="login-input">
+                   <input type="text" placeholder="Usuario" class="login-input" id="username">
 
                     <div class="input-wrapper">
                         <i class="bi bi-lock"></i>
                         <input type="password" placeholder="Contraseña" class="login-input" id="password">
                         <i class="bi bi-eye" id="toggle-password"></i>
                     </div>
+
+                    <div id="login-error" class="form-error" style="display: none;"></div>
 
                     <button type="submit" class="btn-login">Ingresar</button>
                     <a href="#" class="link-olvide">¿Olvidaste tu contraseña?</a>
@@ -48,17 +50,42 @@
             <div class="form-box form-registro">
                 <form id="form-registro">
 
-                    <h2>Crear cuenta</h2>
-                    <input type="text" placeholder="Nombre completo" class="login-input">
-                    <input type="email" placeholder="Correo electrónico" class="login-input">
-                    <input type="text" placeholder="Usuario" class="login-input">
+                    <h2>Crear Cuenta</h2>
+                    <p class="form-subtitle">Completa la información para registrarte</p>
+                    <hr class="form-divider">
+
+                    <div class="seccion-titulo">DATOS PERSONALES</div>
+
+                    <div class="grid-2">
+                        <input type="text" placeholder="Primer Nombre" class="input-gris" id="reg-primer-nombre" required>
+                        <input type="text" placeholder="Segundo Nombre" class="input-gris" id="reg-segundo-nombre">
+                    </div>
+
+                    <div class="grid-2">
+                        <input type="text" placeholder="Primer Apellido" class="input-gris" id="reg-primer-apellido" required>
+                        <input type="text" placeholder="Segundo Apellido" class="input-gris" id="reg-segundo-apellido">
+                    </div>
+
+                    <div class="grid-2">
+                        <input type="text" placeholder="Cédula" class="input-gris" id="reg-cedula" required>
+                        <input type="tel" placeholder="Teléfono" class="input-gris" id="reg-telefono">
+                    </div>
+
+                    <input type="email" placeholder="Correo Electrónico" class="input-gris" id="reg-correo">
+
+                    <div class="seccion-titulo">CUENTA</div>
+
+                    <input type="text" placeholder="Username" class="input-gris" id="reg-username" required>
 
                     <div class="input-wrapper">
                         <i class="bi bi-lock"></i>
-                        <input type="password" placeholder="Contraseña" class="login-input">
+                        <input type="password" placeholder="Contraseña" class="input-gris" id="reg-password" required>
                     </div>
 
+                    <div id="registro-error" class="form-error" style="display: none;"></div>
+
                     <button type="submit" class="btn-login">Registrarse</button>
+
                 </form>
             </div>
         </div>
