@@ -1,5 +1,5 @@
 /* ============================================================
-   MIS-ATENCIONES.CSS
+   ATENCIONES.CSS
    Estilos propios de la pantalla "Mis Atenciones" del Patrullero.
    Solo agrega clases nuevas con sufijo "-at"; no redefine ninguna
    clase de global.css ni de temas.css.
@@ -18,15 +18,69 @@
   }
 }
 
+/* ---------- banner de atención activa ---------- */
+.banner-activa-at {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  background: linear-gradient(135deg, var(--color-danger), #d64550);
+  color: #fff;
+  border-radius: 16px;
+  padding: 16px 20px;
+  margin-bottom: 18px;
+  box-shadow: var(--shadow-sm);
+}
+
+.banner-activa-at .titulo-banner-at {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.9;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.banner-activa-at .caso-banner-at {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.banner-activa-at .meta-banner-at {
+  font-size: 12.5px;
+  opacity: 0.92;
+}
+
+.btn-continuar-at {
+  background: #fff;
+  color: var(--color-danger);
+  border: none;
+  font-weight: 800;
+  font-size: 13px;
+  padding: 10px 18px;
+  border-radius: 12px;
+  white-space: nowrap;
+}
+
+.btn-continuar-at:hover { opacity: 0.9; color: var(--color-danger); }
+
+/* ---------- buscador y filtros adicionales ---------- */
+.buscador-at {
+  margin-bottom: 14px;
+}
+
 /* ---------- columna izquierda: lista de atenciones ---------- */
+/* Sin altura fija ni scroll interno: la lista crece según la cantidad
+   real de alertas y es la página la que hace scroll. Así se evita el
+   hueco en blanco cuando hay pocas atenciones. */
 .lista-at {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  max-height: calc(100vh - 260px);
-  overflow-y: auto;
-  padding-right: 4px;
-  scrollbar-width: thin;
 }
 
 .filtros-at {
@@ -86,6 +140,13 @@
   margin-bottom: 4px;
 }
 
+.tarjeta-at .caso-at {
+  font-size: 11px;
+  color: var(--subtle);
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
 .tarjeta-at .meta-at {
   font-size: 11.5px;
   color: var(--muted);
@@ -97,6 +158,18 @@
 
 .tarjeta-at .meta-at i {
   font-size: 12px;
+}
+
+.tarjeta-at .desc-at {
+  font-size: 12px;
+  color: var(--ink);
+  margin: 8px 0;
+}
+
+.tarjeta-at .ver-at {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-primary-2);
 }
 
 .prioridad-barra-at {
@@ -222,7 +295,31 @@
 
 .linea-at.hecho-at { background: var(--color-green); }
 
-/* ---------- info y formulario ---------- */
+/* ---------- secciones de solo lectura ---------- */
+.seccion-detalle-at {
+  margin-bottom: 20px;
+}
+
+.seccion-detalle-at .titulo-seccion-at {
+  font-size: 11.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.caja-lectura-at {
+  background: var(--fog);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 13px;
+  color: var(--ink);
+}
+
 .fila-info-at {
   display: flex;
   gap: 8px;
@@ -244,41 +341,92 @@
   padding-top: 2px;
 }
 
-.form-cierre-at {
+/* ---------- mapa (placeholder) ---------- */
+.mapa-at {
   background: var(--fog);
-  border-radius: 14px;
-  padding: 18px;
-  margin-top: 20px;
+  border: 1px dashed var(--line);
+  border-radius: 12px;
+  min-height: 140px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--subtle);
+  font-size: 12px;
+  gap: 6px;
 }
 
-.form-cierre-at label {
+.mapa-at i { font-size: 22px; }
+
+/* ---------- línea de tiempo ---------- */
+.linea-tiempo-at {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.item-tiempo-at {
+  position: relative;
+  padding-left: 22px;
+  padding-bottom: 14px;
+  font-size: 12.5px;
+}
+
+.item-tiempo-at::before {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-primary-2);
+}
+
+.item-tiempo-at::after {
+  content: '';
+  position: absolute;
+  left: 7.5px;
+  top: 12px;
+  bottom: 0;
+  width: 1px;
+  background: var(--line);
+}
+
+.item-tiempo-at:last-child::after { display: none; }
+
+.item-tiempo-at .hora-tiempo-at {
+  font-weight: 700;
+  color: var(--ink);
+  margin-right: 6px;
+}
+
+/* ---------- observación ---------- */
+.form-observacion-at {
+  background: var(--fog);
+  border-radius: 14px;
+  padding: 16px 18px;
+  margin-bottom: 20px;
+}
+
+.form-observacion-at label {
   font-size: 12px;
   font-weight: 700;
   color: var(--ink);
   margin-bottom: 5px;
+  display: block;
 }
 
-.form-cierre-at .req-at { color: var(--color-danger); }
-
-.evidencia-drop-at {
-  border: 1.5px dashed var(--line);
-  border-radius: 12px;
-  padding: 16px;
-  text-align: center;
-  font-size: 12px;
-  color: var(--muted);
-  background: #fff;
-  cursor: pointer;
-}
-
-.evidencia-drop-at:hover {
-  border-color: var(--color-primary-2);
+.form-observacion-at .ayuda-at {
+  font-size: 11px;
+  color: var(--subtle);
+  margin-top: 5px;
 }
 
 .acciones-detalle-at {
   display: flex;
   gap: 10px;
-  margin-top: 22px;
+  margin-top: 8px;
   flex-wrap: wrap;
 }
 
@@ -306,16 +454,3 @@
 }
 
 .btn-finalizar-at:hover { color: #fff; opacity: 0.9; }
-
-.aviso-campos-at {
-  display: none;
-  align-items: center;
-  gap: 8px;
-  background: #fce8e9;
-  color: var(--color-danger);
-  border-radius: 10px;
-  padding: 10px 14px;
-  font-size: 12.5px;
-  font-weight: 600;
-  margin-top: 14px;
-}
