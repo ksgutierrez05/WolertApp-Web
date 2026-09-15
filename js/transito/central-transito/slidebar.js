@@ -1,4 +1,4 @@
-// js/transito/central-transito/slidebar.js
+// js/transito/central-transito/sidebar.js
 // Inyecta el sidebar del rol Central de Despacho en cada página.
 // Uso: <aside id="sidebarDash"></aside> + renderSidebarTransito('panel')
 // El id pasado debe coincidir con un "id" de MENU_TRANSITO.
@@ -37,6 +37,36 @@ const MENU_TRANSITO = [
   ]},
 ];
 
+// Ruta a la que se redirige al cerrar sesión: la página de landing
+// (información), a la misma profundidad que usa LOGO_TRANSITO_PNG.
+// Si el archivo principal de tu landing NO se llama "index.html",
+// cambia "index.html" por el nombre real (ej: "landing.html").
+const LANDING_URL_TRANSITO = '../../../landing/index.html';
+
+/**
+ * Cierra la sesión del usuario: limpia los datos guardados en el
+ * navegador (token, usuario, rol, etc.) y redirige a la página de
+ * landing (información). Ajusta las claves de storage según cómo
+ * manejes la autenticación en el resto del proyecto.
+ */
+function cerrarSesionTransito(evento) {
+  if (evento) evento.preventDefault();
+
+  const confirmar = window.confirm('¿Seguro que deseas cerrar sesión?');
+  if (!confirmar) return;
+
+  try {
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
+    localStorage.removeItem('rol');
+    sessionStorage.clear();
+  } catch (e) {
+    console.warn('cerrarSesionTransito: no se pudo limpiar el storage', e);
+  }
+
+  window.location.href = LANDING_URL_TRANSITO;
+}
+
 function renderSidebarTransito(paginaActiva) {
   const el = document.getElementById('sidebarDash');
   if (!el) return;
@@ -68,10 +98,15 @@ function renderSidebarTransito(paginaActiva) {
  
     <div class="flex-grow-1"></div>
  
-    <a href="#" class="logout-dash">
+    <a href="#" id="logoutDash" class="logout-dash">
       <span class="ic-dash"><i class="bi ${ICONOS_TRANSITO.logout}"></i></span>
       <span class="lbl-dash">Cerrar sesión</span>
     </a>
   `;
+
+  // Enlaza el evento de cierre de sesión al link recién inyectado.
+  const logoutLink = document.getElementById('logoutDash');
+  if (logoutLink) {
+    logoutLink.addEventListener('click', cerrarSesionTransito);
+  }
 }
- 

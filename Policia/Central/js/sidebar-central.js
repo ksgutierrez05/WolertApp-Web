@@ -1,21 +1,3 @@
-// js/central/sidebar.js
-// Sidebar único del rol Central de Radio. Se inyecta en cada página
-// (centro de operaciones, alertas, asignación, unidad, mapa operativo,
-// informes, historial, notificaciones, mi perfil, configuración) para
-// no repetir el HTML del <aside> en cada archivo.
-//
-// Uso en cada HTML:
-//   <aside class="sidebar-dash" id="sidebarDash"></aside>
-//   ...
-//   <script src="../js/central/sidebar.js"></script>
-//   <script>renderSidebarCentral('centrooperaciones');</script>
-//
-// El string pasado a renderSidebarCentral() debe coincidir con el
-// "id" del item correspondiente en MENU_CENTRAL, para que se le
-// aplique la clase "active" automáticamente.
-//
-// El rol se pinta con body class="rol-policia" (ver css/temas.css).
-// Requiere Bootstrap Icons cargado en el <head> del HTML.
 
 const ICONOS_CENTRAL = {
   centrooperaciones: 'bi-house',
@@ -30,12 +12,6 @@ const ICONOS_CENTRAL = {
   logout: 'bi-box-arrow-right',
 };
 
-// Estructura del menú de Central de Radio. Para agregar/quitar una
-// opción, se edita SOLO este arreglo — no hay que tocar ningún HTML.
-//
-// "badge" es opcional y muestra un contador rojo junto al ítem
-// (ej. cantidad de alertas nuevas o informes pendientes). Se puede
-// alimentar dinámicamente reemplazando el valor antes de llamar a render.
 const MENU_CENTRAL = [
   {
     seccion: 'General',
@@ -62,6 +38,27 @@ const MENU_CENTRAL = [
     ],
   },
 ];
+
+const LANDING_URL_CENTRAL = '../../../landing/index.html';
+
+
+function cerrarSesionCentral(evento) {
+  if (evento) evento.preventDefault();
+
+  const confirmar = window.confirm('¿Seguro que deseas cerrar sesión?');
+  if (!confirmar) return;
+
+  try {
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
+    localStorage.removeItem('rol');
+    sessionStorage.clear();
+  } catch (e) {
+    console.warn('cerrarSesionCentral: no se pudo limpiar el storage', e);
+  }
+
+  window.location.href = LANDING_URL_CENTRAL;
+}
 
 /**
  * Inyecta el sidebar completo del rol Central de Radio dentro de
@@ -108,11 +105,17 @@ function renderSidebarCentral(paginaActiva) {
 
   <div class="flex-grow-1"></div>
 
-  <a href="#" class="logout-dash">
+  <a href="#" id="logoutDash" class="logout-dash">
     <span class="ic-dash">
       <i class="bi ${ICONOS_CENTRAL.logout}"></i>
     </span>
     <span class="lbl-dash">Cerrar sesión</span>
   </a>
 `;
+
+  // Enlaza el evento de cierre de sesión al link recién inyectado.
+  const logoutLink = document.getElementById('logoutDash');
+  if (logoutLink) {
+    logoutLink.addEventListener('click', cerrarSesionCentral);
+  }
 }

@@ -1,21 +1,4 @@
-// js/policia/sidebar.js
-// Sidebar único del rol Policía. Se inyecta en cada página
-// (centro de operaciones, alertas, alarmas, asignaciones, policías,
-// unidades, historial, estadísticas, reportes, notificaciones) para
-// no repetir el HTML del <aside> en cada archivo.
-//
-// Uso en cada HTML:
-//   <aside class="sidebar-dash" id="sidebarDash"></aside>
-//   ...
-//   <script src="js/policia/sidebar.js"></script>
-//   <script>renderSidebarPolicia('centrooperaciones');</script>
-//
-// El string pasado a renderSidebarPolicia() debe coincidir con el
-// "id" del item correspondiente en MENU_POLICIA, para que se le
-// aplique la clase "active" automáticamente.
 
-// Íconos con Bootstrap Icons (la misma librería que ya usas en la
-// topbar: bi-bell, bi-search). Requiere que el HTML tenga cargado:
 
 const ICONOS_POLICIA = {
   logo: 'bi-shield-check',
@@ -32,13 +15,7 @@ const ICONOS_POLICIA = {
   configuracion: 'bi-sliders',
   logout: 'bi-box-arrow-right',
 };
-// Estructura del menú de Policía. Para agregar/quitar una opción,
-// se edita SOLO este arreglo — no hay que tocar ningún HTML.
-//
-// NOTA: por ahora solo existe CentroOperaciones/index.html. El resto
-// de los href quedan en "#" para no generar links rotos. A medida
-// que vayas creando cada página, reemplaza el "#" correspondiente
-// por su ruta real, ej: href: '../Alarmas/index.html'.
+
 const MENU_POLICIA = [
   {
     seccion: 'General',
@@ -67,6 +44,24 @@ const MENU_POLICIA = [
     ],
   },
 ];
+
+function cerrarSesionPolicia(evento) {
+  if (evento) evento.preventDefault();
+
+  const confirmar = window.confirm('¿Seguro que deseas cerrar sesión?');
+  if (!confirmar) return;
+
+  try {
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
+    localStorage.removeItem('rol');
+    sessionStorage.clear();
+  } catch (e) {
+    console.warn('cerrarSesionPolicia: no se pudo limpiar el storage', e);
+  }
+
+  window.location.href = LANDING_URL_POLICIA;
+}
 
 /**
  * Inyecta el sidebar completo del rol Policía dentro de
@@ -108,9 +103,15 @@ function renderSidebarPolicia(paginaActiva) {
 
     <div class="flex-grow-1"></div>
 
-    <a href="#" class="logout-dash">
+    <a href="#" id="logoutDash" class="logout-dash">
       <span class="ic-dash"><i class="bi ${ICONOS_POLICIA.logout}"></i></span>
       <span class="lbl-dash">Cerrar sesión</span>
     </a>
   `;
+
+  // Enlaza el evento de cierre de sesión al link recién inyectado.
+  const logoutLink = document.getElementById('logoutDash');
+  if (logoutLink) {
+    logoutLink.addEventListener('click', cerrarSesionPolicia);
+  }
 }
