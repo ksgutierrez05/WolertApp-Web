@@ -1,60 +1,100 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-    // ===== CLAVES DE LOCALSTORAGE =====
+    // ===== CLAVES USADAS PARA GUARDAR EN EL NAVEGADOR =====
     const CLAVE_BARRIOS = "wolertapp_barrios";
-    const CLAVE_COMUNAS = "comunasWolertApp"; // debe coincidir con la usada en comunas.js
+    const CLAVE_COMUNAS = "comunasWolertApp"; // debe ser la misma clave que usa comunas.js
 
-    let barrios = [];
-    let comunas = [];
+    // ===== DATOS DE EJEMPLO (se usan solo la primera vez, si no hay nada guardado) =====
+    const comunasDeEjemplo = [
+        { id: 1, nombre: "Comuna 1", color: "#1f3a8a" },
+        { id: 2, nombre: "Comuna 2", color: "#5c4033" },
+        { id: 3, nombre: "Comuna 3", color: "#374151" },
+        { id: 4, nombre: "Comuna 4", color: "#166534" },
+        { id: 5, nombre: "Comuna 5", color: "#1d4ed8" },
+        { id: 6, nombre: "Comuna 6", color: "#14532d" }
+    ];
 
-    const contenedor = document.getElementById("lista-barrios");
-    const inputBuscar = document.getElementById("input-buscar-barrio");
-    const selectComuna = document.getElementById("comuna-barrio");
-    const formBarrio = document.getElementById("form-barrio");
+    const barriosDeEjemplo = [
+        { id: 1, nombre: "Los Fundadores", idComuna: 1 },
+        { id: 2, nombre: "Cañaguate", idComuna: 1 },
+        { id: 3, nombre: "Centro", idComuna: 2 },
+        { id: 4, nombre: "La Nevada", idComuna: 2 },
+        { id: 5, nombre: "El Prado", idComuna: 3 },
+        { id: 6, nombre: "San Joaquín", idComuna: 4 },
+        { id: 7, nombre: "Villa del Rosario", idComuna: 5 },
+        { id: 8, nombre: "Casimiro Raul Maestre", idComuna: 6 }
+    ];
+
+    // Estas dos listas se llenan al iniciar la página
+    let listaBarrios = [];
+    let listaComunas = [];
+
+    // Elementos del HTML que vamos a usar varias veces
+    const contenedorBarrios = document.getElementById("lista-barrios");
+    const campoBuscar = document.getElementById("input-buscar-barrio");
+    const selectorComuna = document.getElementById("comuna-barrio");
+    const formularioNuevoBarrio = document.getElementById("form-barrio");
 
 
-    // ===== CARGAR DATOS GUARDADOS =====
+    // ===== CARGAR COMUNAS GUARDADAS (o crear datos de ejemplo si no hay nada) =====
     function cargarComunas() {
-        const guardado = localStorage.getItem(CLAVE_COMUNAS);
-        comunas = guardado ? JSON.parse(guardado) : [];
+        const datosGuardados = localStorage.getItem(CLAVE_COMUNAS);
+
+        if (datosGuardados) {
+            listaComunas = JSON.parse(datosGuardados);
+        } else {
+            listaComunas = comunasDeEjemplo;
+            localStorage.setItem(CLAVE_COMUNAS, JSON.stringify(listaComunas));
+        }
     }
 
+
+    // ===== CARGAR BARRIOS GUARDADOS (o crear datos de ejemplo si no hay nada) =====
     function cargarBarrios() {
-        const guardado = localStorage.getItem(CLAVE_BARRIOS);
-        barrios = guardado ? JSON.parse(guardado) : [];
+        const datosGuardados = localStorage.getItem(CLAVE_BARRIOS);
+
+        if (datosGuardados) {
+            listaBarrios = JSON.parse(datosGuardados);
+        } else {
+            listaBarrios = barriosDeEjemplo;
+            guardarBarrios();
+        }
     }
 
+
+    // ===== GUARDAR LA LISTA ACTUAL DE BARRIOS EN EL NAVEGADOR =====
     function guardarBarrios() {
-        localStorage.setItem(CLAVE_BARRIOS, JSON.stringify(barrios));
+        localStorage.setItem(CLAVE_BARRIOS, JSON.stringify(listaBarrios));
     }
 
 
-    // ===== LLENAR EL SELECT DE COMUNAS EN EL MODAL =====
-    function llenarSelectComunas() {
-        selectComuna.innerHTML = `<option value="" selected disabled>Seleccionar comuna *</option>`;
-        comunas.forEach(c => {
-            selectComuna.innerHTML += `<option value="${c.id}">${c.nombre}</option>`;
+    // ===== LLENAR EL SELECT DE COMUNAS DENTRO DEL FORMULARIO =====
+    function mostrarComunasEnSelector() {
+        selectorComuna.innerHTML = `<option value="" selected disabled>Seleccionar comuna *</option>`;
+
+        listaComunas.forEach(comuna => {
+            selectorComuna.innerHTML += `<option value="${comuna.id}">${comuna.nombre}</option>`;
         });
     }
 
 
-    // ===== BUSCAR EL NOMBRE/COLOR DE UNA COMUNA POR SU ID =====
-    function obtenerComuna(idComuna) {
-        return comunas.find(c => c.id === Number(idComuna));
+    // ===== BUSCAR UNA COMUNA POR SU ID =====
+    function buscarComunaPorId(idComuna) {
+        return listaComunas.find(comuna => comuna.id === Number(idComuna));
     }
 
 
-    // ===== RENDERIZAR LISTA DE BARRIOS =====
-    function renderBarrios(lista) {
-        contenedor.innerHTML = "";
+    // ===== MOSTRAR LA LISTA DE BARRIOS EN PANTALLA =====
+    function mostrarBarrios(barrios) {
+        contenedorBarrios.innerHTML = "";
 
-        if (lista.length === 0) {
-            contenedor.innerHTML = `<div class="tabla-barrios-vacio">No se encontraron barrios.</div>`;
+        if (barrios.length === 0) {
+            contenedorBarrios.innerHTML = `<div class="tabla-barrios-vacio">No se encontraron barrios.</div>`;
             return;
         }
 
-        lista.forEach(barrio => {
-            const comuna = obtenerComuna(barrio.idComuna);
+        barrios.forEach(barrio => {
+            const comuna = buscarComunaPorId(barrio.idComuna);
             const nombreComuna = comuna ? comuna.nombre : "Sin comuna";
             const colorComuna = comuna ? comuna.color : "#98a2b3";
 
@@ -71,68 +111,81 @@ document.addEventListener("DOMContentLoaded", () => {
                     </button>
                 </div>
             `;
-            contenedor.appendChild(fila);
+            contenedorBarrios.appendChild(fila);
         });
 
-        conectarBotonesEliminar();
-        actualizarKpis();
+        activarBotonesEliminar();
+        actualizarTarjetasResumen();
     }
 
 
-    // ===== ELIMINAR BARRIO =====
-    function conectarBotonesEliminar() {
-        document.querySelectorAll(".btn-eliminar-barrio").forEach(boton => {
+    // ===== ACTIVAR EL BOTÓN "ELIMINAR" DE CADA FILA =====
+    function activarBotonesEliminar() {
+        const botonesEliminar = document.querySelectorAll(".btn-eliminar-barrio");
+
+        botonesEliminar.forEach(boton => {
             boton.addEventListener("click", () => {
-                const id = Number(boton.getAttribute("data-id"));
-                barrios = barrios.filter(b => b.id !== id);
+                const idBarrio = Number(boton.getAttribute("data-id"));
+                listaBarrios = listaBarrios.filter(barrio => barrio.id !== idBarrio);
                 guardarBarrios();
-                renderBarrios(barrios);
+                mostrarBarrios(listaBarrios);
             });
         });
     }
 
 
-    // ===== ACTUALIZAR KPIs =====
-    function actualizarKpis() {
-        document.getElementById("kpi-total-barrios").textContent = barrios.length;
-        document.getElementById("kpi-barrios-activos").textContent = barrios.length;
+    // ===== ACTUALIZAR LOS NÚMEROS DE LAS TARJETAS (KPIs) =====
+    function actualizarTarjetasResumen() {
+        document.getElementById("kpi-total-barrios").textContent = listaBarrios.length;
+        document.getElementById("kpi-barrios-activos").textContent = listaBarrios.length;
 
-        const comunasCubiertas = new Set(barrios.map(b => b.idComuna)).size;
-        document.getElementById("kpi-comunas-cubiertas").textContent = comunasCubiertas;
+        const comunasConAlMenosUnBarrio = new Set(listaBarrios.map(barrio => barrio.idComuna));
+        document.getElementById("kpi-comunas-cubiertas").textContent = comunasConAlMenosUnBarrio.size;
     }
 
 
-    // ===== REGISTRAR NUEVO BARRIO =====
-    formBarrio.addEventListener("submit", (e) => {
-        e.preventDefault();
+    // ===== REGISTRAR UN BARRIO NUEVO CUANDO SE ENVÍA EL FORMULARIO =====
+    formularioNuevoBarrio.addEventListener("submit", (evento) => {
+        evento.preventDefault();
+
+        const nombreIngresado = document.getElementById("nombre-barrio").value;
+        const idComunaSeleccionada = Number(selectorComuna.value);
+
+        const nuevoId = listaBarrios.length > 0
+            ? Math.max(...listaBarrios.map(barrio => barrio.id)) + 1
+            : 1;
 
         const nuevoBarrio = {
-            id: barrios.length > 0 ? Math.max(...barrios.map(b => b.id)) + 1 : 1,
-            nombre: document.getElementById("nombre-barrio").value,
-            idComuna: Number(selectComuna.value)
+            id: nuevoId,
+            nombre: nombreIngresado,
+            idComuna: idComunaSeleccionada
         };
 
-        barrios.push(nuevoBarrio);
+        listaBarrios.push(nuevoBarrio);
         guardarBarrios();
-        renderBarrios(barrios);
+        mostrarBarrios(listaBarrios);
 
-        formBarrio.reset();
+        formularioNuevoBarrio.reset();
         bootstrap.Modal.getInstance(document.getElementById("modalBarrio")).hide();
     });
 
 
-    // ===== FILTRO DE BÚSQUEDA =====
-    inputBuscar.addEventListener("input", () => {
-        const termino = inputBuscar.value.trim().toLowerCase();
-        const filtrados = barrios.filter(b => b.nombre.toLowerCase().includes(termino));
-        renderBarrios(filtrados);
+    // ===== FILTRAR BARRIOS MIENTRAS SE ESCRIBE EN EL BUSCADOR =====
+    campoBuscar.addEventListener("input", () => {
+        const textoBuscado = campoBuscar.value.trim().toLowerCase();
+
+        const barriosFiltrados = listaBarrios.filter(barrio =>
+            barrio.nombre.toLowerCase().includes(textoBuscado)
+        );
+
+        mostrarBarrios(barriosFiltrados);
     });
 
 
-    // ===== INICIALIZACIÓN =====
+    // ===== PUNTO DE INICIO: se ejecuta apenas carga la página =====
     cargarComunas();
     cargarBarrios();
-    llenarSelectComunas();
-    renderBarrios(barrios);
+    mostrarComunasEnSelector();
+    mostrarBarrios(listaBarrios);
 
 });
