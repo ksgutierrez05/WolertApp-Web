@@ -1,0 +1,163 @@
+/* ============================================================
+   ALERTAS.CSS — estilos propios de admin/alertas.html
+   ============================================================
+   Reutiliza las variables y clases de css/global.css
+   (--subtle, --line, --fog, --ink, .card-panel-dash, .badge-dash
+   y sus variantes de color), así que este archivo siempre debe
+   cargarse DESPUÉS de global.css en el <head>.
+   ============================================================ */
+
+.filtro-select-dash {
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background-color: #fff;
+    font-size: 13px;
+    padding: 10px 14px;
+    color: var(--ink);
+    box-shadow: var(--shadow-xs);
+}
+
+/* ---------- Tabla ---------- */
+.tabla-alertas-dash { width: 100%; border-collapse: collapse; }
+
+.tabla-alertas-dash thead th {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--subtle);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    text-align: left;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+}
+
+.tabla-alertas-dash tbody tr {
+    border-bottom: 1px solid var(--line);
+    transition: background 0.12s ease;
+}
+
+.tabla-alertas-dash tbody tr:last-child {
+    border-bottom: none;
+}
+
+.tabla-alertas-dash tbody tr:hover { background-color: var(--fog); }
+
+.tabla-alertas-dash td {
+    padding: 14px 20px;
+    vertical-align: middle;
+    font-size: 13px;
+}
+
+/* ---------- Columna Tipo (con ícono según severidad) ---------- */
+.alerta-tipo-celda-dash {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.alerta-tipo-icono-dash {
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.alerta-tipo-icono-grave-dash { background-color: #fce8e9; color: var(--color-danger); }
+.alerta-tipo-icono-moderado-dash { background-color: #fcf0da; color: var(--color-amber); }
+
+.alerta-tipo-texto-dash {
+    font-weight: 700;
+    color: var(--ink);
+    font-size: 12.5px;
+}
+
+/* ---------- Columna Usuario (con avatar) ---------- */
+.alerta-usuario-celda-dash {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.alerta-avatar-dash {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    flex-shrink: 0;
+}
+
+/* ---------- Columna Estado ---------- */
+.alerta-badge-dash {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 100px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.alerta-badge-dash .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.alerta-badge-pendiente-dash { background-color: #fcf0da; color: var(--color-amber); }
+.alerta-badge-pendiente-dash .dot { background-color: var(--color-amber); }
+
+.alerta-badge-asignada-dash { background-color: #e8f0fb; color: var(--color-blue); }
+.alerta-badge-asignada-dash .dot { background-color: var(--color-blue); }
+
+.alerta-badge-resuelta-dash { background-color: #e3f8ec; color: var(--color-green); }
+.alerta-badge-resuelta-dash .dot { background-color: var(--color-green); }
+
+/* ---------- Columna Fecha ---------- */
+.alerta-fecha-dash {
+    font-weight: 600;
+    color: var(--ink);
+    white-space: nowrap;
+}
+
+/* ---------- Columna Descripción (con tooltip nativo) ---------- */
+.tabla-alertas-dash td.celda-desc {
+    color: var(--muted);
+    max-width: 260px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: default;
+}
+
+/* ---------- Estado vacío ---------- */
+.alertas-vacio-dash {
+    text-align: center;
+    padding: 50px 20px;
+    color: var(--muted);
+}
+
+.alertas-vacio-dash i {
+    font-size: 32px;
+    color: var(--subtle);
+    margin-bottom: 10px;
+    display: block;
+}
+
+.alertas-vacio-dash p {
+    font-size: 13.5px;
+    margin: 0;
+}

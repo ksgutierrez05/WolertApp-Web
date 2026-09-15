@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WolertApp - Gestión de Barrios</title>
+    <script src="../js/admin/script.js" defer></script>
+    <script src="../js/admin/barrios.js" defer></script>
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/admin/barrios.css">
+    <link rel="stylesheet" href="../css/temas.css">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="rol-admin">
+
+    <div id="sidebar-placeholder"></div>
+
+    <div id="wrapperDash">
+        <main class="main-dash">
+            <div class="container-fluid">
+
+                <div class="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-3">
+                    <div>
+                        <h1 class="hero-title-dash" style="color: var(--ink); font-size: 26px;">Gestión de Barrios</h1>
+                        <p class="hero-text-dash" style="color: var(--muted);">Administra los barrios dentro de cada comuna</p>
+                    </div>
+                    <button type="button" class="btn btn-cv-azul d-inline-flex align-items-center gap-2 px-3 py-2"
+                            style="border-radius: 12px; font-size: 13.5px; font-weight: 700;"
+                            data-bs-toggle="modal" data-bs-target="#modalBarrio">
+                        <i class="bi bi-plus-lg"></i>
+                        Nuevo barrio
+                    </button>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        <div class="kpi-dash kpi-blue-dash">
+                            <i class="bi bi-house kpi-icon-dash"></i>
+                            <div class="kpi-num-dash" id="kpi-total-barrios">0</div>
+                            <div class="kpi-label-dash">Total barrios</div>
+                            <div class="kpi-label-dash" style="margin-top: 2px;">Registrados en el sistema</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="kpi-dash kpi-green-dash">
+                            <i class="bi bi-check-circle kpi-icon-dash"></i>
+                            <div class="kpi-num-dash" id="kpi-barrios-activos">0</div>
+                            <div class="kpi-label-dash">Barrios activos</div>
+                            <div class="kpi-label-dash" style="margin-top: 2px;">En el sistema</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="kpi-dash kpi-amber-dash">
+                            <i class="bi bi-map kpi-icon-dash"></i>
+                            <div class="kpi-num-dash" id="kpi-comunas-cubiertas">0</div>
+                            <div class="kpi-label-dash">Comunas cubiertas</div>
+                            <a href="comunas.html" class="kpi-label-dash" style="margin-top: 2px; color: var(--color-amber); font-weight: 700; text-decoration: underline;">Ver módulo Comunas</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-group search-dash mb-3">
+                    <span class="input-group-text bg-white border-0">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text" id="input-buscar-barrio" class="form-control border-0" placeholder="Buscar por nombre de barrio...">
+                </div>
+
+                <div class="card-panel-dash">
+                    <div class="tabla-barrios-header">
+                        <span>NOMBRE</span>
+                        <span>COMUNA</span>
+                        <span class="text-end">ACCIONES</span>
+                    </div>
+                    <div id="lista-barrios"></div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal: Nuevo barrio -->
+    <div class="modal fade" id="modalBarrio" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content modal-dash">
+
+                <form id="form-barrio">
+                    <div class="modal-header-dash d-flex justify-content-between align-items-start">
+                        <div>
+                            <h5 class="modal-title-dash">Nuevo barrio</h5>
+                            <div class="modal-subtitle-dash">Registra un barrio y asígnalo a una comuna</div>
+                        </div>
+                        <button type="button" class="btn-close-dash" data-bs-dismiss="modal">
+                            <i class="bi bi-x-lg"></i>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        <label class="label-col-dash mb-1">Nombre del barrio</label>
+                        <input type="text" id="nombre-barrio" class="form-control input-dash mb-3" placeholder="Ej: Los Fundadores" required>
+
+                        <label class="label-col-dash mb-1">Comuna</label>
+                        <select id="comuna-barrio" class="form-select input-dash" required>
+                            <option value="" selected disabled>Seleccionar comuna *</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-footer-dash">
+                        <button type="button" class="btn btn-cancelar-dash" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-cv-azul px-4" style="border-radius: 12px; font-weight: 700;">Registrar barrio</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
