@@ -15,7 +15,7 @@ const MENU_CIUDADANO = [
   {
     seccion: 'General',
     items: [
-      { id: 'principal', label: 'Principal', href: '../Principal/principal.html', icon: ICONOS_CIUDADANO.principal },
+      { id: 'principal', label: 'Principal', href: '../ciudadano/pagina-principal.html', icon: ICONOS_CIUDADANO.principal },
     ],
   },
   {
