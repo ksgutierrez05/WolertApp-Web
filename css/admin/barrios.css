@@ -1,3 +1,10 @@
+/* ============================================================
+   BARRIOS.CSS — estilos propios de admin/barrios.html
+   ============================================================
+   Reutiliza las variables de css/global.css, así que este
+   archivo siempre debe cargarse DESPUÉS de global.css.
+   ============================================================ */
+
 .tabla-barrios-header {
     display: grid;
     grid-template-columns: 2fr 1fr auto;
@@ -22,6 +29,10 @@
     border-bottom: none;
 }
 
+.tabla-barrios-fila:hover {
+    background-color: var(--fog);
+}
+
 .tabla-barrios-vacio {
     padding: 30px 20px;
     text-align: center;
@@ -42,4 +53,123 @@
     padding: 4px 10px;
     border-radius: 100px;
     color: #fff;
+}
+
+/* Botón de acción (eliminar) — mismo patrón que en comunas/usuarios */
+.btn-accion-dash {
+    width: 34px;
+    height: 34px;
+    border: none;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn-accion-dash:hover {
+    transform: translateY(-1px);
+}
+
+.btn-eliminar-barrio {
+    background-color: #fce8e9;
+    color: var(--color-danger);
+}
+
+/* ============================================================
+   MODAL "Nuevo barrio"
+   ============================================================ */
+
+.modal-dash {
+    border-radius: 16px;
+    border: none;
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+}
+
+.modal-header-dash {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--line);
+}
+
+.modal-title-dash {
+    font-family: "Space Grotesk", sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--ink);
+    margin: 0;
+}
+
+.modal-subtitle-dash {
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-top: 3px;
+}
+
+.btn-close-dash {
+    background: var(--fog);
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    font-size: 12px;
+    flex-shrink: 0;
+}
+
+.btn-close-dash:hover {
+    background-color: var(--line);
+    color: var(--ink);
+}
+
+.modal-body {
+    padding: 20px 24px;
+}
+
+/* Input y select reutilizados dentro del modal */
+.input-dash {
+    background-color: var(--fog);
+    border: 1px solid var(--fog);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 13.5px;
+    color: var(--ink);
+}
+
+.input-dash::placeholder {
+    color: var(--subtle);
+}
+
+.input-dash:focus {
+    background-color: #fff;
+    box-shadow: 0 0 0 3px rgba(31, 95, 168, 0.15);
+    border-color: var(--color-blue);
+    outline: none;
+}
+
+.modal-footer-dash {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 16px 24px;
+    background-color: var(--fog);
+    border-top: 1px solid var(--line);
+}
+
+.btn-cancelar-dash {
+    background-color: #fff;
+    color: var(--ink);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    font-weight: 700;
+    padding: 9px 18px;
+    font-size: 13.5px;
+}
+
+.btn-cancelar-dash:hover {
+    background-color: var(--line);
 }
