@@ -1,30 +1,4 @@
-// js/central/asignacion.js
-// ============================================================
-// Pantalla "Asignación" (Despacho) de Central de Radio.
-//
-// TODO IMPORTANTE PARA INTEGRACIÓN:
-// Este archivo NO tiene datos fijos regados por el código. Todo
-// lo que se pinta en pantalla sale de dos funciones "proveedoras"
-// (obtenerAlertasDespacho y obtenerPatrulleros) y de las acciones
-// (asignarPatrullero, reasignarPatrullero, contactarPatrullero).
-//
-// Para conectar el backend real solo hay que:
-//   1) Reemplazar el CUERPO de obtenerAlertasDespacho() y
-//      obtenerPatrulleros() por un fetch()/llamada a tu API.
-//   2) Reemplazar el CUERPO de guardarAsignacion() y
-//      registrarContacto() por las llamadas que actualicen el caso
-//      en el backend (hoy solo mutan el arreglo en memoria).
-// El resto de la pantalla (render, filtros, sugerencia, modal)
-// no necesita tocarse porque no conoce ningún dato concreto.
-// ============================================================
 
-/* ------------------------------------------------------------
-   1) DATOS DE EJEMPLO (MOCK)
-   Estos arreglos existen solo para poder ver la pantalla
-   funcionando mientras no hay backend conectado. Bórralos o
-   reemplázalos cuando integres los datos reales: nada más en
-   este archivo depende de su contenido, solo de su forma.
------------------------------------------------------------- */
 const ALERTAS_EJEMPLO = [
   {
     id: 'WL-2026-00125',
@@ -98,20 +72,68 @@ const PATRULLEROS_EJEMPLO = [
 ];
 
 /* ------------------------------------------------------------
+   1.1) PERSISTENCIA EN LOCALSTORAGE
+   Guarda el estado completo de ALERTAS y PATRULLEROS (incluye
+   asignaciones, horas, minutosSinConfirmar, etc.) para que la
+   pantalla sobreviva a un F5. Cuando exista backend real, estas
+   funciones se reemplazan por los fetch de obtenerAlertasDespacho/
+   obtenerPatrulleros y guardarAsignacion, y este bloque se elimina.
+------------------------------------------------------------ */
+const LS_KEY_ALERTAS_ASIG = 'wolertapp_asignacion_alertas';
+const LS_KEY_PATRULLEROS_ASIG = 'wolertapp_asignacion_patrulleros';
+
+function guardarEstadoEnStorage() {
+  try {
+    localStorage.setItem(LS_KEY_ALERTAS_ASIG, JSON.stringify(ALERTAS));
+    localStorage.setItem(LS_KEY_PATRULLEROS_ASIG, JSON.stringify(PATRULLEROS));
+  } catch (err) {
+    console.error('No se pudo guardar el estado de asignación en localStorage:', err);
+  }
+}
+
+function cargarAlertasDesdeStorage() {
+  try {
+    const guardado = localStorage.getItem(LS_KEY_ALERTAS_ASIG);
+    if (!guardado) return null;
+    const datos = JSON.parse(guardado);
+    if (Array.isArray(datos) && datos.length) return datos;
+  } catch (err) {
+    console.error('No se pudo leer las alertas de asignación desde localStorage:', err);
+  }
+  return null;
+}
+
+function cargarPatrullerosDesdeStorage() {
+  try {
+    const guardado = localStorage.getItem(LS_KEY_PATRULLEROS_ASIG);
+    if (!guardado) return null;
+    const datos = JSON.parse(guardado);
+    if (Array.isArray(datos) && datos.length) return datos;
+  } catch (err) {
+    console.error('No se pudo leer los patrulleros de asignación desde localStorage:', err);
+  }
+  return null;
+}
+
+/* ------------------------------------------------------------
    2) PROVEEDORES DE DATOS
    Punto único de integración con el backend. Devuelven Promesas
    para que el resto del código ya esté listo para un fetch real.
+   Mientras tanto, primero intentan leer de localStorage y si no
+   hay nada, usan los datos de ejemplo.
 ------------------------------------------------------------ */
 function obtenerAlertasDespacho() {
   // TODO: reemplazar por, por ejemplo:
   // return fetch('/api/central/alertas-despacho').then(r => r.json());
-  return new Promise((resolve) => setTimeout(() => resolve(ALERTAS_EJEMPLO), 200));
+  const guardadas = cargarAlertasDesdeStorage();
+  return new Promise((resolve) => setTimeout(() => resolve(guardadas || ALERTAS_EJEMPLO.map(a => ({ ...a }))), 200));
 }
 
 function obtenerPatrulleros() {
   // TODO: reemplazar por, por ejemplo:
   // return fetch('/api/central/patrulleros').then(r => r.json());
-  return new Promise((resolve) => setTimeout(() => resolve(PATRULLEROS_EJEMPLO), 200));
+  const guardados = cargarPatrullerosDesdeStorage();
+  return new Promise((resolve) => setTimeout(() => resolve(guardados || PATRULLEROS_EJEMPLO.map(p => ({ ...p }))), 200));
 }
 
 function guardarAsignacion(alertaId, patrulleroId, esReasignacion) {
@@ -121,8 +143,8 @@ function guardarAsignacion(alertaId, patrulleroId, esReasignacion) {
   //   headers: { 'Content-Type': 'application/json' },
   //   body: JSON.stringify({ patrulleroId, esReasignacion }),
   // });
-  // Mientras tanto, se actualiza el estado en memoria para que la
-  // interfaz refleje el cambio de inmediato.
+  // Mientras tanto, se actualiza el estado en memoria (y en
+  // localStorage) para que la interfaz refleje el cambio de inmediato.
   const alerta = ALERTAS.find(a => a.id === alertaId);
   const patrulleroAnterior = alerta ? PATRULLEROS.find(p => p.id === alerta.patrulleroAsignadoId) : null;
   const patrulleroNuevo = PATRULLEROS.find(p => p.id === patrulleroId);
@@ -141,6 +163,8 @@ function guardarAsignacion(alertaId, patrulleroId, esReasignacion) {
     patrulleroNuevo.estado = 'en_camino';
     patrulleroNuevo.atencionActualId = alerta.id;
   }
+
+  guardarEstadoEnStorage();
 
   return Promise.resolve({ ok: true });
 }

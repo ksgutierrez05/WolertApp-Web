@@ -18,7 +18,6 @@
 // Requiere Bootstrap Icons cargado en el <head> del HTML.
 
 const ICONOS_CENTRAL = {
-  logo: 'bi-broadcast',
   centrooperaciones: 'bi-house',
   alertas: 'bi-exclamation-triangle',
   asignacion: 'bi-broadcast-pin',
@@ -50,7 +49,7 @@ const MENU_CENTRAL = [
       { id: 'alertas',       label: 'Alertas',        href: '../Alertas/alertas.html', icon: ICONOS_CENTRAL.alertas, badge: null },
       { id: 'asignacion',    label: 'Asignación',     href: '../Asignaciones/asignaciones.html', icon: ICONOS_CENTRAL.asignacion },
       { id: 'unidad',        label: 'Unidad',         href: '../Unidad/unidad.html', icon: ICONOS_CENTRAL.unidad },
-      { id: 'mapaoperativo', label: 'Mapa Operativo', href: '../Mapas/mapas.html', icon: ICONOS_CENTRAL.mapaoperativo },
+      { id: 'mapaoperativo', label: 'Mapa Operativo', href: '../Mapa-operativo/mapa-operativo.html', icon: ICONOS_CENTRAL.mapaoperativo },
       { id: 'reportes',      label: 'Reportes',       href: '../Informe/reportes.html', icon: ICONOS_CENTRAL.informes, badge: null },
     ],
   },
@@ -59,7 +58,7 @@ const MENU_CENTRAL = [
     items: [
       { id: 'historial',      label: 'Historial',      href: '../Historial/historial.html', icon: ICONOS_CENTRAL.historial },
       { id: 'notificaciones', label: 'Notificaciones', href: '../Notificaciones/notificaciones.html', icon: ICONOS_CENTRAL.notificaciones, badge: null },
-      { id: 'configuracion',  label: 'Configuración',  href: '../Configuracion/configuracion.html', icon: ICONOS_CENTRAL.configuracion },
+      { id: 'configuracion',  label: 'Configuración',  href: '../Configuraciones/configuracion.html', icon: ICONOS_CENTRAL.configuracion },
     ],
   },
 ];
@@ -91,24 +90,29 @@ function renderSidebarCentral(paginaActiva) {
     </nav>
   `).join('');
 
-  el.innerHTML = `
-    <div class="d-flex align-items-center brand-dash">
-      <span class="brand-icon-dash">
-        <i class="bi ${ICONOS_CENTRAL.logo}"></i>
-      </span>
-      <span class="brand-text-dash">
-        <span class="brand-name-dash">WolertApp</span>
-        <span class="brand-role-dash">Central de Radio</span>
-      </span>
-    </div>
+ el.innerHTML = `
+  <div class="d-flex align-items-center brand-dash">
 
-    ${secciones}
+    <span class="brand-icon-dash brand-icon-dash--logo">
+      <img src="../../../img/logopolicia.png" alt="Policía Nacional">
+    </span>
 
-    <div class="flex-grow-1"></div>
+    <span class="brand-text-dash">
+      <span class="brand-name-dash">WolertApp</span>
+      <span class="brand-role-dash">Central de Radio</span>
+    </span>
 
-    <a href="#" class="logout-dash">
-      <span class="ic-dash"><i class="bi ${ICONOS_CENTRAL.logout}"></i></span>
-      <span class="lbl-dash">Cerrar sesión</span>
-    </a>
-  `;
+  </div>
+
+  ${secciones}
+
+  <div class="flex-grow-1"></div>
+
+  <a href="#" class="logout-dash">
+    <span class="ic-dash">
+      <i class="bi ${ICONOS_CENTRAL.logout}"></i>
+    </span>
+    <span class="lbl-dash">Cerrar sesión</span>
+  </a>
+`;
 }

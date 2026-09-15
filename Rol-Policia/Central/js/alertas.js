@@ -1,17 +1,3 @@
-// Central/js/alertas-central.js
-// Lógica de "Alertas entrantes" para la Central de Radio.
-//
-// Cubre el flujo RECIBIR → ANALIZAR → CLASIFICAR → DETALLAR → DESPACHAR
-// descrito en el módulo de Central: lista de alertas ciudadanas,
-// modal de gestión con el reporte original (solo lectura), la
-// clasificación que hace Central, las observaciones internas
-// (separadas del reporte del ciudadano) y la asignación de un
-// patrullero.
-//
-// Todo funciona en memoria (sin backend). Cuando exista API real,
-// este archivo es el lugar para reemplazar ALERTAS/PATRULLEROS por
-// datos reales y las funciones guardarClasificacion()/asignar()
-// por llamadas al servidor.
 
 // ---------- ICONOS POR TIPO DE ALERTA (Bootstrap Icons, ya cargado por el sidebar) ----------
 const ICONO_TIPO = {
@@ -48,8 +34,31 @@ const PATRULLEROS = [
   { id: 'P-006', unidad: 'CAI Sur', estado: 'Fuera de servicio', distancia: '—', eta: '—' },
 ];
 
-// ---------- ALERTAS ENTRANTES (mock) ----------
-let ALERTAS = [
+// ---------- PERSISTENCIA EN LOCALSTORAGE ----------
+const STORAGE_KEY_ALERTAS = 'wolertapp_alertas_central';
+
+function guardarAlertasEnStorage() {
+  try {
+    localStorage.setItem(STORAGE_KEY_ALERTAS, JSON.stringify(ALERTAS));
+  } catch (err) {
+    console.error('No se pudo guardar las alertas en localStorage:', err);
+  }
+}
+
+function cargarAlertasDesdeStorage() {
+  try {
+    const guardado = localStorage.getItem(STORAGE_KEY_ALERTAS);
+    if (!guardado) return null;
+    const datos = JSON.parse(guardado);
+    if (Array.isArray(datos) && datos.length) return datos;
+  } catch (err) {
+    console.error('No se pudo leer las alertas desde localStorage:', err);
+  }
+  return null;
+}
+
+// ---------- ALERTAS ENTRANTES (semilla, solo se usa si no hay nada guardado) ----------
+const ALERTAS_SEMILLA = [
   {
     id: 'WL-2026-00125',
     tipoReportado: 'Robo',
@@ -136,6 +145,12 @@ let ALERTAS = [
     sinRespuesta: false,
   },
 ];
+
+let ALERTAS = cargarAlertasDesdeStorage();
+if (!ALERTAS) {
+  ALERTAS = ALERTAS_SEMILLA.map(a => ({ ...a, notas: [...a.notas] }));
+  guardarAlertasEnStorage();
+}
 
 let filtroActual = 'todas';
 let alertaSeleccionadaId = null;
@@ -382,6 +397,8 @@ function guardarClasificacion() {
 
   if (a.estado === 'Nueva') a.estado = 'Clasificada';
 
+  guardarAlertasEnStorage();
+
   document.getElementById('cGuardadoHint').classList.remove('d-none');
   document.getElementById('btnAsignar').disabled = false;
 
@@ -404,6 +421,8 @@ function agregarNota() {
   const ahora = new Date();
   const hora = ahora.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
   a.notas.push({ texto, hora });
+
+  guardarAlertasEnStorage();
 
   input.value = '';
   renderNotas(a);
@@ -429,6 +448,8 @@ function asignarPatrullero() {
   a.sinRespuesta = false;
   a.estado = 'Asignada';
   patrulleroSeleccionadoTmp = null;
+
+  guardarAlertasEnStorage();
 
   const badgeEstado = document.getElementById('mEstadoBadge');
   badgeEstado.className = `badge-dash ${BADGE_ESTADO[a.estado] || 'badge-blue-dash'}`;

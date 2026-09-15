@@ -3,13 +3,26 @@
    Lógica de la página
    ========================================================= */
 
-/* CONFIGURACIÓN */
-const HISTORIAL_CONFIG = {
-  // Cambiar posteriormente por la URL real del backend
-  endpoint: "/api/central/historial",
-  // Tiempo máximo de espera de la petición
-  timeout: 15000
-};
+/* PERSISTENCIA EN LOCALSTORAGE (fuente de datos) */
+const LS_KEY_HISTORIAL = "wolertapp_historial_cache";
+
+function guardarHistorialEnCache(datos) {
+  try {
+    localStorage.setItem(LS_KEY_HISTORIAL, JSON.stringify(datos));
+  } catch (err) {
+    console.error("No se pudo guardar el caché de historial:", err);
+  }
+}
+
+function cargarHistorialDesdeCache() {
+  try {
+    const guardado = localStorage.getItem(LS_KEY_HISTORIAL);
+    return guardado ? JSON.parse(guardado) : null;
+  } catch (err) {
+    console.error("No se pudo leer el caché de historial:", err);
+    return null;
+  }
+}
 
 /* ESTADO */
 const historialState = {
@@ -54,30 +67,76 @@ const elementos = {
   detalleTimeline: document.getElementById("detalleTimeline")
 };
 
-/* CARGAR HISTORIAL */
-async function cargarHistorial() {
+/* CASOS DE EJEMPLO (solo se usan si no hay nada guardado aún) */
+const CASOS_EJEMPLO = [
+  {
+    idCaso: "C-001",
+    fecha: "2026-09-10T14:30:00",
+    tipoAlerta: "Robo",
+    prioridad: "Crítica",
+    zona: "Comuna 1",
+    patrulla: "P-12",
+    estado: "Resuelto",
+    resultado: "Capturado",
+    reporteCiudadano: "Ciudadano reportó robo a mano armada en la esquina de la calle 12.",
+    observacionesCentral: "Se despachó unidad P-12 de inmediato.",
+    resultadoFinal: "Sospechoso capturado en el sitio.",
+    timeline: [
+      { hora: "14:30", titulo: "Reporte recibido", descripcion: "Ciudadano llama a la línea de emergencia." },
+      { hora: "14:33", titulo: "Unidad asignada", descripcion: "Patrulla P-12 asignada al caso." },
+      { hora: "14:45", titulo: "Caso resuelto", descripcion: "Sospechoso capturado." }
+    ]
+  },
+  {
+    idCaso: "C-002",
+    fecha: "2026-09-11T09:15:00",
+    tipoAlerta: "Accidente",
+    prioridad: "Media",
+    zona: "Comuna 3",
+    patrulla: "P-05",
+    estado: "En atención",
+    resultado: "—",
+    reporteCiudadano: "Choque entre dos vehículos, sin heridos reportados.",
+    observacionesCentral: "Tránsito congestionado en la zona.",
+    resultadoFinal: "—",
+    timeline: [
+      { hora: "09:15", titulo: "Reporte recibido", descripcion: "Llamada de testigo." },
+      { hora: "09:20", titulo: "Unidad asignada", descripcion: "Patrulla P-05 en camino." }
+    ]
+  },
+  {
+    idCaso: "C-003",
+    fecha: "2026-09-12T20:05:00",
+    tipoAlerta: "Vandalismo",
+    prioridad: "Baja",
+    zona: "Comuna 2",
+    patrulla: "P-08",
+    estado: "Pendiente",
+    resultado: "—",
+    reporteCiudadano: "Grafitis en fachada de negocio local.",
+    observacionesCentral: "En espera de disponibilidad de unidad.",
+    resultadoFinal: "—",
+    timeline: [
+      { hora: "20:05", titulo: "Reporte recibido", descripcion: "Reporte vía app ciudadana." }
+    ]
+  }
+];
+
+function sembrarCasosEjemploSiNecesario() {
+  const existentes = cargarHistorialDesdeCache();
+  if (!existentes || !Array.isArray(existentes) || existentes.length === 0) {
+    guardarHistorialEnCache(CASOS_EJEMPLO);
+  }
+}
+
+/* CARGAR HISTORIAL (desde localStorage) */
+function cargarHistorial() {
   mostrarCarga(true);
   historialState.error = null;
 
   try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), HISTORIAL_CONFIG.timeout);
-
-    const respuesta = await fetch(HISTORIAL_CONFIG.endpoint, {
-      method: "GET",
-      headers: { "Accept": "application/json" },
-      credentials: "include",
-      signal: controller.signal
-    });
-
-    clearTimeout(timeout);
-
-    if (!respuesta.ok) {
-      throw new Error(`Error HTTP ${respuesta.status}`);
-    }
-
-    const datos = await respuesta.json();
-    historialState.registros = normalizarRespuesta(datos);
+    const guardados = cargarHistorialDesdeCache();
+    historialState.registros = normalizarRespuesta(guardados);
 
     actualizarFiltros();
     aplicarFiltros();
@@ -85,15 +144,24 @@ async function cargarHistorial() {
 
   } catch (error) {
     console.error("Error cargando historial:", error);
+
     historialState.registros = [];
     historialState.registrosFiltrados = [];
-    historialState.error = obtenerMensajeError(error);
+    historialState.error = "No fue posible leer los registros guardados.";
     renderizarTabla();
     mostrarError(true);
 
   } finally {
     mostrarCarga(false);
   }
+}
+
+/* AGREGAR REGISTRO */
+function agregarRegistro(registro) {
+  const actuales = normalizarRespuesta(cargarHistorialDesdeCache());
+  actuales.push(registro);
+  guardarHistorialEnCache(actuales);
+  cargarHistorial();
 }
 
 /* NORMALIZAR RESPUESTA */
@@ -380,11 +448,6 @@ function compararFecha(fecha, fechaFiltro) {
   return fechaRegistro - fechaComparacion;
 }
 
-function obtenerMensajeError(error) {
-  if (error.name === "AbortError") return "La consulta tardó demasiado tiempo.";
-  return "No fue posible consultar el historial.";
-}
-
 /* EVENTOS */
 function registrarEventos() {
   elementos.btnActualizar.addEventListener("click", cargarHistorial);
@@ -408,6 +471,7 @@ function registrarEventos() {
 
 /* INICIALIZACIÓN */
 document.addEventListener("DOMContentLoaded", () => {
+  sembrarCasosEjemploSiNecesario();
   registrarEventos();
   cargarHistorial();
 });

@@ -1,12 +1,3 @@
-// js/central/notificaciones.js
-// Lógica de la pantalla "Notificaciones" de Central de Radio.
-// Cubre exactamente los tipos de notificación definidos para el rol:
-// nueva alerta, alerta crítica, unidad aceptó, unidad en camino,
-// unidad llegó, unidad sin respuesta, alerta reasignada, alerta
-// resuelta, informe pendiente y caso pendiente de cierre.
-//
-// No agrega funcionalidad administrativa: solo lectura, filtrado
-// y marcado de leído/no leído de notificaciones.
 
 // ---------- catálogo de tipos: ícono + color + categoría ----------
 const TIPOS_NOTIF = {
@@ -22,8 +13,35 @@ const TIPOS_NOTIF = {
   caso_pendiente_cierre: { icono: 'bi-folder2-open',              color: 'amber', categoria: 'informes', etiqueta: 'Pendiente de cierre' },
 };
 
+// ---------- persistencia en localStorage ----------
+const LS_KEY_NOTIF_CENTRAL = 'wolertapp_notificaciones_central_leidas';
+
+function guardarEstadoLeidasEnStorage() {
+  try {
+    const estados = notificaciones.map(n => ({ id: n.id, leida: n.leida }));
+    localStorage.setItem(LS_KEY_NOTIF_CENTRAL, JSON.stringify(estados));
+  } catch (err) {
+    console.error('No se pudo guardar el estado de notificaciones en localStorage:', err);
+  }
+}
+
+function aplicarEstadoLeidasDesdeStorage(lista) {
+  try {
+    const guardado = localStorage.getItem(LS_KEY_NOTIF_CENTRAL);
+    if (!guardado) return lista;
+    const estados = JSON.parse(guardado);
+    if (!Array.isArray(estados)) return lista;
+
+    const mapaEstados = new Map(estados.map(e => [e.id, e.leida]));
+    return lista.map(n => mapaEstados.has(n.id) ? { ...n, leida: mapaEstados.get(n.id) } : n);
+  } catch (err) {
+    console.error('No se pudo leer el estado de notificaciones desde localStorage:', err);
+    return lista;
+  }
+}
+
 // ---------- datos de ejemplo (vendrían del backend en producción) ----------
-let notificaciones = [
+let notificaciones = aplicarEstadoLeidasDesdeStorage([
   {
     id: 1,
     tipo: 'alerta_critica',
@@ -114,7 +132,7 @@ let notificaciones = [
     hora: minutosAtras(90),
     leida: true,
   },
-];
+]);
 
 let filtroActual = 'todas';
 
@@ -215,11 +233,13 @@ function actualizarBadgeSidebar() {
 function marcarComoLeida(id) {
   const n = notificaciones.find(n => n.id === id);
   if (n) n.leida = true;
+  guardarEstadoLeidasEnStorage();
   renderNotificaciones();
 }
 
 function marcarTodasComoLeidas() {
   notificaciones.forEach(n => (n.leida = true));
+  guardarEstadoLeidasEnStorage();
   renderNotificaciones();
 }
 

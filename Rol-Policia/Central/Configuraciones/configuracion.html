@@ -52,35 +52,35 @@
           </button>
         </div>
 
-        <div class="row g-4 justify-content-center">
-          <div class="col-12 col-lg-8">
+        <!-- HERO DE PERFIL -->
+        <section class="cfg-hero-dash mb-4">
+          <div class="cfg-hero-cover-dash"></div>
+          <div class="cfg-hero-body-dash">
+            <div class="cfg-avatar-wrap-dash">
+              <div class="cfg-avatar-preview-dash" id="fotoPreview">CR</div>
+              <button type="button" class="cfg-avatar-edit-dash" id="btnCambiarFoto" title="Cambiar foto">
+                <i class="bi bi-camera-fill"></i>
+              </button>
+              <input type="file" id="inputFoto" accept="image/png, image/jpeg" hidden>
+            </div>
 
-            <!-- FOTO DE PERFIL -->
-            <section class="card-panel-dash p-4 mb-4">
-              <div class="cfg-section-head-dash">
-                <i class="bi bi-image cfg-section-icon-dash"></i>
-                <div>
-                  <h2 class="cfg-section-title-dash">Foto de perfil</h2>
-                  <p class="cfg-section-sub-dash">Se muestra en tu avatar dentro de Central de Radio.</p>
-                </div>
+            <div class="cfg-hero-info-dash">
+              <h2 class="cfg-hero-nombre-dash" id="heroNombre">Operador de radio</h2>
+              <div class="cfg-hero-meta-dash">
+                <span class="cfg-hero-cargo-dash"><i class="bi bi-shield-check"></i><span id="heroCargo">Operador de radio</span></span>
+                <span class="cfg-hero-correo-dash"><i class="bi bi-envelope"></i><span id="heroCorreo">Sin correo registrado</span></span>
               </div>
+            </div>
 
-              <div class="d-flex align-items-center gap-3 flex-wrap">
-                <div class="cfg-avatar-preview-dash" id="fotoPreview">CR</div>
-                <div class="d-flex flex-column gap-2">
-                  <div class="d-flex gap-2">
-                    <button type="button" class="btn btn-sm btn-cv-azul rounded-pill px-3" id="btnCambiarFoto">
-                      <i class="bi bi-upload me-1"></i> Cambiar foto
-                    </button>
-                    <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3" id="btnQuitarFoto">
-                      Quitar
-                    </button>
-                  </div>
-                  <span class="cfg-row-desc-dash mb-0">JPG o PNG, máximo 2 MB.</span>
-                  <input type="file" id="inputFoto" accept="image/png, image/jpeg" hidden>
-                </div>
-              </div>
-            </section>
+            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3 cfg-quitar-foto-dash" id="btnQuitarFoto">
+              <i class="bi bi-trash3 me-1"></i> Quitar foto
+            </button>
+          </div>
+        </section>
+
+        <div class="row g-4">
+          <!-- COLUMNA PRINCIPAL -->
+          <div class="col-12 col-xl-8">
 
             <!-- DATOS PERSONALES -->
             <section class="card-panel-dash p-4 mb-4">
@@ -95,19 +95,31 @@
               <div class="row g-3">
                 <div class="col-12 col-md-6">
                   <label class="cfg-label-dash" for="perfilNombre">Nombre completo</label>
-                  <input type="text" class="form-control cfg-input-dash" id="perfilNombre" placeholder="Nombre y apellidos">
+                  <div class="cfg-input-icon-dash">
+                    <i class="bi bi-person"></i>
+                    <input type="text" class="form-control cfg-input-dash" id="perfilNombre" placeholder="Nombre y apellidos">
+                  </div>
                 </div>
                 <div class="col-12 col-md-6">
                   <label class="cfg-label-dash" for="perfilCargo">Cargo</label>
-                  <input type="text" class="form-control cfg-input-dash" id="perfilCargo" placeholder="Ej. Operador de radio" disabled>
+                  <div class="cfg-input-icon-dash">
+                    <i class="bi bi-shield-check"></i>
+                    <input type="text" class="form-control cfg-input-dash" id="perfilCargo" placeholder="Ej. Operador de radio" disabled>
+                  </div>
                 </div>
                 <div class="col-12 col-md-6">
                   <label class="cfg-label-dash" for="perfilCorreo">Correo electrónico</label>
-                  <input type="email" class="form-control cfg-input-dash" id="perfilCorreo" placeholder="correo@ejemplo.com">
+                  <div class="cfg-input-icon-dash">
+                    <i class="bi bi-envelope"></i>
+                    <input type="email" class="form-control cfg-input-dash" id="perfilCorreo" placeholder="correo@ejemplo.com">
+                  </div>
                 </div>
                 <div class="col-12 col-md-6">
                   <label class="cfg-label-dash" for="perfilTelefono">Teléfono</label>
-                  <input type="tel" class="form-control cfg-input-dash" id="perfilTelefono" placeholder="Ej. 300 000 0000">
+                  <div class="cfg-input-icon-dash">
+                    <i class="bi bi-telephone"></i>
+                    <input type="tel" class="form-control cfg-input-dash" id="perfilTelefono" placeholder="Ej. 300 000 0000">
+                  </div>
                 </div>
               </div>
             </section>
@@ -125,23 +137,90 @@
               <div class="row g-3">
                 <div class="col-12">
                   <label class="cfg-label-dash" for="perfilPassActual">Contraseña actual</label>
-                  <input type="password" class="form-control cfg-input-dash" id="perfilPassActual" placeholder="••••••••" autocomplete="current-password">
+                  <div class="cfg-input-icon-dash">
+                    <i class="bi bi-lock"></i>
+                    <input type="password" class="form-control cfg-input-dash" id="perfilPassActual" placeholder="••••••••" autocomplete="current-password">
+                  </div>
                 </div>
                 <div class="col-12 col-md-6">
                   <label class="cfg-label-dash" for="perfilPassNueva">Nueva contraseña</label>
-                  <input type="password" class="form-control cfg-input-dash" id="perfilPassNueva" placeholder="••••••••" autocomplete="new-password">
+                  <div class="cfg-input-icon-dash">
+                    <i class="bi bi-key"></i>
+                    <input type="password" class="form-control cfg-input-dash" id="perfilPassNueva" placeholder="••••••••" autocomplete="new-password">
+                  </div>
                 </div>
                 <div class="col-12 col-md-6">
                   <label class="cfg-label-dash" for="perfilPassConfirmar">Confirmar nueva contraseña</label>
-                  <input type="password" class="form-control cfg-input-dash" id="perfilPassConfirmar" placeholder="••••••••" autocomplete="new-password">
+                  <div class="cfg-input-icon-dash">
+                    <i class="bi bi-key-fill"></i>
+                    <input type="password" class="form-control cfg-input-dash" id="perfilPassConfirmar" placeholder="••••••••" autocomplete="new-password">
+                  </div>
                 </div>
               </div>
+
+              <!-- CHECKLIST DE SEGURIDAD -->
+              <ul class="cfg-checklist-dash d-none" id="perfilPassChecklist">
+                <li id="chkLongitud"><i class="bi bi-circle"></i> Mínimo 8 caracteres</li>
+                <li id="chkMayuscula"><i class="bi bi-circle"></i> Una letra mayúscula</li>
+                <li id="chkNumero"><i class="bi bi-circle"></i> Un número</li>
+                <li id="chkSimbolo"><i class="bi bi-circle"></i> Un símbolo (!@#$...)</li>
+              </ul>
+
               <div class="cfg-error-dash d-none" id="perfilPassError">
                 <i class="bi bi-exclamation-circle"></i>
                 <span>Las contraseñas nuevas no coinciden.</span>
               </div>
             </section>
 
+          </div>
+
+          <!-- COLUMNA LATERAL -->
+          <div class="col-12 col-xl-4">
+            <div class="cfg-side-dash">
+
+              <section class="card-panel-dash p-4 mb-4">
+                <div class="cfg-section-head-dash">
+                  <i class="bi bi-info-circle cfg-section-icon-dash"></i>
+                  <div>
+                    <h2 class="cfg-section-title-dash">Resumen de cuenta</h2>
+                    <p class="cfg-section-sub-dash">Así te ven otros operadores en Central.</p>
+                  </div>
+                </div>
+
+                <div class="cfg-resumen-item-dash">
+                  <span>Nombre</span>
+                  <strong id="resumenNombre">—</strong>
+                </div>
+                <div class="cfg-resumen-item-dash">
+                  <span>Cargo</span>
+                  <strong id="resumenCargo">—</strong>
+                </div>
+                <div class="cfg-resumen-item-dash">
+                  <span>Correo</span>
+                  <strong id="resumenCorreo">—</strong>
+                </div>
+                <div class="cfg-resumen-item-dash">
+                  <span>Teléfono</span>
+                  <strong id="resumenTelefono">—</strong>
+                </div>
+              </section>
+
+              <section class="card-panel-dash p-4">
+                <div class="cfg-section-head-dash">
+                  <i class="bi bi-shield-exclamation cfg-section-icon-dash"></i>
+                  <div>
+                    <h2 class="cfg-section-title-dash">Consejos de seguridad</h2>
+                  </div>
+                </div>
+
+                <ul class="cfg-tips-dash">
+                  <li><i class="bi bi-check2"></i> No compartas tu contraseña con otros operadores.</li>
+                  <li><i class="bi bi-check2"></i> Cambia tu contraseña periódicamente.</li>
+                  <li><i class="bi bi-check2"></i> Verifica que tu correo esté siempre actualizado.</li>
+                </ul>
+              </section>
+
+            </div>
           </div>
         </div>
 

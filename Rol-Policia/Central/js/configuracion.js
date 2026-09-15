@@ -1,12 +1,3 @@
-// js/central/configuracion.js
-// Lógica de la pantalla "Configuración de perfil" de Central de Radio.
-// Solo maneja los datos personales del operador (foto, nombre, cargo,
-// correo, teléfono) y el cambio de contraseña. No hay preferencias de
-// app (notificaciones, sonidos, mapa, tema) ni administración del sistema.
-//
-// El perfil se guarda en localStorage bajo una sola llave, ligado a
-// este navegador/dispositivo. La contraseña NUNCA se guarda en
-// localStorage: solo se valida y se simula el envío al backend.
 
 const CFG_STORAGE_KEY = 'wolertapp.central.perfil';
 
@@ -58,6 +49,8 @@ function aplicarAlFormulario(perfil) {
 
   fotoActualDataUrl = perfil.foto;
   actualizarPreviewFoto(perfil);
+  actualizarHero(perfil);
+  actualizarResumen(perfil);
 }
 
 function iniciales(nombre) {
@@ -81,6 +74,20 @@ function actualizarPreviewFoto(perfil) {
   }
 }
 
+// ---------- hero y resumen (se refrescan con cada cambio) ----------
+function actualizarHero(perfil) {
+  document.getElementById('heroNombre').textContent = perfil.nombre || 'Operador de radio';
+  document.getElementById('heroCargo').textContent = perfil.cargo || 'Operador de radio';
+  document.getElementById('heroCorreo').textContent = perfil.correo || 'Sin correo registrado';
+}
+
+function actualizarResumen(perfil) {
+  document.getElementById('resumenNombre').textContent = perfil.nombre || '—';
+  document.getElementById('resumenCargo').textContent = perfil.cargo || '—';
+  document.getElementById('resumenCorreo').textContent = perfil.correo || '—';
+  document.getElementById('resumenTelefono').textContent = perfil.telefono || '—';
+}
+
 // ---------- feedback visual ----------
 let toastTimeout = null;
 function mostrarToast() {
@@ -94,6 +101,36 @@ function mostrarErrorPassword(mostrar) {
   document.getElementById('perfilPassError').classList.toggle('d-none', !mostrar);
 }
 
+// ---------- checklist de contraseña ----------
+function validarPassword(password) {
+  return {
+    longitud: password.length >= 8,
+    mayuscula: /[A-Z]/.test(password),
+    numero: /[0-9]/.test(password),
+    simbolo: /[^A-Za-z0-9]/.test(password),
+  };
+}
+
+function actualizarChecklistUI(password) {
+  const checklist = document.getElementById('perfilPassChecklist');
+  checklist.classList.toggle('d-none', password.length === 0);
+
+  const estado = validarPassword(password);
+  const mapa = {
+    chkLongitud: estado.longitud,
+    chkMayuscula: estado.mayuscula,
+    chkNumero: estado.numero,
+    chkSimbolo: estado.simbolo,
+  };
+
+  Object.entries(mapa).forEach(([id, cumple]) => {
+    const li = document.getElementById(id);
+    const icono = li.querySelector('i');
+    li.classList.toggle('cfg-checklist-ok-dash', cumple);
+    icono.className = cumple ? 'bi bi-check-circle-fill' : 'bi bi-circle';
+  });
+}
+
 // ---------- estado en memoria de la foto ----------
 let fotoActualDataUrl = null;
 
@@ -101,6 +138,20 @@ let fotoActualDataUrl = null;
 document.addEventListener('DOMContentLoaded', () => {
   const perfil = cargarPerfil();
   aplicarAlFormulario(perfil);
+
+  // Refrescar hero y resumen en vivo mientras se escribe
+  ['perfilNombre', 'perfilCorreo', 'perfilTelefono'].forEach(id => {
+    document.getElementById(id).addEventListener('input', () => {
+      const actual = leerFormulario();
+      actualizarHero(actual);
+      actualizarResumen(actual);
+    });
+  });
+
+  // Checklist de contraseña
+  document.getElementById('perfilPassNueva').addEventListener('input', e => {
+    actualizarChecklistUI(e.target.value);
+  });
 
   // Cambiar foto
   document.getElementById('btnCambiarFoto').addEventListener('click', () => {
@@ -153,9 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
         alert('Ingresa tu contraseña actual para poder cambiarla.');
         return;
       }
-      // Aquí iría la llamada al backend para validar la contraseña
-      // actual y establecer la nueva. La contraseña nunca se guarda
-      // en localStorage.
+  
     }
     mostrarErrorPassword(false);
 
@@ -165,6 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('perfilPassActual').value = '';
       document.getElementById('perfilPassNueva').value = '';
       document.getElementById('perfilPassConfirmar').value = '';
+      document.getElementById('perfilPassChecklist').classList.add('d-none');
       mostrarToast();
     }
   });
