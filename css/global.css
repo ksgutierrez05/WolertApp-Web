@@ -193,16 +193,15 @@ a {
   justify-content: center;
   font-size: 17px;
   flex-shrink: 0;
-  overflow: hidden;   /* ← AGREGA ESTA LÍNEA */
+  overflow: hidden;
 }
 
-/* ← AGREGA ESTE BLOQUE NUEVO */
 .brand-icon-dash img {
   width: 100%;
   height: 100%;
   object-fit: contain;
   display: block;
-  padding: 2px;   /* opcional: deja un margen interno para que el logo no toque los bordes */
+  padding: 2px;
   box-sizing: border-box;
 }
 
@@ -258,6 +257,30 @@ a {
 }
 
 .sidebar-dash:hover .brand-text-dash {
+  width: auto;
+  margin-left: 12px;
+  opacity: 1;
+  transition: opacity 0.25s ease 0.08s;
+}
+
+/* Compatibilidad con sidebars que ponen .brand-name-dash directo
+   bajo .brand-dash, SIN envolverlo en .brand-text-dash (ej.
+   js/transito/central-transito/slidebar.js). El combinador ">"
+   hace que esto NO afecte a los roles que sí usan .brand-text-dash,
+   porque ahí .brand-name-dash queda anidado, no como hijo directo.
+   Sin esto, el texto no colapsaba a 0 al cerrar el sidebar, el
+   bloque icono+texto quedaba más ancho que los 78px, y el
+   justify-content:center de .brand-dash empujaba el logo fuera
+   del área visible dejando solo un recorte del texto. */
+.brand-dash > .brand-name-dash {
+  width: 0;
+  margin-left: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.sidebar-dash:hover .brand-dash > .brand-name-dash {
   width: auto;
   margin-left: 12px;
   opacity: 1;
@@ -929,3 +952,55 @@ body:has(.sidebar-dash:hover) #wrapperDash {
     opacity: 1;
 }
 
+.rol-transito .brand-dash > .brand-name-dash {
+  width: 0;
+  max-width: 0;
+  min-width: 0;
+  margin-left: 0;
+  overflow: hidden;
+  opacity: 0;
+}
+
+.rol-transito .sidebar-dash:hover .brand-dash > .brand-name-dash {
+  width: auto;
+  max-width: none;
+  margin-left: 12px;
+  opacity: 1;
+}
+
+
+.rol-admin .brand-name-dash,
+.rol-admin .brand-subtitle-dash {
+  width: 0;
+  max-width: 0;
+  min-width: 0;
+  overflow: hidden;
+  opacity: 0;
+  white-space: nowrap;
+  transition: opacity 0.15s ease;
+}
+
+.rol-admin .sidebar-dash:hover .brand-name-dash,
+.rol-admin .sidebar-dash:hover .brand-subtitle-dash {
+  width: auto;
+  max-width: none;
+  opacity: 1;
+  transition: opacity 0.25s ease 0.08s;
+}
+
+
+.rol-ciudadano .brand-dash > .brand-name-dash {
+  width: 0;
+  max-width: 0;
+  min-width: 0;
+  margin-left: 0;
+  overflow: hidden;
+  opacity: 0;
+}
+
+.rol-ciudadano .sidebar-dash:hover .brand-dash > .brand-name-dash {
+  width: auto;
+  max-width: none;
+  margin-left: 12px;
+  opacity: 1;
+}
