@@ -1,0 +1,122 @@
+/* ============================================================
+   ALERTAS.CSS
+   Estilos propios de la vista Alertas. Reutiliza variables y
+   clases de global.css (.kpi-dash, .card-panel-dash, .badge-dash,
+   .wait-dash, .info-title-dash, etc.)
+   ============================================================ */
+
+.alertas-tabs-dash {
+  display: inline-flex;
+  background-color: var(--fog);
+  border-radius: 100px;
+  padding: 4px;
+  gap: 4px;
+  margin-bottom: 0;
+}
+
+.alertas-tab-dash {
+  border: none;
+  background: transparent;
+  padding: 7px 16px;
+  border-radius: 100px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  white-space: nowrap;
+}
+
+.alertas-tab-dash.active {
+  background-color: #fff;
+  color: var(--ink);
+  box-shadow: var(--shadow-xs);
+}
+
+.alertas-toolbar-dash {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.alerta-item-dash {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--line);
+  transition: background 0.15s ease;
+}
+
+.alerta-item-dash:last-child {
+  border-bottom: none;
+}
+
+.alerta-item-dash:hover {
+  background-color: var(--fog);
+}
+
+.alerta-icon-dash {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  flex-shrink: 0;
+  color: #fff;
+}
+
+.alerta-icon-dash.tipo-robo { background: linear-gradient(135deg, var(--color-danger), var(--color-danger-2)); }
+.alerta-icon-dash.tipo-accidente { background: linear-gradient(135deg, var(--color-amber), #e0a53f); }
+.alerta-icon-dash.tipo-disturbio { background: linear-gradient(135deg, var(--color-blue), #4b83d1); }
+.alerta-icon-dash.tipo-incendio { background: linear-gradient(135deg, #d9480f, #f2711c); }
+.alerta-icon-dash.tipo-sospechoso { background: linear-gradient(135deg, var(--color-primary), var(--color-primary-2)); }
+
+.alerta-body-dash {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.alerta-top-row-dash {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.alerta-meta-dash {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 5px;
+  font-size: 11.5px;
+  color: var(--muted);
+  flex-wrap: wrap;
+}
+
+.alerta-meta-dash span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.alerta-time-dash {
+  font-size: 11px;
+  color: var(--subtle);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.alertas-empty-dash {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--subtle);
+}
+
+.alertas-empty-dash i {
+  font-size: 40px;
+  display: block;
+  margin-bottom: 10px;
+  opacity: 0.5;
+}

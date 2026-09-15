@@ -1,5 +1,4 @@
 
-
 renderSidebarPolicia('notificaciones');
 
 const STORAGE_KEY_NOT = 'wolert_notificaciones';
