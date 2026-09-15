@@ -143,71 +143,81 @@
             <div class="modal-content modal-dash">
 
                 <form id="form-nuevo-usuario">
-                    <div class="modal-body">
 
-                        <div class="seccion-titulo-dash">DATOS PERSONALES</div>
+                <div class="modal-header-dash d-flex justify-content-between align-items-start">
+                    <div>
+                        <h5 class="modal-title-dash">Nuevo usuario</h5>
+                        <div class="modal-subtitle-dash">Registra un usuario y asígnale un rol</div>
+                    </div>
+                    <button type="button" class="btn-close-dash" data-bs-dismiss="modal">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
 
-                        <div class="row g-2 mb-2">
-                            <div class="col-6">
-                                <input type="text" class="form-control input-dash" id="nu-primer-nombre" required placeholder="Primer Nombre *">
-                            </div>
-                            <div class="col-6">
-                                <input type="text" class="form-control input-dash" id="nu-segundo-nombre" placeholder="Segundo Nombre">
-                            </div>
+                <div class="modal-body">
+
+                    <div class="seccion-titulo-dash">DATOS PERSONALES</div>
+
+                    <div class="row g-2 mb-2">
+                        <div class="col-6">
+                            <input type="text" class="form-control input-dash" id="nu-primer-nombre" required placeholder="Primer Nombre *">
                         </div>
-
-                        <div class="row g-2 mb-2">
-                            <div class="col-6">
-                                <input type="text" class="form-control input-dash" id="nu-primer-apellido" required placeholder="Primer Apellido *">
-                            </div>
-                            <div class="col-6">
-                                <input type="text" class="form-control input-dash" id="nu-segundo-apellido" placeholder="Segundo Apellido">
-                            </div>
+                        <div class="col-6">
+                            <input type="text" class="form-control input-dash" id="nu-segundo-nombre" placeholder="Segundo Nombre">
                         </div>
-
-                        <div class="row g-2 mb-2">
-                            <div class="col-6">
-                                <input type="text" class="form-control input-dash" id="nu-cedula" required placeholder="Cédula *">
-                            </div>
-                            <div class="col-6">
-                                <input type="tel" class="form-control input-dash" id="nu-telefono" placeholder="Teléfono">
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <input type="email" class="form-control input-dash" id="nu-correo" placeholder="Correo">
-                        </div>
-
-                        <div class="seccion-titulo-dash">CUENTA</div>
-
-                        <div class="mb-2">
-                            <input type="text" class="form-control input-dash" id="nu-username" required placeholder="Username *">
-                        </div>
-
-                        <div class="mb-3">
-                            <input type="password" class="form-control input-dash" id="nu-password" required placeholder="Contraseña *">
-                        </div>
-
-                        <div class="seccion-titulo-dash">ROL</div>
-
-                        <div class="mb-1">
-                            <select class="form-select input-dash" id="nu-rol" required>
-                                <option value="" selected disabled>Seleccionar Rol *</option>
-                                <option value="ciudadano">Ciudadano</option>
-                                <option value="policia">Policía</option>
-                                <option value="admin">Administrador</option>
-                            </select>
-                        </div>
-
-                        <div id="nu-error" class="text-danger small mt-2" style="display: none;"></div>
                     </div>
 
-                    <div class="modal-footer-dash">
-                        <button type="button" class="btn btn-cancelar-dash" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-cv-azul px-4" style="border-radius: 12px; font-weight: 700;">Crear Usuario</button>
+                    <div class="row g-2 mb-2">
+                        <div class="col-6">
+                            <input type="text" class="form-control input-dash" id="nu-primer-apellido" required placeholder="Primer Apellido *">
+                        </div>
+                        <div class="col-6">
+                            <input type="text" class="form-control input-dash" id="nu-segundo-apellido" placeholder="Segundo Apellido">
+                        </div>
                     </div>
-                </form>
 
+                    <div class="row g-2 mb-2">
+                        <div class="col-6">
+                            <input type="text" class="form-control input-dash" id="nu-cedula" required placeholder="Cédula *">
+                        </div>
+                        <div class="col-6">
+                            <input type="tel" class="form-control input-dash" id="nu-telefono" placeholder="Teléfono">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <input type="email" class="form-control input-dash" id="nu-correo" placeholder="Correo">
+                    </div>
+
+                    <div class="seccion-titulo-dash">CUENTA</div>
+
+                    <div class="mb-2">
+                        <input type="text" class="form-control input-dash" id="nu-username" required placeholder="Username *">
+                    </div>
+
+                    <div class="mb-3">
+                        <input type="password" class="form-control input-dash" id="nu-password" required placeholder="Contraseña *">
+                    </div>
+
+                    <div class="seccion-titulo-dash">ROL</div>
+
+                    <div class="mb-1">
+                        <select class="form-select input-dash" id="nu-rol" required>
+                            <option value="" selected disabled>Seleccionar Rol *</option>
+                            <option value="ciudadano">Ciudadano</option>
+                            <option value="policia">Policía</option>
+                            <option value="admin">Administrador</option>
+                        </select>
+                    </div>
+
+                    <div id="nu-error" class="text-danger small mt-2" style="display: none;"></div>
+                </div>
+
+                <div class="modal-footer-dash">
+                    <button type="button" class="btn btn-cancelar-dash" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-cv-azul px-4" style="border-radius: 12px; font-weight: 700;">Crear Usuario</button>
+                </div>
+            </form>
             </div>
         </div>
     </div>

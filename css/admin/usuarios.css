@@ -158,3 +158,37 @@
 .btn-cancelar-dash:hover {
     background-color: var(--line);
 }
+
+.modal-header-dash {
+    background: linear-gradient(120deg, var(--color-primary) 0%, var(--color-primary-2) 100%);
+    color: #fff;
+    padding: 22px 24px;
+    border: none;
+    border-radius: 16px 16px 0 0;
+}
+
+.modal-header-dash .modal-title-dash {
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 700;
+    font-size: 19px;
+    margin: 0;
+}
+
+.modal-header-dash .modal-subtitle-dash {
+    font-size: 12.5px;
+    color: rgba(255, 255, 255, 0.75);
+    margin-top: 3px;
+}
+
+.modal-header-dash .btn-close-dash {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 20px;
+    opacity: 0.85;
+    line-height: 1;
+}
+
+.modal-header-dash .btn-close-dash:hover {
+    opacity: 1;
+}
