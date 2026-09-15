@@ -86,15 +86,14 @@ function renderSidebarCiudadano(paginaActiva) {
 
   el.innerHTML = `
     <div class="d-flex align-items-center brand-dash">
-      <span class="brand-icon-dash">
-        <i class="bi ${ICONOS_CIUDADANO.logo}"></i>
-      </span>
-      <span class="brand-text-dash">
-        <span class="brand-name-dash">WolertApp</span>
-        <span class="brand-role-dash">Ciudadano</span>
-      </span>
-    </div>
-
+  <span class="brand-icon-dash">
+    <img src="../img/LogoWolertAPP.png" alt="WolertApp" class="logo-img-dash">
+  </span>
+  <span class="brand-text-dash">
+    <span class="brand-name-dash">WolertApp</span>
+    <span class="brand-role-dash">Ciudadano</span>
+  </span>
+</div>
     ${secciones}
 
     <div class="flex-grow-1"></div>
