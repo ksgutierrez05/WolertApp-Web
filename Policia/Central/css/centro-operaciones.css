@@ -1,0 +1,552 @@
+
+.hero-side-dash {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 18px;
+}
+
+.hero-icon-wrap-dash {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.14);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-icon-wrap-dash .hero-icon-dash {
+  font-size: 26px;
+  color: #fff;
+  opacity: .95;
+}
+
+.hero-icon-wrap-dash::before,
+.hero-icon-wrap-dash::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,.5);
+  animation: heroBroadcastPing 2.6s ease-out infinite;
+}
+
+.hero-icon-wrap-dash::after {
+  animation-delay: 1.3s;
+}
+
+@keyframes heroBroadcastPing {
+  0% { transform: scale(1); opacity: .55; }
+  100% { transform: scale(1.9); opacity: 0; }
+}
+
+
+/* ============================================================
+   TARJETA DE ESTADÍSTICA PRINCIPAL
+   ============================================================ */
+
+.kpi-hero-dash {
+  min-height: 226px;
+
+  position: relative;
+  overflow: hidden;
+
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  background: linear-gradient(135deg, #c85c5c, #d97a7a);
+}
+
+.kpi-hero-dash::before {
+  content: "";
+  position: absolute;
+  width: 170px;
+  height: 170px;
+  border-radius: 50%;
+  top: -50px;
+  right: -50px;
+  background: radial-gradient(circle, rgba(255,255,255,.22), transparent 70%);
+}
+
+.kpi-hero-dash > * {
+  position: relative;
+  z-index: 1;
+}
+
+.kpi-hero-dash .kpi-solid-num-dash {
+  font-size: 42px;
+  margin-top: 6px;
+}
+
+.kpi-hero-dash .kpi-solid-icon-dash {
+  width: 52px;
+  height: 52px;
+  font-size: 22px;
+  background: rgba(255,255,255,.18);
+}
+
+
+/* ============================================================
+   ÍCONOS DE FONDO EN LAS TARJETAS KPI PEQUEÑAS
+   Antes cada ícono (reloj de arena, check, wifi apagado...)
+   se veía con un tamaño distinto y sin posición fija, algunos
+   recortados por el borde. Ahora todos son un watermark
+   parejo en la esquina inferior derecha.
+   ============================================================ */
+
+.kpi-dash {
+  position: relative;
+  overflow: hidden;
+}
+
+.kpi-dash .kpi-icon-dash {
+  position: absolute;
+  right: -8px;
+  bottom: -12px;
+  font-size: 56px;
+  opacity: .14;
+  color: currentColor;
+  pointer-events: none;
+}
+
+.kpi-dash > *:not(.kpi-icon-dash) {
+  position: relative;
+  z-index: 1;
+}
+
+
+/* ============================================================
+   TABLAS
+   ============================================================ */
+
+.tabla-dash {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 0;
+}
+
+.tabla-dash thead th {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+
+  color: var(--muted);
+
+  border-bottom: 1px solid var(--line);
+
+  padding: 0 10px 11px;
+
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.tabla-dash tbody td {
+  padding: 12px 10px;
+
+  border-bottom: 1px solid var(--line);
+
+  font-size: 12.5px;
+
+  vertical-align: middle;
+
+  overflow: hidden;
+}
+
+.tabla-dash tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.tabla-dash tbody tr:hover td {
+  background-color: var(--fog);
+}
+
+
+/* ============================================================
+   ALERTAS RECIENTES
+   Ocupa todo el ancho.
+   ============================================================ */
+
+.tabla-alertas-dash {
+  table-layout: fixed;
+}
+
+.tabla-alertas-dash .col-caso { width: 11%; }
+.tabla-alertas-dash .col-tipo { width: 18%; }
+.tabla-alertas-dash .col-prioridad { width: 13%; }
+.tabla-alertas-dash .col-ubicacion { width: 23%; }
+.tabla-alertas-dash .col-hora { width: 9%; }
+.tabla-alertas-dash .col-estado { width: 17%; }
+.tabla-alertas-dash .col-accion { width: 9%; }
+
+.tabla-alertas-dash .caso-dash {
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.tabla-alertas-dash .tipo-cell-dash {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  min-width: 0;
+
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.tabla-alertas-dash .tipo-cell-dash i {
+  color: var(--subtle);
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.tabla-alertas-dash .tipo-cell-dash span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tabla-alertas-dash td.meta-muted-dash {
+  color: var(--muted);
+
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.tabla-alertas-dash td:nth-child(5) {
+  white-space: nowrap;
+  color: var(--muted);
+}
+
+.tabla-alertas-dash td:nth-child(6) {
+  white-space: nowrap;
+}
+
+.tabla-alertas-dash .badge-dash {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 10px;
+  padding: 4px 8px;
+
+  white-space: nowrap;
+}
+
+.tabla-alertas-dash .btn-cv-azul {
+  width: 30px;
+  height: 30px;
+
+  padding: 0;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 12px;
+  line-height: 1;
+}
+
+
+/* ============================================================
+   ATENCIONES ACTIVAS
+   Queda nivelada con el mapa mediante h-100 en el HTML.
+   ============================================================ */
+
+.tabla-atenciones-dash {
+  table-layout: fixed;
+}
+
+.tabla-atenciones-dash th:nth-child(1),
+.tabla-atenciones-dash td:nth-child(1) { width: 18%; }
+
+.tabla-atenciones-dash th:nth-child(2),
+.tabla-atenciones-dash td:nth-child(2) { width: 27%; }
+
+.tabla-atenciones-dash th:nth-child(3),
+.tabla-atenciones-dash td:nth-child(3) { width: 17%; }
+
+.tabla-atenciones-dash th:nth-child(4),
+.tabla-atenciones-dash td:nth-child(4) { width: 21%; }
+
+.tabla-atenciones-dash th:nth-child(5),
+.tabla-atenciones-dash td:nth-child(5) { width: 17%; }
+
+.tabla-atenciones-dash td {
+  white-space: nowrap;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tabla-atenciones-dash .caso-dash {
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.tabla-atenciones-dash td:nth-child(3) {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.tabla-atenciones-dash td:nth-child(5) {
+  color: var(--muted);
+}
+
+.tabla-atenciones-dash .badge-dash {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 10px;
+  padding: 4px 9px;
+
+  white-space: nowrap;
+}
+
+
+/* ============================================================
+   MAPA OPERATIVO — PRÓXIMAMENTE
+   Mini radar animado con degradado verde + azul, más rico
+   visualmente que un placeholder plano de un solo color.
+   ============================================================ */
+
+.mapa-proximamente-dash {
+  position: relative;
+  height: 210px;
+
+  border-radius: 14px;
+
+  background:
+    radial-gradient(circle at 25% 20%, rgba(79,119,45,.10), transparent 60%),
+    radial-gradient(circle at 80% 85%, rgba(58,125,177,.10), transparent 60%),
+    var(--fog);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  overflow: hidden;
+}
+
+.mapop-mini-badge-dash {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  background: linear-gradient(120deg, rgba(217,158,58,.18), rgba(217,158,58,.08));
+  color: var(--color-amber);
+
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+
+  padding: 5px 12px;
+  border-radius: 100px;
+}
+
+.mapop-mini-dot-dash {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-amber);
+  animation: mapopMiniPulseDot 1.4s ease-in-out infinite;
+}
+
+@keyframes mapopMiniPulseDot {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.6); opacity: .45; }
+}
+
+.mapop-mini-radar-dash {
+  position: relative;
+  width: 108px;
+  height: 108px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: radial-gradient(circle, rgba(79,119,45,.07), transparent 70%);
+}
+
+.mapop-mini-ring-dash {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.mapop-mini-ring-1-dash { width: 40px; height: 40px; border: 1px solid rgba(79,119,45,.30); }
+.mapop-mini-ring-2-dash { width: 76px; height: 76px; border: 1px solid rgba(58,125,177,.22); }
+
+.mapop-mini-sweep-dash {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+
+  background: conic-gradient(
+    from 0deg,
+    color-mix(in srgb, var(--color-primary) 55%, transparent) 0deg,
+    color-mix(in srgb, var(--color-blue) 40%, transparent) 30deg,
+    transparent 90deg,
+    transparent 360deg
+  );
+
+  /* Hueco en el centro para no atravesar el pin */
+  -webkit-mask-image: radial-gradient(circle, transparent 0 14px, #000 16px);
+  mask-image: radial-gradient(circle, transparent 0 14px, #000 16px);
+
+  animation: mapopMiniSweep 3s linear infinite;
+}
+
+@keyframes mapopMiniSweep {
+  to { transform: rotate(360deg); }
+}
+
+.mapop-mini-pin-halo-dash {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 28px;
+  height: 28px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff 55%, rgba(255,255,255,0) 100%);
+  z-index: 2;
+}
+
+.mapop-mini-pin-dash {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+
+  background: linear-gradient(135deg, var(--color-primary), var(--color-blue));
+  color: #fff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+
+  z-index: 3;
+  animation: mapopMiniPinBounce 2.4s ease-in-out infinite;
+}
+
+@keyframes mapopMiniPinBounce {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  50% { transform: translate(-50%, -54%) scale(1.08); }
+}
+
+.mapop-mini-text-dash {
+  font-size: 11.5px;
+  color: var(--muted);
+  margin: 0;
+  text-align: center;
+  padding: 0 14px;
+}
+
+
+/* Leyenda */
+
+.mapa-grupo-dash {
+  font-size: 11px;
+  font-weight: 700;
+
+  text-transform: uppercase;
+  letter-spacing: .03em;
+
+  color: var(--muted);
+
+  margin: 14px 0 6px;
+}
+
+.mapa-fila-dash {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  padding: 6px 0;
+
+  font-size: 13px;
+}
+
+.mapa-fila-dash .dot {
+  width: 8px;
+  height: 8px;
+
+  border-radius: 50%;
+
+  flex-shrink: 0;
+}
+
+.mapa-fila-dash .lbl-dash {
+  flex-grow: 1;
+  color: var(--ink);
+}
+
+.mapa-fila-dash .num-dash {
+  font-weight: 700;
+}
+
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 1200px) {
+
+  .tabla-dash thead th {
+    padding-left: 7px;
+    padding-right: 7px;
+  }
+
+  .tabla-dash tbody td {
+    padding-left: 7px;
+    padding-right: 7px;
+  }
+
+  .tabla-dash {
+    font-size: 12px;
+  }
+
+  .tabla-alertas-dash .badge-dash,
+  .tabla-atenciones-dash .badge-dash {
+    font-size: 9px;
+    padding: 3px 6px;
+  }
+}
+
+
+@media (max-width: 992px) {
+
+  .tabla-alertas-dash .col-ubicacion { width: 20%; }
+  .tabla-alertas-dash .col-tipo { width: 17%; }
+  .tabla-alertas-dash .col-estado { width: 18%; }
+}
+
+
+@media (max-width: 768px) {
+
+  .tabla-dash {
+    min-width: 650px;
+  }
+
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}

@@ -1,0 +1,138 @@
+
+
+.notif-header-dash {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.notif-tabs-dash {
+  display: inline-flex;
+  background-color: var(--fog);
+  border-radius: 100px;
+  padding: 4px;
+  gap: 4px;
+}
+
+.notif-tab-dash {
+  border: none;
+  background: transparent;
+  padding: 7px 16px;
+  border-radius: 100px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.notif-tab-dash.active {
+  background-color: #fff;
+  color: var(--ink);
+  box-shadow: var(--shadow-xs);
+}
+
+.notif-clear-dash {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-blue);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.notif-clear-dash:hover {
+  text-decoration: underline;
+}
+
+.notif-item-dash {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+  transition: background 0.15s ease;
+  position: relative;
+}
+
+.notif-item-dash:last-child {
+  border-bottom: none;
+}
+
+.notif-item-dash:hover {
+  background-color: var(--fog);
+}
+
+.notif-item-dash.no-leida {
+  background-color: #f5f8ff;
+}
+
+.notif-item-dash.no-leida:hover {
+  background-color: #eef3ff;
+}
+
+.notif-dot-dash {
+  position: absolute;
+  left: 6px;
+  top: 22px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--color-blue);
+}
+
+.notif-icon-dash {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  flex-shrink: 0;
+  color: #fff;
+}
+
+.notif-icon-dash.tipo-alerta_vecino {
+  background: linear-gradient(135deg, var(--color-blue), #4b83d1);
+}
+
+.notif-icon-dash.tipo-cambio_estado {
+  background: linear-gradient(135deg, var(--color-amber), #e0a53f);
+}
+
+.notif-body-dash {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.notif-top-row-dash {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.notif-time-dash {
+  font-size: 11px;
+  color: var(--subtle);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.notif-empty-dash {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--subtle);
+}
+
+.notif-empty-dash i {
+  font-size: 40px;
+  display: block;
+  margin-bottom: 10px;
+  opacity: 0.5;
+}

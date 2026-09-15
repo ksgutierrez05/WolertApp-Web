@@ -1,0 +1,296 @@
+/* Piezas de Alertas que no existen en global.css
+   (chips de filtro, avatares, tabla, tono violeta adicional y paginación). */
+
+.chip-filtro-dash {
+  border: 1px solid var(--line);
+  background-color: #fff;
+  color: var(--muted);
+  border-radius: 100px;
+  padding: 7px 16px;
+  font-size: 12.5px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.chip-filtro-dash:hover {
+  background-color: var(--fog);
+}
+
+.chip-filtro-dash.active {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-2));
+  color: #fff;
+  border-color: transparent;
+}
+
+.chip-count-dash {
+  background-color: var(--fog);
+  color: var(--muted);
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: 100px;
+}
+
+.chip-filtro-dash.active .chip-count-dash {
+  background-color: rgba(255, 255, 255, 0.25);
+  color: #fff;
+}
+
+.tabla-alertas-dash thead th {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.tabla-alertas-dash tbody td {
+  padding: 14px;
+  border-bottom: 1px solid var(--line);
+  font-size: 13.5px;
+}
+
+.tabla-alertas-dash tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.tabla-alertas-dash tbody tr:hover {
+  background-color: var(--fog);
+}
+
+.nombre-alerta-dash {
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.dato-secundario-dash {
+  font-size: 11.5px;
+  color: var(--muted);
+  margin-top: 1px;
+}
+
+.link-btn-dash i {
+  font-size: 11px;
+  margin-left: 2px;
+}
+
+/* Avatar circular de color por ciudadano que reporta */
+.avatar-sm-dash {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.avatar-amber-dash { background: linear-gradient(135deg, var(--color-amber), #e0a53f); }
+.avatar-green-dash { background: linear-gradient(135deg, var(--color-primary), var(--color-primary-2)); }
+.avatar-blue-dash { background: linear-gradient(135deg, var(--color-blue), #4c86c9); }
+
+/* Tonos extra para estados que no encajan en rojo/ámbar/verde/azul,
+   alineados a los valores reales del enum EstadoAlerta */
+.badge-violeta-dash {
+  background-color: #f0ecfb;
+  color: #6c4fd1;
+}
+
+.badge-teal-dash {
+  background-color: #e3f6f6;
+  color: #0f7a7a;
+}
+
+.badge-muted-dash {
+  background-color: var(--fog);
+  color: var(--muted);
+}
+
+/* Paginación */
+.paginacion-alertas-dash {
+  border-top: 1px solid var(--line);
+}
+
+.pagina-btn-dash {
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--line);
+  background-color: #fff;
+  color: var(--muted);
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.pagina-btn-dash:hover {
+  background-color: var(--fog);
+}
+
+.pagina-btn-dash.active {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-2));
+  border-color: transparent;
+  color: #fff;
+}
+/* =========================================
+   MODAL DETALLE DE ALERTA
+========================================= */
+
+.modal-alerta-dash {
+  border: none;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
+}
+
+.modal-alerta-dash .modal-header {
+  padding: 22px 24px 16px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.modal-alerta-dash .modal-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.modal-subtitulo-dash {
+  margin: 4px 0 0;
+  color: #6c757d;
+  font-size: 13px;
+}
+
+.modal-alerta-dash .modal-body {
+  padding: 24px;
+}
+
+/* Tipo + estado */
+
+.detalle-principal-dash {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+.detalle-principal-dash small,
+.detalle-descripcion-dash small {
+  display: block;
+  color: #8a8f98;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  margin-bottom: 7px;
+}
+
+/* Información */
+
+.detalle-grid-dash {
+  display: grid;
+  gap: 14px;
+}
+
+.detalle-item-dash {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 13px 14px;
+  background: #f8f9fa;
+  border-radius: 12px;
+}
+
+.detalle-item-dash > i {
+  font-size: 19px;
+  color: #6c757d;
+}
+
+.detalle-item-dash small {
+  display: block;
+  color: #8a8f98;
+  font-size: 11px;
+  margin-bottom: 2px;
+}
+
+.detalle-item-dash strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #212529;
+}
+
+/* Descripción */
+
+.detalle-descripcion-dash {
+  margin-top: 20px;
+}
+
+.detalle-descripcion-dash p {
+  margin: 0;
+  padding: 14px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  color: #495057;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Botón cerrar */
+
+.btn-cerrar-detalle-dash {
+  border: none;
+  background: #f1f3f5;
+  color: #495057;
+  padding: 9px 18px;
+  border-radius: 9px;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.btn-cerrar-detalle-dash:hover {
+  background: #e9ecef;
+}
+
+/* Responsive */
+
+@media (max-width: 576px) {
+  .detalle-principal-dash {
+    grid-template-columns: 1fr;
+  }
+}
+.btn-detalle-alerta {
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #dee2e6;
+  border-radius: 9px;
+  background: #fff;
+  color: #495057;
+
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-detalle-alerta:hover {
+  background: #f1f3f5;
+  border-color: #adb5bd;
+  color: #212529;
+}
+
+.btn-detalle-alerta:active {
+  transform: scale(0.96);
+}

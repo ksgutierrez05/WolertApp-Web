@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>WolertApp — Alertas entrantes</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+
+<!-- Central/Alertas/ -> subir 3 niveles para llegar a la raíz -->
+<link rel="stylesheet" href="../../../css/global.css">
+<link rel="stylesheet" href="../../../css/temas.css">
+<link rel="stylesheet" href="../css/alertas.css">
+</head>
+<body class="rol-policia">
+
+  <aside class="sidebar-dash" id="sidebarDash"></aside>
+
+  <div id="wrapperDash">
+    <main class="main-dash">
+      <div class="container-fluid">
+
+        <!-- ============ TOPBAR ============ -->
+        <div class="d-flex align-items-center gap-3 mb-4">
+          <div class="search-dash flex-grow-1 d-flex align-items-center input-group">
+            <span class="input-group-text bg-transparent border-0"><i class="bi bi-search"></i></span>
+            <input type="text" class="form-control border-0 bg-transparent" id="buscarAlerta" placeholder="Buscar por caso, tipo, dirección o barrio…">
+          </div>
+          <button class="btn icon-btn-dash rounded-circle bg-white border-0">
+            <i class="bi bi-bell"></i>
+            <span class="icon-dot-dash"></span>
+          </button>
+          <span class="avatar-dash">CR</span>
+        </div>
+
+        <!-- ============ ENCABEZADO ============ -->
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+          <div>
+            <h1 class="page-title-dash"><i class="bi bi-exclamation-triangle me-2"></i>Alertas entrantes</h1>
+            <p class="info-sub-dash mb-0">Reportes recibidos desde los ciudadanos, listos para analizar, clasificar y despachar.</p>
+          </div>
+          <span class="badge-dash badge-red-dash" id="badgeNuevas">— alertas nuevas</span>
+        </div>
+
+        <!-- ============ MINI INDICADORES ============ -->
+        <div class="row g-3 mb-3">
+          <div class="col-6 col-md-3">
+            <div class="kpi-dash kpi-blue-dash">
+              <i class="bi bi-inboxes kpi-icon-dash"></i>
+              <div class="kpi-num-dash" id="kpiTotal">—</div>
+              <div class="kpi-label-dash">Alertas activas</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="kpi-dash kpi-red-dash">
+              <i class="bi bi-fire kpi-icon-dash"></i>
+              <div class="kpi-num-dash" id="kpiCriticas">—</div>
+              <div class="kpi-label-dash">Prioridad crítica/alta</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="kpi-dash kpi-amber-dash">
+              <i class="bi bi-hourglass-split kpi-icon-dash"></i>
+              <div class="kpi-num-dash" id="kpiSinClasificar">—</div>
+              <div class="kpi-label-dash">Sin clasificar</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="kpi-dash kpi-red-dash">
+              <i class="bi bi-wifi-off kpi-icon-dash"></i>
+              <div class="kpi-num-dash" id="kpiSinRespuesta">—</div>
+              <div class="kpi-label-dash">Sin respuesta</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ FILTROS ============ -->
+        <div class="al-filterbar">
+          <button class="al-chip active" data-filter="todas">Todas</button>
+          <button class="al-chip" data-filter="Nueva">Nuevas</button>
+          <button class="al-chip" data-filter="Clasificada">Clasificadas</button>
+          <button class="al-chip" data-filter="Asignada">Asignadas</button>
+          <button class="al-chip" data-filter="En atención">En atención</button>
+          <button class="al-chip al-chip-danger" data-filter="__criticas">Críticas</button>
+          <button class="al-chip al-chip-danger" data-filter="__sinrespuesta">Sin respuesta</button>
+        </div>
+
+        <!-- ============ LISTA DE ALERTAS ============ -->
+        <div class="row g-3" id="listaAlertas"></div>
+
+        <!-- ============ SIN RESULTADOS ============ -->
+        <div class="al-empty d-none" id="alEmpty">
+          <i class="bi bi-inbox"></i>
+          <p class="mb-0">No hay alertas que coincidan con este filtro.</p>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- ============================================================
+       MODAL — GESTIÓN DE ALERTA
+       Reúne: reporte del ciudadano (solo lectura), clasificación
+       de Central, información agregada por Central y despacho.
+       ============================================================ -->
+  <div class="modal fade" id="modalGestionAlerta" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content al-modal">
+
+        <div class="modal-header al-modal-header">
+          <div>
+            <p class="al-modal-caso mb-0" id="mCaso">#WL-—</p>
+            <h5 class="modal-title al-modal-title" id="mTitulo">Gestionar alerta</h5>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge-dash" id="mEstadoBadge">—</span>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+        </div>
+
+        <div class="modal-body">
+
+          <!-- Aviso: patrullero sin respuesta -->
+          <div class="al-alert-warning d-none" id="mAvisoSinRespuesta">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <span>El patrullero no ha confirmado la atención.</span>
+            <div class="ms-auto d-flex gap-2">
+              <button class="btn btn-sm btn-outline-dark" id="btnContactar">Contactar</button>
+              <button class="btn btn-sm btn-cv-azul" id="btnReasignarAviso">Reasignar</button>
+            </div>
+          </div>
+
+          <!-- SECCIÓN: Reporte del ciudadano -->
+          <section class="al-section">
+            <h6 class="al-section-title"><i class="bi bi-person-lines-fill"></i> Reporte del ciudadano <span class="al-locked"><i class="bi bi-lock-fill"></i> original, no editable</span></h6>
+            <div class="al-report-grid">
+              <div><span class="label-col-dash">Tipo reportado</span><p class="mb-0" id="rTipo">—</p></div>
+              <div><span class="label-col-dash">Fecha y hora</span><p class="mb-0" id="rFechaHora">—</p></div>
+              <div><span class="label-col-dash">Ubicación</span><p class="mb-0" id="rUbicacion">—</p></div>
+              <div><span class="label-col-dash">Prioridad inicial</span><p class="mb-0" id="rPrioridadInicial">—</p></div>
+              <div><span class="label-col-dash">Contacto</span><p class="mb-0" id="rContacto">—</p></div>
+              <div><span class="label-col-dash">Distancia a patrulleros</span><p class="mb-0" id="rDistancia">—</p></div>
+            </div>
+            <div class="al-desc-box mt-2">
+              <i class="bi bi-quote"></i>
+              <p class="mb-0" id="rDescripcion">—</p>
+            </div>
+            <div class="al-evidence" id="rEvidencias"><i class="bi bi-paperclip"></i> —</div>
+          </section>
+
+          <!-- SECCIÓN: Clasificación de Central -->
+          <section class="al-section">
+            <h6 class="al-section-title"><i class="bi bi-tags-fill"></i> Clasificación de Central</h6>
+            <div class="row g-2">
+              <div class="col-sm-6">
+                <label class="al-label">Tipo de caso</label>
+                <select class="form-select form-select-sm" id="cTipo">
+                  <option>Robo</option>
+                  <option>Accidente</option>
+                  <option>Persona sospechosa</option>
+                  <option>Violencia</option>
+                  <option>Emergencia</option>
+                  <option>Alteración del orden público</option>
+                  <option>Otro</option>
+                </select>
+              </div>
+              <div class="col-sm-6">
+                <label class="al-label">Prioridad</label>
+                <select class="form-select form-select-sm" id="cPrioridad">
+                  <option>Baja</option>
+                  <option>Media</option>
+                  <option>Alta</option>
+                  <option>Crítica</option>
+                </select>
+              </div>
+              <div class="col-sm-6">
+                <label class="al-label">Nivel de atención</label>
+                <select class="form-select form-select-sm" id="cNivel">
+                  <option>Atención normal</option>
+                  <option>Atención prioritaria</option>
+                  <option>Atención inmediata</option>
+                </select>
+              </div>
+              <div class="col-sm-6">
+                <label class="al-label">Zona (comuna / barrio / sector)</label>
+                <input type="text" class="form-control form-control-sm" id="cZona" placeholder="Ej. Comuna 3 — Centro">
+              </div>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mt-2">
+              <span class="al-saved-hint d-none" id="cGuardadoHint"><i class="bi bi-check-circle-fill"></i> Clasificación guardada</span>
+              <button class="btn btn-cv-azul btn-sm ms-auto" id="btnGuardarClasificacion">Guardar clasificación</button>
+            </div>
+          </section>
+
+          <!-- SECCIÓN: Información agregada por Central -->
+          <section class="al-section">
+            <h6 class="al-section-title"><i class="bi bi-journal-plus"></i> Información agregada por Central</h6>
+            <p class="al-hint">Distinta del reporte del ciudadano: observaciones, hallazgos o contexto recopilado durante la gestión.</p>
+            <div class="al-notas" id="cNotasLista"></div>
+            <div class="d-flex gap-2 mt-2">
+              <input type="text" class="form-control form-control-sm" id="cNuevaNota" placeholder="Ej. Se recomienda verificar establecimiento y alrededores…">
+              <button class="btn btn-outline-secondary btn-sm text-nowrap" id="btnAgregarNota">Agregar</button>
+            </div>
+          </section>
+
+          <!-- SECCIÓN: Despacho -->
+          <section class="al-section">
+            <h6 class="al-section-title"><i class="bi bi-broadcast-pin"></i> Despacho</h6>
+
+            <div class="al-asignado-actual d-none" id="cAsignadoBox">
+              <i class="bi bi-car-front-fill"></i>
+              <div>
+                <p class="mb-0 fw-bold" id="cAsignadoNombre">—</p>
+                <p class="mb-0 al-meta-inline" id="cAsignadoInfo">—</p>
+              </div>
+            </div>
+
+            <p class="al-hint mb-2" id="cDespachoHint">Selecciona el patrullero más adecuado para atender el caso.</p>
+
+            <div class="al-patrulleros" id="cPatrulleros"></div>
+
+            <div class="d-flex justify-content-end mt-2">
+              <button class="btn btn-cv-azul btn-sm" id="btnAsignar" disabled>Asignar patrullero</button>
+            </div>
+          </section>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../js/sidebar-central.js"></script>
+  <script>
+    renderSidebarCentral('alertas');
+  </script>
+  <script src="../js/alertas.js"></script>
+</body>
+</html>

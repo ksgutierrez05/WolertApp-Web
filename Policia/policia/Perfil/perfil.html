@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mi Perfil — WolertApp</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+
+<!-- Estilos globales del panel (NO se tocan) -->
+<link rel="stylesheet" href="../../../css/global.css">
+<link rel="stylesheet" href="../../../css/temas.css">
+<link rel="stylesheet" href="../css/perfil.css">
+
+</head>
+
+<body class="rol-policia">
+
+<div id="wrapperDash">
+  <aside class="sidebar-dash" id="sidebarDash"></aside>
+
+  <main class="main-dash">
+    <div class="container-fluid">
+
+      <!-- Topbar -->
+      <div class="d-flex justify-content-between align-items-center mb-4 gap-3">
+        <div>
+          <h1 class="page-title-dash"><i class="bi bi-person-circle me-2"></i>Mi Perfil</h1>
+          <p class="mb-0" style="font-size:13px;color:var(--muted);">Tu información personal, operativa y preferencias</p>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <button class="icon-btn-dash btn btn-light rounded-circle border">
+            <i class="bi bi-bell"></i>
+            <span class="icon-dot-dash"></span>
+          </button>
+          <div class="avatar-dash">JP</div>
+        </div>
+      </div>
+
+      <!-- Encabezado del perfil -->
+      <div class="cabecera-perfil-per mb-4">
+        <div class="avatar-grande-per">JP</div>
+        <div class="flex-grow-1">
+          <p class="nombre-per">John Pérez Rodríguez</p>
+          <p class="subtitulo-per">Patrullero · Unidad Alpha 03 · CAI Centro</p>
+        </div>
+        <span class="estado-op-per">
+          <span class="dot-per"></span>
+          Disponible
+        </span>
+      </div>
+
+      <div class="row g-4">
+
+        <!-- Columna izquierda: información -->
+        <div class="col-lg-7">
+          <div class="card-panel-dash p-3 p-md-4 mb-4" id="tarjetaInfoPer">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <p class="section-title-dash mb-0">Información personal y operativa</p>
+              <button class="btn-editar-per" id="btnEditarPer">
+                <i class="bi bi-pencil"></i> Editar
+              </button>
+            </div>
+
+            <!-- Editables por el propio patrullero -->
+            <div class="fila-info-per" data-editable="true">
+              <span class="label-info-per">Nombre</span>
+              <span class="valor-info-per" data-campo="nombre">John Pérez Rodríguez</span>
+              <input class="input-info-per d-none" data-campo="nombre" type="text" value="John Pérez Rodríguez">
+            </div>
+            <div class="fila-info-per" data-editable="true">
+              <span class="label-info-per">Teléfono de contacto</span>
+              <span class="valor-info-per" data-campo="telefono">300 123 4567</span>
+              <input class="input-info-per d-none" data-campo="telefono" type="tel" value="300 123 4567">
+            </div>
+            <div class="fila-info-per" data-editable="true">
+              <span class="label-info-per">Correo electrónico</span>
+              <span class="valor-info-per" data-campo="correo">john.perez@policia.gov.co</span>
+              <input class="input-info-per d-none" data-campo="correo" type="email" value="john.perez@policia.gov.co">
+            </div>
+
+            <p class="nota-institucional-per">Los siguientes datos son institucionales y los administra la Central de Radio.</p>
+
+            <!-- Información institucional: solo lectura -->
+            <div class="fila-info-per">
+              <span class="label-info-per">Identificación</span>
+              <span class="valor-info-per">CC 1065 *** 214</span>
+            </div>
+            <div class="fila-info-per">
+              <span class="label-info-per">Código operativo</span>
+              <span class="valor-info-per">PT-0342</span>
+            </div>
+            <div class="fila-info-per">
+              <span class="label-info-per">Estación</span>
+              <span class="valor-info-per">Estación de Policía Centro</span>
+            </div>
+            <div class="fila-info-per">
+              <span class="label-info-per">CAI</span>
+              <span class="valor-info-per">CAI Centro</span>
+            </div>
+            <div class="fila-info-per">
+              <span class="label-info-per">Unidad</span>
+              <span class="valor-info-per">Unidad Alpha 03</span>
+            </div>
+            <div class="fila-info-per">
+              <span class="label-info-per">Estado operativo</span>
+              <span class="valor-info-per"><span class="badge-dash badge-green-dash">Disponible</span></span>
+            </div>
+
+            <div class="acciones-edicion-per d-none" id="accionesEdicionPer">
+              <button class="btn-cancelar-per" id="btnCancelarPer">Cancelar</button>
+              <button class="btn-guardar-per" id="btnGuardarPer">Guardar cambios</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Columna derecha: configuración -->
+        <div class="col-lg-5">
+          <div class="card-panel-dash p-3 p-md-4 mb-4">
+            <p class="section-title-dash mb-3">Configuración</p>
+
+            <div class="fila-config-per">
+              <div>
+                <p class="titulo-config-per">Notificaciones</p>
+                <p class="desc-config-per">Recibir avisos de alertas y de la Central</p>
+              </div>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="switchNotificacionesPer" checked>
+              </div>
+            </div>
+
+            <div class="fila-config-per">
+              <div>
+                <p class="titulo-config-per">Sonido</p>
+                <p class="desc-config-per">Reproducir sonido al recibir una alerta</p>
+              </div>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="switchSonidoPer" checked>
+              </div>
+            </div>
+
+            <div class="fila-config-per">
+              <div>
+                <p class="titulo-config-per">Vibración</p>
+                <p class="desc-config-per">Vibrar al recibir una notificación</p>
+              </div>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="switchVibracionPer">
+              </div>
+            </div>
+
+            <div class="fila-config-per sin-borde-per">
+              <div>
+                <p class="titulo-config-per">Preferencias del mapa</p>
+                <p class="desc-config-per">Mostrar tráfico y unidades cercanas</p>
+              </div>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="switchMapaPer" checked>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-panel-dash p-3 p-md-4">
+            <p class="section-title-dash mb-3">Cuenta</p>
+
+            <button class="fila-accion-per">
+              <span><i class="bi bi-shield-lock"></i> Seguridad</span>
+              <i class="bi bi-chevron-right"></i>
+            </button>
+
+            <button class="fila-accion-per fila-accion-peligro-per" id="btnCerrarSesionPer">
+              <span><i class="bi bi-box-arrow-right"></i> Cerrar sesión</span>
+              <i class="bi bi-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../js/sidebar.js"></script>
+<script src="../js/perfil.js"></script>
+</body>
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>WolertApp — Unidades Policiales</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+<link rel="stylesheet" href="../../../css/global.css">
+<link rel="stylesheet" href="../../../css/temas.css">
+<link rel="stylesheet" href="../css/unidades.css">
+</head>
+<body class="rol-policia">
+
+  <aside class="sidebar-dash" id="sidebarDash"></aside>
+
+  <div id="wrapperDash">
+    <main class="main-dash">
+      <div class="container-fluid">
+
+        <!-- Topbar -->
+        <div class="d-flex align-items-center gap-3 mb-4">
+          <div class="search-dash flex-grow-1 d-flex align-items-center input-group">
+            <span class="input-group-text bg-transparent border-0"><i class="bi bi-search"></i></span>
+            <input type="text" class="form-control border-0 bg-transparent" placeholder="Buscar por alerta, barrio, unidad, policía…">
+          </div>
+          <button class="icon-btn-dash btn btn-light rounded-circle position-relative">
+            <i class="bi bi-bell"></i>
+            <span class="dot-danger-dash position-absolute top-0 end-0"></span>
+          </button>
+          <span class="avatar-dash">SG</span>
+        </div>
+
+        <!-- Encabezado -->
+        <div class="header-vista-dash mb-4">
+          <div>
+            <h1>Unidades Policiales</h1>
+            <p>Administra las patrullas, motos y CAI registrados en el sistema.</p>
+          </div>
+          <button class="btn-cv-verde" id="btnNuevaUnidad">
+            <i class="bi bi-plus-lg"></i> Nueva unidad
+          </button>
+        </div>
+
+        <!-- KPIs -->
+        <div class="row g-3 mb-4" id="kpisUnidades"></div>
+
+        <!-- Filtros -->
+        <div class="filtros-toolbar-dash mb-3">
+          <div class="search-dash flex-grow-1 d-flex align-items-center input-group">
+            <span class="input-group-text bg-transparent border-0"><i class="bi bi-search"></i></span>
+            <input type="text" id="buscarUnidad" class="form-control border-0 bg-transparent" placeholder="Buscar por nombre o barrio…">
+          </div>
+          <select id="filtroEstadoUnidad" class="form-select">
+            <option value="">Todos los estados</option>
+            <option value="OPERATIVA">Operativa</option>
+            <option value="ACTIVA">Activa</option>
+            <option value="INACTIVA">Inactiva</option>
+          </select>
+          <select id="filtroBarrioUnidad" class="form-select">
+            <option value="">Todos los barrios</option>
+          </select>
+        </div>
+
+        <!-- Tabla -->
+        <div class="card-panel-dash mb-4">
+          <div class="tabla-header-dash">
+            <span class="flex-grow-1">Unidad</span>
+            <span style="width:150px;">Barrio</span>
+            <span style="width:130px;">Estado</span>
+            <span style="width:110px;">Policías</span>
+            <span style="width:150px;">Coordenadas</span>
+            <span style="width:110px;">Acciones</span>
+          </div>
+          <table class="tabla-dash">
+            <tbody id="tablaUnidades"></tbody>
+          </table>
+          <div class="tabla-vacio-dash d-none" id="unidadesVacio">No se encontraron unidades con esos filtros.</div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal crear/editar unidad -->
+  <div class="modal fade" id="modalUnidad" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header modal-header-dash">
+          <div>
+            <div class="modal-title" id="modalUnidadTitulo">Nueva unidad</div>
+            <div class="modal-subtitle">Registra una patrulla, moto o CAI en el sistema</div>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <form id="formUnidad">
+          <div class="modal-body modal-body-dash">
+            <input type="hidden" id="unidadId">
+            <div class="row g-3">
+              <div class="col-12 form-field-dash">
+                <label for="unidadNombre">Nombre de la unidad *</label>
+                <input type="text" class="form-control" id="unidadNombre" placeholder="Ej: Patrulla 101" required>
+              </div>
+              <div class="col-6 form-field-dash">
+                <label for="unidadBarrio">Barrio *</label>
+                <select class="form-select" id="unidadBarrio" required></select>
+              </div>
+              <div class="col-6 form-field-dash">
+                <label for="unidadEstado">Estado *</label>
+                <select class="form-select" id="unidadEstado" required>
+                  <option value="OPERATIVA">Operativa</option>
+                  <option value="ACTIVA">Activa</option>
+                  <option value="INACTIVA">Inactiva</option>
+                </select>
+              </div>
+              <div class="col-6 form-field-dash">
+                <label for="unidadLat">Latitud *</label>
+                <input type="number" step="0.0001" class="form-control" id="unidadLat" placeholder="10.4631" required>
+              </div>
+              <div class="col-6 form-field-dash">
+                <label for="unidadLng">Longitud *</label>
+                <input type="number" step="0.0001" class="form-control" id="unidadLng" placeholder="-73.2532" required>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer modal-footer-dash">
+            <button type="button" class="btn-secundario-dash" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn-cv-verde"><i class="bi bi-check-lg"></i> Guardar unidad</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal ver unidad -->
+  <div class="modal fade" id="modalVerUnidad" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header modal-header-dash">
+          <div class="detalle-header-dash w-100">
+            <div class="avatar-lg-dash" id="verUnidadAvatar" style="background:var(--color-primary-2);"><i class="bi bi-car-front"></i></div>
+            <div class="modal-title" id="verUnidadNombre">—</div>
+            <span class="badge-dash" id="verUnidadEstado">—</span>
+          </div>
+          <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body modal-body-dash">
+          <div class="detalle-fila-dash"><span class="k">Barrio</span><span class="v" id="verUnidadBarrio">—</span></div>
+          <div class="detalle-fila-dash"><span class="k">Coordenadas</span><span class="v" id="verUnidadCoords">—</span></div>
+          <div class="detalle-fila-dash"><span class="k">Policías asignados</span><span class="v" id="verUnidadPolicias">—</span></div>
+        </div>
+        <div class="modal-footer modal-footer-dash">
+          <button type="button" class="btn-secundario-dash" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../js/sidebar-policia.js"></script>
+  <script src="../js/unidades.js"></script>
+</body>
+</html>

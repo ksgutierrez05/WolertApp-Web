@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WolertApp — Alertas</title>
+
+  <!-- Bootstrap (layout + iconos, igual que el resto del proyecto) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+  <!-- Sistema compartido de estilos (rutas desde Policia/AdminitradorPolicia/Alertas/) -->
+  <link rel="stylesheet" href="../../../css/global.css">
+  <link rel="stylesheet" href="../../../css/temas.css">
+  <link rel="stylesheet" href="../css/alertas.css">
+
+
+</head>
+
+<body class="rol-policia">
+
+  <aside class="sidebar-dash" id="sidebarDash"></aside>
+
+  <div id="wrapperDash">
+    <main class="main-dash">
+      <div class="container-fluid">
+
+        <!-- Topbar -->
+        <div class="d-flex align-items-center gap-3 mb-4">
+          <div class="search-dash flex-grow-1 d-flex align-items-center input-group">
+            <span class="input-group-text bg-transparent border-0"><i class="bi bi-search"></i></span>
+            <input type="text" id="buscarAlerta" class="form-control border-0 bg-transparent"
+              placeholder="Buscar por ciudadano o barrio...">
+          </div>
+          <button class="icon-btn-dash btn btn-light rounded-circle position-relative">
+            <i class="bi bi-bell"></i>
+            <span class="dot-danger-dash position-absolute top-0 end-0"></span>
+          </button>
+          <span class="avatar-dash">SG</span>
+        </div>
+
+        <!-- Encabezado de la vista -->
+        <div class="d-flex align-items-end justify-content-between flex-wrap gap-2 mb-4">
+          <div>
+            <p class="page-title-dash fw-bold m-0">Alertas</p>
+            <p class="info-sub-dash m-0">Seguimiento de las alertas reportadas por los ciudadanos.</p>
+          </div>
+        </div>
+
+        <!-- KPIs -->
+        <div class="row g-3 mb-4">
+          <div class="col-6 col-xl-3">
+            <div class="kpi-solid-dash">
+              <div>
+                <p class="kpi-solid-num-dash" id="kpiTotalAlertas">20</p>
+                <p class="kpi-solid-label-dash">Total alertas</p>
+              </div>
+              <span class="kpi-solid-icon-dash"><i class="bi bi-exclamation-triangle"></i></span>
+            </div>
+          </div>
+          <div class="col-6 col-xl-3">
+            <div class="kpi-solid-dash">
+              <div>
+                <p class="kpi-solid-num-dash" id="kpiPendientes">5</p>
+                <p class="kpi-solid-label-dash">Pendientes</p>
+              </div>
+              <span class="kpi-solid-icon-dash"><i class="bi bi-hourglass-split"></i></span>
+            </div>
+          </div>
+          <div class="col-6 col-xl-3">
+            <div class="kpi-solid-dash">
+              <div>
+                <p class="kpi-solid-num-dash" id="kpiEnAtencion">6</p>
+                <p class="kpi-solid-label-dash">En atención</p>
+              </div>
+              <span class="kpi-solid-icon-dash"><i class="bi bi-shield-exclamation"></i></span>
+            </div>
+          </div>
+          <div class="col-6 col-xl-3">
+            <div class="kpi-solid-dash">
+              <div>
+                <p class="kpi-solid-num-dash" id="kpiResueltas">9</p>
+                <p class="kpi-solid-label-dash">Resueltas</p>
+              </div>
+              <span class="kpi-solid-icon-dash"><i class="bi bi-check-circle"></i></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filtros por tipo -->
+        <div class="d-flex gap-2 flex-wrap mb-3" id="filtrosAlertas">
+          <button class="chip-filtro-dash active" data-filtro="todas">Todas <span
+              class="chip-count-dash">20</span></button>
+          <button class="chip-filtro-dash" data-filtro="ROBO">Robo / Hurto <span
+              class="chip-count-dash">6</span></button>
+          <button class="chip-filtro-dash" data-filtro="ACCIDENTE">Accidente <span
+              class="chip-count-dash">8</span></button>
+          <button class="chip-filtro-dash" data-filtro="INCENDIO">Incendio <span
+              class="chip-count-dash">3</span></button>
+          <button class="chip-filtro-dash" data-filtro="SOSPECHOSO">Sospechoso <span
+              class="chip-count-dash">3</span></button>
+        </div>
+
+        <!-- Tabla de alertas -->
+        <div class="card-panel-dash p-3">
+          <div class="table-responsive">
+            <table class="table table-borderless align-middle tabla-alertas-dash mb-0">
+              <thead>
+                <tr>
+                  <th>Reportado por</th>
+                  <th>Tipo</th>
+                  <th>Barrio</th>
+                  <th>Estado</th>
+                  <th class="text-end">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="filaAlertas">
+                <tr>
+                  <td>
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="avatar-sm-dash avatar-amber-dash">KG</span>
+                      <div>
+                        <div class="nombre-alerta-dash">Katherine Gutiérrez</div>
+                        <div class="dato-secundario-dash">11/09/2026 · 08:12 a. m.</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td><span class="badge-dash badge-blue-dash">Accidente</span></td>
+                  <td>Casimiro Raúl Maestre</td>
+                  <td><span class="badge-dash badge-violeta-dash">En atención</span></td>
+                  <td class="text-end"><a href="#" class="link-btn-dash">Ver detalle <i
+                        class="bi bi-chevron-right"></i></a></td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="avatar-sm-dash avatar-amber-dash">KG</span>
+                      <div>
+                        <div class="nombre-alerta-dash">Katherine Gutiérrez</div>
+                        <div class="dato-secundario-dash">11/09/2026 · 07:47 a. m.</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td><span class="badge-dash badge-red-dash">Robo / Hurto</span></td>
+                  <td>Casimiro Raúl Maestre</td>
+                  <td><span class="badge-dash badge-teal-dash">Unidad asignada</span></td>
+                  <td class="text-end"><a href="#" class="link-btn-dash">Ver detalle <i
+                        class="bi bi-chevron-right"></i></a></td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="avatar-sm-dash avatar-green-dash">LP</span>
+                      <div>
+                        <div class="nombre-alerta-dash">Laura Peña</div>
+                        <div class="dato-secundario-dash">10/09/2026 · 10:30 p. m.</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td><span class="badge-dash badge-violeta-dash">Sospechoso</span></td>
+                  <td>Casimiro Raúl Maestre</td>
+                  <td><span class="badge-dash badge-amber-dash">Pendiente</span></td>
+                  <td class="text-end"><a href="#" class="link-btn-dash">Ver detalle <i
+                        class="bi bi-chevron-right"></i></a></td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="avatar-sm-dash avatar-blue-dash">DT</span>
+                      <div>
+                        <div class="nombre-alerta-dash">Diego Torres</div>
+                        <div class="dato-secundario-dash">09/09/2026 · 07:05 p. m.</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td><span class="badge-dash badge-amber-dash">Incendio</span></td>
+                  <td>Los Fundadores</td>
+                  <td><span class="badge-dash badge-green-dash">Resuelta</span></td>
+                  <td class="text-end"><a href="#" class="link-btn-dash">Ver detalle <i
+                        class="bi bi-chevron-right"></i></a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Paginación -->
+          <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 pt-3 paginacion-alertas-dash">
+            <span class="info-sub-dash m-0">Mostrando 1–4 de 20 alertas</span>
+            <div class="d-flex align-items-center gap-1">
+              <button class="pagina-btn-dash active">1</button>
+              <button class="pagina-btn-dash">2</button>
+              <button class="pagina-btn-dash">3</button>
+              <button class="pagina-btn-dash" title="Siguiente"><i class="bi bi-chevron-right"></i></button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <div
+  class="modal fade"
+  id="modalDetalleAlerta"
+  tabindex="-1"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content modal-alerta-dash">
+
+      <div class="modal-header">
+        <div>
+          <h5 class="modal-title">
+            Detalle de la alerta
+          </h5>
+          <p class="modal-subtitulo-dash">
+            Información del reporte ciudadano
+          </p>
+        </div>
+
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Cerrar"
+        ></button>
+      </div>
+
+      <div class="modal-body">
+
+        <div class="detalle-principal-dash">
+
+          <div>
+            <small>TIPO DE ALERTA</small>
+            <div id="detalleTipo"></div>
+          </div>
+
+          <div>
+            <small>ESTADO</small>
+            <div id="detalleEstado"></div>
+          </div>
+
+        </div>
+
+        <div class="detalle-grid-dash">
+
+          <div class="detalle-item-dash">
+            <i class="bi bi-person"></i>
+
+            <div>
+              <small>Ciudadano</small>
+              <strong id="detalleCiudadano"></strong>
+            </div>
+          </div>
+
+          <div class="detalle-item-dash">
+            <i class="bi bi-geo-alt"></i>
+
+            <div>
+              <small>Barrio</small>
+              <strong id="detalleBarrio"></strong>
+            </div>
+          </div>
+
+          <div class="detalle-item-dash">
+            <i class="bi bi-clock"></i>
+
+            <div>
+              <small>Fecha</small>
+              <strong id="detalleFecha"></strong>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="detalle-descripcion-dash">
+          <small>DESCRIPCIÓN</small>
+
+          <p id="detalleDescripcion"></p>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn-cerrar-detalle-dash"
+          data-bs-dismiss="modal"
+        >
+          Cerrar
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+  <script src="../js/alertas.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../js/sidebar-policia.js" ></script>
+  <script>
+    renderSidebarPolicia('alertas');
+  </script>
+</body>
+
+</html>

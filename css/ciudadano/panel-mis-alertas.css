@@ -1,0 +1,176 @@
+/* ============================================================
+   MISALERTAS.CSS
+   Estilos propios de la vista Mis Alertas. Reutiliza variables y
+   clases de global.css (.kpi-dash, .card-panel-dash, .badge-dash,
+   .wait-dash, .info-title-dash, etc.)
+   ============================================================ */
+
+.misalertas-toolbar-dash {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.misalertas-tabs-dash {
+  display: inline-flex;
+  background-color: var(--fog);
+  border-radius: 100px;
+  padding: 4px;
+  gap: 4px;
+}
+
+.misalertas-tab-dash {
+  border: none;
+  background: transparent;
+  padding: 7px 16px;
+  border-radius: 100px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  white-space: nowrap;
+}
+
+.misalertas-tab-dash.active {
+  background-color: #fff;
+  color: var(--ink);
+  box-shadow: var(--shadow-xs);
+}
+
+.mireporte-item-dash {
+  border-bottom: 1px solid var(--line);
+  transition: background 0.15s ease;
+}
+
+.mireporte-item-dash:last-child {
+  border-bottom: none;
+}
+
+.mireporte-cabecera-dash {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 18px;
+  cursor: pointer;
+}
+
+.mireporte-cabecera-dash:hover {
+  background-color: var(--fog);
+}
+
+.mireporte-icon-dash {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  flex-shrink: 0;
+  color: #fff;
+}
+
+.mireporte-icon-dash.tipo-robo { background: linear-gradient(135deg, var(--color-danger), var(--color-danger-2)); }
+.mireporte-icon-dash.tipo-accidente { background: linear-gradient(135deg, var(--color-amber), #e0a53f); }
+.mireporte-icon-dash.tipo-disturbio { background: linear-gradient(135deg, var(--color-blue), #4b83d1); }
+.mireporte-icon-dash.tipo-incendio { background: linear-gradient(135deg, #d9480f, #f2711c); }
+.mireporte-icon-dash.tipo-sospechoso { background: linear-gradient(135deg, var(--color-primary), var(--color-primary-2)); }
+
+.mireporte-body-dash {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.mireporte-top-row-dash {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.mireporte-meta-dash {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 5px;
+  font-size: 11.5px;
+  color: var(--muted);
+  flex-wrap: wrap;
+}
+
+.mireporte-meta-dash span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.mireporte-time-dash {
+  font-size: 11px;
+  color: var(--subtle);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.mireporte-chevron-dash {
+  color: var(--subtle);
+  font-size: 14px;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+  margin-top: 4px;
+}
+
+.mireporte-item-dash.abierto .mireporte-chevron-dash {
+  transform: rotate(180deg);
+}
+
+/* -------- panel expandible con toda la info que el usuario agregó -------- */
+.mireporte-detalle-dash {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.25s ease;
+  background-color: var(--fog);
+}
+
+.mireporte-item-dash.abierto .mireporte-detalle-dash {
+  max-height: 500px;
+}
+
+.mireporte-detalle-inner-dash {
+  padding: 4px 18px 18px 74px;
+}
+
+.detalle-fila-dash {
+  display: flex;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px dashed var(--line);
+  font-size: 12.5px;
+}
+
+.detalle-fila-dash:last-child {
+  border-bottom: none;
+}
+
+.detalle-fila-dash .detalle-label-dash {
+  width: 130px;
+  flex-shrink: 0;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.detalle-fila-dash .detalle-valor-dash {
+  color: var(--ink);
+}
+
+.misalertas-empty-dash {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--subtle);
+}
+
+.misalertas-empty-dash i {
+  font-size: 40px;
+  display: block;
+  margin-bottom: 10px;
+  opacity: 0.5;
+}

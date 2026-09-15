@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>WolertApp — Tipo de Alertas</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+<link rel="stylesheet" href="../../../css/global.css">
+<link rel="stylesheet" href="../../../css/temas.css">
+<link rel="stylesheet" href="../css/tipo-alertas.css">
+</head>
+<body class="rol-policia">
+
+  <aside class="sidebar-dash" id="sidebarDash"></aside>
+
+  <div id="wrapperDash">
+    <main class="main-dash">
+      <div class="container-fluid">
+
+        <!-- Topbar -->
+        <div class="d-flex align-items-center gap-3 mb-4">
+          <div class="search-dash flex-grow-1 d-flex align-items-center input-group">
+            <span class="input-group-text bg-transparent border-0"><i class="bi bi-search"></i></span>
+            <input type="text" class="form-control border-0 bg-transparent" placeholder="Buscar por alerta, barrio, unidad, policía…">
+          </div>
+          <button class="icon-btn-dash btn btn-light rounded-circle position-relative">
+            <i class="bi bi-bell"></i>
+            <span class="dot-danger-dash position-absolute top-0 end-0"></span>
+          </button>
+          <span class="avatar-dash">SG</span>
+        </div>
+
+        <!-- Encabezado -->
+        <div class="header-vista-dash mb-4">
+          <div>
+            <h1>Tipo de Alertas</h1>
+            <p>Administra las categorías de alerta del sistema y su nivel de prioridad.</p>
+          </div>
+          <button class="btn-cv-verde" id="btnNuevoTipo">
+            <i class="bi bi-plus-lg"></i> Nuevo tipo de alerta
+          </button>
+        </div>
+
+        <!-- KPIs -->
+        <div class="row g-3 mb-4" id="kpisTipoAlertas"></div>
+
+        <!-- Filtros -->
+        <div class="filtros-toolbar-dash mb-3">
+          <div class="search-dash flex-grow-1 d-flex align-items-center input-group">
+            <span class="input-group-text bg-transparent border-0"><i class="bi bi-search"></i></span>
+            <input type="text" id="buscarTipo" class="form-control border-0 bg-transparent" placeholder="Buscar tipo de alerta…">
+          </div>
+          <div class="chips-prioridad-dash" id="chipsPrioridad">
+            <button class="chip-prioridad-dash activo" data-prioridad="">Todas</button>
+            <button class="chip-prioridad-dash" data-prioridad="ALTA">Alta</button>
+            <button class="chip-prioridad-dash" data-prioridad="MEDIA">Media</button>
+            <button class="chip-prioridad-dash" data-prioridad="BAJA">Baja</button>
+          </div>
+        </div>
+
+        <!-- Tabla -->
+        <div class="card-panel-dash mb-4">
+          <div class="tabla-header-dash">
+            <span class="flex-grow-1">Tipo de alerta</span>
+            <span style="width:150px;">Prioridad</span>
+            <span style="width:160px;">Categoría sugerida</span>
+            <span style="width:110px;">Acciones</span>
+          </div>
+          <table class="tabla-dash">
+            <tbody id="tablaTipos"></tbody>
+          </table>
+          <div class="tabla-vacio-dash d-none" id="tiposVacio">No se encontraron tipos de alerta con esos filtros.</div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal crear/editar tipo de alerta -->
+  <div class="modal fade" id="modalTipo" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header modal-header-dash">
+          <div>
+            <div class="modal-title" id="modalTipoTitulo">Nuevo tipo de alerta</div>
+            <div class="modal-subtitle">Define el nombre y el nivel de prioridad con el que se atenderá</div>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <form id="formTipo">
+          <div class="modal-body modal-body-dash">
+            <input type="hidden" id="tipoId">
+            <div class="form-field-dash mb-3">
+              <label for="tipoNombre">Nombre del tipo de alerta *</label>
+              <input type="text" class="form-control" id="tipoNombre" placeholder="Ej: Robo / Asalto, Incendio…" required>
+            </div>
+            <div class="form-field-dash">
+              <label>Prioridad *</label>
+              <input type="hidden" id="tipoPrioridad" required>
+              <div class="prioridad-picker-dash" id="prioridadPicker">
+                <label class="prioridad-opcion-dash alta" data-valor="ALTA">
+                  <input type="radio" name="prioridadRadio" value="ALTA">
+                  <div class="dot" style="background:var(--color-danger);"></div>
+                  <span class="txt">Alta</span>
+                </label>
+                <label class="prioridad-opcion-dash media" data-valor="MEDIA">
+                  <input type="radio" name="prioridadRadio" value="MEDIA">
+                  <div class="dot" style="background:var(--color-amber);"></div>
+                  <span class="txt">Media</span>
+                </label>
+                <label class="prioridad-opcion-dash baja" data-valor="BAJA">
+                  <input type="radio" name="prioridadRadio" value="BAJA">
+                  <div class="dot" style="background:var(--color-green);"></div>
+                  <span class="txt">Baja</span>
+                </label>
+              </div>
+              <p class="celda-sub-dash mt-2 mb-0" id="prioridadAyuda">La prioridad define qué tan rápido debe responder la unidad asignada.</p>
+            </div>
+          </div>
+          <div class="modal-footer modal-footer-dash">
+            <button type="button" class="btn-secundario-dash" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn-cv-verde"><i class="bi bi-check-lg"></i> Guardar tipo</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../js/sidebar-policia.js"></script>
+  <script src="../js/tipo-alertas.js"></script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+/* ============================================================
+   VECINOS.CSS
+   Estilos de la vista Mis Vecinos (solo lectura). Reutiliza
+   variables y clases de global.css (.card-panel-dash,
+   .badge-dash, .info-title-dash, etc.)
+   ============================================================ */
+
+.vecino-item-dash {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--line);
+  transition: background 0.15s ease;
+}
+
+.vecino-item-dash:last-child {
+  border-bottom: none;
+}
+
+.vecino-item-dash:hover {
+  background-color: var(--fog);
+}
+
+.vecino-avatar-dash {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-2));
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.vecino-body-dash {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.vecino-top-row-dash {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.vecino-meta-dash {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 3px;
+  font-size: 11.5px;
+  color: var(--muted);
+  flex-wrap: wrap;
+}
+
+.vecino-meta-dash span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.vecinos-empty-dash {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--subtle);
+}
+
+.vecinos-empty-dash i {
+  font-size: 40px;
+  display: block;
+  margin-bottom: 10px;
+  opacity: 0.5;
+}

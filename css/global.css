@@ -52,6 +52,8 @@
 /* [SECCIÓN 02] SCROLL BASE ---------------------------------------- */
 html {
   height: 100%;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(16, 24, 40, 0.18) transparent;
 }
 
 body {
@@ -61,6 +63,39 @@ body {
   background-color: var(--page);
   font-family: "Inter", sans-serif;
   color: var(--ink);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(16, 24, 40, 0.18) transparent;
+}
+
+/* Scroll de toda la página: fino, casi transparente y sin flechas
+   (Chrome/Edge/Safari). Antes se veía la barra clásica del sistema
+   operativo porque html/body no tenían ningún estilo propio. */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  width: 6px;
+}
+
+html::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+html::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb {
+  background-color: rgba(16, 24, 40, 0.16);
+  border-radius: 10px;
+}
+
+html::-webkit-scrollbar-thumb:hover,
+body::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(16, 24, 40, 0.3);
+}
+
+html::-webkit-scrollbar-button,
+body::-webkit-scrollbar-button {
+  display: none;
+  height: 0;
+  width: 0;
 }
 
 h1, h2, h3 {
@@ -95,6 +130,32 @@ a {
   width: 250px;
   overflow-y: auto;
   box-shadow: 16px 0 36px -18px rgba(23, 43, 65, 0.35);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(16, 24, 40, 0.16) transparent;
+}
+
+/* Scrollbar del sidebar: fina y casi transparente (Chrome/Edge/Safari) */
+.sidebar-dash::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar-dash::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar-dash::-webkit-scrollbar-thumb {
+  background-color: rgba(16, 24, 40, 0.14);
+  border-radius: 10px;
+}
+
+.sidebar-dash::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(16, 24, 40, 0.28);
+}
+
+.sidebar-dash::-webkit-scrollbar-button {
+  display: none;
+  height: 0;
+  width: 0;
 }
 
 .brand-logo-img-dash {
@@ -111,7 +172,14 @@ a {
 
 
 .brand-dash {
+  display: flex;
+  align-items: center;
   padding: 2px 24px 26px;
+  justify-content: center;
+}
+
+.sidebar-dash:hover .brand-dash {
+  justify-content: flex-start;
 }
 
 .brand-icon-dash {
@@ -125,20 +193,75 @@ a {
   justify-content: center;
   font-size: 17px;
   flex-shrink: 0;
+  overflow: hidden;   /* ← AGREGA ESTA LÍNEA */
+}
+
+/* ← AGREGA ESTE BLOQUE NUEVO */
+.brand-icon-dash img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  padding: 2px;   /* opcional: deja un margen interno para que el logo no toque los bordes */
+  box-sizing: border-box;
+}
+
+/* Variante para logos-imagen (ej. escudo de Policía): sin fondo de
+   color, un poco más grande y con la imagen bien centrada/ajustada. */
+.brand-icon-dash.brand-icon-dash--logo {
+  width: 66px;
+  height: 66px;
+  background: transparent;
+  border-radius: 0;
+}
+
+.brand-icon-dash.brand-icon-dash--logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
 }
 
 .brand-name-dash {
   font-family: "Inter", sans-serif;
   font-weight: 700;
-  font-size: 15px;
+
+
   margin-left: 12px;
+
+  font-size: 16.5px;
+  line-height: 1.15;
+
   white-space: nowrap;
-  opacity: 0;
-  transition: opacity 0.2s ease;
 }
 
-.sidebar-dash:hover .brand-name-dash {
+.brand-role-dash {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--subtle);
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+/* Envuelve nombre + rol. En estado cerrado mide 0 (no solo opacidad)
+   para que NO empuje ni recorte el logo — antes el texto invisible
+   seguía ocupando espacio y por eso el ícono se veía cortado. */
+.brand-text-dash {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  width: 0;
+  margin-left: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.sidebar-dash:hover .brand-text-dash {
+  width: auto;
+  margin-left: 12px;
   opacity: 1;
+  transition: opacity 0.25s ease 0.08s;
 }
 
 .glabel-dash {
@@ -365,6 +488,14 @@ a {
 
 #wrapperDash {
   padding-left: 78px;
+  transition: padding-left 0.24s ease;
+}
+
+/* Cuando el sidebar se expande (hover), empuja el contenido en vez
+   de taparlo — el sidebar sigue siendo "fixed" pero el wrapper le
+   deja el espacio equivalente a su ancho expandido. */
+body:has(.sidebar-dash:hover) #wrapperDash {
+  padding-left: 250px;
 }
 
 /* Centra el contenido del main*/
@@ -548,6 +679,53 @@ a {
 .kpi-green-dash .kpi-icon-dash, .kpi-green-dash .kpi-num-dash { color: var(--color-green); }
 .kpi-amber-dash .kpi-icon-dash, .kpi-amber-dash .kpi-num-dash { color: var(--color-amber); }
 
+/* ---------- variante de relleno sólido (color del rol activo) ---------- */
+.kpi-solid-dash {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-2));
+  color: #fff;
+  border-radius: 18px;
+  padding: 18px 20px;
+  min-height: 104px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+.kpi-solid-dash:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.kpi-solid-num-dash {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1;
+  margin: 0;
+}
+
+.kpi-solid-label-dash {
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 600;
+  margin-top: 7px;
+}
+
+.kpi-solid-icon-dash {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.16);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 19px;
+  flex-shrink: 0;
+}
+
 .kpi-num-dash {
   font-family: "Space Grotesk", sans-serif;
   font-size: 27px;
@@ -562,10 +740,18 @@ a {
   margin-top: 7px;
 }
 
-/* ---------- encabezados de sección y tarjetas contenedoras ---------- */
 .section-title-dash {
   font-size: 16px;
   margin: 0;
+}
+
+.page-title-dash {
+  font-size: 24px;
+  margin: 0;
+}
+
+.page-title-dash i {
+  color: var(--color-primary);
 }
 
 .see-all-dash {
@@ -653,15 +839,78 @@ a {
 }
 
 .btn-cv-rosado {
-  background-color: var(--color-danger);
-  border-color: var(--color-danger);
+  background-color: #087F5B;
+  border-color: #087F5B;
   color: #fff;
   font-size: 0.75rem;
 }
 
 .btn-cv-rosado:hover {
-  background-color: #a91824;
-  border-color: #a91824;
+  background-color: #006B5B;
+  border-color: #006B5B;
   color: #fff;
 }
 
+/* ============================================================
+   AGREGADO PARA PATRULLERO — no modifica nada de lo anterior,
+   solo añade clases nuevas y una propiedad puntual donde hacía
+   falta (por selector repetido, sin tocar el bloque original).
+   ============================================================ */
+
+/* .icon-btn-dash ya existe arriba; solo le sumamos position para
+   poder anclar el punto de notificación (.icon-dot-dash) dentro. */
+.icon-btn-dash {
+  position: relative;
+}
+
+.icon-dot-dash {
+  position: absolute;
+  top: 9px;
+  right: 10px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--color-danger);
+  box-shadow: 0 0 0 2px #fff;
+}
+
+/* Insignia numérica de un ítem del menú (ej. "2" en Mis Alertas).
+   Usa margin-left:auto, así que no necesita tocar .menu-dash a. */
+.nav-badge-dash {
+  margin-left: auto;
+  background-color: var(--color-danger);
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: 100px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.sidebar-dash:hover .nav-badge-dash {
+  opacity: 1;
+}
+
+/* Chip de estado operativo del Patrullero (🟢 Disponible), usado
+   encima del hero en Centro de Operaciones. */
+.estado-chip-dash {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 100px;
+  padding: 7px 14px 7px 10px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.estado-chip-dash .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #34d399;
+  box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.28);
+}
