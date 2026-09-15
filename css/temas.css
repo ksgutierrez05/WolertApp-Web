@@ -11,11 +11,11 @@
 }
 
 .rol-administrador {
-  --color-primary: #33245c;
-  --color-primary-2: #5b3fa0;
+  --color-primary: #0e1733;
+  --color-primary-2: #2d3e7d;
 }
 
 .rol-ciudadano {
-  --color-primary: #0f6e4f;
-  --color-primary-2: #159463;
+ --color-primary: #0e2f57;
+  --color-primary-2: #184a8c;
 }

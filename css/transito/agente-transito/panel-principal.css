@@ -1,9 +1,3 @@
-/* ============================================================
-   WOLERTAPP · TRÁNSITO · AGENTE — Panel principal
-   Inspirado en el estilo de panel-despacho (clases -pd)
-   ============================================================ */
-
-/* [01] Encabezados de sección --------------------------------- */
 .sec-head-ag {
   display: flex;
   align-items: center;
