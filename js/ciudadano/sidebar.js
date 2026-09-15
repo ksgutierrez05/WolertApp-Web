@@ -22,7 +22,7 @@ const MENU_CIUDADANO = [
     seccion: 'Alertas',
     items: [
       { id: 'alertas', label: 'Alertas', href: '../ciudadano/panel-alertas.html', icon: ICONOS_CIUDADANO.alertas },
-      { id: 'misalertas', label: 'Mis Alertas', href: '../ciudadano/misalertas.html', icon: ICONOS_CIUDADANO.misalertas },
+      { id: 'misalertas', label: 'Mis Alertas', href: '../ciudadano/panel-mis-alertas.html', icon: ICONOS_CIUDADANO.misalertas },
     ],
   },
   {
@@ -35,7 +35,7 @@ const MENU_CIUDADANO = [
     seccion: 'Cuenta',
     items: [
       { id: 'notificaciones', label: 'Notificaciones', href: '../ciudadano/panel-notificaciones.html', icon: ICONOS_CIUDADANO.notificaciones },
-      { id: 'configuracion', label: 'Configuración', href: '../ciudadano/configuracion.html', icon: ICONOS_CIUDADANO.configuracion },
+      { id: 'configuracion', label: 'Configuración', href: '../ciudadano/panel-configuracion.html', icon: ICONOS_CIUDADANO.configuracion },
     ],
   },
 ];
