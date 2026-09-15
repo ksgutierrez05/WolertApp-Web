@@ -146,6 +146,16 @@ formLogin.addEventListener("submit", (e) => {
             window.location.href = "../ciudadano/pagina-principal.html";//sirve
             break;
 
+        case "Agente-transito":
+            window.location.href = "../transito/agente-transito/panel-principal.html";
+            break;
+
+        case "Central-transito":
+            window.location.href = "../transito/central-transito/panel-principal.html";
+            break;
+        case "Director-transito":
+            window.location.href = "../transito/director-transito/panel-principal.html";
+            break;
         default:
             window.location.href = "../landing/index.html";
     }
