@@ -1,3 +1,4 @@
+// ===== ANIMACIÓN DE PASOS AL HACER SCROLL =====
 const pasos = document.querySelectorAll(".paso");
 
 const observer = new IntersectionObserver((entries) => {
@@ -10,14 +11,14 @@ const observer = new IntersectionObserver((entries) => {
 
 pasos.forEach((paso) => observer.observe(paso));
 
+
+// ===== ANIMACIÓN PANEL LOGIN/REGISTRO =====
 const authContainer = document.getElementById("auth-container");
 const btnToggle = document.getElementById("btn-toggle");
 
-console.log("btnToggle es:", btnToggle);
-
 btnToggle.addEventListener("click", () => {
     authContainer.classList.toggle("active");
-    document.body.classList.toggle("modo-registro")
+    document.body.classList.toggle("modo-registro");
 
     if (authContainer.classList.contains("active")) {
         btnToggle.textContent = "Iniciar sesión";
@@ -25,6 +26,7 @@ btnToggle.addEventListener("click", () => {
         btnToggle.textContent = "Registrarse";
     }
 });
+
 
 // ============================================================
 // AUTENTICACIÓN CON LOCALSTORAGE
@@ -41,7 +43,8 @@ function guardarUsuariosLogin(lista) {
     localStorage.setItem(USERS_KEY, JSON.stringify(lista));
 }
 
-// --- Registro ---
+
+// ===== REGISTRO =====
 const formRegistro = document.getElementById("form-registro");
 const registroError = document.getElementById("registro-error");
 
@@ -57,10 +60,10 @@ formRegistro.addEventListener("submit", (e) => {
     const correo = document.getElementById("reg-correo").value.trim();
     const username = document.getElementById("reg-username").value.trim();
     const password = document.getElementById("reg-password").value;
+    const rol = document.getElementById("reg-rol").value;
 
     const usuarios = obtenerUsuariosGuardados();
 
-    // Validar que no exista ya ese username o cédula
     const yaExiste = usuarios.some(
         u => u.username.toLowerCase() === username.toLowerCase() || u.cedula === cedula
     );
@@ -71,7 +74,7 @@ formRegistro.addEventListener("submit", (e) => {
         return;
     }
 
-    if (!username || !password || !primerNombre || !primerApellido || !cedula) {
+    if (!username || !password || !primerNombre || !primerApellido || !cedula || !rol) {
         registroError.textContent = "Completa todos los campos obligatorios.";
         registroError.style.display = "block";
         return;
@@ -83,19 +86,19 @@ formRegistro.addEventListener("submit", (e) => {
         .filter(Boolean)
         .join(" ");
 
-    usuarios.push({ nombre, username, password, cedula, telefono, correo });
+    usuarios.push({ nombre, username, password, cedula, telefono, correo, rol });
     guardarUsuariosLogin(usuarios);
 
     alert("Cuenta creada correctamente. Ahora inicia sesión.");
     formRegistro.reset();
 
-    // Regresa automáticamente al panel de login
     authContainer.classList.remove("active");
     document.body.classList.remove("modo-registro");
     btnToggle.textContent = "Registrarse";
 });
 
-// --- Login ---
+
+// ===== LOGIN =====
 const formLogin = document.getElementById("form-login");
 const loginError = document.getElementById("login-error");
 
@@ -119,9 +122,31 @@ formLogin.addEventListener("submit", (e) => {
 
     loginError.style.display = "none";
 
-    // Guarda quién inició sesión (útil para saludar al usuario en el dashboard, por ejemplo)
     localStorage.setItem("wolertapp_sesion_activa", JSON.stringify(encontrado));
 
-    // Redirige a donde corresponda tras iniciar sesión
-    window.location.href = "../landing/index.html"; // 👈 cambia esto por tu ruta real
+    // ===== REDIRECCIÓN SEGÚN ROL =====
+    switch (encontrado.rol) {
+        case "admin":
+            window.location.href = "../admin/index.html";//sirve
+            break;
+
+        case "policia":
+            window.location.href = "../Policia/Central/centro-operaciones/centro-operaciones.html";//sirve
+            break;
+
+        case "central":
+            window.location.href = "../Policia/Central/centro-operaciones/centro-operaciones.html";//sirve
+            break;
+
+        case "admin-policia":
+            window.location.href = "../Policia/AdminitradorPolicia/centro-operaciones/centro-operaciones.html";//sirve
+            break;
+
+        case "ciudadano":
+            window.location.href = "../ciudadano/pagina-principal.html";//sirve
+            break;
+
+        default:
+            window.location.href = "../landing/index.html";
+    }
 });

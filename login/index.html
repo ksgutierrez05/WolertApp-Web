@@ -84,8 +84,15 @@
 
                     <div id="registro-error" class="form-error" style="display: none;"></div>
 
-                    <button type="submit" class="btn-login">Registrarse</button>
+                    <select id="reg-rol" class="input-gris" required>
+                        <option value="admin">Administrador</option>
+                        <option value="admin-policia">Administrador Policía</option>
+                        <option value="central">Central (Policía)</option>
+                        <option value="policia">Policía</option>
+                        <option value="ciudadano">Ciudadano</option>
+                    </select>
 
+                    <button type="submit" class="btn-login">Registrarse</button>
                 </form>
             </div>
         </div>
