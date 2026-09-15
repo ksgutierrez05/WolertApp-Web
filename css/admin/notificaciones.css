@@ -1,0 +1,189 @@
+/* ============================================================
+   NOTIFICACIONES.CSS — estilos propios de admin/notificaciones.html
+   ============================================================
+   Reutiliza las variables de css/global.css. Cargar después de
+   global.css en el <head>.
+   ============================================================ */
+
+.filtro-select-dash {
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background-color: #fff;
+    font-size: 13px;
+    padding: 10px 14px;
+    color: var(--ink);
+    box-shadow: var(--shadow-xs);
+}
+
+/* ---------- Tabla ---------- */
+.tabla-noti-dash {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tabla-noti-dash thead th {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--subtle);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    text-align: left;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+}
+
+.tabla-noti-dash tbody tr {
+    border-bottom: 1px solid var(--line);
+    transition: background 0.12s ease;
+}
+
+.tabla-noti-dash tbody tr:last-child {
+    border-bottom: none;
+}
+
+.tabla-noti-dash tbody tr:hover {
+    background-color: var(--fog);
+}
+
+.tabla-noti-dash td {
+    padding: 16px 20px;
+    vertical-align: middle;
+}
+
+/* ---------- Columna Mensaje ---------- */
+.noti-mensaje-celda-dash {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    max-width: 420px;
+}
+
+.noti-icono-tipo-dash {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.noti-icono-alerta-dash { background-color: #fce8e9; color: var(--color-danger); }
+.noti-icono-asignacion-dash { background-color: #e8f0fb; color: var(--color-blue); }
+.noti-icono-sistema-dash { background-color: var(--fog); color: var(--muted); }
+
+.noti-mensaje-texto-dash {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.noti-mensaje-tipo-dash {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 3px;
+}
+
+/* ---------- Columna Destinatario ---------- */
+.noti-destinatario-dash {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.noti-avatar-dash {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 700;
+    font-size: 11.5px;
+    flex-shrink: 0;
+}
+
+.noti-correo-dash {
+    font-size: 13px;
+    color: var(--ink);
+    font-weight: 500;
+}
+
+/* ---------- Columna Fecha ---------- */
+.noti-fecha-dash {
+    font-size: 13px;
+    color: var(--ink);
+    font-weight: 600;
+}
+
+.noti-fecha-relativa-dash {
+    font-size: 11.5px;
+    color: var(--muted);
+    margin-top: 2px;
+}
+
+/* ---------- Badges de estado ---------- */
+.noti-badge-dash {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 100px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.noti-badge-dash .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.noti-badge-enviado-dash {
+    background-color: #e3f8ec;
+    color: var(--color-green);
+}
+.noti-badge-enviado-dash .dot { background-color: var(--color-green); }
+
+.noti-badge-pendiente-dash {
+    background-color: #fcf0da;
+    color: var(--color-amber);
+}
+.noti-badge-pendiente-dash .dot { background-color: var(--color-amber); }
+
+.noti-badge-error-dash {
+    background-color: #fce8e9;
+    color: var(--color-danger);
+}
+.noti-badge-error-dash .dot { background-color: var(--color-danger); }
+
+/* ---------- Estado vacío ---------- */
+.noti-vacio-dash {
+    text-align: center;
+    padding: 50px 20px;
+    color: var(--muted);
+}
+
+.noti-vacio-dash i {
+    font-size: 32px;
+    color: var(--subtle);
+    margin-bottom: 10px;
+    display: block;
+}
+
+.noti-vacio-dash p {
+    font-size: 13.5px;
+    margin: 0;
+}
