@@ -1,5 +1,4 @@
 
-
 const ICONOS_POLICIA = {
   logo: 'bi-shield-check',
   centrooperaciones: 'bi-house',
@@ -38,6 +37,26 @@ const MENU_POLICIA = [
     ],
   },
 ];
+const LANDING_URL_POLICIA = '../../../landing/index.html';
+
+
+function cerrarSesionPolicia(evento) {
+  if (evento) evento.preventDefault();
+
+  const confirmar = window.confirm('¿Seguro que deseas cerrar sesión?');
+  if (!confirmar) return;
+
+  try {
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
+    localStorage.removeItem('rol');
+    sessionStorage.clear();
+  } catch (e) {
+    console.warn('cerrarSesionPolicia: no se pudo limpiar el storage', e);
+  }
+
+  window.location.href = LANDING_URL_POLICIA;
+}
 
 /**
  * Inyecta el sidebar completo del rol Policía dentro de
@@ -81,9 +100,15 @@ function renderSidebarPolicia(paginaActiva) {
 
     <div class="flex-grow-1"></div>
 
-    <a href="#" class="logout-dash">
+    <a href="#" id="logoutDash" class="logout-dash">
       <span class="ic-dash"><i class="bi ${ICONOS_POLICIA.logout}"></i></span>
       <span class="lbl-dash">Cerrar sesión</span>
     </a>
   `;
+
+  // Enlaza el evento de cierre de sesión al link recién inyectado.
+  const logoutLink = document.getElementById('logoutDash');
+  if (logoutLink) {
+    logoutLink.addEventListener('click', cerrarSesionPolicia);
+  }
 }

@@ -1,5 +1,3 @@
-
-
 const ICONOS_CIUDADANO = {
   logo: 'bi-shield-check',
   principal: 'bi-house',
@@ -55,6 +53,37 @@ function obtenerNoLeidasSidebar() {
   }
 }
 
+// Ruta a la que se redirige al cerrar sesión: la página de landing
+// (información). Usa la misma profundidad que ya usa este sidebar
+// para el logo (../img/...), es decir un nivel arriba de la carpeta
+// de páginas del ciudadano. Si el archivo principal de tu landing
+// NO se llama "index.html", cambia "index.html" por el nombre real.
+const LANDING_URL_CIUDADANO = '../landing/index.html';
+
+/**
+ * Cierra la sesión del usuario: limpia los datos guardados en el
+ * navegador (token, usuario, rol, notificaciones, etc.) y redirige
+ * a la página de landing (información). Ajusta las claves de storage
+ * según cómo manejes la autenticación en el resto del proyecto.
+ */
+function cerrarSesionCiudadano(evento) {
+  if (evento) evento.preventDefault();
+
+  const confirmar = window.confirm('¿Seguro que deseas cerrar sesión?');
+  if (!confirmar) return;
+
+  try {
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
+    localStorage.removeItem('rol');
+    sessionStorage.clear();
+  } catch (e) {
+    console.warn('cerrarSesionCiudadano: no se pudo limpiar el storage', e);
+  }
+
+  window.location.href = LANDING_URL_CIUDADANO;
+}
+
 /**
  * Inyecta el sidebar completo del rol Ciudadano dentro de
  * <aside id="sidebarDash">, marcando como "active" el link
@@ -98,9 +127,15 @@ function renderSidebarCiudadano(paginaActiva) {
 
     <div class="flex-grow-1"></div>
 
-    <a href="#" class="logout-dash">
+    <a href="#" id="logoutDash" class="logout-dash">
       <span class="ic-dash"><i class="bi ${ICONOS_CIUDADANO.logout}"></i></span>
       <span class="lbl-dash">Cerrar sesión</span>
     </a>
   `;
+
+  // Enlaza el evento de cierre de sesión al link recién inyectado.
+  const logoutLink = document.getElementById('logoutDash');
+  if (logoutLink) {
+    logoutLink.addEventListener('click', cerrarSesionCiudadano);
+  }
 }
