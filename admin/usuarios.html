@@ -146,7 +146,7 @@
 
                 <div class="modal-header-dash d-flex justify-content-between align-items-start">
                     <div>
-                        <h5 class="modal-title-dash">Nuevo usuario</h5>
+                        <h5 class="modal-title-dash" id="titulo-modal-usuario">Nuevo usuario</h5>
                         <div class="modal-subtitle-dash">Registra un usuario y asígnale un rol</div>
                     </div>
                     <button type="button" class="btn-close-dash" data-bs-dismiss="modal">
@@ -215,12 +215,68 @@
 
                 <div class="modal-footer-dash">
                     <button type="button" class="btn btn-cancelar-dash" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-cv-azul px-4" style="border-radius: 12px; font-weight: 700;">Crear Usuario</button>
+                    <button type="submit" class="btn btn-cv-azul px-4" style="border-radius: 12px; font-weight: 700;" id="texto-boton-guardar">Crear Usuario</button>
                 </div>
             </form>
             </div>
         </div>
     </div>
+
+        <!-- Modal: Ver usuario -->
+    <div class="modal fade" id="modalVerUsuario" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content modal-dash">
+
+                <div class="modal-header-dash d-flex justify-content-between align-items-start">
+                    <div>
+                        <h5 class="modal-title-dash" id="ver-nombre">—</h5>
+                        <div class="modal-subtitle-dash" id="ver-username">—</div>
+                    </div>
+                    <button type="button" class="btn-close-dash" data-bs-dismiss="modal">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="fila-detalle-dash">
+                        <span class="etiqueta-detalle-dash">Cédula</span>
+                        <span class="valor-detalle-dash" id="ver-cedula">—</span>
+                    </div>
+
+                    <div class="fila-detalle-dash">
+                        <span class="etiqueta-detalle-dash">Correo</span>
+                        <span class="valor-detalle-dash" id="ver-correo">—</span>
+                    </div>
+
+                    <div class="fila-detalle-dash">
+                        <span class="etiqueta-detalle-dash">Teléfono</span>
+                        <span class="valor-detalle-dash" id="ver-telefono">—</span>
+                    </div>
+
+                    <div class="fila-detalle-dash">
+                        <span class="etiqueta-detalle-dash">Rol</span>
+                        <span class="valor-detalle-dash" id="ver-rol">—</span>
+                    </div>
+
+                    <div class="fila-detalle-dash" style="border-bottom: none;">
+                        <span class="etiqueta-detalle-dash">Estado</span>
+                        <span class="valor-detalle-dash" id="ver-estado">—</span>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!--
+    Bootstrap JS (bundle incluye Popper.js).
+    Le da COMPORTAMIENTO a los componentes de Bootstrap CSS: sin esto,
+    los modales (data-bs-toggle, new bootstrap.Modal(...)) no abren
+    ni cierran, aunque los estilos se vean bien. Va al final del body
+    para que el HTML ya esté parseado antes de ejecutarse.
+    -->
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 

@@ -191,3 +191,23 @@
 .modal-header-dash .btn-close-dash:hover {
     opacity: 1;
 }
+
+/* Filas de detalle en el modal "Ver usuario" */
+.fila-detalle-dash {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+}
+
+.etiqueta-detalle-dash {
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.valor-detalle-dash {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--ink);
+}

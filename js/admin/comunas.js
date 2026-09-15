@@ -12,12 +12,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const contenedor = document.getElementById("lista-comunas");
     const inputBuscar = document.getElementById("input-buscar-comuna");
+    const formComuna = document.getElementById("form-comuna");
+
+    // Guarda el id de la comuna que se está editando (null = se está creando una nueva)
+    let idComunaEnEdicion = null;
 
 
     // ===== GENERAR INICIALES PARA EL AVATAR =====
     function iniciales(nombre) {
         const partes = nombre.trim().split(" ");
         return (partes[0][0] + (partes[1] || "")).toUpperCase();
+    }
+
+
+    // ===== BUSCAR UNA COMUNA POR SU ID =====
+    function buscarComunaPorId(id) {
+        return comunas.find(c => c.id === id);
     }
 
 
@@ -58,13 +68,27 @@ document.addEventListener("DOMContentLoaded", () => {
             contenedor.appendChild(fila);
         });
 
-        conectarBotonesEliminar();
+        conectarBotonesDeLaTabla();
         actualizarKPIs();
     }
 
 
-    // ===== ELIMINAR COMUNA =====
-    function conectarBotonesEliminar() {
+    // ===== CONECTAR LOS 3 BOTONES DE CADA FILA (ver / editar / eliminar) =====
+    function conectarBotonesDeLaTabla() {
+        document.querySelectorAll(".btn-ver-dash").forEach(boton => {
+            boton.addEventListener("click", () => {
+                const id = Number(boton.getAttribute("data-id"));
+                abrirModalVerComuna(id);
+            });
+        });
+
+        document.querySelectorAll(".btn-editar-dash").forEach(boton => {
+            boton.addEventListener("click", () => {
+                const id = Number(boton.getAttribute("data-id"));
+                abrirModalEditarComuna(id);
+            });
+        });
+
         document.querySelectorAll(".btn-eliminar-dash").forEach(boton => {
             boton.addEventListener("click", () => {
                 const id = Number(boton.getAttribute("data-id"));
@@ -79,6 +103,47 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
+    // ===== ABRIR MODAL "VER COMUNA" =====
+    function abrirModalVerComuna(id) {
+        const comuna = buscarComunaPorId(id);
+        if (!comuna) return;
+
+        document.getElementById("ver-comuna-nombre").textContent = comuna.nombre;
+        document.getElementById("ver-comuna-color-texto").textContent = comuna.color;
+        document.getElementById("ver-comuna-color-muestra").style.backgroundColor = comuna.color;
+
+        const modal = new bootstrap.Modal(document.getElementById("modalVerComuna"));
+        modal.show();
+    }
+
+
+    // ===== ABRIR MODAL EN MODO "EDITAR" (reutiliza el mismo modal de crear) =====
+    function abrirModalEditarComuna(id) {
+        const comuna = buscarComunaPorId(id);
+        if (!comuna) return;
+
+        idComunaEnEdicion = id;
+
+        document.getElementById("nombre-comuna").value = comuna.nombre;
+        document.getElementById("color-comuna").value = comuna.color;
+
+        document.querySelector("#modalComuna .modal-title").textContent = "Editar comuna";
+        document.querySelector("#modalComuna button[type='submit']").textContent = "Guardar cambios";
+
+        const modal = new bootstrap.Modal(document.getElementById("modalComuna"));
+        modal.show();
+    }
+
+
+    // ===== VOLVER EL MODAL A SU MODO NORMAL: "CREAR" =====
+    function restablecerModalComoCreacion() {
+        idComunaEnEdicion = null;
+        document.querySelector("#modalComuna .modal-title").textContent = "Nueva comuna";
+        document.querySelector("#modalComuna button[type='submit']").textContent = "Registrar comuna";
+        formComuna.reset();
+    }
+
+
     // ===== ACTUALIZAR CONTADORES (KPIs) =====
     function actualizarKPIs() {
         document.getElementById("kpi-total-comunas").textContent = comunas.length;
@@ -86,24 +151,34 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    // ===== REGISTRAR NUEVA COMUNA =====
-    const formComuna = document.getElementById("form-comuna");
-
+    // ===== GUARDAR EL FORMULARIO (crea una nueva o actualiza la existente) =====
     formComuna.addEventListener("submit", (e) => {
         e.preventDefault();
 
-        const nuevaComuna = {
-            id: comunas.length > 0 ? Math.max(...comunas.map(c => c.id)) + 1 : 1,
-            nombre: document.getElementById("nombre-comuna").value,
-            color: document.getElementById("color-comuna").value
-        };
+        const nombre = document.getElementById("nombre-comuna").value;
+        const color = document.getElementById("color-comuna").value;
 
-        comunas.push(nuevaComuna);
+        if (idComunaEnEdicion) {
+            // ----- MODO EDICIÓN -----
+            const comuna = buscarComunaPorId(idComunaEnEdicion);
+            comuna.nombre = nombre;
+            comuna.color = color;
+        } else {
+            // ----- MODO CREACIÓN -----
+            comunas.push({
+                id: comunas.length > 0 ? Math.max(...comunas.map(c => c.id)) + 1 : 1,
+                nombre,
+                color
+            });
+        }
+
         renderComunas(comunas);
-
-        formComuna.reset();
         bootstrap.Modal.getInstance(document.getElementById("modalComuna")).hide();
     });
+
+
+    // Si el modal se cierra sin guardar (clic afuera, o la X), vuelve a modo "crear"
+    document.getElementById("modalComuna").addEventListener("hidden.bs.modal", restablecerModalComoCreacion);
 
 
     // ===== FILTRO DE BÚSQUEDA EN VIVO =====

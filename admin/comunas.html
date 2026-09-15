@@ -21,74 +21,73 @@
         <div id="wrapperDash">
             <main class="main-dash">
                 <div class="container-fluid">
-
-                    <!-- Encabezado -->
-                    <div class="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-3">
-                        <div>
-                            <h1 class="hero-title-dash" style="color: var(--ink); font-size: 26px;">Gestión de Comunas</h1>
-                            <p class="hero-text-dash" style="color: var(--muted);">Administra las divisiones territoriales del sistema</p>
+                        <!-- Encabezado -->
+                        <div class="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-3">
+                            <div>
+                                <h1 class="hero-title-dash" style="color: var(--ink); font-size: 26px;">Gestión de Comunas</h1>
+                                <p class="hero-text-dash" style="color: var(--muted);">Administra las divisiones territoriales del sistema</p>
+                            </div>
+                            <button type="button" class="btn btn-cv-azul d-inline-flex align-items-center gap-2 px-3 py-2" 
+                                    style="border-radius: 12px; font-size: 13.5px; font-weight: 700;"
+                                    data-bs-toggle="modal" data-bs-target="#modalComuna">
+                                <i class="bi bi-plus-lg"></i>
+                                Nueva comuna
+                            </button>
                         </div>
-                        <button type="button" class="btn btn-cv-azul d-inline-flex align-items-center gap-2 px-3 py-2" 
-                                style="border-radius: 12px; font-size: 13.5px; font-weight: 700;"
-                                data-bs-toggle="modal" data-bs-target="#modalComuna">
-                            <i class="bi bi-plus-lg"></i>
-                            Nueva comuna
-                        </button>
-                    </div>
-                </div>
+                        
+                        <!-- KPIs -->
+                        <div class="row g-3 mb-3">
+                            
+                            <div class="col-md-4">
+                                <div class="kpi-dash kpi-blue-dash">
+                                    <i class="bi bi-map kpi-icon-dash"></i>
+                                    <div class="kpi-num-dash" id="kpi-total-comunas">6</div>
+                                    <div class="kpi-label-dash">Total comunas</div>
+                                <div class="kpi-label-dash" style="margin-top: 2px;">Divisiones registradas</div>
+                            </div>
+                        </div>
 
-                <!-- KPIs -->
-                <div class="row g-3 mb-3">
+                        <div class="col-md-4">
+                            <div class="kpi-dash kpi-green-dash">
+                                <i class="bi bi-check-circle kpi-icon-dash"></i>
+                                <div class="kpi-num-dash" id="kpi-comunas-activas">6</div>
+                                <div class="kpi-label-dash">Comunas activas</div>
+                                <div class="kpi-label-dash" style="margin-top: 2px;">En el sistema</div>
+                            </div>
+                        </div>
 
-                    <div class="col-md-4">
-                        <div class="kpi-dash kpi-blue-dash">
-                            <i class="bi bi-map kpi-icon-dash"></i>
-                            <div class="kpi-num-dash" id="kpi-total-comunas">6</div>
-                            <div class="kpi-label-dash">Total comunas</div>
-                            <div class="kpi-label-dash" style="margin-top: 2px;">Divisiones registradas</div>
+                        <div class="col-md-4">
+                            <div class="kpi-dash kpi-red-dash">
+                                <i class="bi bi-exclamation-triangle kpi-icon-dash"></i>
+                                <div class="kpi-num-dash" style="font-size: 20px;">—</div>
+                                <div class="kpi-label-dash">Alertas por zona</div>
+                                <a href="alertas.html" class="kpi-label-dash" style="margin-top: 2px; color: var(--color-danger); font-weight: 700; text-decoration: underline;">Ver módulo Alertas</a>
+                            </div>
                         </div>
                     </div>
-
-                    <div class="col-md-4">
-                        <div class="kpi-dash kpi-green-dash">
-                            <i class="bi bi-check-circle kpi-icon-dash"></i>
-                            <div class="kpi-num-dash" id="kpi-comunas-activas">6</div>
-                            <div class="kpi-label-dash">Comunas activas</div>
-                            <div class="kpi-label-dash" style="margin-top: 2px;">En el sistema</div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-4">
-                        <div class="kpi-dash kpi-red-dash">
-                            <i class="bi bi-exclamation-triangle kpi-icon-dash"></i>
-                            <div class="kpi-num-dash" style="font-size: 20px;">—</div>
-                            <div class="kpi-label-dash">Alertas por zona</div>
-                            <a href="alertas.html" class="kpi-label-dash" style="margin-top: 2px; color: var(--color-danger); font-weight: 700; text-decoration: underline;">Ver módulo Alertas</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Barra de búsqueda -->
-                <div class="input-group search-dash search-dash-comunas mb-3">
-                    <span class="input-group-text bg-white border-0">
-                        <i class="bi bi-search"></i>
-                    </span>
-                    <input
+                    
+                    <!-- Barra de búsqueda -->
+                    <div class="input-group search-dash search-dash-comunas mb-3">
+                        <span class="input-group-text bg-white border-0">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input
                         type="text"
-                        id="input-buscar-comuna"
-                        class="form-control border-0"
-                        placeholder="Buscar por nombre de comuna...">
-                </div>
-
-                <!-- Tabla de comunas -->
-                <div class="card-panel-dash">
-                    <div class="tabla-comunas-header">
-                        <span>NOMBRE</span>
-                        <span class="text-end">ACCIONES</span>
+                            id="input-buscar-comuna"
+                            class="form-control border-0"
+                            placeholder="Buscar por nombre de comuna...">
                     </div>
 
-                    <div id="lista-comunas">
-                        <!-- Las filas se inyectan desde comunas.js -->
+                    <!-- Tabla de comunas -->
+                    <div class="card-panel-dash">
+                        <div class="tabla-comunas-header">
+                            <span>NOMBRE</span>
+                            <span class="text-end">ACCIONES</span>
+                        </div>
+
+                        <div id="lista-comunas">
+                            <!-- Las filas se inyectan desde comunas.js -->
+                        </div>
                     </div>
                 </div>
             </main>
@@ -120,6 +119,35 @@
                 </div>
             </div>
         </div>
+
+        <!-- Modal: Ver comuna -->
+        <div class="modal fade" id="modalVerComuna" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content" style="border-radius: 18px; border: none;">
+
+                    <div class="modal-header border-0 pb-0">
+                        <h5 class="modal-title section-title-dash" id="ver-comuna-nombre">—</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="fila-detalle-dash">
+                            <span class="etiqueta-detalle-dash">Tipo</span>
+                            <span class="valor-detalle-dash">División territorial</span>
+                        </div>
+                        <div class="fila-detalle-dash" style="border-bottom: none;">
+                            <span class="etiqueta-detalle-dash">Color identificador</span>
+                            <span class="valor-detalle-dash d-flex align-items-center gap-2">
+                                <span id="ver-comuna-color-muestra" style="width: 16px; height: 16px; border-radius: 50%; display: inline-block;"></span>
+                                <span id="ver-comuna-color-texto">—</span>
+                            </span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
     </body>
 </html>
