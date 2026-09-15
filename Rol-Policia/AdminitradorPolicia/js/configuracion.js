@@ -1,18 +1,47 @@
-// js/mi-cuenta.js
-// Lógica de Configuración → Mi cuenta (rol Comandante de Estación / Administrador Policía).
-// Responsabilidades exclusivas de esta pantalla:
-//   1) Previsualizar el cambio de foto de perfil.
-//   2) Guardar los datos personales editables (nombre, correo, teléfono).
-//   3) Mostrar/ocultar y validar el formulario de cambio de contraseña.
-// "Rol" y "Estación asignada" son intencionalmente de solo lectura y
-// no tienen ningún manejador de edición aquí.
+
+const LS_KEY_PERFIL = 'perfilUsuarioPolicia';
+
+function cargarPerfil() {
+  try {
+    const guardado = localStorage.getItem(LS_KEY_PERFIL);
+    if (guardado) return JSON.parse(guardado);
+  } catch (e) {
+    console.warn('No se pudo leer el perfil desde localStorage:', e);
+  }
+  return null;
+}
+
+function guardarPerfil(datos) {
+  try {
+    const actual = cargarPerfil() || {};
+    const nuevo = { ...actual, ...datos };
+    localStorage.setItem(LS_KEY_PERFIL, JSON.stringify(nuevo));
+    return nuevo;
+  } catch (e) {
+    console.warn('No se pudo guardar el perfil en localStorage:', e);
+    return null;
+  }
+}
 
 document.addEventListener('DOMContentLoaded', () => {
+
+  const perfilGuardado = cargarPerfil();
 
   /* ---------- 1) Foto de perfil ---------- */
   const inputFoto = document.getElementById('inputFotoPerfil');
   const imgFoto = document.getElementById('fotoPerfilImg');
   const fallbackFoto = document.getElementById('fotoPerfilFallback');
+
+  // Foto pendiente de guardar (se confirma junto con el resto del
+  // formulario al pulsar "Guardar cambios", igual que nombre/correo/teléfono).
+  let fotoPendiente = null;
+
+  // Restaura la foto guardada, si existe, al cargar la página.
+  if (perfilGuardado?.foto && imgFoto) {
+    imgFoto.src = perfilGuardado.foto;
+    imgFoto.classList.remove('d-none');
+    fallbackFoto?.classList.add('d-none');
+  }
 
   inputFoto?.addEventListener('change', (e) => {
     const archivo = e.target.files[0];
@@ -20,7 +49,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const reader = new FileReader();
     reader.onload = (ev) => {
-      imgFoto.src = ev.target.result;
+      fotoPendiente = ev.target.result;
+      imgFoto.src = fotoPendiente;
       imgFoto.classList.remove('d-none');
       fallbackFoto.classList.add('d-none');
     };
@@ -31,6 +61,19 @@ document.addEventListener('DOMContentLoaded', () => {
   const formCuenta = document.getElementById('formCuenta');
   const previewNombre = document.getElementById('previewNombre');
   const campoNombre = document.getElementById('campoNombre');
+
+  // Restaura los campos editables guardados (cualquier campo cuyo id
+  // empiece por "campo" dentro del formulario), si existe algo previo.
+  if (perfilGuardado) {
+    formCuenta?.querySelectorAll('[id^="campo"]').forEach(campo => {
+      if (perfilGuardado[campo.id] !== undefined) {
+        campo.value = perfilGuardado[campo.id];
+      }
+    });
+    if (previewNombre && campoNombre) {
+      previewNombre.textContent = campoNombre.value.trim() || 'Sin nombre';
+    }
+  }
 
   // Refleja el nombre en vivo en la tarjeta de la izquierda mientras se edita.
   campoNombre?.addEventListener('input', () => {
@@ -45,8 +88,21 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    // Junta todos los campos editables (id que empiece por "campo")
+    // más la foto pendiente (si el usuario seleccionó una nueva).
+    const datos = {};
+    formCuenta.querySelectorAll('[id^="campo"]').forEach(campo => {
+      datos[campo.id] = campo.value;
+    });
+    if (fotoPendiente) {
+      datos.foto = fotoPendiente;
+      fotoPendiente = null;
+    }
+
     // Aquí se conectaría la llamada real al backend para persistir:
-    // nombre, correo y teléfono del usuario autenticado.
+    // nombre, correo y teléfono del usuario autenticado. Mientras tanto,
+    // se guarda localmente para que los cambios no se pierdan al recargar.
+    guardarPerfil(datos);
     mostrarToast('Cambios guardados correctamente.');
   });
 
@@ -96,7 +152,9 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Aquí se conectaría la llamada real al backend para actualizar la contraseña.
+    // Aquí se conectaría la llamada real al backend para actualizar la
+    // contraseña. Deliberadamente NO se guarda nada de esto en
+    // localStorage por seguridad.
     cerrarFormPassword();
     mostrarToast('Contraseña actualizada correctamente.');
   });

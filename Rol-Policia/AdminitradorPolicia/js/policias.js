@@ -1,14 +1,13 @@
-
 renderSidebarPolicia('policias');
 
-// ---------- Datos de ejemplo (en memoria) ----------
-// Simula lo que hoy traen PoliciaDAO / UnidadPolicialDAO desde MySQL.
-// Al conectar el backend real, basta con reemplazar estos arreglos
-// por el resultado de un fetch() a la API.
 
-// Unidades disponibles para asignar (mismo listado que Unidades.html;
-// si cambias una lista, recuerda actualizar la otra).
-const UNIDADES = [
+// ---------- Claves de localStorage ----------
+const LS_KEY_UNIDADES = 'unidadesPoliciales';    
+const LS_KEY_POLICIAS = 'policiasPoliciales';
+const LS_KEY_NEXT_POLICIA_ID = 'policiasPolicialesNextId';
+
+
+const UNIDADES_DEFECTO = [
   { id: 1, nombre: 'Patrulla 101' },
   { id: 2, nombre: 'CAI La Nevada' },
   { id: 3, nombre: 'Moto 07' },
@@ -16,6 +15,21 @@ const UNIDADES = [
   { id: 5, nombre: 'CAI Sicarare' },
   { id: 6, nombre: 'Moto 12' },
 ];
+
+function cargarUnidades() {
+  try {
+    const guardado = localStorage.getItem(LS_KEY_UNIDADES);
+    if (guardado) {
+      const lista = JSON.parse(guardado);
+      return lista.map(u => ({ id: u.id, nombre: u.nombre }));
+    }
+  } catch (e) {
+    console.warn('No se pudo leer unidades desde localStorage:', e);
+  }
+  return UNIDADES_DEFECTO.map(u => ({ ...u }));
+}
+
+const UNIDADES = cargarUnidades();
 
 // EstadoPolicia: DISPONIBLE | EN_SERVICIO | OCUPADO | FUERA_DE_SERVICIO
 const ESTADOS_POLICIA = {
@@ -25,7 +39,7 @@ const ESTADOS_POLICIA = {
   FUERA_DE_SERVICIO: { label: 'Fuera de servicio', badge: 'badge-red-dash' },
 };
 
-let POLICIAS = [
+const POLICIAS_DEFECTO = [
   { id: 1, primerNombre: 'Sofía', segundoNombre: '', primerApellido: 'Gómez', segundoApellido: 'Ruiz', identificacion: '1065432101', placa: 'P-1042', rango: 'Comandante', unidadId: 1, estado: 'EN_SERVICIO', telefono: '3001234567', correo: 'sofia.gomez@wolertapp.co', username: 'sgomez' },
   { id: 2, primerNombre: 'Carlos', segundoNombre: 'Andrés', primerApellido: 'Pérez', segundoApellido: 'León', identificacion: '1065432102', placa: 'P-1043', rango: 'Subintendente', unidadId: 2, estado: 'DISPONIBLE', telefono: '3007654321', correo: 'carlos.perez@wolertapp.co', username: 'cperez' },
   { id: 3, primerNombre: 'Laura', segundoNombre: '', primerApellido: 'Martínez', segundoApellido: 'Díaz', identificacion: '1065432103', placa: 'P-1044', rango: 'Patrullero', unidadId: 3, estado: 'OCUPADO', telefono: '3009876543', correo: 'laura.martinez@wolertapp.co', username: 'lmartinez' },
@@ -35,7 +49,38 @@ let POLICIAS = [
   { id: 7, primerNombre: 'Valentina', segundoNombre: '', primerApellido: 'Cotes', segundoApellido: 'Iguarán', identificacion: '1065432107', placa: 'P-1048', rango: 'Subintendente', unidadId: 5, estado: 'DISPONIBLE', telefono: '3021112233', correo: 'valentina.cotes@wolertapp.co', username: 'vcotes' },
 ];
 
-let nextPoliciaId = POLICIAS.length + 1;
+function cargarPolicias() {
+  try {
+    const guardado = localStorage.getItem(LS_KEY_POLICIAS);
+    if (guardado) return JSON.parse(guardado);
+  } catch (e) {
+    console.warn('No se pudo leer policías desde localStorage:', e);
+  }
+  return POLICIAS_DEFECTO.map(p => ({ ...p }));
+}
+
+function cargarNextPoliciaId() {
+  try {
+    const guardado = localStorage.getItem(LS_KEY_NEXT_POLICIA_ID);
+    if (guardado) return parseInt(guardado, 10);
+  } catch (e) {
+    console.warn('No se pudo leer el siguiente id de policía desde localStorage:', e);
+  }
+  return POLICIAS.length + 1;
+}
+
+let POLICIAS = cargarPolicias();
+let nextPoliciaId = cargarNextPoliciaId();
+
+// ---------- Persistencia ----------
+function guardarPolicias() {
+  try {
+    localStorage.setItem(LS_KEY_POLICIAS, JSON.stringify(POLICIAS));
+    localStorage.setItem(LS_KEY_NEXT_POLICIA_ID, String(nextPoliciaId));
+  } catch (e) {
+    console.warn('No se pudo guardar policías en localStorage:', e);
+  }
+}
 
 function unidadPorId(id) {
   return UNIDADES.find(u => u.id === id);
@@ -217,6 +262,7 @@ document.getElementById('formPolicia').addEventListener('submit', (e) => {
     POLICIAS.push({ id: nextPoliciaId++, ...datos });
   }
 
+  guardarPolicias();
   modalPolicia.hide();
   refrescarPolicias();
 });
@@ -248,6 +294,7 @@ function eliminarPolicia(id) {
   if (!p) return;
   if (!confirm(`¿Eliminar a "${nombreCompletoPolicia(p)}"? Esta acción no se puede deshacer.`)) return;
   POLICIAS = POLICIAS.filter(x => x.id !== id);
+  guardarPolicias();
   refrescarPolicias();
 }
 
@@ -258,4 +305,5 @@ document.getElementById('filtroUnidadPolicia').addEventListener('change', render
 
 // ---------- Inicio ----------
 poblarUnidadesSelect();
+guardarPolicias();
 refrescarPolicias();

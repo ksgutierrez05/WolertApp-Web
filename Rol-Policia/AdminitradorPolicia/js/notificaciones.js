@@ -1,17 +1,35 @@
-// js/policia/notificaciones.js
-// Centro de Notificaciones del Administrador de Policía (Comandante de
-// Estación). A diferencia del feed de "Alertas recientes" del Centro de
-// Operaciones (que muestra el flujo operativo en tiempo real que maneja
-// la Central de Radio), esta vista solo muestra eventos de SUPERVISIÓN
-// y GESTIÓN que le corresponden al comandante, filtrados por su propia
-// estación/jurisdicción (ver JURISDICCION_ACTUAL más abajo).
+
 
 renderSidebarPolicia('notificaciones');
 
-// CATEGORIAS, PRIORIDAD_BADGE, PRIORIDAD_LABEL, NOTIFICACIONES y
-// JURISDICCION_ACTUAL vienen de notificaciones-data.js (cargado antes
-// que este archivo), para compartir la misma fuente de datos con el
-// resumen de la campanita (campanita-dash.js).
+const LS_KEY_NOTIF_LEIDAS = 'notificacionesPolicialesLeidas';
+
+function cargarIdsLeidas() {
+  try {
+    const guardado = localStorage.getItem(LS_KEY_NOTIF_LEIDAS);
+    if (guardado) return new Set(JSON.parse(guardado));
+  } catch (e) {
+    console.warn('No se pudo leer el estado de notificaciones leídas desde localStorage:', e);
+  }
+  return new Set();
+}
+
+function guardarIdsLeidas() {
+  try {
+    const idsLeidas = NOTIFICACIONES.filter(n => n.leida).map(n => n.id);
+    localStorage.setItem(LS_KEY_NOTIF_LEIDAS, JSON.stringify(idsLeidas));
+  } catch (e) {
+    console.warn('No se pudo guardar el estado de notificaciones leídas en localStorage:', e);
+  }
+}
+
+
+(function aplicarEstadoLeidasGuardado() {
+  const idsLeidas = cargarIdsLeidas();
+  NOTIFICACIONES.forEach(n => {
+    if (idsLeidas.has(n.id)) n.leida = true;
+  });
+})();
 
 // ------------------------------------------------------------------
 // Estado de la vista
@@ -117,6 +135,7 @@ function renderLista() {
       const n = NOTIFICACIONES.find(x => x.id === id);
       n.leida = true;
       detalleAbierto = detalleAbierto === id ? null : id;
+      guardarIdsLeidas();
       renderChips();
       renderLista();
       if (typeof refrescarCampanita === 'function') refrescarCampanita();
@@ -128,6 +147,7 @@ function renderLista() {
 
 document.getElementById('btnMarcarTodas').addEventListener('click', () => {
   NOTIFICACIONES.forEach(n => n.leida = true);
+  guardarIdsLeidas();
   renderLista();
   if (typeof refrescarCampanita === 'function') refrescarCampanita();
 });

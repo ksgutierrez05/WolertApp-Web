@@ -1,8 +1,6 @@
 renderSidebarPolicia('reportes');
 
-// ---------- Datos de ejemplo (en memoria) ----------
-// Simula lo que hoy calcula ReporteStatsCalculator y trae
-// AlertaService.listar() desde MySQL.
+const LS_KEY_ALERTAS_REPORTES = 'alertasReportes';
 
 const ESTADOS_ALERTA = {
   PENDIENTE: { label: 'Pendiente', badge: 'badge-red-dash' },
@@ -19,7 +17,7 @@ const STATS_GENERALES = {
 
 const NOTIFICACIONES_ENVIADAS = 34;
 
-const ALERTAS = [
+const ALERTAS_DEFECTO = [
   { id: 214, tipo: 'Riña', barrio: 'Centro', estado: 'RESUELTA', fecha: '11/09/2026 08:40', desc: 'Riña reportada en la vía pública, unidad disolvió el conflicto sin heridos.', unidad: 'Patrulla 101', policia: 'Sofía Gómez' },
   { id: 213, tipo: 'Robo', barrio: 'La Nevada', estado: 'EN_ATENCION', fecha: '11/09/2026 07:55', desc: 'Robo a mano armada en local comercial, unidad en el sitio recolectando información.', unidad: 'CAI La Nevada', policia: 'Carlos Pérez' },
   { id: 212, tipo: 'Sospechoso', barrio: 'Cañaguate', estado: 'PENDIENTE', fecha: '11/09/2026 07:20', desc: 'Alerta comunitaria por sospechoso merodeando cerca de un colegio.', unidad: '—', policia: '—' },
@@ -33,6 +31,26 @@ const ALERTAS = [
   { id: 204, tipo: 'Riña', barrio: 'La Popa', estado: 'RESUELTA', fecha: '08/09/2026 21:30', desc: 'Disturbio en establecimiento nocturno, unidad controló la situación.', unidad: 'Moto 12', policia: 'Miguel Torres' },
   { id: 203, tipo: 'Robo', barrio: 'Sicarare', estado: 'RESUELTA', fecha: '08/09/2026 15:10', desc: 'Hurto de bicicleta reportado por el propietario.', unidad: 'CAI Sicarare', policia: 'Valentina Cotes' },
 ];
+
+function cargarAlertas() {
+  try {
+    const guardado = localStorage.getItem(LS_KEY_ALERTAS_REPORTES);
+    if (guardado) return JSON.parse(guardado);
+  } catch (e) {
+    console.warn('No se pudo leer las alertas de reportes desde localStorage:', e);
+  }
+  return ALERTAS_DEFECTO.map(a => ({ ...a }));
+}
+
+function guardarAlertas() {
+  try {
+    localStorage.setItem(LS_KEY_ALERTAS_REPORTES, JSON.stringify(ALERTAS));
+  } catch (e) {
+    console.warn('No se pudo guardar las alertas de reportes en localStorage:', e);
+  }
+}
+
+const ALERTAS = cargarAlertas();
 
 let alertasFiltradas = [...ALERTAS];
 let paginaActual = 1;
@@ -210,6 +228,7 @@ function renderDetalleExtra() {
 }
 
 // ---------- Inicio ----------
+guardarAlertas();
 poblarFiltros();
 renderKpisReportes();
 renderTabla();

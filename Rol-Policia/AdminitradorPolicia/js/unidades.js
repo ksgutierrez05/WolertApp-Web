@@ -1,9 +1,9 @@
 renderSidebarPolicia('unidades');
 
-// ---------- Datos de ejemplo (en memoria) ----------
+// ---------- Datos de ejemplo (en memoria + localStorage) ----------
 // Simula lo que hoy trae UnidadPolicialDAO desde MySQL. Al conectar
-// el backend real, basta con reemplazar este arreglo por el
-// resultado de un fetch() a la API.
+// el backend real, basta con reemplazar las funciones cargarUnidades()/
+// guardarUnidades() por llamadas fetch() a la API.
 
 const BARRIOS = ['Centro', 'La Nevada', 'Cañaguate', 'Los Almendros', 'Sicarare', 'La Popa'];
 
@@ -14,7 +14,12 @@ const ESTADOS_UNIDAD = {
   INACTIVA: { label: 'Inactiva', badge: 'badge-dash' },
 };
 
-let UNIDADES = [
+// ---------- Claves de localStorage ----------
+const LS_KEY_UNIDADES = 'unidadesPoliciales';
+const LS_KEY_NEXT_ID = 'unidadesPolicialesNextId';
+const LS_KEY_POLICIAS_POR_UNIDAD = 'policiasPorUnidad';
+
+const UNIDADES_DEFECTO = [
   { id: 1, nombre: 'Patrulla 101', barrio: 'Centro', estado: 'OPERATIVA', lat: 10.4631, lng: -73.2532 },
   { id: 2, nombre: 'CAI La Nevada', barrio: 'La Nevada', estado: 'OPERATIVA', lat: 10.4702, lng: -73.2598 },
   { id: 3, nombre: 'Moto 07', barrio: 'Cañaguate', estado: 'ACTIVA', lat: 10.4550, lng: -73.2461 },
@@ -25,9 +30,60 @@ let UNIDADES = [
 
 // Conteo de policías por unidad. Reemplaza esto por la relación real
 // cuando esta vista se conecte con PoliciaDAO / UnidadPolicialDAO.
-const POLICIAS_POR_UNIDAD = { 1: 1, 2: 2, 3: 1, 4: 1, 5: 1, 6: 1 };
+const POLICIAS_POR_UNIDAD_DEFECTO = { 1: 1, 2: 2, 3: 1, 4: 1, 5: 1, 6: 1 };
 
-let nextUnidadId = UNIDADES.length + 1;
+// ---------- Carga inicial desde localStorage ----------
+function cargarUnidades() {
+  try {
+    const guardado = localStorage.getItem(LS_KEY_UNIDADES);
+    if (guardado) return JSON.parse(guardado);
+  } catch (e) {
+    console.warn('No se pudo leer unidades desde localStorage:', e);
+  }
+  return UNIDADES_DEFECTO.map(u => ({ ...u }));
+}
+
+function cargarPoliciasPorUnidad() {
+  try {
+    const guardado = localStorage.getItem(LS_KEY_POLICIAS_POR_UNIDAD);
+    if (guardado) return JSON.parse(guardado);
+  } catch (e) {
+    console.warn('No se pudo leer policías por unidad desde localStorage:', e);
+  }
+  return { ...POLICIAS_POR_UNIDAD_DEFECTO };
+}
+
+function cargarNextId() {
+  try {
+    const guardado = localStorage.getItem(LS_KEY_NEXT_ID);
+    if (guardado) return parseInt(guardado, 10);
+  } catch (e) {
+    console.warn('No se pudo leer el siguiente id desde localStorage:', e);
+  }
+  return UNIDADES.length + 1;
+}
+
+let UNIDADES = cargarUnidades();
+const POLICIAS_POR_UNIDAD = cargarPoliciasPorUnidad();
+let nextUnidadId = cargarNextId();
+
+// ---------- Persistencia ----------
+function guardarUnidades() {
+  try {
+    localStorage.setItem(LS_KEY_UNIDADES, JSON.stringify(UNIDADES));
+    localStorage.setItem(LS_KEY_NEXT_ID, String(nextUnidadId));
+  } catch (e) {
+    console.warn('No se pudo guardar unidades en localStorage:', e);
+  }
+}
+
+function guardarPoliciasPorUnidad() {
+  try {
+    localStorage.setItem(LS_KEY_POLICIAS_POR_UNIDAD, JSON.stringify(POLICIAS_POR_UNIDAD));
+  } catch (e) {
+    console.warn('No se pudo guardar policías por unidad en localStorage:', e);
+  }
+}
 
 function unidadPorId(id) {
   return UNIDADES.find(u => u.id === id);
@@ -176,6 +232,7 @@ document.getElementById('formUnidad').addEventListener('submit', (e) => {
     UNIDADES.push({ id: nextUnidadId++, ...datos });
   }
 
+  guardarUnidades();
   modalUnidad.hide();
   refrescarUnidades();
 });
@@ -201,6 +258,9 @@ function eliminarUnidad(id) {
   if (!u) return;
   if (!confirm(`¿Eliminar la unidad "${u.nombre}"? Esta acción no se puede deshacer.`)) return;
   UNIDADES = UNIDADES.filter(x => x.id !== id);
+  delete POLICIAS_POR_UNIDAD[id];
+  guardarUnidades();
+  guardarPoliciasPorUnidad();
   refrescarUnidades();
 }
 
@@ -211,4 +271,6 @@ document.getElementById('filtroBarrioUnidad').addEventListener('change', renderT
 
 // ---------- Inicio ----------
 poblarBarrios();
+guardarUnidades();
+guardarPoliciasPorUnidad();
 refrescarUnidades();

@@ -1,10 +1,10 @@
 renderSidebarPolicia('estadisticas');
 
-// ---------- Datos de ejemplo (en memoria) ----------
-// Simula lo que hoy calculan AlertaService / PoliciaService /
-// UnidadPolicialService / AlarmaService al construir esta vista.
+const LS_KEY_ALERTAS_ESTADO = 'estadisticasAlertasPorEstado';
+const LS_KEY_POLICIAS_ESTADO = 'estadisticasPoliciasPorEstado';
+const LS_KEY_ALARMAS_UNIDADES = 'estadisticasAlarmasUnidades';
 
-const ALERTAS_POR_ESTADO = {
+const ALERTAS_POR_ESTADO_DEFECTO = {
   PENDIENTE: 3,
   RECIBIDA: 2,
   'EN ATENCIÓN': 4,
@@ -13,14 +13,14 @@ const ALERTAS_POR_ESTADO = {
   CANCELADA: 1,
 };
 
-const POLICIAS_POR_ESTADO = {
+const POLICIAS_POR_ESTADO_DEFECTO = {
   DISPONIBLE: 3,
   'EN SERVICIO': 2,
   OCUPADO: 1,
   'FUERA DE SERVICIO': 1,
 };
 
-const ALARMAS_UNIDADES = [
+const ALARMAS_UNIDADES_DEFECTO = [
   { nombre: 'Alarmas activas', valor: 4, total: 12, color: 'var(--color-green)' },
   { nombre: 'Alarmas en mantenimiento', valor: 2, total: 12, color: 'var(--color-amber)' },
   { nombre: 'Alarmas inactivas', valor: 6, total: 12, color: 'var(--subtle)' },
@@ -28,6 +28,34 @@ const ALARMAS_UNIDADES = [
   { nombre: 'Unidades activas', valor: 2, total: 6, color: 'var(--color-amber)' },
   { nombre: 'Unidades inactivas', valor: 1, total: 6, color: 'var(--subtle)' },
 ];
+
+function cargarDesdeLocalStorage(clave, porDefecto) {
+  try {
+    const guardado = localStorage.getItem(clave);
+    if (guardado) return JSON.parse(guardado);
+  } catch (e) {
+    console.warn(`No se pudo leer "${clave}" desde localStorage:`, e);
+  }
+  return JSON.parse(JSON.stringify(porDefecto)); // copia profunda del valor por defecto
+}
+
+function guardarEnLocalStorage(clave, valor) {
+  try {
+    localStorage.setItem(clave, JSON.stringify(valor));
+  } catch (e) {
+    console.warn(`No se pudo guardar "${clave}" en localStorage:`, e);
+  }
+}
+
+const ALERTAS_POR_ESTADO = cargarDesdeLocalStorage(LS_KEY_ALERTAS_ESTADO, ALERTAS_POR_ESTADO_DEFECTO);
+const POLICIAS_POR_ESTADO = cargarDesdeLocalStorage(LS_KEY_POLICIAS_ESTADO, POLICIAS_POR_ESTADO_DEFECTO);
+const ALARMAS_UNIDADES = cargarDesdeLocalStorage(LS_KEY_ALARMAS_UNIDADES, ALARMAS_UNIDADES_DEFECTO);
+
+// Deja guardado lo que se terminó usando (útil la primera vez que se
+// visita la página, para que quede fijado en localStorage).
+guardarEnLocalStorage(LS_KEY_ALERTAS_ESTADO, ALERTAS_POR_ESTADO);
+guardarEnLocalStorage(LS_KEY_POLICIAS_ESTADO, POLICIAS_POR_ESTADO);
+guardarEnLocalStorage(LS_KEY_ALARMAS_UNIDADES, ALARMAS_UNIDADES);
 
 // ---------- Colores semánticos por estado ----------
 // Cada estado tiene siempre el mismo color, sin importar el orden
@@ -75,12 +103,6 @@ function renderKpisEstadisticas() {
 }
 
 // ---------- Barras horizontales ----------
-// Mejoras respecto a la versión anterior:
-//  - Color fijo por estado (COLOR_ESTADO), no por posición en el objeto.
-//  - Muestra el % real sobre el total, no solo el ancho relativo al máximo.
-//  - Ordena de mayor a menor para lectura rápida.
-//  - Accesible (role="progressbar" + aria-*) y con tooltip nativo.
-//  - Anima el ancho al cargar en vez de aparecer ya llena.
 function renderBarras(contenedorId, datos) {
   const total = Object.values(datos).reduce((a, b) => a + b, 0) || 1;
   const max = Math.max(...Object.values(datos), 1);

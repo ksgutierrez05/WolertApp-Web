@@ -36,41 +36,41 @@
         <div class="hero-dash mb-4">
           <p class="eyebrow-dash">CENTRO DE OPERACIONES POLICIAL · 11 DE SEPTIEMBRE DE 2026</p>
           <h1 class="hero-title-dash">¡Bienvenida, Sofía!</h1>
-          <p class="hero-text-dash">6 alertas activas y el sistema operativo con monitoreo en tiempo real.</p>
+          <p class="hero-text-dash" id="heroTextoOperativo">6 alertas activas y el sistema operativo con monitoreo en tiempo real.</p>
           <button class="btn btn-light rounded-pill hero-cta-dash d-inline-flex align-items-center mt-3">
             <span class="dot-danger-dash"></span> Ver alertas críticas
           </button>
           <i class="bi bi-shield-check hero-icon-dash" style="font-size:110px;"></i>
         </div>
 
-        <!-- KPIs -->
+        <!-- KPIs principales: supervisión de la estación -->
         <div class="row g-3 mb-4">
           <div class="col-6 col-xl-3">
             <div class="kpi-dash kpi-red-dash">
               <i class="bi bi-bell kpi-icon-dash"></i>
-              <p class="kpi-num-dash">6</p>
+              <p class="kpi-num-dash" id="kpiAlertasActivas">–</p>
               <p class="kpi-label-dash">Alertas activas</p>
             </div>
           </div>
           <div class="col-6 col-xl-3">
-            <div class="kpi-dash kpi-amber-dash">
-              <i class="bi bi-clipboard-check kpi-icon-dash"></i>
-              <p class="kpi-num-dash">2</p>
-              <p class="kpi-label-dash">Asignaciones pendientes</p>
+            <div class="kpi-dash kpi-red-dash">
+              <i class="bi bi-exclamation-octagon-fill kpi-icon-dash"></i>
+              <p class="kpi-num-dash" id="kpiAlertasCriticas">–</p>
+              <p class="kpi-label-dash">Alertas críticas</p>
             </div>
           </div>
           <div class="col-6 col-xl-3">
             <div class="kpi-dash kpi-green-dash">
-              <i class="bi bi-car-front kpi-icon-dash"></i>
-              <p class="kpi-num-dash">11</p>
-              <p class="kpi-label-dash">Unidades disponibles</p>
+              <i class="bi bi-check2-circle kpi-icon-dash"></i>
+              <p class="kpi-num-dash" id="kpiResueltasHoy">–</p>
+              <p class="kpi-label-dash">Resueltas hoy</p>
             </div>
           </div>
           <div class="col-6 col-xl-3">
-            <div class="kpi-dash kpi-blue-dash">
+            <div class="kpi-dash kpi-green-dash">
               <i class="bi bi-person-check kpi-icon-dash"></i>
-              <p class="kpi-num-dash">4</p>
-              <p class="kpi-label-dash">Policías disponibles</p>
+              <p class="kpi-num-dash" id="kpiPatrullerosDisponibles">–</p>
+              <p class="kpi-label-dash">Patrulleros disponibles</p>
             </div>
           </div>
         </div>
@@ -91,25 +91,12 @@
             <div class="card-panel-dash p-3 h-100">
               <p class="section-title-dash fw-bold mb-2"><i class="bi bi-geo-alt me-2"></i>Mapa policial en tiempo real</p>
               <div class="map-box-dash">
-                <svg width="100%" height="100%" viewBox="0 0 700 300" preserveAspectRatio="none">
-                  <rect width="700" height="300" fill="#EAF3EE" />
-                  <path d="M0 90 L700 60" stroke="#D6E3DD" stroke-width="8" />
-                  <path d="M0 200 L700 220" stroke="#D6E3DD" stroke-width="8" />
-                  <path d="M200 0 L240 300" stroke="#D6E3DD" stroke-width="7" />
-                  <path d="M500 0 L460 300" stroke="#D6E3DD" stroke-width="7" />
-                  <circle cx="150" cy="80" r="9" fill="#0A8F72" stroke="#fff" stroke-width="2" />
-                  <circle cx="300" cy="125" r="10" fill="#EF4444" stroke="#fff" stroke-width="2" />
-                  <circle cx="230" cy="215" r="9" fill="#0A8F72" stroke="#fff" stroke-width="2" />
-                  <circle cx="400" cy="105" r="9" fill="#EF4444" stroke="#fff" stroke-width="2" />
-                  <circle cx="450" cy="200" r="9" fill="#F59E0B" stroke="#fff" stroke-width="2" />
-                  <circle cx="520" cy="110" r="9" fill="#0A8F72" stroke="#fff" stroke-width="2" />
-                </svg>
-                <div class="map-legend-dash">
-                  <span><span class="sw-dash" style="background:#0A8F72;"></span>Unidades</span>
-                  <span><span class="sw-dash" style="background:#EF4444;"></span>Alertas activas</span>
-                  <span><span class="sw-dash" style="background:#F59E0B;"></span>En atención</span>
+                <div class="map-placeholder-dash">
+                  <i class="bi bi-map"></i>
+                  <p class="mb-0 fw-semibold">Mapa en tiempo real</p>
+                  <p class="mb-0 map-placeholder-texto-dash">Muy pronto vas a poder ver aquí la ubicación de tus unidades y alertas sobre el mapa.</p>
+                  <span class="badge-soon-dash mt-2">Próximamente</span>
                 </div>
-                <button class="map-btn-dash btn btn-light"><i class="bi bi-map"></i> Ver mapa completo</button>
               </div>
             </div>
           </div>
@@ -120,31 +107,31 @@
           <p class="section-title-dash fw-bold mb-3"><i class="bi bi-activity me-2"></i>Estado operativo</p>
           <div class="row g-3">
             <div class="col-6 col-md-3">
-              <div class="kpi-dash kpi-green-dash">
+              <div class="kpi-dash kpi-blue-dash">
                 <i class="bi bi-car-front kpi-icon-dash"></i>
-                <p class="kpi-num-dash">11</p>
-                <p class="kpi-label-dash">Unidades disponibles</p>
+                <p class="kpi-num-dash" id="kpiPatrullerosServicio">–</p>
+                <p class="kpi-label-dash">Patrulleros en servicio</p>
               </div>
             </div>
             <div class="col-6 col-md-3">
               <div class="kpi-dash kpi-blue-dash">
-                <i class="bi bi-person-check kpi-icon-dash"></i>
-                <p class="kpi-num-dash">4</p>
-                <p class="kpi-label-dash">Policías disponibles</p>
-              </div>
-            </div>
-            <div class="col-6 col-md-3">
-              <div class="kpi-dash kpi-red-dash">
-                <i class="bi bi-bell kpi-icon-dash"></i>
-                <p class="kpi-num-dash">1</p>
-                <p class="kpi-label-dash">Alertas pendientes</p>
+                <i class="bi bi-graph-up kpi-icon-dash"></i>
+                <p class="kpi-num-dash" id="kpiTotalAlertasHoy">–</p>
+                <p class="kpi-label-dash">Total de alertas hoy</p>
               </div>
             </div>
             <div class="col-6 col-md-3">
               <div class="kpi-dash kpi-amber-dash">
-                <i class="bi bi-clock kpi-icon-dash"></i>
-                <p class="kpi-num-dash">1</p>
-                <p class="kpi-label-dash">Alertas en atención</p>
+                <i class="bi bi-clock-history kpi-icon-dash"></i>
+                <p class="kpi-num-dash" id="kpiEnAtencion">–</p>
+                <p class="kpi-label-dash">En atención</p>
+              </div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="kpi-dash kpi-amber-dash">
+                <i class="bi bi-hourglass-split kpi-icon-dash"></i>
+                <p class="kpi-num-dash" id="kpiPendientes">–</p>
+                <p class="kpi-label-dash">Pendientes</p>
               </div>
             </div>
           </div>

@@ -1,8 +1,7 @@
 renderSidebarPolicia('historial');
 
-// ---------- Datos de ejemplo (en memoria) ----------
-// Simula lo que hoy trae AtencionAlertaService.listar() desde MySQL.
-// EstadoAtencionAlerta: FINALIZADA | EN_PROCESO | PENDIENTE | CANCELADA
+
+const LS_KEY_ATENCIONES = 'atencionesPoliciales';
 
 const ESTADOS_ATENCION = {
   FINALIZADA: { label: 'Finalizada', badge: 'badge-green-dash', color: 'var(--color-green)', icon: 'bi-check-lg' },
@@ -11,7 +10,7 @@ const ESTADOS_ATENCION = {
   CANCELADA: { label: 'Cancelada', badge: 'badge-dash', color: 'var(--subtle)', icon: 'bi-x-lg' },
 };
 
-const ATENCIONES = [
+const ATENCIONES_DEFECTO = [
   { id: 1, unidad: 'Patrulla 101', estado: 'FINALIZADA', descripcion: 'Riña reportada en la vía pública, unidad disolvió el conflicto sin heridos.', fecha: '11/09/2026 08:40', alertaId: 214, policia: 'Sofía Gómez' },
   { id: 2, unidad: 'CAI La Nevada', estado: 'EN_PROCESO', descripcion: 'Robo a mano armada en local comercial, unidad en el sitio recolectando información.', fecha: '11/09/2026 07:55', alertaId: 213, policia: 'Carlos Pérez' },
   { id: 3, unidad: 'Moto 07', estado: 'PENDIENTE', descripcion: 'Alerta comunitaria por sospechoso merodeando, unidad asignada aún no reporta llegada.', fecha: '11/09/2026 07:20', alertaId: 212, policia: null },
@@ -20,6 +19,26 @@ const ATENCIONES = [
   { id: 6, unidad: 'Moto 12', estado: 'FINALIZADA', descripcion: 'Acompañamiento a comerciantes durante el cierre nocturno del sector.', fecha: '10/09/2026 18:05', alertaId: 209, policia: 'Miguel Torres' },
   { id: 7, unidad: 'Patrulla 101', estado: 'EN_PROCESO', descripcion: 'Incendio menor en zona verde, unidad apoya a bomberos con el perímetro.', fecha: '10/09/2026 16:30', alertaId: 208, policia: 'Sofía Gómez' },
 ];
+
+function cargarAtenciones() {
+  try {
+    const guardado = localStorage.getItem(LS_KEY_ATENCIONES);
+    if (guardado) return JSON.parse(guardado);
+  } catch (e) {
+    console.warn('No se pudo leer el historial desde localStorage:', e);
+  }
+  return ATENCIONES_DEFECTO.map(a => ({ ...a }));
+}
+
+function guardarAtenciones() {
+  try {
+    localStorage.setItem(LS_KEY_ATENCIONES, JSON.stringify(ATENCIONES));
+  } catch (e) {
+    console.warn('No se pudo guardar el historial en localStorage:', e);
+  }
+}
+
+const ATENCIONES = cargarAtenciones();
 
 function iniciales(nombre) {
   const partes = (nombre || '').trim().split(/\s+/).filter(Boolean);
@@ -116,5 +135,6 @@ document.getElementById('chipsEstado').addEventListener('click', (e) => {
 });
 
 // ---------- Inicio ----------
+guardarAtenciones();
 renderKpisHistorial();
 renderTimeline();

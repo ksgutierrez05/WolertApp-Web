@@ -58,3 +58,44 @@
   white-space: nowrap;
   flex-shrink: 0;
 }
+
+/* ---------- Placeholder "Próximamente" del mapa ---------- */
+/* Reemplaza temporalmente el mapa real mientras se integra el
+   proveedor de mapas/telemetría de las unidades. */
+.map-placeholder-dash {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  padding: 24px;
+  color: var(--subtle);
+}
+
+.map-placeholder-dash i {
+  font-size: 42px;
+  color: var(--subtle);
+  opacity: .8;
+}
+
+.map-placeholder-dash p {
+  color: inherit;
+}
+
+.map-placeholder-texto-dash {
+  font-size: 12.5px;
+  max-width: 320px;
+}
+
+.badge-soon-dash {
+  display: inline-block;
+  padding: 4px 14px;
+  border-radius: 100px;
+  font-size: 11.5px;
+  font-weight: 600;
+  background: rgba(245, 158, 11, 0.15);
+  color: #b45309;
+}
