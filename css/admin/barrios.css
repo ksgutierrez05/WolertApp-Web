@@ -1,0 +1,45 @@
+.tabla-barrios-header {
+    display: grid;
+    grid-template-columns: 2fr 1fr auto;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--line);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--subtle);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.tabla-barrios-fila {
+    display: grid;
+    grid-template-columns: 2fr 1fr auto;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--line);
+}
+
+.tabla-barrios-fila:last-child {
+    border-bottom: none;
+}
+
+.tabla-barrios-vacio {
+    padding: 30px 20px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 13.5px;
+}
+
+.barrio-nombre-dash {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--ink);
+}
+
+.barrio-comuna-badge-dash {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 100px;
+    color: #fff;
+}
