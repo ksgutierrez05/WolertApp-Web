@@ -108,6 +108,12 @@
 
 .co-active-meta i { color: var(--subtle); }
 
+.co-active-empty {
+  color: var(--muted);
+}
+
+.co-active-empty i { color: var(--color-green); }
+
 .co-route-box {
   margin-top: 16px;
   border-radius: 14px;
@@ -155,16 +161,28 @@
 
 .co-alert-item:last-child { border-bottom: none; }
 
-.co-alert-dot {
-  width: 9px;
-  height: 9px;
+/* Ícono circular por tipo, coloreado según prioridad.
+   Un solo bloque con variables de color hace de "media"/"alta"/"baja"
+   en vez de repetir reglas por cada tono. */
+.co-alert-icon {
+  --co-alert-color: var(--color-amber);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
   border-radius: 50%;
-  margin-top: 6px;
+  margin-top: 1px;
+  font-size: 14px;
+  color: var(--co-alert-color);
+  background: color-mix(in srgb, var(--co-alert-color) 15%, transparent);
   flex-shrink: 0;
 }
 
-.co-alert-dot.alta { background: var(--color-danger); }
-.co-alert-dot.media { background: var(--color-amber); }
+.co-alert-icon-alta   { --co-alert-color: var(--color-danger); }
+.co-alert-icon-media  { --co-alert-color: var(--color-amber); }
+.co-alert-icon-baja   { --co-alert-color: var(--color-primary); }
 
 .co-alert-body { flex: 1; min-width: 0; }
 
@@ -298,7 +316,7 @@
   width: 30px;
   height: 30px;
   border-radius: 9px;
-  background: #fcf0da;
+  background: color-mix(in srgb, var(--color-amber) 16%, transparent);
   color: var(--color-amber);
   display: flex;
   align-items: center;

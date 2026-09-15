@@ -1,21 +1,4 @@
-// js/policia/sidebar.js
-// Sidebar único del rol Policía. Se inyecta en cada página
-// (centro de operaciones, mis alertas, mis atenciones, mi unidad,
-// alarmas, historial, mapas, notificaciones, mi perfil) para no
-// repetir el HTML del <aside> en cada archivo.
-//
-// Uso en cada HTML:
-//   <aside class="sidebar-dash" id="sidebarDash"></aside>
-//   ...
-//   <script src="../js/policia/sidebar.js"></script>
-//   <script>renderSidebarPolicia('misalertas');</script>
-//
-// El string pasado a renderSidebarPolicia() debe coincidir con el
-// "id" del item correspondiente en MENU_POLICIA, para que se le
-// aplique la clase "active" automáticamente.
-//
-// El rol se pinta con body class="rol-policia" (ver css/temas.css).
-// Requiere Bootstrap Icons cargado en el <head> del HTML.
+
 
 const ICONOS_POLICIA = {
   logo: 'bi-shield-check',
@@ -23,7 +6,6 @@ const ICONOS_POLICIA = {
   misalertas: 'bi-exclamation-triangle',
   misatenciones: 'bi-check2-circle',
   miunidad: 'bi-people',
-  alarmas: 'bi-megaphone',
   historial: 'bi-clock-history',
   mapas: 'bi-geo-alt',
   notificaciones: 'bi-bell',
@@ -31,12 +13,6 @@ const ICONOS_POLICIA = {
   logout: 'bi-box-arrow-right',
 };
 
-// Estructura del menú de Policía. Para agregar/quitar una opción,
-// se edita SOLO este arreglo — no hay que tocar ningún HTML.
-//
-// "badge" es opcional y muestra un contador rojo junto al ítem
-// (ej. cantidad de alertas nuevas sin aceptar). Se puede alimentar
-// dinámicamente reemplazando el valor antes de llamar a render.
 const MENU_POLICIA = [
   {
     seccion: 'General',
@@ -50,8 +26,7 @@ const MENU_POLICIA = [
       { id: 'misalertas',    label: 'Mis Alertas',    href: '../Alertas/alertas.html', icon: ICONOS_POLICIA.misalertas},
       { id: 'misatenciones', label: 'Mis Atenciones', href: '../Atenciones/atenciones.html', icon: ICONOS_POLICIA.misatenciones },
       { id: 'miunidad',      label: 'Mi Unidad',      href: '../Unidad/unidad.html', icon: ICONOS_POLICIA.miunidad },
-      { id: 'alarmas',       label: 'Alarmas',        href: '../Alarmas/alarmas.html', icon: ICONOS_POLICIA.alarmas },
-      { id: 'mapas',         label: 'Mapas',          href: '../Mapas/mapas.html', icon: ICONOS_POLICIA.mapas },
+      { id: 'mapas',         label: 'Mapas',          href: '../Mapas/Mapa.html', icon: ICONOS_POLICIA.mapas },
     ],
   },
   {

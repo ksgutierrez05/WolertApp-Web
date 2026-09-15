@@ -1,0 +1,142 @@
+/* ============================================================
+   css/patrullero/mapas.css
+   Estado "próximamente" de la sección Mapas. Usa solo las
+   variables ya definidas en global.css / temas.css para quedar
+   coherente con el resto del rol (verde de marca, tipografías,
+   sombras). Prefijo "mp-" para no chocar con nada del global.
+   ============================================================ */
+
+.mp-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 6px;
+  padding: 72px 24px;
+  min-height: 66vh;
+}
+
+.mp-tag {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-green);
+  margin: 28px 0 2px;
+}
+
+.mp-title {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0 0 10px;
+}
+
+.mp-desc {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--muted);
+  max-width: 380px;
+  margin: 0;
+}
+
+/* --- Radar --- */
+.mp-radar {
+  position: relative;
+  width: 220px;
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mp-ring {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+}
+
+.mp-ring-1 { width: 100%;   height: 100%; }
+.mp-ring-2 { width: 68%;    height: 68%; }
+.mp-ring-3 { width: 36%;    height: 36%; }
+
+.mp-grid {
+  position: absolute;
+  background: var(--line);
+  opacity: 0.6;
+}
+
+.mp-grid-h { top: 50%; left: 6%; right: 6%; height: 1px; transform: translateY(-50%); }
+.mp-grid-v { left: 50%; top: 6%; bottom: 6%; width: 1px; transform: translateX(-50%); }
+
+.mp-sweep {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  background: conic-gradient(
+    from 0deg,
+    color-mix(in srgb, var(--color-green) 55%, transparent) 0deg,
+    transparent 70deg,
+    transparent 360deg
+  );
+  animation: mp-rotar 3.4s linear infinite;
+}
+
+.mp-core {
+  position: relative;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-green);
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-green) 55%, transparent);
+  animation: mp-latido 2.2s ease-out infinite;
+  z-index: 1;
+}
+
+.mp-blip {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-green);
+  opacity: 0;
+  animation: mp-parpadeo 3.4s ease-in-out infinite;
+}
+
+.mp-blip-1 { top: 28%; left: 68%; animation-delay: 0.3s; }
+.mp-blip-2 { top: 66%; left: 30%; animation-delay: 1.4s; }
+.mp-blip-3 { top: 40%; left: 22%; animation-delay: 2.3s; }
+
+@keyframes mp-rotar {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes mp-latido {
+  0%   { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-green) 45%, transparent); }
+  70%  { box-shadow: 0 0 0 26px color-mix(in srgb, var(--color-green) 0%, transparent); }
+  100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-green) 0%, transparent); }
+}
+
+@keyframes mp-parpadeo {
+  0%, 100% { opacity: 0; transform: scale(0.6); }
+  15%      { opacity: 1; transform: scale(1.1); }
+  30%      { opacity: 0.5; transform: scale(1); }
+  45%      { opacity: 0; transform: scale(0.6); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mp-sweep, .mp-core, .mp-blip {
+    animation: none;
+  }
+  .mp-sweep { opacity: 0.5; }
+  .mp-core { box-shadow: none; }
+  .mp-blip { opacity: 0.8; }
+}
+
+@media (max-width: 480px) {
+  .mp-radar { width: 170px; height: 170px; }
+  .mp-title { font-size: 24px; }
+}

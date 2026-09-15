@@ -1,18 +1,4 @@
-// js/patrullero/mis-atenciones.js
-// Lógica de la pantalla "Mis Atenciones" del rol Patrullero.
-//
-// Reglas clave (ver documento de especificación):
-// - Flujo único y sin saltos: ASIGNADA -> EN_CAMINO -> EN_SITIO -> RESUELTA
-// - El patrullero NO redacta informe final: solo cambia de estado y puede
-//   dejar una observación corta y opcional.
-// - Cada cambio de estado registra usuario, fecha, hora, estado anterior y
-//   estado nuevo, y alimenta automáticamente la línea de tiempo.
-// - "Alerta resuelta" exige confirmación antes de aplicar el cambio.
-//
-// Requiere que este archivo se cargue DESPUÉS de sidebar.js, y que el HTML
-// tenga los ids: sidebarDash, kpiTotal, kpiCamino, kpiSitio, kpiResueltas,
-// bannerActivaAt, filtrosAt, buscarCasoAt, filtroTipoAt, filtroFechaAt,
-// listaAt, panelDetalleAt, modalResolverAt, btnConfirmarResolucionAt.
+
 
 renderSidebarPolicia('misatenciones');
 
@@ -38,11 +24,13 @@ const ACCION_SIGUIENTE = {
 const PATRULLERO_ACTUAL = 'Juan Pérez';
 
 /* ============================================================
-   DATOS DE EJEMPLO
-   En producción esto viene del backend (alertas asignadas al
-   patrullero autenticado por Central de Radio).
+   PERSISTENCIA (localStorage)
+   Mientras no haya backend, cada cambio de estado u observación
+   se guarda acá para que sobreviva a un refresh de la página.
    ============================================================ */
-let atenciones = [
+const STORAGE_KEY_AT = 'wolert_mis_atenciones';
+
+const ATENCIONES_INICIALES = [
   {
     id: 'WL-2026-00125',
     tipo: 'Robo reportado',
@@ -122,6 +110,30 @@ let atenciones = [
     },
   },
 ];
+
+function cargarAtenciones() {
+  try {
+    const guardado = localStorage.getItem(STORAGE_KEY_AT);
+    if (guardado) return JSON.parse(guardado);
+  } catch (e) {
+    console.warn('No se pudo leer Mis Atenciones desde localStorage, usando datos de ejemplo.', e);
+  }
+  return structuredClone(ATENCIONES_INICIALES);
+}
+
+function guardarAtenciones() {
+  try {
+    localStorage.setItem(STORAGE_KEY_AT, JSON.stringify(atenciones));
+  } catch (e) {
+    console.warn('No se pudo guardar Mis Atenciones en localStorage.', e);
+  }
+}
+
+/* ============================================================
+   DATOS (cargados de localStorage o, si no hay nada guardado,
+   de los datos de ejemplo de arriba)
+   ============================================================ */
+let atenciones = cargarAtenciones();
 
 let filtroActual = 'TODAS';
 let idSeleccionado = atenciones[0].id;
@@ -389,6 +401,16 @@ function renderDetalle() {
       }
     });
   }
+
+  // Guarda la observación aunque el patrullero no avance de estado todavía
+  // (por ejemplo, si escribe algo y navega a otra atención o recarga).
+  const campoObs = document.getElementById('campoObservacion');
+  if (campoObs) {
+    campoObs.addEventListener('blur', () => {
+      guardarObservacion(a);
+      guardarAtenciones();
+    });
+  }
 }
 
 function guardarObservacion(a) {
@@ -410,6 +432,7 @@ function avanzarEstado(id) {
   a.estado = nuevoEstado;
   a.tiempos[nuevoEstado] = horaActual();
   // En una implementación real aquí se notifica a Central de Radio.
+  guardarAtenciones();
 
   poblarFiltroTipos();
   renderKPIs();
