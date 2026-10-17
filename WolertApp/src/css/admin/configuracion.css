@@ -1,0 +1,268 @@
+/* ============================================================
+   CONFIGURACION.CSS — estilos completos de admin/configuracion.html
+   ============================================================ */
+
+/* --- Banner superior --- */
+.config-banner-dash {
+    position: relative;
+    overflow: hidden;
+    padding: 24px 28px;
+    background: linear-gradient(120deg, var(--color-primary) 0%, var(--color-primary-2) 100%);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: var(--shadow-md);
+}
+
+.config-avatar-grande-dash {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    flex-shrink: 0;
+}
+
+.config-banner-nombre-dash {
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 700;
+    font-size: 19px;
+}
+
+.config-banner-estado-dash {
+    font-size: 12.5px;
+    color: #d6dceb;
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.dot-online-dash {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background-color: var(--color-green);
+    display: inline-block;
+}
+
+.config-banner-icono-dash {
+    font-size: 64px;
+    opacity: 0.15;
+    position: absolute;
+    right: 24px;
+}
+
+/* --- Header de tarjeta con botón editar --- */
+.info-card-header-dash {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--line);
+}
+
+.btn-editar-info-dash {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #fff;
+    border: 1px solid var(--line);
+    color: var(--ink);
+    font-size: 12.5px;
+    font-weight: 700;
+    padding: 7px 14px;
+    border-radius: 10px;
+}
+
+.btn-editar-info-dash:hover {
+    background-color: var(--fog);
+}
+
+/* --- Filas de información (vista / edición) --- */
+.info-fila-dash {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--line);
+}
+
+.info-fila-label-dash {
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.info-fila-valor-dash {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--ink);
+}
+
+/* Inputs de edición: ocultos por defecto */
+.input-edicion-dash {
+    display: none;
+    max-width: 220px;
+    text-align: right;
+}
+
+/* Cuando el form tiene .editando, se invierte qué se ve */
+#form-configuracion.editando .info-fila-valor-dash {
+    display: none;
+}
+
+#form-configuracion.editando .input-edicion-dash {
+    display: block;
+}
+
+.config-footer-dash {
+    padding: 20px 24px;
+}
+
+/* --- Estilo base de inputs (antes dependía solo de Bootstrap) --- */
+.input-dash {
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    background-color: var(--fog);
+    padding: 10px 14px;
+    font-size: 13.5px;
+    color: var(--ink);
+}
+
+.input-dash:focus {
+    background-color: #fff;
+    box-shadow: 0 0 0 3px rgba(31, 95, 168, 0.15);
+    border-color: var(--color-blue);
+    outline: none;
+}
+
+.config-label-dash {
+    display: block;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 6px;
+}
+
+.btn-cancelar-dash {
+    background-color: var(--fog);
+    color: var(--muted);
+    border: none;
+    border-radius: 12px;
+    font-weight: 700;
+    padding: 9px 18px;
+    font-size: 13.5px;
+}
+
+.btn-cancelar-dash:hover {
+    background-color: var(--line);
+    color: var(--ink);
+}
+
+/* --- Toggles tipo switch --- */
+.toggle-fila-dash {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--line);
+}
+
+.toggle-titulo-dash {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--ink);
+}
+
+.toggle-sub-dash {
+    font-size: 11.5px;
+    color: var(--muted);
+    margin-top: 2px;
+}
+
+.switch-dash {
+    position: relative;
+    display: inline-block;
+    width: 42px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.switch-dash input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.switch-slider-dash {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background-color: var(--line);
+    border-radius: 100px;
+    transition: 0.2s;
+}
+
+.switch-slider-dash::before {
+    content: "";
+    position: absolute;
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: #fff;
+    border-radius: 50%;
+    transition: 0.2s;
+    box-shadow: var(--shadow-xs);
+}
+
+.switch-dash input:checked + .switch-slider-dash {
+    background-color: var(--color-green);
+}
+
+.switch-dash input:checked + .switch-slider-dash::before {
+    transform: translateX(18px);
+}
+
+/* --- Filas de cuenta con flecha (clickeables) --- */
+.cuenta-fila-dash {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--line);
+    cursor: pointer;
+    transition: background 0.12s ease;
+}
+
+.cuenta-fila-dash:hover {
+    background-color: var(--fog);
+}
+
+.cuenta-fila-dash > i.bi-chevron-right {
+    color: var(--subtle);
+    font-size: 14px;
+}
+
+.cuenta-fila-icono-dash {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    flex-shrink: 0;
+}
+
+.cuenta-icono-azul-dash { background-color: #e8f0fb; color: var(--color-blue); }
+.cuenta-icono-rojo-dash { background-color: #fce8e9; color: var(--color-danger); }
+
+.cuenta-fila-danger-dash:hover {
+    background-color: #fdf1f1;
+}

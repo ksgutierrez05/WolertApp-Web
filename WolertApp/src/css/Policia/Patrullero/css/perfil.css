@@ -1,0 +1,271 @@
+/* ============================================================
+   PERFIL.CSS — estilos propios de "Mi Perfil" (sufijo -per)
+   ============================================================ */
+
+.cabecera-perfil-per {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  background: linear-gradient(120deg, var(--color-primary) 0%, var(--color-primary-2) 100%);
+  border-radius: 20px;
+  padding: 22px 26px;
+  color: #fff;
+  box-shadow: var(--shadow-md);
+  flex-wrap: wrap;
+}
+
+.avatar-grande-per {
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.16);
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 700;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.nombre-per {
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 700;
+  font-size: 19px;
+  margin: 0;
+}
+
+.subtitulo-per {
+  font-size: 12.5px;
+  color: #c3cade;
+  margin: 4px 0 0;
+}
+
+.estado-op-per {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 100px;
+  padding: 7px 14px 7px 10px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.estado-op-per .dot-per {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #34d399;
+  box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.28);
+}
+
+/* ---------- información personal/operativa ---------- */
+.fila-info-per {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 2px;
+  border-bottom: 1px solid var(--line);
+  font-size: 13.5px;
+}
+
+.fila-info-per:last-child {
+  border-bottom: none;
+}
+
+.label-info-per {
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.valor-info-per {
+  font-weight: 700;
+  color: var(--ink);
+  text-align: right;
+}
+
+.input-info-per {
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 7px 11px;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: right;
+  max-width: 240px;
+  color: var(--ink);
+}
+
+.input-info-per:focus {
+  outline: none;
+  border-color: var(--color-primary-2);
+  box-shadow: 0 0 0 3px rgba(21, 77, 140, 0.12);
+}
+
+.nota-institucional-per {
+  font-size: 11px;
+  color: var(--subtle);
+  margin: 4px 2px 6px;
+}
+
+/* ---------- botón Editar / Guardar / Cancelar ---------- */
+.btn-editar-per {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: #fff;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 8px 15px;
+  border-radius: 11px;
+  box-shadow: var(--shadow-xs);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, color 0.15s ease;
+}
+
+.btn-editar-per i {
+  color: var(--color-primary-2);
+}
+
+.btn-editar-per:hover,
+.btn-editar-per.activo-per {
+  border-color: var(--color-primary-2);
+  color: var(--color-primary-2);
+  box-shadow: var(--shadow-sm);
+}
+
+.acciones-edicion-per {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+
+.btn-cancelar-per {
+  background: #fff;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 9px 16px;
+  border-radius: 11px;
+}
+
+.btn-cancelar-per:hover {
+  color: var(--ink);
+  border-color: var(--subtle);
+}
+
+.btn-guardar-per {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-2));
+  border: none;
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 9px 18px;
+  border-radius: 11px;
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-guardar-per:hover {
+  opacity: 0.94;
+}
+
+/* ---------- configuración (switches) ---------- */
+.fila-config-per {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  padding: 13px 2px;
+  border-bottom: 1px solid var(--line);
+}
+
+.fila-config-per.sin-borde-per {
+  border-bottom: none;
+}
+
+.titulo-config-per {
+  font-size: 13.5px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.desc-config-per {
+  font-size: 11.5px;
+  color: var(--muted);
+  margin: 2px 0 0;
+}
+
+.fila-config-per .form-check-input {
+  width: 38px;
+  height: 21px;
+  cursor: pointer;
+}
+
+.fila-config-per .form-check-input:checked {
+  background-color: var(--color-primary-2);
+  border-color: var(--color-primary-2);
+}
+
+/* ---------- acciones de cuenta ---------- */
+.fila-accion-per {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: none;
+  border: none;
+  padding: 13px 2px;
+  border-bottom: 1px solid var(--line);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ink);
+  text-align: left;
+}
+
+.fila-accion-per:last-child {
+  border-bottom: none;
+}
+
+.fila-accion-per span {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.fila-accion-per i:first-child {
+  color: var(--color-primary-2);
+  font-size: 15px;
+}
+
+.fila-accion-per:hover {
+  color: var(--color-primary-2);
+}
+
+.fila-accion-per > i.bi-chevron-right {
+  color: var(--subtle);
+  font-size: 13px;
+}
+
+.fila-accion-peligro-per {
+  color: var(--color-danger);
+}
+
+.fila-accion-peligro-per i:first-child {
+  color: var(--color-danger);
+}
+
+.fila-accion-peligro-per:hover {
+  color: var(--color-danger-2);
+}

@@ -1,0 +1,240 @@
+/* Piezas de Reportes que no existen en global.css: encabezado con
+   botón exportar, barra de filtros estilo dashboard web, tabla
+   paginada y variante morada de KPI. */
+
+.header-vista-dash {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.header-vista-dash h1 {
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 700;
+  font-size: 24px;
+  margin: 0 0 4px;
+  color: var(--ink);
+}
+
+.header-vista-dash p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13.5px;
+}
+
+.btn-cv-verde {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-2));
+  border: none;
+  color: #fff;
+  font-weight: 700;
+  font-size: 13.5px;
+  padding: 11px 20px;
+  border-radius: 100px;
+  box-shadow: var(--shadow-sm);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.btn-cv-verde:hover {
+  color: #fff;
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+/* ---------- Barra de filtros (misma familia que Unidades/Policías) ---------- */
+.filtros-toolbar-dash {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 12px 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+.filtros-toolbar-dash .search-dash {
+  flex: 1 1 240px;
+}
+
+.filtros-toolbar-dash select.form-select {
+  border-radius: 10px;
+  border-color: var(--line);
+  background-color: var(--fog);
+  font-size: 13px;
+  min-width: 150px;
+  padding: 10px 14px;
+}
+
+.filtros-toolbar-dash select.form-select:focus {
+  box-shadow: 0 0 0 3px rgba(28, 120, 30, 0.15);
+  border-color: var(--color-primary);
+}
+
+.rango-fechas-dash {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--fog);
+  border-radius: 10px;
+  padding: 4px 10px;
+}
+
+.rango-fechas-dash input[type="date"] {
+  border: none;
+  background: transparent;
+  font-size: 12.5px;
+  color: var(--ink);
+  padding: 6px 2px;
+  max-width: 118px;
+}
+
+.rango-fechas-dash input[type="date"]:focus {
+  outline: none;
+}
+
+.rango-fechas-dash span {
+  color: var(--subtle);
+  font-size: 12px;
+}
+
+.btn-limpiar-link-dash {
+  background: none;
+  border: none;
+  color: var(--color-danger);
+  font-size: 12.5px;
+  font-weight: 700;
+  white-space: nowrap;
+  padding: 8px 4px;
+}
+
+.btn-limpiar-link-dash:hover {
+  text-decoration: underline;
+}
+
+/* ---------- Tabla de alertas ---------- */
+.tabla-header-dash {
+  display: flex;
+  align-items: center;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--line);
+  gap: 10px;
+}
+
+.tabla-header-dash span {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--subtle);
+}
+
+.tabla-dash {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+
+.tabla-dash tbody tr {
+  border-bottom: 1px solid var(--line);
+  transition: background 0.12s ease;
+}
+
+.tabla-dash tbody tr:last-child {
+  border-bottom: none;
+}
+
+.tabla-dash tbody tr:hover {
+  background: var(--fog);
+}
+
+.tabla-dash td {
+  padding: 11px 10px;
+  vertical-align: top;
+  color: var(--ink);
+}
+
+.tabla-dash td:first-child {
+  padding-left: 18px;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.celda-desc-dash {
+  color: var(--muted);
+  font-size: 12px;
+  max-width: 260px;
+}
+
+.tabla-footer-dash {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px;
+  border-top: 1px solid var(--line);
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.paginacion-dash {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pagina-btn-dash {
+  min-width: 30px;
+  height: 30px;
+  padding: 0 6px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pagina-btn-dash:hover:not(:disabled) {
+  background: var(--fog);
+  color: var(--ink);
+}
+
+.pagina-btn-dash.activo {
+  background: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary);
+}
+
+.pagina-btn-dash:disabled {
+  opacity: 0.35;
+}
+
+.tabla-vacio-dash {
+  text-align: center;
+  padding: 44px 20px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* ---------- Variante morada de KPI (no está en global.css) ---------- */
+.kpi-purple-dash::before { background-color: #7b1fa2; }
+.kpi-purple-dash .kpi-icon-dash,
+.kpi-purple-dash .kpi-num-dash { color: #7b1fa2; }
+
+@media (max-width: 640px) {
+  .filtros-toolbar-dash select.form-select {
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+  .rango-fechas-dash {
+    flex: 1 1 100%;
+  }
+}

@@ -1,0 +1,351 @@
+/* ============================================================
+   ASIGNACIÓN — Central de Radio
+   ============================================================ */
+
+.asig-layout {
+    display: grid;
+    grid-template-columns: 380px minmax(0, 1fr);
+    gap: 20px;
+    align-items: start;
+}
+
+.asig-col-list {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-height: calc(100vh - 220px);
+    min-height: 420px;
+}
+
+/* Tabs */
+.asig-tabs {
+    display: flex;
+    gap: 6px;
+    padding: 4px;
+    background: var(--fog);
+    border-radius: 12px;
+}
+
+.asig-tab {
+    flex: 1;
+    border: 0;
+    background: transparent;
+    padding: 9px 10px;
+    border-radius: 9px;
+    color: var(--muted);
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.asig-tab.active {
+    background: #fff;
+    color: var(--ink);
+    box-shadow: var(--shadow-xs);
+}
+
+.asig-tab-count {
+    padding: 1px 7px;
+    border-radius: 100px;
+    background: var(--line);
+    font-size: 10.5px;
+}
+
+.asig-tab.active .asig-tab-count {
+    background: var(--color-primary);
+    color: #fff;
+}
+
+/* Búsqueda */
+.asig-search .input-group-text {
+    background: #fff;
+    border-right: 0;
+    color: var(--subtle);
+}
+
+.asig-search .form-control {
+    border-left: 0;
+    font-size: 13px;
+}
+
+.asig-search .form-control:focus {
+    box-shadow: none;
+}
+
+/* Listas */
+.asig-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+/* Alertas */
+.asig-card {
+    position: relative;
+    padding: 12px 14px 12px 16px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: #fff;
+    cursor: pointer;
+    transition: .15s;
+}
+
+.asig-card:hover {
+    box-shadow: var(--shadow-sm);
+    transform: translateY(-1px);
+}
+
+.asig-card.selected {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(21,77,140,.14);
+}
+
+.asig-card::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 10px;
+    bottom: 10px;
+    width: 4px;
+    border-radius: 4px;
+}
+
+.asig-card[data-prioridad="critica"]::before,
+.asig-card[data-prioridad="alta"]::before {
+    background: var(--color-danger);
+}
+
+.asig-card[data-prioridad="media"]::before {
+    background: var(--color-amber);
+}
+
+.asig-card[data-prioridad="baja"]::before {
+    background: var(--color-blue);
+}
+
+.asig-card-top,
+.asig-patrullero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.asig-card-caso,
+.asig-detalle-caso {
+    color: var(--subtle);
+    font-size: 11.5px;
+    font-weight: 700;
+}
+
+.asig-card-tipo,
+.asig-patrullero-nombre {
+    font-weight: 700;
+}
+
+.asig-card-tipo {
+    margin-top: 2px;
+    font-size: 13.5px;
+}
+
+.asig-card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 6px;
+    color: var(--muted);
+    font-size: 11.5px;
+}
+
+/* Detalle */
+.asig-col-detalle {
+    min-height: 420px;
+    padding: 22px;
+}
+
+.asig-detalle-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--line);
+}
+
+.asig-detalle-titulo {
+    margin-top: 2px;
+    font-size: 19px;
+    font-weight: 700;
+}
+
+.asig-detalle-meta,
+.asig-patrullero-sub {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 8px;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+/* Bloques */
+.asig-bloque {
+    margin-bottom: 18px;
+}
+
+.asig-bloque-titulo {
+    margin-bottom: 8px;
+    color: var(--subtle);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.asig-texto-reporte {
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: var(--fog);
+    color: var(--ink);
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.asig-texto-reporte.central {
+    background: #eaf1fb;
+}
+
+/* Patrulleros */
+.asig-patrullero {
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+}
+
+.asig-patrullero-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.asig-patrullero-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    border-radius: 12px;
+    background: linear-gradient(
+        135deg,
+        var(--color-primary),
+        var(--color-primary-2)
+    );
+    color: #fff;
+    font-weight: 700;
+}
+
+.asig-sugerido-tag {
+    padding: 2px 8px;
+    margin-left: 6px;
+    border-radius: 100px;
+    background: #e3f8ec;
+    color: var(--color-green);
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.asig-estado-pill {
+    padding: 3px 9px;
+    border-radius: 100px;
+    font-size: 10.5px;
+    font-weight: 700;
+}
+
+.asig-estado-disponible {
+    background: #e3f8ec;
+    color: var(--color-green);
+}
+
+.asig-estado-en_camino {
+    background: #e8f0fb;
+    color: var(--color-blue);
+}
+
+.asig-estado-en_sitio {
+    background: #fcf0da;
+    color: var(--color-amber);
+}
+
+.asig-estado-ocupado {
+    background: #fce8e9;
+    color: var(--color-danger);
+}
+
+.asig-estado-fuera_servicio {
+    background: var(--fog);
+    color: var(--subtle);
+}
+
+/* Seguimiento */
+.asig-seguimiento-card {
+    padding: 16px;
+    margin-bottom: 16px;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+}
+
+.asig-aviso-sin-respuesta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    margin-bottom: 14px;
+    border-radius: 12px;
+    background: #fce8e9;
+    color: var(--color-danger);
+    font-size: 12.5px;
+    font-weight: 600;
+}
+
+.asig-empty {
+    padding: 40px 12px;
+    color: var(--subtle);
+    font-size: 13px;
+    text-align: center;
+}
+
+.asig-empty i {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 26px;
+}
+
+.asig-toast {
+    border: 0;
+    background: var(--ink);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .asig-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 576px) {
+    .asig-patrullero {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .asig-detalle-header {
+        flex-direction: column;
+    }
+}
