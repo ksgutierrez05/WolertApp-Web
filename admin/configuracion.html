@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WolertApp - Configuración</title>
+    <script src="../js/admin/script.js" defer></script>
+    <script src="../js/admin/configuracion.js" defer></script>
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/admin/configuracion.css">
+    <link rel="stylesheet" href="../css/temas.css">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="rol-admin">
+
+    <div id="sidebar-placeholder"></div>
+
+    <div id="wrapperDash">
+        <main class="main-dash">
+                            <!-- Encabezado con banner -->
+                <div class="config-banner-dash mb-4">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="config-avatar-grande-dash">
+                            <i class="bi bi-person-fill"></i>
+                        </div>
+                        <div>
+                            <div class="config-banner-nombre-dash" id="perfil-nombre">ADMIN SISTEMA</div>
+                            <div class="config-banner-estado-dash">
+                                <span class="dot-online-dash"></span>
+                                Sistema activo · Administrador
+                            </div>
+                        </div>
+                    </div>
+                    <i class="bi bi-shield-check config-banner-icono-dash"></i>
+                </div>
+
+                <div class="row g-3">
+
+                    <!-- Columna izquierda: información personal -->
+                    <div class="col-lg-7">
+                        <div class="card-panel-dash">
+                            <div class="info-card-header-dash">
+                                <h3 class="section-title-dash">Información personal y operativa</h3>
+                                <button type="button" class="btn-editar-info-dash" id="btn-toggle-edicion">
+                                    <i class="bi bi-pencil"></i>
+                                    Editar
+                                </button>
+                            </div>
+
+                            <form id="form-configuracion">
+
+                                <div class="info-fila-dash">
+                                    <span class="info-fila-label-dash">Nombre completo</span>
+                                    <span class="info-fila-valor-dash" data-view="nombre">ADMIN SISTEMA</span>
+                                    <input type="text" id="config-nombre" class="form-control input-dash input-edicion-dash" value="ADMIN SISTEMA">
+                                </div>
+
+                                <div class="info-fila-dash">
+                                    <span class="info-fila-label-dash">Correo electrónico</span>
+                                    <span class="info-fila-valor-dash" data-view="correo">admin@wolertapp.com</span>
+                                    <input type="email" id="config-correo" class="form-control input-dash input-edicion-dash" value="admin@wolertapp.com">
+                                </div>
+
+                                <div class="info-fila-dash">
+                                    <span class="info-fila-label-dash">Teléfono</span>
+                                    <span class="info-fila-valor-dash" data-view="telefono">3000000000</span>
+                                    <input type="tel" id="config-telefono" class="form-control input-dash input-edicion-dash" value="3000000000">
+                                </div>
+
+                                <div class="info-fila-dash">
+                                    <span class="info-fila-label-dash">Usuario</span>
+                                    <span class="info-fila-valor-dash" data-view="usuario">admin</span>
+                                    <input type="text" id="config-usuario" class="form-control input-dash input-edicion-dash" value="admin">
+                                </div>
+
+                                <div class="info-fila-dash" style="border-bottom: none;">
+                                    <span class="info-fila-label-dash">Estado</span>
+                                    <span class="badge-dash badge-green-dash">ACTIVO</span>
+                                </div>
+
+                                <div class="config-footer-dash d-flex justify-content-end gap-2" id="acciones-edicion-dash" style="display: none;">
+                                    <button type="button" class="btn btn-cancelar-dash" id="btn-cancelar-config">Cancelar</button>
+                                    <button type="submit" class="btn btn-cv-azul px-4" style="border-radius: 12px; font-weight: 700;">Guardar cambios</button>
+                                </div>
+
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Columna derecha: preferencias + cuenta -->
+                    <div class="col-lg-5">
+                        <div class="card-panel-dash mb-3">
+                            <div class="info-card-header-dash">
+                                <h3 class="section-title-dash">Configuración</h3>
+                            </div>
+
+                            <div class="toggle-fila-dash">
+                                <div>
+                                    <div class="toggle-titulo-dash">Notificaciones</div>
+                                    <div class="toggle-sub-dash">Recibir avisos de alertas del sistema</div>
+                                </div>
+                                <label class="switch-dash">
+                                    <input type="checkbox" id="pref-notificaciones" checked>
+                                    <span class="switch-slider-dash"></span>
+                                </label>
+                            </div>
+
+                            <div class="toggle-fila-dash">
+                                <div>
+                                    <div class="toggle-titulo-dash">Sonido</div>
+                                    <div class="toggle-sub-dash">Reproducir sonido al recibir una alerta</div>
+                                </div>
+                                <label class="switch-dash">
+                                    <input type="checkbox" id="pref-sonido" checked>
+                                    <span class="switch-slider-dash"></span>
+                                </label>
+                            </div>
+
+                            <div class="toggle-fila-dash" style="border-bottom: none;">
+                                <div>
+                                    <div class="toggle-titulo-dash">Modo compacto</div>
+                                    <div class="toggle-sub-dash">Reduce el espaciado de las tablas</div>
+                                </div>
+                                <label class="switch-dash">
+                                    <input type="checkbox" id="pref-compacto">
+                                    <span class="switch-slider-dash"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="card-panel-dash">
+                            <div class="info-card-header-dash">
+                                <h3 class="section-title-dash">Cuenta</h3>
+                            </div>
+
+                            <div class="cuenta-fila-dash" id="fila-seguridad">
+                                <div class="cuenta-fila-icono-dash cuenta-icono-azul-dash">
+                                    <i class="bi bi-shield-lock-fill"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="toggle-titulo-dash">Seguridad</div>
+                                </div>
+                                <i class="bi bi-chevron-right"></i>
+                            </div>
+
+                            <div class="cuenta-fila-dash cuenta-fila-danger-dash" style="border-bottom: none;" id="fila-cerrar-sesion">
+                                <div class="cuenta-fila-icono-dash cuenta-icono-rojo-dash">
+                                    <i class="bi bi-box-arrow-right"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="toggle-titulo-dash" style="color: var(--color-danger);">Cerrar sesión</div>
+                                </div>
+                                <i class="bi bi-chevron-right"></i>
+                            </div>
+                        </div>
+
+                        <!-- Panel de seguridad, oculto hasta que se haga click -->
+                        <div class="card-panel-dash mt-3" id="panel-seguridad" style="display: none;">
+                            <div class="info-card-header-dash">
+                                <h3 class="section-title-dash">Cambiar contraseña</h3>
+                            </div>
+                            <div class="p-3">
+                                <label class="config-label-dash">Contraseña actual</label>
+                                <input type="password" id="config-pass-actual" class="form-control input-dash mb-3" placeholder="••••••••">
+                                <label class="config-label-dash">Nueva contraseña</label>
+                                <input type="password" id="config-pass-nueva" class="form-control input-dash mb-3" placeholder="••••••••">
+                                <button type="button" class="btn btn-cv-azul w-100" id="btn-cambiar-pass" style="border-radius: 12px; font-weight: 700;">
+                                    Actualizar contraseña
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

@@ -5,7 +5,7 @@ import ComoFunciona from '../../components/Landing/ComoFunciona'
 import Cobertura from '../../components/Landing/Cobertura'
 import Seguridad from '../../components/Landing/Seguridad'
 import Footer from '../../components/Landing/Footer'
-import '../../components/Css/Landing.css'
+import '../../css/landing/styles.css'
 
 function Landing() {
   return (

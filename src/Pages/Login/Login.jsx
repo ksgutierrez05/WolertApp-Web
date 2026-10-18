@@ -2,7 +2,7 @@ import { useState } from 'react';
 import FormLogin from '../../components/Login/FormLogin';
 import FormRegistro from '../../components/Login/FormRegistro';
 import { guardarSesionActiva } from '../../utils/utils';
-import '../../components/Css/Login.css';
+import '../../css/login/styles.css';
 
 function Login() {
     const [esRegistro, setRegistro] = useState(false);
