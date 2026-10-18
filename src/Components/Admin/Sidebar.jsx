@@ -17,11 +17,6 @@ const menuItems = [
   { label: 'Configuración', href: '/admin/configuracion', icon: 'bi-gear' },
 ];
 
-const isRouteActive = (href, pathname) => {
-  if (href === '/admin') return pathname === '/admin';
-  return pathname === href || pathname.startsWith(href + '/');
-};
-
 export default function Sidebar({ collapsed = false }) {
   const { pathname } = useLocation();
 
