@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WolertApp - Panel Ciudadano</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="../../css/global.css" />
+  <link rel="stylesheet" href="../../css/temas.css" />
+ <link rel="stylesheet" href="../../css/ciudadano/pagina-principal.css" />
+  <script src="../../js/global.js" defer></script>
+  <script src="../../js/ciudadano/panel-principal.js" defer></script>
+
+</head>
+
+
+<body class="rol-ciudadano rail-collapsed" data-rol="ciudadano">
+
+  <div class="d-flex" id="wrapperDash">
+
+    <aside class="sidebar-dash" id="sidebarDash">
+
+    </aside>
+
+    <!-- ===================== MAIN ===================== -->
+    <main class="main-dash flex-grow-1">
+      <div class="container-fluid px-4 py-4">
+
+        <!-- topbar -->
+        <div class="row g-3 align-items-center mb-4">
+          <div class="col">
+            <div class="input-group search-dash">
+              <span class="input-group-text bg-white border-0"><i class="bi bi-search"></i></span>
+              <input type="text" class="form-control border-0" placeholder="Buscar en tu barrio...">
+            </div>
+          </div>
+          <div class="col-auto">
+            <button class="btn btn-light rounded-circle position-relative icon-btn-dash">
+              <i class="bi bi-bell"></i>
+              <span class="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle">2</span>
+            </button>
+          </div>
+          <div class="col-auto">
+            <span class="avatar-dash" id="railToggle" title="Mostrar/ocultar perfil">K</span>
+          </div>
+        </div>
+
+        <!-- hero (en global.css se llama: .hero-dash) -->
+        <div class="hero-dash mb-4">
+
+          <div class="eyebrow-dash">11 de septiembre de 2026 · 08:14 a. m.</div>
+          <h1 class="hero-title-dash">Buenos días, Katherine Gutiérrez</h1>
+          <p class="hero-text-dash">Tienes 2 alertas activas y 6 vecinos conectados cerca de ti. Este es tu resumen
+            de seguridad.</p>
+          <a href="#" class="btn btn-light rounded-pill fw-bold mt-3 hero-cta-dash">
+            <span class="dot-danger-dash"></span> Reportar una alerta
+          </a>
+          <svg class="hero-icon-dash" width="110" height="110" viewBox="0 0 24 24" fill="none"><path d="M12 2l8 3v6c0 5-3.4 8.7-8 11-4.6-2.3-8-6-8-11V5l8-3z" stroke="#fff" stroke-width="1" stroke-linejoin="round"/></svg>
+        </div>
+
+        <!-- KPI -->
+        <div class="row g-3 mb-4">
+          <div class="col-6 col-lg-3">
+            <div class="kpi-dash kpi-red-dash">
+              <i class="bi bi-exclamation-triangle kpi-icon-dash"></i>
+              <div class="kpi-num-dash" id="kpiAlertasActivas">2</div>
+              <div class="kpi-label-dash">Mis alertas activas</div>
+            </div>
+          </div>
+          <div class="col-6 col-lg-3">
+            <div class="kpi-dash kpi-blue-dash">
+              <i class="bi bi-people kpi-icon-dash"></i>
+              <div class="kpi-num-dash">6</div>
+              <div class="kpi-label-dash">Vecinos conectados</div>
+            </div>
+          </div>
+          <div class="col-6 col-lg-3">
+            <div class="kpi-dash kpi-green-dash">
+              <i class="bi bi-check2-circle kpi-icon-dash"></i>
+              <div class="kpi-num-dash">9</div>
+              <div class="kpi-label-dash">Alertas resueltas este mes</div>
+            </div>
+          </div>
+          <div class="col-6 col-lg-3">
+            <div class="kpi-dash kpi-amber-dash">
+              <i class="bi bi-shield-check kpi-icon-dash"></i>
+              <div class="kpi-num-dash">Zona segura</div>
+              <div class="kpi-label-dash">Estado de mi barrio</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- BOTÓN DE EMERGENCIA -->
+        <div class="sos-panel-usu mb-4">
+          <div class="sos-panel-texto-usu">
+            <span class="sos-panel-badge-usu"><i class="bi bi-bell-fill"></i></span>
+            <div>
+              <div class="sos-panel-titulo-usu">Botón de emergencia</div>
+              <div class="sos-panel-sub-usu">Envía tu ubicación en tiempo real a la policía y a tus vecinos
+                conectados.</div>
+            </div>
+          </div>
+          <button class="sos-btn-usu" id="botonSOS" type="button" data-bs-toggle="modal" data-bs-target="#modalSOS"
+            title="Enviar alerta de emergencia">
+            <span class="sos-pulso-usu"></span>
+            <span class="sos-contenido-usu">
+              <i class="bi bi-exclamation-triangle-fill"></i>
+              <span>SOS</span>
+            </span>
+          </button>
+        </div>
+
+        <!-- MIS ALERTAS -->
+        <div class="sec-head-usu">
+          <h2 id="tituloMisAlertas">Mis alertas</h2>
+          <a class="see-all-dash" href="#">Ver todas <i class="bi bi-chevron-right"></i></a>
+        </div>
+        <div class="panel-usu mb-4">
+          <table class="tabla-usu" id="tablaMisAlertas">
+            <thead>
+              <tr>
+                <th>Tipo</th>
+                <th>Ubicación</th>
+                <th>Estado</th>
+                <th class="text-end">&nbsp;</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="alerta-row-usu" data-id="1" data-estado="pendiente">
+                <td><span class="badge-dash badge-amber-dash">SEMÁFORO DAÑADO</span></td>
+                <td>
+                  <div class="info-title-dash">Casimiro Raúl Maestre</div>
+                  <div class="info-sub-dash">Reportada hoy · 08:12 a.m.</div>
+                </td>
+                <td><span class="estado-badge-usu estado-pendiente-usu" data-estado-label>Pendiente</span></td>
+                <td class="text-end"><button class="cancelar-btn-usu" data-id="1" data-accion>Cancelar</button></td>
+              </tr>
+              <tr class="alerta-row-usu" data-id="2" data-estado="en_camino">
+                <td><span class="badge-dash badge-red-dash">ACCIDENTE</span></td>
+                <td>
+                  <div class="info-title-dash">Casimiro Raúl Maestre</div>
+                  <div class="info-sub-dash">Reportada hoy · 07:47 a.m.</div>
+                </td>
+                <td><span class="estado-badge-usu estado-en_camino-usu" data-estado-label>En camino</span></td>
+                <td class="text-end"><button class="cancelar-btn-usu" data-id="2" data-accion disabled>En atención</button></td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="text-center text-muted small mb-0 d-none" id="mensajeMisAlertasVacio" style="padding: 20px;">
+            No tienes alertas activas por ahora.
+          </p>
+        </div>
+
+        <!-- MIS VECINOS -->
+        <div class="sec-head-usu">
+          <h2 class="titulos-usu">Mis vecinos</h2>
+          <a class="see-all-dash" href="#">Ver todos <i class="bi bi-chevron-right"></i></a>
+        </div>
+        <div class="vecinos-usu mb-4">
+          <div class="vecino-row-usu">
+            <div class="vecino-info-usu">
+              <span class="nombre-usu">Laura Peña</span>
+              <span class="distancia-usu"><i class="bi bi-geo-alt"></i> 80 m</span>
+            </div>
+            <span class="estado-mini-usu estado-verde-usu">Conectada</span>
+          </div>
+          <div class="vecino-row-usu">
+            <div class="vecino-info-usu">
+              <span class="nombre-usu">Diego Torres</span>
+              <span class="distancia-usu"><i class="bi bi-geo-alt"></i> 140 m</span>
+            </div>
+            <span class="estado-mini-usu estado-verde-usu">Conectado</span>
+          </div>
+          <div class="vecino-row-usu">
+            <div class="vecino-info-usu">
+              <span class="nombre-usu">Ravi Kumar</span>
+              <span class="distancia-usu"><i class="bi bi-geo-alt"></i> 210 m</span>
+            </div>
+            <span class="estado-mini-usu estado-gris-usu">Sin conexión</span>
+          </div>
+          <div class="vecino-row-usu">
+            <div class="vecino-info-usu">
+              <span class="nombre-usu">Marta Correa</span>
+              <span class="distancia-usu"><i class="bi bi-geo-alt"></i> 260 m</span>
+            </div>
+            <span class="estado-mini-usu estado-verde-usu">Conectada</span>
+          </div>
+        </div>
+
+        <!-- ÚLTIMAS ALERTAS -->
+        <div class="sec-head-usu">
+          <h2 class="titulos-usu">Últimas alertas del barrio</h2>
+          <a class="see-all-dash" href="#">Ver todas <i class="bi bi-chevron-right"></i></a>
+        </div>
+        <div class="tabs-usu" id="tabsUltimasAlertas">
+          <button class="tab-usu active-usu" data-tipo="todas">Todas (12)</button>
+          <button class="tab-usu" data-tipo="semaforo">Semáforo dañado (4)</button>
+          <button class="tab-usu" data-tipo="accidente">Accidente (3)</button>
+          <button class="tab-usu" data-tipo="choque">Choque (3)</button>
+          <button class="tab-usu" data-tipo="otras">Otras (2)</button>
+        </div>
+        <div class="panel-usu">
+          <table class="tabla-usu" id="tablaUltimasAlertas">
+            <thead>
+              <tr>
+                <th>Reportado por</th>
+                <th>Tipo</th>
+                <th>Barrio</th>
+                <th>Estado</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-tipo="semaforo">
+                <td>
+                  <div class="info-title-dash">Katherine Gutiérrez</div>
+                  <div class="info-sub-dash">11/9/2026 · 08:12 a.m.</div>
+                </td>
+                <td><span class="badge-dash badge-amber-dash">SEMÁFORO DAÑADO</span></td>
+                <td>Casimiro Raúl Maestre</td>
+                <td><span class="badge-dash badge-amber-dash">Pendiente</span></td>
+                <td class="text-end"><a href="#" class="link-btn-dash">Ver detalle</a></td>
+              </tr>
+              <tr data-tipo="accidente">
+                <td>
+                  <div class="info-title-dash">Katherine Gutiérrez</div>
+                  <div class="info-sub-dash">11/9/2026 · 07:47 a.m.</div>
+                </td>
+                <td><span class="badge-dash badge-red-dash">ACCIDENTE</span></td>
+                <td>Casimiro Raúl Maestre</td>
+                <td><span class="badge-dash badge-blue-dash">En camino</span></td>
+                <td class="text-end"><a href="#" class="link-btn-dash">Ver detalle</a></td>
+              </tr>
+              <tr data-tipo="choque">
+                <td>
+                  <div class="info-title-dash">Laura Peña</div>
+                  <div class="info-sub-dash">10/9/2026 · 10:30 p.m.</div>
+                </td>
+                <td><span class="badge-dash badge-blue-dash">CHOQUE</span></td>
+                <td>Casimiro Raúl Maestre</td>
+                <td><span class="badge-dash badge-green-dash">Resuelto</span></td>
+                <td class="text-end"><a href="#" class="link-btn-dash">Ver detalle</a></td>
+              </tr>
+              <tr data-tipo="otras">
+                <td>
+                  <div class="info-title-dash">Diego Torres</div>
+                  <div class="info-sub-dash">10/9/2026 · 07:05 p.m.</div>
+                </td>
+                <td><span class="badge-dash badge-amber-dash">EMBOTELLAMIENTO</span></td>
+                <td>Los Fundadores</td>
+                <td><span class="badge-dash badge-green-dash">Resuelto</span></td>
+                <td class="text-end"><a href="#" class="link-btn-dash">Ver detalle</a></td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="text-center text-muted small mb-0 d-none" id="mensajeUltimasAlertasVacio" style="padding: 20px;">
+            Ningún caso coincide con este filtro.
+          </p>
+          <div class="paginacion-usu">
+            <span>Mostrando 1–4 de 12 alertas</span>
+            <div class="paginas-usu">
+              <button class="active-usu">1</button>
+              <button>2</button>
+              <button>3</button>
+              <button><i class="bi bi-chevron-right"></i></button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+  </div>
+
+  <!-- MODAL CONFIRMACIÓN SOS -->
+  <div class="modal fade" id="modalSOS" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content sos-modal-usu">
+        <div class="modal-body text-center py-4">
+          <div class="sos-modal-icon-usu">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+          </div>
+          <h5 class="fw-bold mt-3 mb-2">¿Necesitas ayuda urgente?</h5>
+          <p class="text-muted mb-4">Se enviará tu ubicación en tiempo real a la policía y a tus vecinos conectados.
+          </p>
+          <div class="d-flex gap-2 justify-content-center">
+            <button type="button" class="btn btn-light rounded-pill fw-bold px-4" data-bs-dismiss="modal">Cancelar</button>
+            <button type="button" class="btn btn-danger rounded-pill fw-bold px-4" id="confirmarSOS">Sí, enviar
+              SOS</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST DE CONFIRMACIÓN -->
+  <div class="toast-container position-fixed bottom-0 end-0 p-4" style="z-index: 1200;">
+    <div id="toastSOS" class="toast align-items-center border-0 toast-sos-usu" role="alert" aria-live="assertive"
+      aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body">
+          <i class="bi bi-check-circle-fill me-2"></i>
+          Alerta SOS enviada. La policía y tus vecinos han sido notificados.
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/ciudadano/sidebar.js"></script>
+  <script>renderSidebarCiudadano('panel');</script>
+</body>
+
+</html>

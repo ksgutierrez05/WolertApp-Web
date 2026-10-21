@@ -1,0 +1,129 @@
+/* ============================================================
+   CONFIGURACION.CSS
+   Estilos propios de la vista Configuración. Reutiliza variables
+   y clases de global.css (.card-panel-dash, .avatar-dash, etc.)
+   ============================================================ */
+
+.config-section-dash {
+  padding: 22px 24px;
+  border-bottom: 1px solid var(--line);
+}
+
+.config-section-dash:last-child {
+  border-bottom: none;
+}
+
+.config-section-title-dash {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 3px;
+}
+
+.config-section-sub-dash {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 18px;
+}
+
+.config-avatar-row-dash {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.config-avatar-dash {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-2));
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.config-avatar-name-dash {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.config-avatar-role-dash {
+  font-size: 11.5px;
+  color: var(--muted);
+}
+
+.config-field-label-dash {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  margin-bottom: 5px;
+  display: block;
+}
+
+.config-toggle-row-dash {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px dashed var(--line);
+}
+
+.config-toggle-row-dash:last-child {
+  border-bottom: none;
+}
+
+.config-toggle-text-dash b {
+  display: block;
+  font-size: 13px;
+}
+
+.config-toggle-text-dash span {
+  display: block;
+  font-size: 11.5px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+/* Switch reutilizando el color del rol activo */
+.form-check-input:checked {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.config-actions-dash {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 18px 24px;
+  background-color: var(--fog);
+}
+
+.config-guardado-msg-dash {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--color-green);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.config-guardado-msg-dash.visible {
+  opacity: 1;
+}
+
+.config-danger-row-dash {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
