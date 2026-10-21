@@ -33,6 +33,13 @@ export default function CiudadanoSidebar() {
           ))}
         </div>
       ))}
+
+      <div className="sidebar__footer">
+        <button type="button" className="sidebar__logout" onClick={() => { /* TODO: logout */ }}>
+          <i className="bi bi-box-arrow-right sidebar__icon" />
+          <span className="sidebar__label">Cerrar sesión</span>
+        </button>
+      </div>
     </nav>
   );
 }

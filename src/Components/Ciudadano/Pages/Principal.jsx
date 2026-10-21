@@ -3,8 +3,11 @@ import '../../../css/global.css';
 import '../../../css/temas.css';
 import '../../../css/ciudadano/pagina-principal.css';
 
+import { Link } from 'react-router-dom';
+
 export default function Principal() {
   const [tab, setTab] = useState('todas');
+  const [showNotif, setShowNotif] = useState(false);
 
   return (
     <div className="container-fluid px-4 py-4">
@@ -16,11 +19,34 @@ export default function Principal() {
             <input type="text" className="form-control border-0" placeholder="Buscar en tu barrio..." />
           </div>
         </div>
-        <div className="col-auto">
-          <button className="btn btn-light rounded-circle position-relative icon-btn-dash">
+        <div className="col-auto" style={{ position: 'relative' }}>
+          <div className="position-relative d-flex align-items-center justify-content-center rounded-circle bg-white" style={{ cursor: 'pointer', width: '40px', height: '40px', padding: 0, position: 'relative', borderRadius: '9999px', border: '1px solid #e2e8f0' }} onClick={() => setShowNotif((s) => !s)}>
             <i className="bi bi-bell"></i>
             <span className="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle">2</span>
-          </button>
+          </div>
+          {showNotif && (
+            <div className="top-bar__dropdown" style={{ right: 0, top: 'calc(100% + 8px)', width: '320px' }}>
+              <div className="top-bar__dropdown-header">
+                <span className="top-bar__dropdown-title">Notificaciones</span>
+                <span className="top-bar__dropdown-mark-all" style={{ cursor: 'pointer' }}>Marcar todo como leído</span>
+              </div>
+              <div className="top-bar__dropdown-list">
+                <div className="top-bar__notif-item unread">
+                  <div className="top-bar__notif-item-icon bg-blue"><i className="bi bi-bell" /></div>
+                  <div className="top-bar__notif-item-content">
+                    <div className="top-bar__notif-item-title">Nueva alerta cerca</div>
+                    <div className="top-bar__notif-item-sub">Laura Peña reportó un accidente</div>
+                    <div className="top-bar__notif-item-time">hace 5 min</div>
+                  </div>
+                </div>
+              </div>
+              <div className="top-bar__dropdown-footer">
+                <Link to="/ciudadano/notificaciones" className="top-bar__dropdown-link" onClick={() => setShowNotif(false)}>
+                  Ver todas las notificaciones
+                </Link>
+              </div>
+            </div>
+          )}
         </div>
         <div className="col-auto">
           <span className="avatar-dash" title="Mostrar/ocultar perfil">K</span>

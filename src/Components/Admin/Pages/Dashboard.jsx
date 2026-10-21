@@ -5,6 +5,7 @@ import '../../../css/temas.css';
 export default function Dashboard() {
   const [fecha, setFecha] = useState('');
   const [hora, setHora] = useState('');
+  const [showNotif, setShowNotif] = useState(false);
 
   useEffect(() => {
     const tick = () => {
@@ -49,10 +50,27 @@ export default function Dashboard() {
               <i className="bi bi-clock" /> {hora}
             </div>
           </div>
-          <div className="icon-btn-dash position-relative d-flex align-items-center justify-content-center rounded-circle bg-white" style={{ cursor: 'pointer' }}>
+          <div className="position-relative d-flex align-items-center justify-content-center rounded-circle bg-white" style={{ cursor: 'pointer', width: '40px', height: '40px', padding: 0, position: 'relative', borderRadius: '9999px', border: '1px solid #e2e8f0' }} onClick={() => setShowNotif((s) => !s)}>
             <i className="bi bi-bell" style={{ fontSize: '18px' }} />
             <span className="badge-red-dash position-absolute" style={{ top: '-4px', right: '-4px' }} />
           </div>
+          {showNotif && (
+            <div className="top-bar__dropdown" style={{ right: 0, top: 'calc(100% + 8px)', width: '320px', position: 'absolute', zIndex: 1000 }}>
+              <div className="top-bar__dropdown-header">
+                <span className="top-bar__dropdown-title">Notificaciones</span>
+              </div>
+              <div className="top-bar__dropdown-list">
+                <div className="top-bar__notif-item unread">
+                  <div className="top-bar__notif-item-icon bg-blue"><i className="bi bi-bell" /></div>
+                  <div className="top-bar__notif-item-content">
+                    <div className="top-bar__notif-item-title">Alerta de HOMICIDIO</div>
+                    <div className="top-bar__notif-item-sub">Casimiro Raul Maestre</div>
+                    <div className="top-bar__notif-item-time">hace 10 min</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
