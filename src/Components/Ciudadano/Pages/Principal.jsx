@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import '../../../css/global.css';
 import '../../../css/temas.css';
 import '../../../css/ciudadano/pagina-principal.css';
@@ -8,48 +8,99 @@ import { Link } from 'react-router-dom';
 export default function Principal() {
   const [tab, setTab] = useState('todas');
   const [showNotif, setShowNotif] = useState(false);
+  const [showUser, setShowUser] = useState(false);
+  const [fecha, setFecha] = useState('');
+  const [hora, setHora] = useState('');
+
+  useEffect(() => {
+    const tick = () => {
+      const ahora = new Date();
+      setFecha(ahora.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }));
+      setHora(ahora.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+    };
+    tick();
+    const timer = setInterval(tick, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   return (
     <div className="container-fluid px-4 py-4">
-      {/* topbar */}
-      <div className="row g-3 align-items-center mb-4">
-        <div className="col">
-          <div className="input-group search-dash">
-            <span className="input-group-text bg-white border-0"><i className="bi bi-search"></i></span>
-            <input type="text" className="form-control border-0" placeholder="Buscar en tu barrio..." />
-          </div>
+      {/* topbar estilo admin */}
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <div className="top-bar__brand">
+          <span className="top-bar__brand-text">WolertApp</span>
+          <span className="top-bar__brand-sub">Panel de Ciudadano</span>
         </div>
-        <div className="col-auto" style={{ position: 'relative' }}>
-          <div className="position-relative d-flex align-items-center justify-content-center rounded-circle bg-white" style={{ cursor: 'pointer', width: '40px', height: '40px', padding: 0, position: 'relative', borderRadius: '9999px', border: '1px solid #e2e8f0' }} onClick={() => setShowNotif((s) => !s)}>
-            <i className="bi bi-bell"></i>
-            <span className="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle">2</span>
+        <div className="d-flex align-items-center gap-3">
+          <div className="text-end">
+            <div style={{ fontSize: '13px', color: 'var(--muted)' }}>
+              <i className="bi bi-calendar3" style={{ color: 'var(--color-primary)' }} /> {fecha}
+            </div>
+            <div style={{ fontSize: '13px', color: 'var(--muted)' }}>
+              <i className="bi bi-clock" /> {hora}
+            </div>
           </div>
-          {showNotif && (
-            <div className="top-bar__dropdown" style={{ right: 0, top: 'calc(100% + 8px)', width: '320px' }}>
-              <div className="top-bar__dropdown-header">
-                <span className="top-bar__dropdown-title">Notificaciones</span>
-                <span className="top-bar__dropdown-mark-all" style={{ cursor: 'pointer' }}>Marcar todo como leído</span>
-              </div>
-              <div className="top-bar__dropdown-list">
-                <div className="top-bar__notif-item unread">
-                  <div className="top-bar__notif-item-icon bg-blue"><i className="bi bi-bell" /></div>
-                  <div className="top-bar__notif-item-content">
-                    <div className="top-bar__notif-item-title">Nueva alerta cerca</div>
-                    <div className="top-bar__notif-item-sub">Laura Peña reportó un accidente</div>
-                    <div className="top-bar__notif-item-time">hace 5 min</div>
+          <div className="col-auto" style={{ position: 'relative' }}>
+            <div className="position-relative d-flex align-items-center justify-content-center rounded-circle bg-white" style={{ cursor: 'pointer', width: '40px', height: '40px', padding: 0, position: 'relative', borderRadius: '9999px', border: '1px solid #e2e8f0' }} onClick={() => setShowNotif((s) => !s)}>
+              <i className="bi bi-bell"></i>
+              <span className="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle">2</span>
+            </div>
+            {showNotif && (
+              <div className="top-bar__dropdown" style={{ right: 0, top: 'calc(100% + 8px)', width: '320px' }}>
+                <div className="top-bar__dropdown-header">
+                  <span className="top-bar__dropdown-title">Notificaciones</span>
+                  <span className="top-bar__dropdown-mark-all" style={{ cursor: 'pointer' }}>Marcar todo como leído</span>
+                </div>
+                <div className="top-bar__dropdown-list">
+                  <div className="top-bar__notif-item unread">
+                    <div className="top-bar__notif-item-icon bg-blue"><i className="bi bi-bell" /></div>
+                    <div className="top-bar__notif-item-content">
+                      <div className="top-bar__notif-item-title">Nueva alerta cerca</div>
+                      <div className="top-bar__notif-item-sub">Laura Peña reportó un accidente</div>
+                      <div className="top-bar__notif-item-time">hace 5 min</div>
+                    </div>
                   </div>
                 </div>
+                <div className="top-bar__dropdown-footer">
+                  <Link to="/ciudadano/notificaciones" className="top-bar__dropdown-link" onClick={() => setShowNotif(false)}>
+                    Ver todas las notificaciones
+                  </Link>
+                </div>
               </div>
-              <div className="top-bar__dropdown-footer">
-                <Link to="/ciudadano/notificaciones" className="top-bar__dropdown-link" onClick={() => setShowNotif(false)}>
-                  Ver todas las notificaciones
-                </Link>
+            )}
+          </div>
+          <div style={{ position: 'relative' }}>
+            <button
+              type="button"
+              className={`top-bar__user ${showUser ? 'open' : ''}`}
+              onClick={() => setShowUser((s) => !s)}
+              aria-expanded={showUser}
+            >
+              <div className="top-bar__user-avatar"><i className="bi bi-person-circle" /></div>
+              <div className="top-bar__user-info">
+                <div className="top-bar__user-name">Juan Carlos Pérez</div>
+                <div className="top-bar__user-email">ciudadano@wolertapp.com</div>
               </div>
-            </div>
-          )}
-        </div>
-        <div className="col-auto">
-          <span className="avatar-dash" title="Mostrar/ocultar perfil">K</span>
+              <i className="bi bi-chevron-down top-bar__user-chevron" />
+            </button>
+            {showUser && (
+              <div className="top-bar__dropdown">
+                <div className="top-bar__dropdown-header">
+                  <span className="top-bar__dropdown-title">Cuenta</span>
+                </div>
+                <div className="top-bar__dropdown-list">
+                  <Link to="/ciudadano/configuracion" className="top-bar__dropdown-link" onClick={() => setShowUser(false)}>
+                    <i className="bi bi-person-gear top-bar__dropdown-link-icon" />
+                    Configuración de perfil
+                  </Link>
+                  <button type="button" className="top-bar__dropdown-link top-bar__dropdown-link--danger" onClick={() => setShowUser(false)}>
+                    <i className="bi bi-box-arrow-right top-bar__dropdown-link-icon" />
+                    Cerrar sesión
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

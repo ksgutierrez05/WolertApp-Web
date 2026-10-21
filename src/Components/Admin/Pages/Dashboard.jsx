@@ -6,6 +6,7 @@ export default function Dashboard() {
   const [fecha, setFecha] = useState('');
   const [hora, setHora] = useState('');
   const [showNotif, setShowNotif] = useState(false);
+  const [showUser, setShowUser] = useState(false);
 
   useEffect(() => {
     const tick = () => {
@@ -40,7 +41,10 @@ export default function Dashboard() {
   return (
     <div className="container-fluid">
       <div className="d-flex justify-content-between align-items-center mb-3">
-        <div></div>
+        <div className="top-bar__brand">
+          <span className="top-bar__brand-text">WolertApp</span>
+          <span className="top-bar__brand-sub">Panel de Administración</span>
+        </div>
         <div className="d-flex align-items-center gap-3">
           <div className="text-end">
             <div style={{ fontSize: '13px', color: 'var(--muted)' }} id="fecha-actual">
@@ -71,6 +75,34 @@ export default function Dashboard() {
               </div>
             </div>
           )}
+          <div style={{ position: 'relative' }}>
+            <button
+              type="button"
+              className={`top-bar__user ${showUser ? 'open' : ''}`}
+              onClick={() => setShowUser((s) => !s)}
+              aria-expanded={showUser}
+            >
+              <div className="top-bar__user-avatar"><i className="bi bi-person-circle" /></div>
+              <div className="top-bar__user-info">
+                <div className="top-bar__user-name">Administrador</div>
+                <div className="top-bar__user-email">admin@wolertapp.com</div>
+              </div>
+              <i className="bi bi-chevron-down top-bar__user-chevron" />
+            </button>
+            {showUser && (
+              <div className="top-bar__dropdown">
+                <div className="top-bar__dropdown-header">
+                  <span className="top-bar__dropdown-title">Cuenta</span>
+                </div>
+                <div className="top-bar__dropdown-list">
+                  <button type="button" className="top-bar__dropdown-link top-bar__dropdown-link--danger" onClick={() => setShowUser(false)}>
+                    <i className="bi bi-box-arrow-right top-bar__dropdown-link-icon" />
+                    Cerrar sesión
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

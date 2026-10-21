@@ -31,12 +31,7 @@ function Topbar({ onToggleSidebar }) {
         </div>
       </div>
 
-      <div className="top-bar__center">
-        <div className="top-bar__search">
-          <i className="bi bi-search top-bar__search-icon" />
-          <input type="text" className="top-bar__search-input" placeholder="Buscar en el sistema..." />
-        </div>
-      </div>
+
 
       <div className="top-bar__right">
         {/* Notificaciones: botón + menú dentro del mismo contenedor relativo */}
