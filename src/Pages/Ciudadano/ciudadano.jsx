@@ -4,6 +4,7 @@ import Principal from '../../Components/Ciudadano/Pages/Principal';
 import Alertas from '../../Components/Ciudadano/Pages/Alertas';
 import MisAlertas from '../../Components/Ciudadano/Pages/MisAlertas';
 import Configuracion from '../../Components/Ciudadano/Pages/Configuracion';
+import Notificaciones from '../../Components/Ciudadano/Pages/Notificaciones';
 
 export default function Ciudadano() {
   return (
@@ -14,6 +15,7 @@ export default function Ciudadano() {
         <Route path="alertas" element={<Alertas />} />
         <Route path="mis-alertas" element={<MisAlertas />} />
         <Route path="configuracion" element={<Configuracion />} />
+        <Route path="notificaciones" element={<Notificaciones />} />
       </Routes>
     </CiudadanoLayout>
   );
