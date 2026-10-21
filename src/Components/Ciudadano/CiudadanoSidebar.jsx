@@ -26,7 +26,7 @@ export default function CiudadanoSidebar() {
         <div key={sec.group}>
           <li className="sidebar__group-label">{sec.group}</li>
           {sec.items.map((item) => (
-            <NavLink key={item.label} to={item.href} className={({ isActive }) => isActive ? 'sidebar__link active' : 'sidebar__link'}>
+            <NavLink key={item.label} to={item.href} end={item.label === 'Principal'} className={({ isActive }) => isActive ? 'sidebar__link active' : 'sidebar__link'}>
               <i className={`bi ${item.icon} sidebar__icon`} />
               <span className="sidebar__label">{item.label}</span>
             </NavLink>

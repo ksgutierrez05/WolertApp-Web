@@ -151,6 +151,22 @@
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: #3b82f6 #1e293b;
+}
+
+.sidebar__menu::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar__menu::-webkit-scrollbar-track {
+  background: #1e293b;
+  border-radius: 3px;
+}
+
+.sidebar__menu::-webkit-scrollbar-thumb {
+  background: #3b82f6;
+  border-radius: 3px;
 }
 
 .sidebar__group-label {
@@ -159,7 +175,7 @@
   letter-spacing: 0.08em;
   color: #64748b;
   font-weight: 700;
-  padding: 1rem 1.25rem 0.5rem;
+  padding: 0.6rem 1.25rem 0.3rem;
   list-style: none;
 }
 
@@ -177,7 +193,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 0.7rem 1.25rem;
+  padding: 0.5rem 1.25rem;
   color: #94a3b8;
   text-decoration: none;
   border-radius: 0 0.75rem 0.75rem 0;
@@ -292,7 +308,7 @@
   width: 100%;
   color: #94a3b8;
   text-decoration: none;
-  padding: 0.7rem 1.25rem;
+  padding: 0.5rem 1.25rem;
   border: none;
   background: transparent;
   cursor: pointer;

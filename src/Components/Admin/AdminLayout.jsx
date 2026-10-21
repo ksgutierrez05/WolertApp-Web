@@ -10,12 +10,7 @@ function AdminLayout({ children }) {
   const { pathname } = useLocation();
 
   // En escritorio inicia abierto (false), en móvil inicia colapsado (true)
-  const [collapsed, setCollapsed] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return window.matchMedia(MOBILE).matches;
-    }
-    return false;
-  });
+  const [collapsed, setCollapsed] = useState(true);
   // Cursor encima del sidebar (solo cuando está colapsado en escritorio)
   const [hovered, setHovered] = useState(false);
 
