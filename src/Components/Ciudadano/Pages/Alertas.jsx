@@ -67,17 +67,34 @@ export default function Alertas() {
         <div id="listaAlertas">
           {alertasEjemplo.map((a) => (
             <div key={a.id} className="card-panel-dash p-3 mb-3">
-              <div className="d-flex justify-content-between align-items-start mb-2">
-                <div>
-                  <h5 className="info-title-dash mb-0">{a.tipo}</h5>
-                  <span className="badge-dash badge-amber-dash me-2">{a.categoria}</span>
-                  <span className="badge-dash badge-blue-dash">{a.estado}</span>
+              <div className="d-flex align-items-start gap-3">
+                <div className="alerta-tipo-icono-dash" style={{
+                  fontSize: '28px',
+                  width: '48px',
+                  height: '48px',
+                  borderRadius: '12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#fff',
+                  backgroundColor: a.estado === 'Pendiente' ? '#f59e0b' : a.estado === 'En atención' ? '#3b82f6' : '#10b981',
+                }}>
+                  <i className="bi bi-exclamation-triangle-fill"></i>
                 </div>
-              </div>
-              <p className="mb-2">{a.descripcion}</p>
-              <div className="info-sub-dash">
-                Reportado por {a.reportadoPor}<br />
-                {a.ubicacion} · {a.tiempo}
+                <div className="flex-grow-1">
+                  <div className="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                      <h5 className="info-title-dash mb-0">{a.tipo}</h5>
+                      <span className="badge-dash badge-amber-dash me-2">{a.categoria}</span>
+                      <span className="badge-dash badge-blue-dash">{a.estado}</span>
+                    </div>
+                  </div>
+                  <p className="mb-2">{a.descripcion}</p>
+                  <div className="info-sub-dash">
+                    Reportado por {a.reportadoPor}<br />
+                    {a.ubicacion} · {a.tiempo}
+                  </div>
+                </div>
               </div>
             </div>
           ))}
