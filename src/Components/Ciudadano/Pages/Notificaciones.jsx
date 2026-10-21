@@ -33,6 +33,30 @@ export default function Notificaciones() {
         </div>
       </div>
 
+      <div className="row g-3 mb-4">
+        <div className="col-6 col-md-4">
+          <div className="kpi-dash kpi-blue-dash">
+            <i className="bi bi-bell kpi-icon-dash"></i>
+            <p className="kpi-num-dash mb-0">{lista.length}</p>
+            <p className="kpi-label-dash">Total</p>
+          </div>
+        </div>
+        <div className="col-6 col-md-4">
+          <div className="kpi-dash kpi-amber-dash">
+            <i className="bi bi-envelope kpi-icon-dash"></i>
+            <p className="kpi-num-dash mb-0">{lista.filter((n) => !n.leida).length}</p>
+            <p className="kpi-label-dash">No leídas</p>
+          </div>
+        </div>
+        <div className="col-6 col-md-4">
+          <div className="kpi-dash kpi-green-dash">
+            <i className="bi bi-check2-circle kpi-icon-dash"></i>
+            <p className="kpi-num-dash mb-0">{lista.filter((n) => n.leida).length}</p>
+            <p className="kpi-label-dash">Leídas</p>
+          </div>
+        </div>
+      </div>
+
       <div className="card-panel-dash p-0">
         <div className="notif-header-dash p-3">
           <div className="notif-tabs-dash" id="tabsNotif">
@@ -57,8 +81,8 @@ export default function Notificaciones() {
           {filtradas.map((n) => (
             <div key={n.id} className={`d-flex align-items-start gap-3 p-3 border-bottom ${n.leida ? '' : 'bg-light'}`}>
               <div style={{
-                width: '40px',
-                height: '40px',
+                width: '34px',
+                height: '34px',
                 borderRadius: '10px',
                 display: 'flex',
                 alignItems: 'center',
@@ -70,11 +94,11 @@ export default function Notificaciones() {
               </div>
               <div className="flex-grow-1">
                 <div className="d-flex justify-content-between align-items-start">
-                  <h6 className="mb-1">{n.titulo}</h6>
-                  {!n.leida && <span className="badge bg-danger rounded-pill">Nueva</span>}
+                  <span className="fw-bold" style={{ fontSize: '14px' }}>{n.titulo}</span>
+                  <span className="info-sub-dash">{n.tiempo}</span>
                 </div>
-                <p className="mb-1 small">{n.mensaje}</p>
-                <span className="info-sub-dash">{n.tiempo}</span>
+                <span className="small d-block">{n.mensaje}</span>
+                {!n.leida && <span className="badge bg-danger rounded-pill mt-1">Nueva</span>}
               </div>
             </div>
           ))}
