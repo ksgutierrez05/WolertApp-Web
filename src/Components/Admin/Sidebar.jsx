@@ -23,20 +23,10 @@ export default function Sidebar({ collapsed = false }) {
   return (
     <nav className="sidebar">
       <div className="sidebar__brand">
-        <div className="sidebar__brand-mark" style={{ background: 'transparent', padding: 0 }}>
+        <div className="sidebar__brand-mark" style={{ background: '#1e293b', padding: '4px', borderRadius: '8px' }}>
           <img src="/img/logo.png" alt="WolertApp" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
         </div>
         <span className="sidebar__brand-text">WolertApp</span>
-      </div>
-
-      <div className="sidebar__user">
-        <div className="sidebar__user-avatar">
-          <i className="bi bi-person-circle" />
-        </div>
-        <div className="sidebar__user-info">
-          <div className="sidebar__user-name">Administrador</div>
-          <div className="sidebar__user-role">rol-admin</div>
-        </div>
       </div>
 
       <ul className="sidebar__menu">

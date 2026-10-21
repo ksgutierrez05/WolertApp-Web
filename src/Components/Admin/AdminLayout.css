@@ -27,8 +27,8 @@
   width: 260px;
   flex-shrink: 0;
   min-height: 0;
-  background-color: #0f172a;
-  color: #e2e8f0;
+  background-color: #ffffff;
+  color: #1e293b;
   display: flex;
   flex-direction: column;
   box-shadow: 4px 0 12px rgba(0, 0, 0, 0.08);
@@ -111,7 +111,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #94a3b8;
+  color: #334155;
   font-size: 1.125rem;
   flex-shrink: 0;
 }
@@ -152,7 +152,7 @@
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-width: thin;
-  scrollbar-color: #3b82f6 #1e293b;
+  scrollbar-color: #94a3b8 #f1f5f9;
 }
 
 .sidebar__menu::-webkit-scrollbar {
@@ -160,12 +160,12 @@
 }
 
 .sidebar__menu::-webkit-scrollbar-track {
-  background: #1e293b;
+  background: #f1f5f9;
   border-radius: 3px;
 }
 
 .sidebar__menu::-webkit-scrollbar-thumb {
-  background: #3b82f6;
+  background: #94a3b8;
   border-radius: 3px;
 }
 
@@ -194,7 +194,7 @@
   align-items: center;
   gap: 12px;
   padding: 0.5rem 1.25rem;
-  color: #94a3b8;
+  color: #334155;
   text-decoration: none;
   border-radius: 0 0.75rem 0.75rem 0;
   margin-inline: 0.5rem;
@@ -263,7 +263,7 @@
   display: flex;
   align-items: center;
   padding: 0.55rem 1.25rem;
-  color: #94a3b8;
+  color: #334155;
   text-decoration: none;
   font-size: 0.8125rem;
   border-radius: 0.6rem;
@@ -306,7 +306,7 @@
   align-items: center;
   gap: 12px;
   width: 100%;
-  color: #94a3b8;
+  color: #334155;
   text-decoration: none;
   padding: 0.5rem 1.25rem;
   border: none;
@@ -436,7 +436,7 @@
   left: 12px;
   top: 50%;
   transform: translateY(-50%);
-  color: #94a3b8;
+  color: #334155;
   font-size: 1rem;
 }
 
@@ -579,7 +579,7 @@
 
 .top-bar__user-chevron {
   font-size: 0.7rem;
-  color: #94a3b8;
+  color: #334155;
   flex-shrink: 0;
   transition: transform 0.2s ease;
 }
@@ -708,7 +708,7 @@
 
 .top-bar__notif-item-time {
   font-size: 0.725rem;
-  color: #94a3b8;
+  color: #334155;
 }
 
 .top-bar__dropdown-footer {
@@ -767,7 +767,7 @@ button.top-bar__dropdown-link {
 
 .top-bar__dropdown-link-icon {
   font-size: 1rem;
-  color: #94a3b8;
+  color: #334155;
   width: 20px;
   text-align: center;
 }

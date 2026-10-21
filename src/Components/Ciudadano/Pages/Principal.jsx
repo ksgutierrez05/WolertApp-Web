@@ -107,7 +107,7 @@ export default function Principal() {
       {/* hero */}
       <div className="hero-dash mb-4">
         <div className="eyebrow-dash">11 de septiembre de 2026 · 08:14 a. m.</div>
-        <h1 className="hero-title-dash">Buenos días, Katherine Gutiérrez</h1>
+        <h1 className="hero-title-dash">Buenos días, Juan Carlos Pérez</h1>
         <p className="hero-text-dash">Tienes 2 alertas activas y 6 vecinos conectados cerca de ti. Este es tu resumen de seguridad.</p>
         <a href="#" className="btn btn-light rounded-pill fw-bold mt-3 hero-cta-dash">
           <span className="dot-danger-dash"></span> Reportar una alerta
