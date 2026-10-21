@@ -1,8 +1,8 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Landing from './Pages/Landing/Landing';
 import Login from './Pages/Login/Login';
-import Admin from './Pages/admin';
-import Ciudadano from './Pages/ciudadano';
+import Admin from './Pages/Admin/admin';
+import Ciudadano from './Pages/Ciudadano/ciudadano';
 
 function App() {
   return (

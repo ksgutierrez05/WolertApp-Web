@@ -1,5 +1,5 @@
 import { Routes, Route } from 'react-router-dom';
-import CiudadanoLayout from '../Components/Ciudadano/CiudadanoLayout';
+import CiudadanoLayout from '../../Components/Ciudadano/CiudadanoLayout';
 
 export default function Ciudadano() {
   return (
