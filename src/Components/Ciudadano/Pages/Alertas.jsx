@@ -4,16 +4,15 @@ import '../../../css/temas.css';
 import '../../../css/ciudadano/panel-alertas.css';
 
 const alertasEjemplo = [
-  { id: 1, tipo: 'SEMÁFORO DAÑADO', barrio: 'Casimiro Raúl Maestre', comuna: 'Comuna 1', estado: 'pendiente' },
-  { id: 2, tipo: 'ACCIDENTE', barrio: 'Casimiro Raúl Maestre', comuna: 'Comuna 1', estado: 'en_camino' },
-  { id: 3, tipo: 'CHOQUE', barrio: 'Los Fundadores', comuna: 'Comuna 2', estado: 'resuelto' },
+  { id: 1, tipo: 'Riña en la vía pública', categoria: 'Disturbio', estado: 'En atención', descripcion: 'Discusión entre varias personas frente al parque principal.', reportadoPor: 'Carlos Ramírez', ubicacion: 'Calle 9 con Cra 12 · Los Fundadores', tiempo: 'Hace 2 h' },
+  { id: 2, tipo: 'Semáforo dañado', categoria: 'Infraestructura', estado: 'Pendiente', descripcion: 'Semáforo sin funcionar en la esquina principal.', reportadoPor: 'Laura Peña', ubicacion: 'Casimiro Raúl Maestre', tiempo: 'Hace 1 h' },
 ];
 
 export default function Alertas() {
   const [filtro, setFiltro] = useState('todas');
   const total = alertasEjemplo.length;
-  const miComuna = alertasEjemplo.filter((a) => a.comuna === 'Comuna 1').length;
-  const miBarrio = alertasEjemplo.filter((a) => a.barrio === 'Casimiro Raúl Maestre').length;
+  const miComuna = alertasEjemplo.length;
+  const miBarrio = alertasEjemplo.length;
 
   return (
     <div className="container-fluid">
@@ -66,27 +65,22 @@ export default function Alertas() {
           </div>
         </div>
         <div id="listaAlertas">
-          <div className="table-responsive">
-            <table className="tabla-usu">
-              <thead>
-                <tr>
-                  <th>Tipo</th><th>Ubicación</th><th>Comuna</th><th>Estado</th>
-                </tr>
-              </thead>
-              <tbody>
-                {alertasEjemplo.map((a) => (
-                  <tr key={a.id}>
-                    <td><span className="badge-dash badge-amber-dash">{a.tipo}</span></td>
-                    <td>
-                      <div className="info-title-dash">{a.barrio}</div>
-                    </td>
-                    <td>{a.comuna}</td>
-                    <td><span className="badge-dash badge-blue-dash">{a.estado}</span></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          {alertasEjemplo.map((a) => (
+            <div key={a.id} className="card-panel-dash p-3 mb-3">
+              <div className="d-flex justify-content-between align-items-start mb-2">
+                <div>
+                  <h5 className="info-title-dash mb-0">{a.tipo}</h5>
+                  <span className="badge-dash badge-amber-dash me-2">{a.categoria}</span>
+                  <span className="badge-dash badge-blue-dash">{a.estado}</span>
+                </div>
+              </div>
+              <p className="mb-2">{a.descripcion}</p>
+              <div className="info-sub-dash">
+                Reportado por {a.reportadoPor}<br />
+                {a.ubicacion} · {a.tiempo}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>
