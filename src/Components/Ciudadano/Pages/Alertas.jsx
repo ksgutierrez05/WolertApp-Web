@@ -84,15 +84,16 @@ export default function Alertas() {
                 <div className="flex-grow-1">
                   <div className="d-flex justify-content-between align-items-start mb-2">
                     <div>
-                      <h5 className="info-title-dash mb-0">{a.tipo}</h5>
+                      <h5 className="info-title-dash mb-0" style={{ fontSize: '11.5px' }}>{a.tipo}</h5>
                       <span className="badge-dash badge-amber-dash me-2">{a.categoria}</span>
                       <span className="badge-dash badge-blue-dash">{a.estado}</span>
                     </div>
+                    <div className="info-sub-dash">{a.tiempo}</div>
                   </div>
                   <p className="mb-2">{a.descripcion}</p>
                   <div className="info-sub-dash">
                     Reportado por {a.reportadoPor}<br />
-                    {a.ubicacion} · {a.tiempo}
+                    <i className="bi bi-geo-alt me-1"></i>{a.ubicacion}
                   </div>
                 </div>
               </div>

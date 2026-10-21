@@ -132,14 +132,14 @@ export default function Alertas() {
 
       <div className="card-panel-dash">
         <div className="table-responsive">
-          <table className="tabla-alertas-dash">
+          <table className="tabla-alertas-dash" style={{ tableLayout: 'fixed' }}>
             <thead>
               <tr>
                 <th>Tipo</th>
                 <th>Barrio</th>
                 <th>Usuario</th>
                 <th>Estado</th>
-                <th>Fecha</th>
+                <th>Fecha / Hora</th>
                 <th>Descripción</th>
               </tr>
             </thead>
@@ -179,7 +179,7 @@ export default function Alertas() {
                           <span className="dot" />{estadoLabel[a.estado]}
                         </span>
                       </td>
-                      <td className="alerta-fecha-dash">{formatearFechaAlerta(a.fecha)}</td>
+                      <td className="alerta-fecha-dash">{formatearFechaAlerta(a.fecha)} · 08:12 a.m.</td>
                       <td className="celda-desc" title={a.descripcion || ''}>{a.descripcion || '—'}</td>
                     </tr>
                   );
