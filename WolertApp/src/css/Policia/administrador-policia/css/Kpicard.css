@@ -1,0 +1,146 @@
+
+.kpi-card-policial {
+  --kpi-color: #08765a;
+  --kpi-fondo: #e1f4ec;
+
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+
+  width: 100%;
+  min-height: 112px;
+  height: 100%;
+  padding: 19px 17px;
+
+  background: #fff;
+  border: 1px solid #e5eaf0;
+  border-left: 5px solid var(--kpi-color);
+  border-radius: 15px;
+
+  box-shadow: 0 3px 10px rgba(24, 44, 64, 0.055);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.kpi-card-policial:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 22px rgba(24, 44, 64, 0.11);
+}
+
+.kpi-card-icono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+
+  color: var(--kpi-color);
+  background: var(--kpi-fondo);
+}
+
+.kpi-card-icono i {
+  font-size: 1.55rem;
+  line-height: 1;
+}
+
+.kpi-card-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 7px;
+  min-width: 0;
+}
+
+.kpi-card-titulo {
+  color: #53647b;
+  font-size: 0.83rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.kpi-card-valor {
+  color: #263d58;
+  font-size: 1.9rem;
+  font-weight: 750;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.kpi-card-flecha {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  color: var(--kpi-color);
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+/* Variantes de color */
+
+.kpi-card-policial.tono-verde {
+  --kpi-color: #07835b;
+  --kpi-fondo: #dff5e9;
+}
+
+.kpi-card-policial.tono-rojo {
+  --kpi-color: #dc3545;
+  --kpi-fondo: #fde7eb;
+}
+
+.kpi-card-policial.tono-ambar {
+  --kpi-color: #e68a00;
+  --kpi-fondo: #fff0d8;
+}
+
+.kpi-card-policial.tono-azul {
+  --kpi-color: #2475d5;
+  --kpi-fondo: #e2edff;
+}
+
+@media (max-width: 576px) {
+  .kpi-card-policial {
+    gap: 10px;
+    min-height: 100px;
+    padding: 13px 10px;
+    border-radius: 12px;
+  }
+
+  .kpi-card-icono {
+    width: 42px;
+    height: 42px;
+  }
+
+  .kpi-card-icono i {
+    font-size: 1.2rem;
+  }
+
+  .kpi-card-titulo {
+    font-size: 0.75rem;
+  }
+
+  .kpi-card-valor {
+    font-size: 1.55rem;
+  }
+
+  .kpi-card-flecha {
+    font-size: 0.7rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kpi-card-policial {
+    transition: none;
+  }
+
+  .kpi-card-policial:hover {
+    transform: none;
+  }
+}

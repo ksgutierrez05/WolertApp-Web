@@ -1,9 +1,14 @@
-/* Piezas de Unidades que no existen en global.css: encabezado con
-   acción, filtros, tabla de datos, avatares pequeños y modales de
-   crear/editar/ver. Usan las variables del rol activo (rol-policia =
-   verde) para mantenerse consistentes con el resto del sistema. */
 
-/* ---------- Encabezado de vista con botón de acción ---------- */
+/* =====================================================
+   WOLERTAPP — UNIDADES POLICIALES
+   Encabezado, filtros, tabla, avatares y modales
+   ===================================================== */
+
+
+/* =====================================================
+   1. ENCABEZADO DE LA VISTA
+   ===================================================== */
+
 .header-vista-dash {
   display: flex;
   align-items: flex-end;
@@ -26,8 +31,17 @@
   font-size: 13.5px;
 }
 
+
+/* =====================================================
+   2. BOTÓN PRINCIPAL
+   ===================================================== */
+
 .btn-cv-verde {
-  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-2));
+  background: linear-gradient(
+    135deg,
+    var(--color-primary),
+    var(--color-primary-2)
+  );
   border: none;
   color: #fff;
   font-weight: 700;
@@ -37,54 +51,333 @@
   box-shadow: var(--shadow-sm);
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
-  transition: box-shadow 0.15s ease, transform 0.15s ease;
+  cursor: pointer;
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.2s ease,
+    filter 0.2s ease;
 }
 
 .btn-cv-verde:hover {
   color: #fff;
   box-shadow: var(--shadow-md);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  filter: brightness(1.05);
 }
 
-/* ---------- Barra de filtros ---------- */
-.filtros-toolbar-dash {
+.btn-cv-verde:focus-visible {
+  outline: 3px solid rgba(8, 116, 96, 0.25);
+  outline-offset: 3px;
+}
+
+
+/* =====================================================
+   3. PANEL DE FILTROS
+   ===================================================== */
+
+.panel-filtros-unidades {
+  overflow: hidden;
+  margin-bottom: 24px;
+  border: 1px solid #d5e5dd;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 5px 18px rgba(6, 59, 50, 0.07);
+}
+
+
+/* Encabezado verde petróleo */
+
+.panel-filtros-header {
   display: flex;
   align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
+  gap: 13px;
+  padding: 18px 22px;
+  background: linear-gradient(
+    110deg,
+    #063b32 0%,
+    #075747 65%,
+    #087460 100%
+  );
+  color: #fff;
+}
+
+.panel-filtros-icono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 43px;
+  height: 43px;
+  flex-shrink: 0;
+  border: 1px solid rgba(193, 255, 226, 0.2);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.11);
+  color: #c1f5d9;
+  font-size: 20px;
+}
+
+.panel-filtros-header h3 {
+  margin: 0 0 4px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.panel-filtros-header p {
+  margin: 0;
+  color: #c0dcd2;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.filtros-etiqueta {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-left: auto;
+  padding: 8px 11px;
+  border: 1px solid rgba(218, 255, 235, 0.2);
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.09);
+  color: #e0f7eb;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+
+/* Cuerpo del panel */
+
+.panel-filtros-body {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.85fr) minmax(0, 1.5fr);
+  gap: 18px;
+  align-items: stretch;
+  padding: 20px;
+  background: linear-gradient(
+    135deg,
+    #f2f7f4 0%,
+    #eaf3ee 100%
+  );
+}
+
+
+/* =====================================================
+   4. BUSCADOR DE UNIDADES
+   ===================================================== */
+
+.buscador-unidades {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.buscador-unidades > label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  color: #244d40;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.buscador-unidades > label i {
+  color: #087460;
+  font-size: 14px;
+}
+
+.buscador-unidades-input {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 49px;
+  padding: 0 14px;
+  border: 1px solid #d4e4db;
+  border-radius: 11px;
   background: #fff;
+  color: #087460;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.buscador-unidades-input:hover {
+  border-color: #a8cdbb;
+}
+
+.buscador-unidades-input:focus-within {
+  border-color: #07866b;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(7, 134, 107, 0.12);
+}
+
+.buscador-unidades-input > i {
+  flex-shrink: 0;
+  font-size: 15px;
+}
+
+.buscador-unidades-input input {
+  width: 100%;
+  min-width: 0;
+  min-height: 45px;
+  padding: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #173e32;
+  font-family: inherit;
+  font-size: 13px;
+  box-shadow: none;
+}
+
+.buscador-unidades-input input::placeholder {
+  color: #91a49b;
+}
+
+.buscador-unidades-input input:focus {
+  border: none;
+  outline: none;
+  box-shadow: none;
+}
+
+
+/* =====================================================
+   5. SELECTORES DE FILTROS
+   ===================================================== */
+
+.filtros-unidades-selects {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  min-width: 0;
+}
+
+.filtro-unidad-card {
+  min-width: 0;
+  padding: 13px;
+  border: 1px solid #d8e7df;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(6, 59, 50, 0.025);
+  transition:
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.filtro-unidad-card:hover {
+  transform: translateY(-2px);
+  border-color: #a8cdbb;
+  box-shadow: 0 5px 12px rgba(6, 59, 50, 0.07);
+}
+
+.filtro-unidad-card > label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  cursor: pointer;
+}
+
+.filtro-unidad-card > label > span:last-child {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.filtro-unidad-card strong {
+  color: #244d40;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.filtro-unidad-card small {
+  color: #82968c;
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.filtro-unidad-icono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 37px;
+  height: 37px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  font-size: 17px;
+}
+
+.filtro-unidad-icono.estado {
+  background: #dff3e8;
+  color: #087653;
+}
+
+.filtro-unidad-icono.ubicacion {
+  background: #e0edf9;
+  color: #346a9a;
+}
+
+
+/* Selectores */
+
+.filtro-unidad-card .form-select {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 41px;
+  padding: 8px 30px 8px 10px;
+  border: 1px solid #dce8e1;
+  border-radius: 8px;
+  background-color: #f7faf8;
+  color: #244d40;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: none;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.filtro-unidad-card .form-select:hover {
+  border-color: #a6cbbb;
+  background-color: #fff;
+}
+
+.filtro-unidad-card .form-select:focus {
+  border-color: #087460;
+  background-color: #fff;
+  box-shadow: 0 0 0 3px rgba(8, 116, 96, 0.1);
+}
+
+
+/* =====================================================
+   6. TARJETA Y ENCABEZADO DE TABLA
+   ===================================================== */
+
+.card-panel-dash {
+  overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 16px;
-  padding: 12px 16px;
+  background: #fff;
   box-shadow: var(--shadow-sm);
 }
 
-.filtros-toolbar-dash .search-dash {
-  flex: 1 1 260px;
-}
-
-.filtros-toolbar-dash select.form-select {
-  border-radius: 10px;
-  border-color: var(--line);
-  background-color: var(--fog);
-  font-size: 13px;
-  min-width: 170px;
-  padding: 10px 14px;
-}
-
-.filtros-toolbar-dash select.form-select:focus {
-  box-shadow: 0 0 0 3px rgba(28, 120, 30, 0.15);
-  border-color: var(--color-primary);
-}
-
-/* ---------- Tarjeta de tabla ---------- */
 .tabla-header-dash {
   display: flex;
   align-items: center;
   padding: 14px 20px;
   border-bottom: 1px solid var(--line);
   gap: 12px;
+  background: #f8faf9;
 }
 
 .tabla-header-dash span {
@@ -95,6 +388,11 @@
   color: var(--subtle);
 }
 
+
+/* =====================================================
+   7. TABLA DE UNIDADES
+   ===================================================== */
+
 .tabla-dash {
   width: 100%;
   border-collapse: collapse;
@@ -103,7 +401,7 @@
 
 .tabla-dash tbody tr {
   border-bottom: 1px solid var(--line);
-  transition: background 0.12s ease;
+  transition: background 0.15s ease;
 }
 
 .tabla-dash tbody tr:last-child {
@@ -124,21 +422,31 @@
   padding-left: 20px;
 }
 
+.tabla-dash td:last-child {
+  padding-right: 20px;
+}
+
+
+/* =====================================================
+   8. CELDAS Y AVATARES PEQUEÑOS
+   ===================================================== */
+
 .celda-persona-dash {
   display: flex;
   align-items: center;
   gap: 12px;
+  min-width: 0;
 }
 
 .avatar-sm-dash {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 36px;
   height: 36px;
   min-width: 36px;
   border-radius: 50%;
   color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   font-family: "Space Grotesk", sans-serif;
   font-weight: 700;
   font-size: 12.5px;
@@ -148,34 +456,48 @@
   font-weight: 700;
   font-size: 13.5px;
   color: var(--ink);
-  line-height: 1.25;
+  line-height: 1.4;
 }
 
 .celda-sub-dash {
   font-size: 11.5px;
   color: var(--muted);
+  line-height: 1.5;
 }
+
+
+/* =====================================================
+   9. BOTONES DE ACCIONES DE TABLA
+   ===================================================== */
 
 .tabla-acciones-dash {
   display: flex;
+  align-items: center;
   gap: 6px;
 }
 
 .btn-icono-dash {
-  width: 32px;
-  height: 32px;
-  border-radius: 9px;
-  border: 1px solid var(--line);
-  background: #fff;
-  color: var(--muted);
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: #fff;
+  color: var(--muted);
   font-size: 13px;
-  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.15s ease;
 }
 
 .btn-icono-dash:hover {
+  transform: translateY(-1px);
   background: var(--fog);
   color: var(--ink);
 }
@@ -192,38 +514,61 @@
   border-color: #fce8e9;
 }
 
+.btn-icono-dash:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+
+/* =====================================================
+   10. ESTADO VACÍO DE LA TABLA
+   ===================================================== */
+
 .tabla-vacio-dash {
-  text-align: center;
   padding: 48px 20px;
   color: var(--muted);
   font-size: 13.5px;
+  text-align: center;
 }
 
-/* ---------- Modales (crear / editar / ver) ---------- */
+.tabla-vacio-dash.d-none {
+  display: none !important;
+}
+
+
+/* =====================================================
+   11. MODALES: CREAR, EDITAR Y VER
+   ===================================================== */
+
 .modal-content {
+  overflow: hidden;
   border: none;
   border-radius: 20px;
-  overflow: hidden;
   box-shadow: var(--shadow-md);
 }
 
 .modal-header-dash {
-  background: linear-gradient(120deg, var(--color-primary) 0%, var(--color-primary-2) 100%);
-  color: #fff;
   padding: 22px 26px;
   border: none;
+  background: linear-gradient(
+    120deg,
+    var(--color-primary) 0%,
+    var(--color-primary-2) 100%
+  );
+  color: #fff;
 }
 
 .modal-header-dash .modal-title {
   font-family: "Space Grotesk", sans-serif;
-  font-weight: 700;
   font-size: 18px;
+  font-weight: 700;
+  color: #fff;
 }
 
 .modal-header-dash .modal-subtitle {
-  font-size: 12.5px;
-  color: #d7ddec;
   margin-top: 2px;
+  color: #d7e8e1;
+  font-size: 12.5px;
 }
 
 .modal-header-dash .btn-close {
@@ -236,44 +581,51 @@
 }
 
 .form-field-dash label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--muted);
   font-size: 11.5px;
   font-weight: 700;
-  text-transform: uppercase;
   letter-spacing: 0.03em;
-  color: var(--muted);
-  margin-bottom: 6px;
-  display: block;
+  text-transform: uppercase;
 }
 
 .form-field-dash .form-control,
 .form-field-dash .form-select {
-  border-radius: 10px;
-  border-color: var(--line);
-  font-size: 13.5px;
   padding: 10px 12px;
+  border-color: var(--line);
+  border-radius: 10px;
+  font-size: 13.5px;
 }
 
 .form-field-dash .form-control:focus,
 .form-field-dash .form-select:focus {
-  box-shadow: 0 0 0 3px rgba(28, 120, 30, 0.15);
   border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(28, 120, 30, 0.15);
 }
 
+
+/* Pie del modal */
+
 .modal-footer-dash {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
   padding: 16px 26px 24px;
   border: none;
   background: #fff;
-  gap: 10px;
 }
 
 .btn-secundario-dash {
-  background: var(--fog);
-  border: 1px solid var(--line);
-  color: var(--ink);
-  font-weight: 600;
-  font-size: 13.5px;
-  border-radius: 100px;
   padding: 10px 20px;
+  border: 1px solid var(--line);
+  border-radius: 100px;
+  background: var(--fog);
+  color: var(--ink);
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
 }
 
 .btn-secundario-dash:hover {
@@ -281,27 +633,42 @@
   color: var(--ink);
 }
 
-/* ---------- Modal "ver detalle" ---------- */
+
+/* =====================================================
+   12. MODAL DE DETALLE DE UNIDAD
+   ===================================================== */
+
 .detalle-header-dash {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 10px;
+  width: 100%;
   text-align: center;
 }
 
 .avatar-lg-dash {
-  width: 68px;
-  height: 68px;
-  border-radius: 50%;
-  border: 3px solid rgba(255, 255, 255, 0.6);
-  color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 68px;
+  height: 68px;
+  border: 3px solid rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  color: #fff;
   font-family: "Space Grotesk", sans-serif;
-  font-weight: 700;
   font-size: 22px;
+  font-weight: 700;
+}
+
+.badge-dash {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 11px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 700;
 }
 
 .detalle-fila-dash {
@@ -317,21 +684,123 @@
 }
 
 .detalle-fila-dash .k {
-  font-size: 11.5px;
   color: var(--muted);
+  font-size: 11.5px;
   font-weight: 600;
 }
 
 .detalle-fila-dash .v {
+  color: var(--ink);
   font-size: 13.5px;
   font-weight: 700;
-  color: var(--ink);
   text-align: right;
+  overflow-wrap: anywhere;
 }
 
-@media (max-width: 640px) {
-  .filtros-toolbar-dash select.form-select {
-    min-width: 0;
-    flex: 1 1 auto;
+
+/* =====================================================
+   13. RESPONSIVE: TABLET
+   ===================================================== */
+
+@media (max-width: 992px) {
+  .panel-filtros-body {
+    grid-template-columns: 1fr;
+  }
+
+  .tabla-header-dash {
+    gap: 10px;
+    padding: 14px;
+  }
+
+  .tabla-dash td:first-child {
+    padding-left: 14px;
+  }
+
+  .tabla-dash td {
+    padding-right: 12px;
+  }
+
+  .tabla-dash td:last-child {
+    padding-right: 14px;
   }
 }
+
+
+/* =====================================================
+   14. RESPONSIVE: MÓVILES
+   ===================================================== */
+
+@media (max-width: 640px) {
+  .header-vista-dash {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .header-vista-dash h1 {
+    font-size: 21px;
+  }
+
+  .header-vista-dash .btn-cv-verde {
+    width: 100%;
+  }
+
+  .panel-filtros-header {
+    padding: 15px;
+  }
+
+  .panel-filtros-header h3 {
+    font-size: 14px;
+  }
+
+  .panel-filtros-header p {
+    font-size: 11px;
+  }
+
+  .filtros-etiqueta {
+    display: none;
+  }
+
+  .panel-filtros-body {
+    gap: 15px;
+    padding: 14px;
+  }
+
+  .filtros-unidades-selects {
+    grid-template-columns: 1fr;
+  }
+
+  .filtro-unidad-card {
+    padding: 13px;
+  }
+
+  .modal-header-dash,
+  .modal-body-dash {
+    padding: 18px;
+  }
+
+  .modal-footer-dash {
+    padding: 14px 18px 18px;
+  }
+
+  .detalle-fila-dash {
+    gap: 10px;
+  }
+}
+
+
+/* =====================================================
+   15. TABLA CON DESPLAZAMIENTO EN PANTALLAS PEQUEÑAS
+   ===================================================== */
+
+@media (max-width: 768px) {
+  .card-panel-dash {
+    overflow-x: auto;
+  }
+
+  .tabla-header-dash,
+  .tabla-dash {
+    min-width: 760px;
+  }
+}
+
+
