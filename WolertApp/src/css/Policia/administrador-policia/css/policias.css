@@ -1,9 +1,27 @@
-/* Piezas de Policías que no existen en global.css: encabezado con
-   acción, filtros, tabla de datos, avatares pequeños y modales de
-   crear/editar/ver. Usan las variables del rol activo (rol-policia =
-   verde) para mantenerse consistentes con el resto del sistema. */
+/* Piezas de Policías: encabezado, tabla, avatares y modales.
+   Usan las variables del rol activo (rol-policia = verde). */
 
-/* ---------- Encabezado de vista con botón de acción ---------- */
+:root {
+  --ring-policia: 0 0 0 3px rgba(28, 120, 30, 0.15);
+}
+
+/* Fuente de títulos */
+.header-vista-dash h1,
+.modal-header-dash .modal-title,
+.avatar-sm-dash,
+.avatar-lg-dash {
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 700;
+}
+
+/* Focus verde */
+.form-field-dash .form-control:focus,
+.form-field-dash .form-select:focus {
+  box-shadow: var(--ring-policia);
+  border-color: var(--color-primary);
+}
+
+/* ---------- Encabezado ---------- */
 .header-vista-dash {
   display: flex;
   align-items: flex-end;
@@ -13,8 +31,6 @@
 }
 
 .header-vista-dash h1 {
-  font-family: "Space Grotesk", sans-serif;
-  font-weight: 700;
   font-size: 24px;
   margin: 0 0 4px;
   color: var(--ink);
@@ -26,18 +42,23 @@
   font-size: 13.5px;
 }
 
+/* ---------- Botones ---------- */
+.btn-cv-verde,
+.btn-secundario-dash {
+  font-size: 13.5px;
+  border-radius: 100px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .btn-cv-verde {
   background: linear-gradient(135deg, var(--color-primary), var(--color-primary-2));
   border: none;
   color: #fff;
   font-weight: 700;
-  font-size: 13.5px;
   padding: 11px 20px;
-  border-radius: 100px;
   box-shadow: var(--shadow-sm);
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
   transition: box-shadow 0.15s ease, transform 0.15s ease;
 }
 
@@ -47,38 +68,44 @@
   transform: translateY(-1px);
 }
 
-/* ---------- Barra de filtros ---------- */
-.filtros-toolbar-dash {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  background: #fff;
+.btn-secundario-dash {
+  background: var(--fog);
   border: 1px solid var(--line);
+  color: var(--ink);
+  font-weight: 600;
+  padding: 10px 20px;
+}
+
+.btn-secundario-dash:hover {
+  background: var(--line);
+  color: var(--ink);
+}
+
+/* ---------- Panel de filtros (mismo estilo que Unidades) ---------- */
+.panel-filtros-policias {
+  overflow: hidden;
+  border: 1px solid #d5e5dd;
   border-radius: 16px;
-  padding: 12px 16px;
-  box-shadow: var(--shadow-sm);
+  background: #fff;
+  box-shadow: 0 5px 18px rgba(6, 59, 50, 0.07);
 }
 
-.filtros-toolbar-dash .search-dash {
-  flex: 1 1 260px;
+.panel-filtros-policias .panel-filtros-body {
+  grid-template-columns: minmax(220px, 0.85fr) minmax(0, 1.5fr);
 }
 
-.filtros-toolbar-dash select.form-select {
-  border-radius: 10px;
-  border-color: var(--line);
-  background-color: var(--fog);
-  font-size: 13px;
-  min-width: 170px;
-  padding: 10px 14px;
+@media (max-width: 640px) {
+  .panel-filtros-policias .filtros-etiqueta {
+    display: none;
+  }
+
+  .panel-filtros-policias .panel-filtros-body,
+  .panel-filtros-policias .filtros-unidades-selects {
+    grid-template-columns: 1fr;
+  }
 }
 
-.filtros-toolbar-dash select.form-select:focus {
-  box-shadow: 0 0 0 3px rgba(28, 120, 30, 0.15);
-  border-color: var(--color-primary);
-}
-
-/* ---------- Tarjeta de tabla ---------- */
+/* ---------- Tabla ---------- */
 .tabla-header-dash {
   display: flex;
   align-items: center;
@@ -130,20 +157,6 @@
   gap: 12px;
 }
 
-.avatar-sm-dash {
-  width: 36px;
-  height: 36px;
-  min-width: 36px;
-  border-radius: 50%;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: "Space Grotesk", sans-serif;
-  font-weight: 700;
-  font-size: 12.5px;
-}
-
 .celda-titulo-dash {
   font-weight: 700;
   font-size: 13.5px;
@@ -156,6 +169,38 @@
   color: var(--muted);
 }
 
+.tabla-vacio-dash {
+  text-align: center;
+  padding: 48px 20px;
+  color: var(--muted);
+  font-size: 13.5px;
+}
+
+/* ---------- Avatares ---------- */
+.avatar-sm-dash,
+.avatar-lg-dash {
+  border-radius: 50%;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-sm-dash {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  font-size: 12.5px;
+}
+
+.avatar-lg-dash {
+  width: 68px;
+  height: 68px;
+  border: 3px solid rgba(255, 255, 255, 0.6);
+  font-size: 22px;
+}
+
+/* ---------- Botones de acción de la tabla ---------- */
 .tabla-acciones-dash {
   display: flex;
   gap: 6px;
@@ -192,14 +237,7 @@
   border-color: #fce8e9;
 }
 
-.tabla-vacio-dash {
-  text-align: center;
-  padding: 48px 20px;
-  color: var(--muted);
-  font-size: 13.5px;
-}
-
-/* ---------- Modales (crear / editar / ver) ---------- */
+/* ---------- Modales ---------- */
 .modal-content {
   border: none;
   border-radius: 20px;
@@ -208,15 +246,13 @@
 }
 
 .modal-header-dash {
-  background: linear-gradient(120deg, var(--color-primary) 0%, var(--color-primary-2) 100%);
+  background: linear-gradient(120deg, var(--color-primary), var(--color-primary-2));
   color: #fff;
   padding: 22px 26px;
   border: none;
 }
 
 .modal-header-dash .modal-title {
-  font-family: "Space Grotesk", sans-serif;
-  font-weight: 700;
   font-size: 18px;
 }
 
@@ -233,6 +269,13 @@
 .modal-body-dash {
   padding: 24px 26px;
   background: #fff;
+}
+
+.modal-footer-dash {
+  padding: 16px 26px 24px;
+  border: none;
+  background: #fff;
+  gap: 10px;
 }
 
 .form-field-dash label {
@@ -253,34 +296,6 @@
   padding: 10px 12px;
 }
 
-.form-field-dash .form-control:focus,
-.form-field-dash .form-select:focus {
-  box-shadow: 0 0 0 3px rgba(28, 120, 30, 0.15);
-  border-color: var(--color-primary);
-}
-
-.modal-footer-dash {
-  padding: 16px 26px 24px;
-  border: none;
-  background: #fff;
-  gap: 10px;
-}
-
-.btn-secundario-dash {
-  background: var(--fog);
-  border: 1px solid var(--line);
-  color: var(--ink);
-  font-weight: 600;
-  font-size: 13.5px;
-  border-radius: 100px;
-  padding: 10px 20px;
-}
-
-.btn-secundario-dash:hover {
-  background: var(--line);
-  color: var(--ink);
-}
-
 /* ---------- Modal "ver detalle" ---------- */
 .detalle-header-dash {
   display: flex;
@@ -288,20 +303,6 @@
   align-items: center;
   gap: 10px;
   text-align: center;
-}
-
-.avatar-lg-dash {
-  width: 68px;
-  height: 68px;
-  border-radius: 50%;
-  border: 3px solid rgba(255, 255, 255, 0.6);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: "Space Grotesk", sans-serif;
-  font-weight: 700;
-  font-size: 22px;
 }
 
 .detalle-fila-dash {
@@ -327,11 +328,4 @@
   font-weight: 700;
   color: var(--ink);
   text-align: right;
-}
-
-@media (max-width: 640px) {
-  .filtros-toolbar-dash select.form-select {
-    min-width: 0;
-    flex: 1 1 auto;
-  }
 }

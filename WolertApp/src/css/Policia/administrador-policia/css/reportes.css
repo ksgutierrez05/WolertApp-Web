@@ -45,77 +45,136 @@
   transform: translateY(-1px);
 }
 
-/* ---------- Barra de filtros (misma familia que Unidades/Policías) ---------- */
+
+/* ===== BARRA DE FILTROS DE REPORTES ===== */
+
 .filtros-toolbar-dash {
   display: flex;
   align-items: center;
-  gap: 12px;
   flex-wrap: wrap;
+  gap: 12px;
+  padding: 16px;
+  margin-bottom: 18px;
+  border: 1px solid #dcebe7;
+  border-radius: 14px;
   background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  padding: 12px 16px;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 3px 12px rgba(6, 59, 50, 0.05);
 }
 
+/* Búsqueda principal */
 .filtros-toolbar-dash .search-dash {
-  flex: 1 1 240px;
+  flex: 1 1 260px;
+  min-width: 220px;
+  height: 44px;
+  padding: 0 12px;
+  border: 1px solid #d8e7e3;
+  border-radius: 9px;
+  background: #f7faf9;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.filtros-toolbar-dash select.form-select {
-  border-radius: 10px;
-  border-color: var(--line);
-  background-color: var(--fog);
+.filtros-toolbar-dash .search-dash:focus-within {
+  border-color: #087565;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(8, 117, 101, 0.10);
+}
+
+.filtros-toolbar-dash .search-dash i {
+  color: #087565;
+}
+
+.filtros-toolbar-dash .search-dash input {
+  height: 100%;
+  padding-left: 4px;
+  color: #244b45;
   font-size: 13px;
-  min-width: 150px;
-  padding: 10px 14px;
+  box-shadow: none;
 }
 
-.filtros-toolbar-dash select.form-select:focus {
-  box-shadow: 0 0 0 3px rgba(28, 120, 30, 0.15);
-  border-color: var(--color-primary);
+.filtros-toolbar-dash .search-dash input::placeholder {
+  color: #8ba39d;
 }
 
-.rango-fechas-dash {
+/* Selectores */
+.filtros-toolbar-dash > .form-select {
+  flex: 0 1 155px;
+  width: auto;
+  min-width: 135px;
+  height: 44px;
+  border: 1px solid #d8e7e3;
+  border-radius: 9px;
+  background-color: #f7faf9;
+  color: #31564f;
+  font-size: 13px;
+  cursor: pointer;
+  box-shadow: none;
+}
+
+.filtros-toolbar-dash > .form-select:focus,
+.filtros-toolbar-dash .rango-fechas-dash:focus-within {
+  border-color: #087565;
+  box-shadow: 0 0 0 3px rgba(8, 117, 101, 0.10);
+}
+
+/* Fechas */
+.filtros-toolbar-dash .rango-fechas-dash {
   display: flex;
   align-items: center;
-  gap: 6px;
-  background: var(--fog);
-  border-radius: 10px;
-  padding: 4px 10px;
+  gap: 7px;
+  min-height: 44px;
+  padding: 0 10px;
+  border: 1px solid #d8e7e3;
+  border-radius: 9px;
+  background: #f7faf9;
+  color: #78928b;
 }
 
-.rango-fechas-dash input[type="date"] {
+.filtros-toolbar-dash .rango-fechas-dash input {
+  width: 125px;
+  min-width: 0;
   border: none;
-  background: transparent;
-  font-size: 12.5px;
-  color: var(--ink);
-  padding: 6px 2px;
-  max-width: 118px;
-}
-
-.rango-fechas-dash input[type="date"]:focus {
   outline: none;
-}
-
-.rango-fechas-dash span {
-  color: var(--subtle);
+  background: transparent;
+  color: #31564f;
   font-size: 12px;
 }
 
-.btn-limpiar-link-dash {
-  background: none;
-  border: none;
-  color: var(--color-danger);
-  font-size: 12.5px;
-  font-weight: 700;
+/* Limpiar filtros */
+.filtros-toolbar-dash .btn-limpiar-link-dash {
+  padding: 9px 12px;
+  border: 1px solid #d8e7e3;
+  border-radius: 9px;
+  background: #edf7f4;
+  color: #086b5b;
+  font-size: 12px;
+  font-weight: 600;
   white-space: nowrap;
-  padding: 8px 4px;
+  transition: background 0.2s;
 }
 
-.btn-limpiar-link-dash:hover {
-  text-decoration: underline;
+.filtros-toolbar-dash .btn-limpiar-link-dash:hover {
+  background: #d8eee7;
 }
+
+/* Pantallas pequeñas */
+@media (max-width: 768px) {
+  .filtros-toolbar-dash {
+    padding: 12px;
+  }
+
+  .filtros-toolbar-dash .search-dash,
+  .filtros-toolbar-dash > .form-select,
+  .filtros-toolbar-dash .rango-fechas-dash {
+    flex: 1 1 100%;
+    width: 100%;
+  }
+
+  .filtros-toolbar-dash .rango-fechas-dash input {
+    flex: 1;
+    width: 0;
+  }
+}
+
 
 /* ---------- Tabla de alertas ---------- */
 .tabla-header-dash {
