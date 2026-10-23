@@ -224,4 +224,37 @@ export const KPIS_CONFIG = {
       },
     ],
   },
+
+  
+  notificaciones: {
+    columnas: 'col-6 col-xl-3',
+    claseFila: 'row g-3 mb-4',
+    items: [
+      {
+        clave: 'total',
+        etiqueta: 'Total de notificaciones',
+        icono: 'bi-bell-fill',
+        tono: 'azul',
+      },
+      {
+        clave: 'noLeidas',
+        etiqueta: 'No leídas',
+        icono: 'bi-envelope-exclamation-fill',
+        tono: 'ambar',
+      },
+      {
+        clave: 'criticas',
+        etiqueta: 'Críticas',
+        icono: 'bi-exclamation-octagon-fill',
+        tono: 'rojo',
+      },
+      {
+        clave: 'hoy',
+        etiqueta: 'Notificaciones de hoy',
+        icono: 'bi-calendar-check-fill',
+        tono: 'verde',
+      },
+    ],
+  },
+
 };
