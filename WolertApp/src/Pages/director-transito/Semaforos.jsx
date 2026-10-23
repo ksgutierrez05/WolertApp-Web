@@ -1,5 +1,5 @@
-import Layout from '../../Components/director-transito/Layout';
-import KpiCard from '../..Components/director-transito/KpiCard';
+import Layout from '../../Components/transito/Layout';
+import KpiCard from '../../Components/transito/KpiCard';
 
 export default function Semaforos() {
   return (

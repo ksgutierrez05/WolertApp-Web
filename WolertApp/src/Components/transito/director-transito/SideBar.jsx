@@ -1,11 +1,12 @@
 import { Link } from 'react-router-dom';
+import logoTransito from '../../../../public/img/secretaria transito.png';
 
 export default function Sidebar({ activo }) {
   return (
-    <aside id="sidebarDash">
+    <aside className="sidebar-dash" id="sidebarDash">
       <div className="d-flex align-items-center brand-dash">
         <span className="brand-icon-dash">
-          <img src="/img/secretaria transito.png" alt="Logo Tránsito" className="brand-logo-img-dash" />
+        <img src={logoTransito} alt="Logo Tránsito" className="brand-logo-img-dash" />
         </span>
         <span className="brand-name-dash">
           <span className="d-block">Secretaria de</span>

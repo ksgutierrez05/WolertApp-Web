@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import Layout from '../../Components/director-transito/Layout';
+import Layout from '../../Components/transito/Layout';
 
 export default function Catalogo() {
   const [tab, setTab] = useState('zonas');
