@@ -17,6 +17,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import AgentePanel from './Pages/agentes-transito/PanelPrincipal';
 import AgenteGrupo from './Pages/agentes-transito/Grupo';
 import AgenteHistorial from './Pages/agentes-transito/Historial';
+import AgenteConfiguracion from './Pages/agentes-transito/Configuracion';
 
 export default function App() {
   return (
@@ -43,6 +44,7 @@ export default function App() {
         <Route path="/transito/agente/panel" element={<AgentePanel />} />
         <Route path="/transito/agente/grupo" element={<AgenteGrupo />} />
         <Route path="/transito/agente/historial" element={<AgenteHistorial />} />
+        <Route path="/transito/agente/configuracion" element={<AgenteConfiguracion />} />
       
       </Routes>
     </BrowserRouter>

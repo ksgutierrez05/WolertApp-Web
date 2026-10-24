@@ -14,7 +14,6 @@ const MENU = [
     { id: 'historial', label: 'Historial', href: `${BASE}/historial`, icon: 'bi-clock-history' },
   ]},
   { seccion: 'Cuenta', items: [
-    { id: 'perfil',        label: 'Perfil',        href: `${BASE}/perfil`,        icon: 'bi-person' },
     { id: 'configuracion', label: 'Configuración', href: `${BASE}/configuracion`, icon: 'bi-gear' },
   ]},
 ];
