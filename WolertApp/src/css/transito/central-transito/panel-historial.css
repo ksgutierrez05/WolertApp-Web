@@ -160,3 +160,82 @@
   padding: 12px 14px;
   margin-bottom: 0;
 }
+/* Botón del calendario: solo el ícono, en el azul del rol */
+.fecha-wrap-dash {
+  position: relative;
+  display: inline-flex;
+}
+ 
+.btn-fecha-dash {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background-color: #eef1f8;
+  color: var(--color-primary);
+  font-size: 17px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
+}
+ 
+.btn-fecha-dash:hover {
+  background-color: #e2e7f3;
+}
+ 
+.btn-fecha-dash:active {
+  transform: scale(0.95);
+}
+ 
+.btn-fecha-dash.activo-dash {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-2));
+  color: #ffffff;
+}
+ 
+/* El input nativo queda invisible, solo sirve para anclar el calendario */
+.fecha-oculta-dash {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 40px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+  border: 0;
+  padding: 0;
+}
+ 
+/* Fecha elegida, con su X para quitarla */
+.chip-fecha-dash {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background-color: #eef1f8;
+  color: var(--color-primary);
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 6px 6px 6px 14px;
+  border-radius: 20px;
+}
+ 
+.chip-fecha-dash button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-primary);
+  font-size: 16px;
+  padding: 0;
+  cursor: pointer;
+}
+ 
+.chip-fecha-dash button:hover {
+  background-color: rgba(10, 47, 92, 0.12);
+}
+ 

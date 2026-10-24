@@ -8,6 +8,8 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 // import Configuracion from '../src/Pages/director-transito/Configuracion';
 import CentralPanel from './Pages/central-transito/PanelPrincipal';
 import CentralCasos from './Pages/central-transito/Casos';
+import CentralAgentes from './Pages/central-transito/Agentes';
+import CentralHistorial from './Pages/central-transito/Historial';
 
 export default function App() {
   return (
@@ -24,6 +26,8 @@ export default function App() {
         <Route path="/" element={<Navigate to="/transito/central/panel" replace/>} />
         <Route path="/transito/central/panel" element={<CentralPanel />} />
         <Route path="/transito/central/asignar" element={<CentralCasos />} />
+        <Route path="/transito/central/agentes" element={<CentralAgentes />} />
+        <Route path="/transito/central/historial" element={<CentralHistorial />} />
       
       </Routes>
     </BrowserRouter>
