@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import SidebarDirector from './director-transito/Sidebar';
+import SidebarCentral from './central-transito/SideBar';
 
 
 const ROLES = {
   director: { Sidebar: SidebarDirector, avatar: 'D',  notificaciones: '9+' },
+  central: { Sidebar: SidebarCentral, avatar: 'C',  notificaciones: '9+' },
   
 };
 

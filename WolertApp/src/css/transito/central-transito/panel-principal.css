@@ -384,3 +384,66 @@
     padding: 12px 14px;
   }
 }
+
+/* Hero con imagen (igual al del director) */
+.hero-dash.hero-img-dash {
+  background-color: var(--color-primary);
+  min-height: 270px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 36px 44px;
+  background-image:
+    linear-gradient(
+      90deg,
+      var(--color-primary) 0%,
+      var(--color-primary) 45%,
+      color-mix(in srgb, var(--color-primary) 60%, transparent) 62%,
+      color-mix(in srgb, var(--color-primary) 15%, transparent) 80%,
+      transparent 92%
+    ),
+    url('../../../../public/img/Maria Mulata.jpg');
+  background-position: center, right 12%;
+  background-size: cover, cover;
+  background-repeat: no-repeat;
+}
+.eyebrow-img-dash {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; font-weight: 700; letter-spacing: 0.14em;
+  color: #9fd0ff; margin-bottom: 14px;
+}
+.eyebrow-img-dash i { font-size: 13px; }
+.hero-img-dash .hero-title-dash { font-size: 40px; line-height: 1.12; max-width: 620px; margin: 0 0 10px; letter-spacing: -0.02em; }
+.hero-img-dash .hero-text-dash { font-size: 14px; color: #e3ebf7; max-width: 520px; margin: 0; }
+@media (max-width: 768px) {
+  .hero-dash.hero-img-dash { padding: 26px 22px; min-height: 230px; }
+  .hero-img-dash .hero-title-dash { font-size: 28px; }
+}
+ 
+/* Etiqueta de las KPI del panel (no la pisan otros CSS) */
+.kpi-dash .kpi-label-dash { color: var(--muted); font-size: 12.5px; font-weight: 600; margin-top: 7px; }
+ 
+/* Solo si NO los tienes ya en ese archivo: lista de agentes y badges extra */
+.badge-purple-dash { background-color: #efe8fb; color: #7c4fc9; }
+.badge-gray-dash { background-color: #eceff3; color: #6b7686; }
+ 
+.agentes-pd {
+  background-color: #ffffff; border: 1px solid var(--line);
+  border-radius: 18px; padding: 8px 20px; box-shadow: var(--shadow-sm);
+}
+.agente-row-pd {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 13px 0; border-bottom: 1px solid var(--fog);
+}
+.agente-row-pd:last-child { border-bottom: none; }
+.agente-info-pd { display: flex; align-items: center; gap: 12px; }
+.agente-avatar-pd {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-2));
+  color: #fff; font-size: 12px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+.agente-nombre-pd { font-size: 13px; font-weight: 700; }
+.agente-zona-pd { font-size: 11.5px; color: var(--muted); }
+ 

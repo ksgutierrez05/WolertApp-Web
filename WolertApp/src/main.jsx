@@ -13,6 +13,8 @@ import './css/transito/director-transito/panel-reportes.css';
 import './css/transito/director-transito/panel-catalogo.css';
 import './css/transito/director-transito/panel-configuracion.css';
 import './css/transito/agente-transito/panel-configuracion.css';
+import './css/transito/central-transito/panel-principal.css';
+import './css/transito/central-transito/panel-casos.css';
 import App from './App';
 
 createRoot(document.getElementById('root')).render(<App />);
