@@ -151,4 +151,97 @@ export const KPIS_CENTRAL_CONFIG = {
       },
     ],
   },
+
+  historial: {
+    columnas: 'col-6 col-xl-3',
+    claseFila: 'row g-3 mb-4',
+    items: [
+      {
+        clave: 'totalCasos',
+        etiqueta: 'Total de casos',
+        icono: 'bi-folder2-open',
+        tono: 'petroleo',
+      },
+      {
+        clave: 'casosResueltos',
+        etiqueta: 'Casos resueltos',
+        icono: 'bi-check-circle-fill',
+        tono: 'verde',
+      },
+      {
+        clave: 'casosCriticos',
+        etiqueta: 'Casos críticos',
+        icono: 'bi-exclamation-triangle-fill',
+        tono: 'rojo',
+      },
+      {
+        clave: 'casosConInforme',
+        etiqueta: 'Con informe',
+        icono: 'bi-file-earmark-text-fill',
+        tono: 'azul',
+      },
+    ],
+  },
+
+  reportes: {
+    columnas: 'col-6 col-xl-3',
+    claseFila: 'row g-3 mb-4',
+    items: [
+      {
+        clave: 'total',
+        etiqueta: 'Total de casos',
+        icono: 'bi-folder2-open',
+        tono: 'petroleo',
+      },
+      {
+        clave: 'resueltos',
+        etiqueta: 'Casos resueltos',
+        icono: 'bi-check-circle-fill',
+        tono: 'verde',
+      },
+      {
+        clave: 'pendientes',
+        etiqueta: 'Casos pendientes',
+        icono: 'bi-hourglass-split',
+        tono: 'ambar',
+      },
+      {
+        clave: 'conInforme',
+        etiqueta: 'Con informe',
+        icono: 'bi-file-earmark-text-fill',
+        tono: 'azul',
+      },
+    ],
+  },
+  notificaciones: {
+    columnas: 'col-6 col-md-3',
+    claseFila: 'row g-3 mb-4',
+    items: [
+      {
+        clave: 'total',
+        etiqueta: 'Total',
+        icono: 'bi-bell-fill',
+        tono: 'petroleo',
+      },
+      {
+        clave: 'noLeidas',
+        etiqueta: 'Sin leer',
+        icono: 'bi-envelope-exclamation-fill',
+        tono: 'rojo',
+      },
+      {
+        clave: 'urgentes',
+        etiqueta: 'Requieren acción',
+        icono: 'bi-clock-history',
+        tono: 'ambar',
+      },
+      {
+        clave: 'resueltas',
+        etiqueta: 'Resueltas hoy',
+        icono: 'bi-check2-circle',
+        tono: 'verde',
+      },
+    ],
+  },
+
 };

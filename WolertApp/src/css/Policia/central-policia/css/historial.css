@@ -578,6 +578,249 @@
     border-top: 1px solid #edf0f4;
 }
 
+/* Filtros de Historial */
+.historial-filtros-panel {
+  padding: 20px;
+  margin-bottom: 28px;
+  background: #fff;
+  border: 1px solid #dce8f7;
+  border-radius: 12px;
+  box-shadow: 0 3px 12px rgba(22, 65, 115, 0.04);
+}
+
+.historial-filtros {
+  display: grid;
+  grid-template-columns: minmax(230px, 1.6fr)
+    repeat(3, minmax(145px, 1fr)) auto;
+  gap: 14px;
+  align-items: center;
+}
+
+.historial-field {
+  position: relative;
+  min-width: 0;
+}
+
+.historial-field > i {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: 14px;
+  color: #456b9b;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.historial-input {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px 10px 40px;
+  color: #284b76;
+  font-size: 13px;
+  border: 1px solid #d8e5f5;
+  border-radius: 9px;
+  background-color: #fff;
+  box-shadow: none;
+}
+
+.historial-input:focus {
+  border-color: #4385e8;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+}
+
+.historial-input::placeholder {
+  color: #7187a5;
+}
+
+.historial-btn-filtrar {
+  min-height: 44px;
+  padding: 10px 20px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  background: #0757c9;
+  border: 1px solid #0757c9;
+  border-radius: 9px;
+}
+
+.historial-btn-filtrar:disabled {
+  color: #fff;
+  background: #0757c9;
+  opacity: 1;
+  cursor: default;
+}
+
+/* Tabla y estado vacío */
+.historial-contenido {
+  display: grid;
+  grid-template-columns: minmax(0, 2.2fr) minmax(280px, 0.9fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.historial-table-panel,
+.historial-detalle-panel {
+  min-width: 0;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid #dce8f7;
+  border-radius: 12px;
+  box-shadow: 0 5px 18px rgba(22, 65, 115, 0.06);
+}
+
+.historial-table {
+  width: 100%;
+  color: #183b68;
+  font-size: 12px;
+}
+
+.historial-table thead th {
+  padding: 18px 14px;
+  color: #3d5f8c;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+  background: #f1f6fd;
+  border-bottom: 1px solid #e0eaf7;
+}
+
+.historial-empty {
+  display: flex;
+  min-height: 300px;
+  padding: 40px 20px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.historial-empty-icon {
+  margin-bottom: 14px;
+  color: #8ca5c3;
+  font-size: 42px;
+}
+
+.historial-empty h3 {
+  margin-bottom: 8px;
+  color: #17365f;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.historial-empty p {
+  margin: 0;
+  color: #7088aa;
+  font-size: 13px;
+}
+
+/* Panel de detalle */
+.historial-detalle-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 18px;
+  border-bottom: 1px solid #edf2f9;
+}
+
+.historial-detalle-header h2 {
+  margin: 0;
+  color: #15345c;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.historial-detalle-cerrar {
+  padding: 4px;
+  color: #345982;
+  background: transparent;
+  border: 0;
+  font-size: 16px;
+}
+
+.historial-detalle-body {
+  padding: 6px 18px 16px;
+}
+
+.historial-detalle-item {
+  display: flex;
+  gap: 8px;
+  padding: 13px 0;
+  border-bottom: 1px solid #edf2f8;
+  font-size: 12px;
+}
+
+.historial-detalle-item span {
+  flex: 0 0 auto;
+  color: #183b68;
+}
+
+.historial-detalle-item strong {
+  overflow-wrap: anywhere;
+  color: #6683a7;
+  font-weight: 500;
+}
+
+.historial-detalle-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 16px 18px;
+  background: #f6f9fd;
+}
+
+.historial-btn-cerrar {
+  padding: 10px 24px;
+  color: #23466f;
+  font-size: 12px;
+  font-weight: 600;
+  background: #e8eff8;
+  border-radius: 9px;
+}
+
+.historial-btn-cerrar:disabled {
+  opacity: 1;
+}
+
+/* Adaptación a pantallas pequeñas */
+@media (max-width: 1200px) {
+  .historial-filtros {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .historial-busqueda {
+    grid-column: 1 / -1;
+  }
+
+  .historial-btn-filtrar {
+    width: 100%;
+  }
+}
+
+@media (max-width: 900px) {
+  .historial-contenido {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 576px) {
+  .historial-filtros-panel {
+    padding: 14px;
+  }
+
+  .historial-filtros {
+    grid-template-columns: 1fr;
+  }
+
+  .historial-busqueda {
+    grid-column: auto;
+  }
+
+  .historial-empty {
+    min-height: 240px;
+  }
+}
+
+
 
 /* =========================================================
    DETALLE

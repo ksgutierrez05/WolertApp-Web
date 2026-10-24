@@ -6,6 +6,10 @@ import Alertas from './Pages/Central-Policia/Alertas';
 import Asignaciones from './Pages/Central-Policia/Asignaciones';
 import AtencionAlertas from './Pages/Central-Policia/Atencion-Alertas';
 import Unidades from './Pages/Central-Policia/Unidades';
+import Historial from './Pages/Central-Policia/Historial';
+import Reportes from './Pages/Central-Policia/Reportes';
+import Notificaciones from './Pages/Central-Policia/Notificaciones';
+import Configuracion from './Pages/Central-Policia/Configuracion';
 
 function App() {
   return (
@@ -21,6 +25,10 @@ function App() {
         <Route path="Asignaciones" element={<Asignaciones />} />
         <Route path="AtencionAlertas" element={<AtencionAlertas />} />
         <Route path="Unidades" element={<Unidades />} />
+        <Route path="Historial" element={<Historial />} />
+        <Route path="Reportes" element={<Reportes />} />
+        <Route path="Notificaciones" element={<Notificaciones />} />
+        <Route path="Configuracion" element={<Configuracion />} />
       </Route>
     </Routes>
   );
