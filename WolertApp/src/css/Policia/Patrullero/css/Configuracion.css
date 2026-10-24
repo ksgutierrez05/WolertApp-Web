@@ -1,0 +1,361 @@
+/* Patrullero · Configuración. Prefijo "cf-". */
+
+.configuracion-patrullero {
+  padding-bottom: 28px;
+}
+
+/* ---------- Cabecera del perfil ---------- */
+
+.cf-perfil {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-bottom: 24px;
+  padding: 24px 28px;
+  border-radius: 18px;
+  background: linear-gradient(120deg, #053f33 0%, #08765a 100%);
+  box-shadow: 0 12px 28px rgba(2, 35, 31, 0.2);
+  color: #fff;
+}
+
+.cf-perfil-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 68px;
+  width: 68px;
+  height: 68px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.16);
+  font-size: 2rem;
+}
+
+.cf-perfil-texto {
+  flex: 1;
+  min-width: 0;
+}
+
+.cf-perfil-nombre {
+  margin: 0 0 4px;
+  color: #fff;
+  font-family: "Space Grotesk", "Inter", sans-serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.cf-perfil-sub {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.86rem;
+}
+
+.cf-perfil-estado {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.26);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.13);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.cf-perfil-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #b8c4cf;
+}
+
+/* ---------- Paneles ---------- */
+
+.cf-panel {
+  padding: 22px 24px;
+  border-radius: 16px;
+}
+
+.cf-panel-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.cf-titulo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 6px;
+  color: #1f3348;
+  font-family: "Space Grotesk", "Inter", sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.cf-panel-cabecera .cf-titulo {
+  margin: 0;
+}
+
+.cf-titulo i {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #e5f3ec;
+  color: #08765a;
+  font-size: 1.05rem;
+}
+
+.cf-solo-lectura {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #edf4f1;
+  color: #5b7a70;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.cf-nota {
+  margin: 8px 0 4px;
+  color: #6b7c90;
+  font-size: 0.8rem;
+}
+
+/* ---------- Filas de información ---------- */
+
+.cf-fila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid #edf1f5;
+}
+
+.cf-fila:last-of-type {
+  border-bottom: none;
+}
+
+.cf-label {
+  flex-shrink: 0;
+  margin: 0;
+  color: #6b7c90;
+  font-size: 0.83rem;
+  font-weight: 500;
+}
+
+.cf-valor {
+  color: #1f3348;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: right;
+}
+
+.cf-input {
+  width: 100%;
+  max-width: 280px;
+  height: 38px;
+  padding: 0 12px;
+  border: 1px solid #e0e6ed;
+  border-radius: 10px;
+  background: #fff;
+  color: #1f3348;
+  font-size: 0.86rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cf-input:focus {
+  outline: none;
+  border-color: #08765a;
+  box-shadow: 0 0 0 3px rgba(8, 118, 90, 0.14);
+}
+
+.cf-btn-editar {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 14px;
+  border: 1px solid #cfe5db;
+  border-radius: 10px;
+  background: #f1f9f5;
+  color: #08765a;
+  font-size: 0.8rem;
+  font-weight: 700;
+  transition: background 0.15s ease;
+}
+
+.cf-btn-editar:hover {
+  background: #e5f3ec;
+}
+
+.cf-edicion-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 8px;
+  padding-top: 16px;
+  border-top: 1px solid #edf1f5;
+}
+
+/* ---------- Preferencias ---------- */
+
+.cf-opcion {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 0;
+  border-bottom: 1px solid #edf1f5;
+}
+
+.cf-opcion:last-child {
+  border-bottom: none;
+}
+
+.cf-opcion-icono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: #f4f7f9;
+  color: #4a5d73;
+  font-size: 1.05rem;
+}
+
+.cf-opcion-texto {
+  flex: 1;
+  min-width: 0;
+}
+
+.cf-opcion-titulo {
+  margin: 0 0 2px;
+  color: #1f3348;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.cf-opcion-desc {
+  margin: 0;
+  color: #6b7c90;
+  font-size: 0.77rem;
+  line-height: 1.45;
+}
+
+.cf-opcion .form-check-input:checked {
+  border-color: #08765a;
+  background-color: #08765a;
+}
+
+.cf-opcion .form-check-input:focus {
+  border-color: #08765a;
+  box-shadow: 0 0 0 3px rgba(8, 118, 90, 0.18);
+}
+
+/* ---------- Cuenta ---------- */
+
+.cf-accion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 10px;
+  padding: 13px 16px;
+  border: 1px solid #e5eaf0;
+  border-radius: 12px;
+  background: #fff;
+  color: #1f3348;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-align: left;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.cf-accion:hover {
+  background: #f8fafb;
+  border-color: #d3dce5;
+}
+
+.cf-accion-izq {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.cf-accion-izq i {
+  color: #08765a;
+  font-size: 1.05rem;
+}
+
+.cf-accion > i {
+  color: #9aa8b8;
+  font-size: 0.8rem;
+}
+
+.cf-accion--peligro {
+  color: #c62d3d;
+}
+
+.cf-accion--peligro .cf-accion-izq i {
+  color: #c62d3d;
+}
+
+.cf-accion--peligro:hover {
+  background: #fff5f6;
+  border-color: #f3c7cd;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 575px) {
+  .cf-perfil {
+    padding: 20px 18px;
+  }
+
+  .cf-perfil-avatar {
+    flex-basis: 56px;
+    width: 56px;
+    height: 56px;
+    font-size: 1.6rem;
+  }
+
+  .cf-panel {
+    padding: 18px 16px;
+  }
+
+  .cf-fila {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .cf-input {
+    max-width: none;
+  }
+
+  .cf-valor {
+    text-align: left;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cf-input,
+  .cf-btn-editar,
+  .cf-accion {
+    transition: none;
+  }
+}

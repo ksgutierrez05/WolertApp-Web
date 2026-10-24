@@ -1,0 +1,290 @@
+/* Patrullero · Mis Asignaciones. Prefijo "as-". */
+
+.mis-asignaciones-patrullero {
+  padding-bottom: 28px;
+}
+
+.as-panel {
+  padding: 20px;
+  border-radius: 16px;
+}
+
+/* ---------- Filtros ---------- */
+
+.as-filterbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.as-chip {
+  padding: 7px 14px;
+  border: 1px solid #e0e6ed;
+  border-radius: 999px;
+  background: #fff;
+  color: #5d6f84;
+  font-size: 0.78rem;
+  font-weight: 700;
+  transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.as-chip:hover {
+  background: #f4f7f9;
+  color: #1f3348;
+}
+
+.as-chip.active {
+  border-color: transparent;
+  background: linear-gradient(
+    135deg,
+    var(--color-primary, #08765a),
+    var(--color-primary-2, #0b8f6e)
+  );
+  box-shadow: 0 4px 12px rgba(8, 118, 90, 0.25);
+  color: #fff;
+}
+
+/* ---------- Campos ---------- */
+
+.as-buscador {
+  position: relative;
+  margin-bottom: 10px;
+}
+
+.as-buscador > i {
+  position: absolute;
+  top: 50%;
+  left: 14px;
+  transform: translateY(-50%);
+  color: #7d8da1;
+  font-size: 0.9rem;
+  pointer-events: none;
+}
+
+.as-buscador .as-campo {
+  padding-left: 38px;
+}
+
+.as-filtros-extra {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.as-campo {
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid #e0e6ed;
+  border-radius: 10px;
+  background: #fff;
+  color: #1f3348;
+  font-size: 0.84rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.as-campo::placeholder {
+  color: #8696a9;
+}
+
+.as-campo:focus {
+  outline: none;
+  border-color: #08765a;
+  box-shadow: 0 0 0 3px rgba(8, 118, 90, 0.14);
+}
+
+/* ---------- Estados vacíos ---------- */
+
+.as-vacio,
+.as-detalle-vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 34px 18px;
+  border: 1px dashed #d3dce5;
+  border-radius: 14px;
+  background: #f8fafb;
+  text-align: center;
+}
+
+.as-vacio-icono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 12px;
+  border-radius: 14px;
+  background: #e5f3ec;
+  color: #08765a;
+  font-size: 1.3rem;
+}
+
+.as-vacio-icono--grande {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  font-size: 1.5rem;
+}
+
+.as-vacio h3,
+.as-detalle-vacio h3 {
+  margin: 0 0 6px;
+  color: #1f3348;
+  font-family: "Space Grotesk", "Inter", sans-serif;
+  font-size: 0.97rem;
+  font-weight: 700;
+}
+
+.as-vacio p,
+.as-detalle-vacio p {
+  max-width: 300px;
+  margin: 0;
+  color: #5d6f84;
+  font-size: 0.83rem;
+  line-height: 1.65;
+}
+
+/* ---------- Detalle ---------- */
+
+.as-detalle {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  padding: 24px;
+  border-radius: 16px;
+}
+
+.as-detalle-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.as-detalle-titulo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  color: #1f3348;
+  font-family: "Space Grotesk", "Inter", sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.as-detalle-titulo i {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #e5f3ec;
+  color: #08765a;
+  font-size: 1.05rem;
+}
+
+.as-estado-vacio {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #edf4f1;
+  color: #5b7a70;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+/* Pasos de avance */
+
+.as-pasos {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.as-pasos::before {
+  content: "";
+  position: absolute;
+  top: 19px;
+  left: 12.5%;
+  right: 12.5%;
+  height: 2px;
+  background: #e3e9ef;
+}
+
+.as-paso {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.as-paso-punto {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 2px solid #e3e9ef;
+  border-radius: 50%;
+  background: #fff;
+  color: #9aa8b8;
+  font-size: 1rem;
+}
+
+.as-paso-texto {
+  color: #6b7c90;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Acciones */
+
+.as-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 18px;
+  border-top: 1px solid #edf1f5;
+}
+
+.as-acciones .btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 575px) {
+  .as-panel,
+  .as-detalle {
+    padding: 16px;
+  }
+
+  .as-filtros-extra {
+    grid-template-columns: 1fr;
+  }
+
+  .as-paso-texto {
+    font-size: 0.68rem;
+  }
+
+  .as-acciones .btn {
+    flex: 1 1 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .as-chip,
+  .as-campo {
+    transition: none;
+  }
+}

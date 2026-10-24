@@ -1,79 +1,224 @@
-/* ============================================================
-   css/patrullero/centro-operaciones.css
-   Estilos propios de la página "Centro de Operaciones" del rol
-   Patrullero. Usa solo las variables ya definidas en global.css /
-   temas.css (--color-*, --ink, --muted, --line, --fog, --shadow-*)
-   para no romper el sistema al cambiar de rol.
-   Prefijo "co-" para no chocar con nada del global.
-   ============================================================ */
+/* =========================================================
+   CENTRO DE OPERACIONES · PATRULLERO
+   Reemplaza por completo el archivo CentroOperaciones.css.
+   Las tarjetas de KPI tienen su propio CSS (kpicard.css).
+   ========================================================= */
 
-.co-topbar {
+.centro-operaciones-patrullero {
   display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-bottom: 22px;
+  flex-direction: column;
+  gap: 0;
+  min-width: 0;
+  padding-bottom: 28px;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
-.co-hero {
+/* =========================================================
+   BANNER CON FOTO
+   La imagen se toma de public/img/ (ruta absoluta).
+   ========================================================= */
+
+.centro-operaciones-patrullero .co-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 24px;
   flex-wrap: wrap;
+  min-height: 250px;
+  margin-bottom: 26px;
+  padding: 36px 40px;
+  border-radius: 20px;
+  color: #fff;
+  box-shadow: 0 14px 34px rgba(2, 35, 31, 0.22);
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(2, 35, 31, 0.92) 0%,
+      rgba(2, 43, 37, 0.62) 45%,
+      rgba(2, 35, 31, 0.08) 100%
+    ),
+    url('../../../../../public/img/cai.webp') center 35% / cover no-repeat #02231f;
 }
 
-.co-hero-icon {
+.centro-operaciones-patrullero .co-hero-copy {
   position: relative;
   z-index: 1;
-  width: 74px;
-  height: 74px;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.14);
-  border: 1px solid rgba(255, 255, 255, 0.22);
+  max-width: 740px;
+}
+
+.centro-operaciones-patrullero .co-hero .eyebrow-dash {
+  margin: 0 0 12px;
+  color: #a8e8d4;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.centro-operaciones-patrullero .co-hero .hero-title-dash {
+  max-width: none;
+  margin: 0 0 12px;
+  color: #fff;
+  font-family: "Space Grotesk", "Inter", sans-serif;
+  font-size: clamp(1.9rem, 3.2vw, 2.7rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.25);
+}
+
+.centro-operaciones-patrullero .co-hero .hero-text-dash {
+  max-width: 600px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.65;
+}
+
+/* Chip de estado */
+
+.centro-operaciones-patrullero .co-estado-disponible {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 20px;
+  padding: 8px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.26);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.13);
+  backdrop-filter: blur(6px);
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.co-estado-disponible .dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #7de2ac;
+  box-shadow: 0 0 0 0 rgba(125, 226, 172, 0.6);
+  animation: co-pulso 2s infinite;
+}
+
+@keyframes co-pulso {
+  0%   { box-shadow: 0 0 0 0 rgba(125, 226, 172, 0.55); }
+  70%  { box-shadow: 0 0 0 9px rgba(125, 226, 172, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(125, 226, 172, 0); }
+}
+
+/* Ícono del banner */
+
+.centro-operaciones-patrullero .co-hero-icon {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 30px;
+  flex: 0 0 84px;
+  width: 84px;
+  height: 84px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.13);
+  backdrop-filter: blur(6px);
   color: #fff;
-  flex-shrink: 0;
+  font-size: 38px;
 }
 
-.co-hero-cta {
+/* =========================================================
+   TÍTULOS DE SECCIÓN
+   ========================================================= */
+
+.centro-operaciones-patrullero .section-title-dash {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
+  align-items: center;
   gap: 10px;
-  position: relative;
-  z-index: 1;
+  margin: 0;
+  color: #1f3348;
+  font-family: "Space Grotesk", "Inter", sans-serif;
+  font-size: 1.08rem;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
 }
 
-.co-hero-cta small {
-  color: #c3cade;
-  font-size: 12px;
+.centro-operaciones-patrullero .section-title-dash > i {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  margin: 0 !important;
+  border-radius: 10px;
+  color: #08765a;
+  background: #e5f3ec;
+  font-size: 1.05rem;
+}
+
+.centro-operaciones-patrullero .card-panel-dash > .section-title-dash {
+  margin-bottom: 18px !important;
 }
 
 .co-section-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 30px 0 14px;
+  gap: 12px;
+  margin: 0 0 14px;
 }
 
-.co-section-head:first-of-type { margin-top: 0; }
+.co-estado-vacio {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #edf4f1;
+  color: #5b7a70;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
 
-/* --- Caso activo --- */
+.co-text-link {
+  color: #08765a;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+/* =========================================================
+   ATENCIÓN ACTIVA
+   ========================================================= */
+
 .co-active {
   position: relative;
-  padding: 22px;
+  padding: 24px 26px;
   overflow: hidden;
 }
 
 .co-active::before {
   content: "";
   position: absolute;
-  top: 0; left: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  bottom: 0;
   width: 4px;
-  background: linear-gradient(180deg, var(--color-danger), var(--color-danger-2));
+  background: linear-gradient(
+    180deg,
+    var(--color-danger),
+    var(--color-danger-2)
+  );
 }
 
 .co-active-top {
@@ -85,250 +230,325 @@
 }
 
 .co-active-title {
-  font-family: "Space Grotesk", sans-serif;
-  font-size: 18px;
+  margin: 0 0 8px;
+  color: #1f3348;
+  font-family: "Space Grotesk", "Inter", sans-serif;
+  font-size: 1.2rem;
   font-weight: 700;
-  margin: 0 0 4px;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+}
+
+.co-empty-description {
+  max-width: 520px;
+  margin: 0;
+  color: #5d6f84;
+  font-size: 0.88rem;
+  line-height: 1.7;
 }
 
 .co-active-meta {
   display: flex;
-  gap: 16px;
   flex-wrap: wrap;
-  margin-top: 14px;
-  font-size: 12.5px;
-  color: var(--muted);
+  gap: 10px;
+  margin-top: 20px;
 }
 
 .co-active-meta span {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
+  padding: 7px 12px;
+  border-radius: 9px;
+  background: #f4f7f9;
+  color: #5d6f84;
+  font-size: 0.78rem;
+  font-weight: 500;
 }
 
-.co-active-meta i { color: var(--subtle); }
-
-.co-active-empty {
-  color: var(--muted);
+.co-active-meta i {
+  color: #7d8da1;
+  font-size: 0.9rem;
 }
 
-.co-active-empty i { color: var(--color-green); }
+/* Ruta de atención */
 
 .co-route-box {
-  margin-top: 16px;
-  border-radius: 14px;
-  background: linear-gradient(135deg, var(--fog), #eef0f5);
-  border: 1px dashed var(--line);
-  padding: 14px 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
   flex-wrap: wrap;
+  margin-top: 20px;
+  padding: 16px 18px;
+  border: 1px dashed #d3dce5;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #f7f9fb, #eef2f6);
 }
 
 .co-route-info {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 13px;
+  min-width: 0;
 }
 
 .co-route-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
   background: #fff;
-  box-shadow: var(--shadow-xs);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-primary);
-  font-size: 16px;
-  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(24, 44, 64, 0.08);
+  color: #08765a;
+  font-size: 1.05rem;
 }
 
-.co-route-info b { font-size: 13.5px; display: block; }
-.co-route-info span { font-size: 11.5px; color: var(--muted); }
-
-/* --- Lista de alertas nuevas --- */
-.co-alert-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  padding: 15px 4px;
-  border-bottom: 1px solid var(--line);
-}
-
-.co-alert-item:last-child { border-bottom: none; }
-
-/* Ícono circular por tipo, coloreado según prioridad.
-   Un solo bloque con variables de color hace de "media"/"alta"/"baja"
-   en vez de repetir reglas por cada tono. */
-.co-alert-icon {
-  --co-alert-color: var(--color-amber);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  min-width: 34px;
-  border-radius: 50%;
-  margin-top: 1px;
-  font-size: 14px;
-  color: var(--co-alert-color);
-  background: color-mix(in srgb, var(--co-alert-color) 15%, transparent);
-  flex-shrink: 0;
-}
-
-.co-alert-icon-alta   { --co-alert-color: var(--color-danger); }
-.co-alert-icon-media  { --co-alert-color: var(--color-amber); }
-.co-alert-icon-baja   { --co-alert-color: var(--color-primary); }
-
-.co-alert-body { flex: 1; min-width: 0; }
-
-.co-alert-title {
-  font-weight: 700;
-  font-size: 13.5px;
+.co-route-info b {
+  display: block;
   margin-bottom: 2px;
+  color: #1f3348;
+  font-size: 0.88rem;
+  font-weight: 700;
 }
 
-.co-alert-desc {
-  font-size: 12px;
-  color: var(--muted);
-  margin-bottom: 6px;
+.co-route-info span {
+  display: block;
+  max-width: 340px;
+  color: #6b7c90;
+  font-size: 0.78rem;
+  line-height: 1.55;
 }
 
-.co-alert-foot {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 11.5px;
-  color: var(--subtle);
+.co-active .btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
-.co-alert-actions {
+/* =========================================================
+   ESTADOS VACÍOS
+   ========================================================= */
+
+.co-alert-list {
+  padding: 14px 18px;
+}
+
+.co-empty-state {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  min-height: 220px;
+  padding: 22px;
+  text-align: center;
 }
 
-/* --- Panel lateral: resumen del día --- */
-.co-timeline { padding: 4px 4px 2px; }
+.co-empty-state-compact {
+  min-height: 180px;
+}
+
+.co-empty-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  margin-bottom: 14px;
+  border-radius: 15px;
+  color: #08765a;
+  background: color-mix(in srgb, #08765a 10%, white);
+  font-size: 1.3rem;
+}
+
+.co-empty-state h3 {
+  margin: 0 0 7px;
+  color: #1f3348;
+  font-family: "Space Grotesk", "Inter", sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.co-empty-state p {
+  max-width: 300px;
+  margin: 0;
+  color: #5d6f84;
+  font-size: 0.82rem;
+  line-height: 1.7;
+}
+
+/* =========================================================
+   PANELES INFERIORES
+   ========================================================= */
+
+.co-panel {
+  border-radius: 16px;
+}
+
+/* Resumen del día */
+
+.co-timeline {
+  padding: 4px 4px 2px;
+}
 
 .co-timeline-item {
   position: relative;
-  padding-left: 22px;
-  padding-bottom: 18px;
+  padding-bottom: 20px;
+  padding-left: 24px;
 }
 
-.co-timeline-item:last-child { padding-bottom: 0; }
+.co-timeline-item:last-child {
+  padding-bottom: 0;
+}
 
 .co-timeline-item::before {
   content: "";
   position: absolute;
-  left: 4px;
   top: 4px;
-  width: 8px;
-  height: 8px;
+  left: 3px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  background: var(--color-green);
+  background: #08765a;
+  box-shadow: 0 0 0 4px #e5f3ec;
 }
 
 .co-timeline-item::after {
   content: "";
   position: absolute;
+  top: 18px;
+  bottom: -4px;
   left: 7.5px;
-  top: 14px;
-  bottom: -2px;
   width: 1px;
-  background: var(--line);
+  background: #dbe3ea;
 }
 
-.co-timeline-item:last-child::after { display: none; }
+.co-timeline-item:last-child::after {
+  display: none;
+}
 
 .co-timeline-time {
-  font-size: 11px;
-  color: var(--subtle);
-  font-weight: 600;
+  display: block;
+  margin-bottom: 3px;
+  color: #7d8da1;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
 }
 
 .co-timeline-text {
-  font-size: 12.5px;
-  color: var(--ink);
-  margin-top: 1px;
+  margin: 0;
+  color: #34495e;
+  font-size: 0.85rem;
+  line-height: 1.6;
 }
 
-/* --- Panel lateral: mi unidad --- */
-.co-team-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 9px 0;
-}
+/* Alarmas */
 
-.co-team-avatar {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  background: var(--fog);
-  color: var(--muted);
-  font-family: "Space Grotesk", sans-serif;
-  font-weight: 700;
-  font-size: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.co-team-name { font-size: 13px; font-weight: 600; }
-
-.co-team-status {
-  font-size: 11px;
-  color: var(--muted);
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.co-team-status .dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-}
-
-.dot-disponible { background: var(--color-green); }
-.dot-atencion { background: var(--color-amber); }
-.dot-camino { background: var(--color-danger); }
-
-/* --- Panel lateral: alarmas --- */
 .co-alarma-item {
   display: flex;
-  gap: 10px;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--line);
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid #e8edf2;
 }
 
-.co-alarma-item:last-child { border-bottom: none; }
+.co-alarma-item:last-child {
+  border-bottom: none;
+}
 
 .co-alarma-icon {
-  width: 30px;
-  height: 30px;
-  border-radius: 9px;
-  background: color-mix(in srgb, var(--color-amber) 16%, transparent);
-  color: var(--color-amber);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
   flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  background: #fff0d8;
+  color: #e68a00;
+  font-size: 1rem;
 }
 
-.co-alarma-text { font-size: 12.5px; }
-.co-alarma-time { font-size: 11px; color: var(--subtle); }
+.co-alarma-text {
+  color: #1f3348;
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+
+.co-alarma-time {
+  color: #6b7c90;
+  font-size: 0.76rem;
+  line-height: 1.55;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
 
 @media (max-width: 991px) {
-  .co-hero { flex-direction: column; align-items: flex-start; }
-  .co-hero-cta { align-items: flex-start; width: 100%; }
+  .centro-operaciones-patrullero .co-hero {
+    padding: 30px 28px;
+  }
+
+  .centro-operaciones-patrullero .co-hero-icon {
+    flex-basis: 66px;
+    width: 66px;
+    height: 66px;
+    font-size: 30px;
+  }
+}
+
+@media (max-width: 575px) {
+  .centro-operaciones-patrullero .co-hero {
+    align-items: flex-start;
+    min-height: 220px;
+    padding: 24px 20px;
+    background-position: center, 60% center;
+  }
+
+  .centro-operaciones-patrullero .co-hero .eyebrow-dash {
+    font-size: 0.66rem;
+    letter-spacing: 0.1em;
+  }
+
+  .centro-operaciones-patrullero .co-hero .hero-text-dash {
+    font-size: 0.9rem;
+  }
+
+  .centro-operaciones-patrullero .co-hero-icon {
+    display: none;
+  }
+
+  .centro-operaciones-patrullero .section-title-dash {
+    gap: 8px;
+    font-size: 0.97rem;
+  }
+
+  .centro-operaciones-patrullero .section-title-dash > i {
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+    font-size: 0.95rem;
+  }
+
+  .co-active {
+    padding: 20px 18px;
+  }
+
+  .co-route-box {
+    align-items: flex-start;
+  }
+
+  .co-route-info span {
+    max-width: 230px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .co-estado-disponible .dot {
+    animation: none;
+  }
 }
