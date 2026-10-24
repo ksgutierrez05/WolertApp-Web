@@ -4,9 +4,8 @@ import Layout from './Components/Central-policia/Layout';
 import CentroOperaciones from './Pages/Central-Policia/Centro-Operaciones';
 import Alertas from './Pages/Central-Policia/Alertas';
 import Asignaciones from './Pages/Central-Policia/Asignaciones';
-import AtencionAlertas from './Pages/Central-policia/Atencion-Alertas';
-
-
+import AtencionAlertas from './Pages/Central-Policia/Atencion-Alertas';
+import Unidades from './Pages/Central-Policia/Unidades';
 
 function App() {
   return (
@@ -21,8 +20,7 @@ function App() {
         <Route path="Alertas" element={<Alertas />} />
         <Route path="Asignaciones" element={<Asignaciones />} />
         <Route path="AtencionAlertas" element={<AtencionAlertas />} />
-
-
+        <Route path="Unidades" element={<Unidades />} />
       </Route>
     </Routes>
   );
