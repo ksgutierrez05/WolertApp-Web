@@ -10,6 +10,8 @@ import CentralPanel from './Pages/central-transito/PanelPrincipal';
 import CentralCasos from './Pages/central-transito/Casos';
 import CentralAgentes from './Pages/central-transito/Agentes';
 import CentralHistorial from './Pages/central-transito/Historial';
+import CentralInforme from './Pages/central-transito/Reportes';
+import CentralConfiguracion from './Pages/central-transito/Configuracion';
 
 export default function App() {
   return (
@@ -28,6 +30,8 @@ export default function App() {
         <Route path="/transito/central/asignar" element={<CentralCasos />} />
         <Route path="/transito/central/agentes" element={<CentralAgentes />} />
         <Route path="/transito/central/historial" element={<CentralHistorial />} />
+        <Route path="/transito/central/reportes" element={<CentralInforme />} />
+        <Route path="/transito/central/configuracion" element={<CentralConfiguracion />} />
       
       </Routes>
     </BrowserRouter>

@@ -15,7 +15,7 @@ const MENU = [
     { id: 'historial', label: 'Historial',         href: `${BASE}/historial`, icon: 'bi-clock-history' },
   ]},
   { seccion: 'Gestión', items: [
-    { id: 'reportes',      label: 'Informes',      href: `${BASE}/informes`,      icon: 'bi-file-earmark-text' },
+    { id: 'reportes',      label: 'Informes',      href: `${BASE}/reportes`,      icon: 'bi-file-earmark-text' },
     { id: 'configuracion', label: 'Configuración', href: `${BASE}/configuracion`, icon: 'bi-gear' },
   ]},
 ];

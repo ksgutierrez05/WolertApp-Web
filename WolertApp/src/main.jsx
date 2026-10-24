@@ -17,6 +17,8 @@ import './css/transito/central-transito/panel-principal.css';
 import './css/transito/central-transito/panel-casos.css';
 import './css/transito/central-transito/panel-agentes.css';
 import './css/transito/central-transito/panel-historial.css';
+import './css/transito/central-transito/panel-reportes.css';
+import './css/transito/central-transito/panel-configuracion.css';
 import App from './App';
 
 createRoot(document.getElementById('root')).render(<App />);
