@@ -1,5 +1,14 @@
+
+/* ========================================
+   HERO Y ENCABEZADOS
+======================================== */
+
 .hero-page-dash {
-  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-2));
+  background: linear-gradient(
+    135deg,
+    var(--color-primary),
+    var(--color-primary-2)
+  );
   border-radius: 18px;
   padding: 28px 32px;
   color: #ffffff;
@@ -16,6 +25,10 @@
   color: #cfd9ec;
   font-size: 14px;
 }
+
+/* ========================================
+   TARJETAS Y TEXTOS
+======================================== */
 
 .panel-card-dash {
   background-color: #ffffff;
@@ -53,6 +66,10 @@
   color: #6b7a90;
 }
 
+/* ========================================
+   ETIQUETAS DEL TIPO DE CASO
+======================================== */
+
 .badge-tipo-dash {
   padding: 4px 12px;
   border-radius: 20px;
@@ -60,48 +77,159 @@
   font-weight: 700;
 }
 
-.tipo-semaforo-dash { background-color: #fdf3e0; color: #cf8a08; }
-.tipo-accidente-dash { background-color: #fdecec; color: #d9364a; }
+.tipo-semaforo-dash {
+  background-color: #fdf3e0;
+  color: #cf8a08;
+}
+
+.tipo-accidente-dash {
+  background-color: #fdecec;
+  color: #d9364a;
+}
+
+
+/* ========================================
+   SEGUIMIENTO DEL CASO - REDISEÑO
+======================================== */
 
 .estado-steps-dash {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
-  margin-top: 8px;
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  position: relative;
+  gap: 0;
+  margin-top: 24px;
+  padding: 24px 10px 20px;
+  background: #ffffff;
+  border: 1px solid #e9edf3;
+  border-radius: 16px;
+}
+
+/* Línea que conecta las etapas */
+.estado-steps-dash::before {
+  content: "";
+  position: absolute;
+  top: 46px;
+  left: 12.5%;
+  right: 12.5%;
+  height: 3px;
+  background: #e5eaf1;
+  border-radius: 10px;
+  z-index: 0;
 }
 
 .btn-estado-dash {
-  border: none;
-  background-color: #eef1f5;
-  color: #8a97ab;
-  border-radius: 14px;
-  padding: 18px 10px;
-  display: flex;
+  position: relative;
+  z-index: 1;
+  display: flex !important;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  font-weight: 700;
+  justify-content: flex-start;
+  gap: 12px;
+  min-width: 0;
+  padding: 0 4px !important;
+  border: none !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: #8b95a7;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.2s ease;
 }
 
+/* Círculos */
 .btn-estado-dash i {
-  font-size: 24px;
+  box-sizing: border-box;
+  width: 46px;
+  height: 46px;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid #e5eaf1;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #9ba6b6;
+  font-size: 17px;
+  box-shadow: 0 0 0 5px #ffffff;
+  transition: all 0.2s ease;
 }
 
+/* Etapas completadas */
 .btn-estado-dash.completado-dash {
-  background-color: #e9f8ee;
-  color: #2fa84f;
+  color: #18864b !important;
 }
 
-.btn-estado-dash.activo-dash {
-  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-2));
-  color: #ffffff;
+.btn-estado-dash.completado-dash i {
+  background: #e7f7ed !important;
+  border-color: #bce8cb !important;
+  color: #18864b !important;
 }
+
+/* Etapa seleccionada */
+.btn-estado-dash.activo-dash {
+  color: var(--color-primary) !important;
+}
+
+.btn-estado-dash.activo-dash i {
+  background: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+  color: #ffffff !important;
+  box-shadow:
+    0 0 0 5px #ffffff,
+    0 0 0 8px
+      color-mix(in srgb, var(--color-primary) 15%, white);
+}
+
+/* Hover */
+.btn-estado-dash:hover {
+  color: var(--color-primary) !important;
+}
+
+.btn-estado-dash:hover i {
+  transform: translateY(-2px);
+}
+
+/* Teclado */
+.btn-estado-dash:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 5px;
+}
+
+/* Móvil */
+@media (max-width: 576px) {
+  .estado-steps-dash {
+    padding: 22px 2px 18px;
+  }
+
+  .estado-steps-dash::before {
+    top: 40px;
+  }
+
+  .btn-estado-dash {
+    gap: 10px;
+    font-size: 10px;
+    overflow-wrap: anywhere;
+  }
+
+  .btn-estado-dash i {
+    width: 36px;
+    height: 36px;
+    border-width: 2px;
+    font-size: 14px;
+  }
+}
+
+/* ========================================
+   INTEGRANTES DEL GRUPO
+======================================== */
 
 .miembro-row-dash {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
   padding: 12px 0;
   border-bottom: 1px solid #f2f4f8;
 }
@@ -114,6 +242,7 @@
 .avatar-icon-dash {
   width: 34px;
   height: 34px;
+  flex-shrink: 0;
   border-radius: 50%;
   color: #ffffff;
   display: flex;
@@ -123,15 +252,389 @@
   font-weight: 700;
 }
 
-.avatar-amber-dash { background-color: #cf8a08; }
-.avatar-green-dash { background-color: #2fa84f; }
+.avatar-amber-dash {
+  background-color: #cf8a08;
+}
+
+.avatar-green-dash {
+  background-color: #2fa84f;
+}
+
+/* Estado de los integrantes */
 
 .badge-estado-dash {
   padding: 4px 12px;
   border-radius: 20px;
   font-size: 12px;
   font-weight: 600;
+  white-space: nowrap;
 }
 
-.estado-resuelta-dash { background-color: #e9f8ee; color: #2fa84f; }
-.estado-atencion-dash { background-color: #fdf3e0; color: #cf8a08; }
+.estado-resuelta-dash {
+  background-color: #e9f8ee;
+  color: #2fa84f;
+}
+
+.estado-atencion-dash {
+  background-color: #fdf3e0;
+  color: #cf8a08;
+}
+
+/* ========================================
+   HERO CON IMAGEN DE LA MASCOTA
+======================================== */
+
+.hero-page-dash.hero-page-img-dash {
+  background-color: var(--color-primary);
+  min-height: 230px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 32px 40px;
+  background-image:
+    linear-gradient(
+      90deg,
+      var(--color-primary) 0%,
+      var(--color-primary) 45%,
+      color-mix(
+        in srgb,
+        var(--color-primary) 60%,
+        transparent
+      ) 62%,
+      color-mix(
+        in srgb,
+        var(--color-primary) 15%,
+        transparent
+      ) 80%,
+      transparent 92%
+    ),
+    url('../../../../public/img/Mascota de Tránsito.png');
+  background-position: center, right 12%;
+  background-size: cover, cover;
+  background-repeat: no-repeat;
+}
+
+.hero-page-img-dash .hero-page-title-dash {
+  font-size: 36px;
+  line-height: 1.12;
+  max-width: 560px;
+  letter-spacing: -0.02em;
+  margin: 0 0 10px;
+}
+
+.hero-page-img-dash .hero-page-text-dash {
+  color: #e3ebf7;
+  max-width: 480px;
+}
+
+/* Etiqueta superior del hero */
+
+.eyebrow-page-img-dash {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: #9fd0ff;
+  margin-bottom: 12px;
+}
+
+/* Indicadores del hero */
+
+.chips-page-img-dash {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.chip-page-img-dash {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 100px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(6px);
+}
+
+.chip-page-img-dash .punto-vivo-dash {
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background-color: #3ddc84;
+}
+
+/* ========================================
+   RESPONSIVE: TABLET Y MÓVIL
+======================================== */
+
+@media (max-width: 768px) {
+  .hero-page-dash.hero-page-img-dash {
+    padding: 24px 22px;
+    min-height: 210px;
+  }
+
+  .hero-page-img-dash .hero-page-title-dash {
+    font-size: 26px;
+  }
+
+  .panel-card-dash {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 576px) {
+  .estado-steps-dash {
+    padding: 18px 4px;
+  }
+
+  .btn-estado-dash {
+    gap: 8px;
+    padding: 0 2px;
+    font-size: 10px;
+    overflow-wrap: anywhere;
+  }
+
+  .btn-estado-dash i {
+    width: 36px;
+    height: 36px;
+    font-size: 15px;
+  }
+
+  .miembro-row-dash {
+    gap: 8px;
+  }
+
+  .badge-estado-dash {
+    padding: 4px 8px;
+    font-size: 10px;
+  }
+}
+
+
+/* ========================================
+   PROGRESO DEL CASO - MI GRUPO
+======================================== */
+
+.progreso-caso-dash {
+  margin-top: 26px;
+  padding: 24px;
+  background: #f8fafc;
+  border: 1px solid #e8edf4;
+  border-radius: 16px;
+}
+
+.progreso-linea-dash {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  position: relative;
+  gap: 0;
+  margin-bottom: 24px;
+}
+
+/* Línea que conecta los círculos */
+.progreso-linea-dash::before {
+  content: "";
+  position: absolute;
+  top: 22px;
+  left: 12.5%;
+  right: 12.5%;
+  height: 3px;
+  background: #e2e8f0;
+  border-radius: 10px;
+  z-index: 0;
+}
+
+.progreso-paso-dash {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  min-width: 0;
+  padding: 0 4px;
+  border: none;
+  background: transparent;
+  color: #8793a5;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+/* Círculos */
+.progreso-circulo-dash {
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #dfe5ed;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #94a3b8;
+  box-shadow: 0 0 0 5px #f8fafc;
+  transition: all 0.2s ease;
+}
+
+.progreso-circulo-dash i {
+  font-size: 18px;
+  line-height: 1;
+}
+
+/* Pasos completados */
+.progreso-paso-dash.paso-completado-dash {
+  color: #16834a;
+}
+
+.progreso-paso-dash.paso-completado-dash
+.progreso-circulo-dash {
+  background: #e7f6ed;
+  border-color: #b8e5c9;
+  color: #16834a;
+}
+
+/* Paso actual */
+.progreso-paso-dash.paso-actual-dash {
+  color: var(--color-primary);
+}
+
+.progreso-paso-dash.paso-actual-dash
+.progreso-circulo-dash {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #ffffff;
+  box-shadow:
+    0 0 0 5px #f8fafc,
+    0 0 0 8px
+      color-mix(in srgb, var(--color-primary) 15%, white);
+}
+
+/* Pasos pendientes */
+.progreso-paso-dash.paso-pendiente-dash {
+  color: #8793a5;
+}
+
+.progreso-paso-dash.paso-pendiente-dash
+.progreso-circulo-dash {
+  background: #ffffff;
+  border-color: #dfe5ed;
+  color: #94a3b8;
+}
+
+/* Efectos al interactuar */
+.progreso-paso-dash:hover {
+  color: var(--color-primary);
+}
+
+.progreso-paso-dash:hover .progreso-circulo-dash {
+  transform: translateY(-2px);
+}
+
+.progreso-paso-dash:focus-visible,
+.btn-progreso-dash:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 4px;
+}
+
+/* Zona inferior de acciones */
+.progreso-accion-dash {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 20px;
+  border-top: 1px solid #e8edf4;
+}
+
+.progreso-ayuda-dash {
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* Botón principal */
+.btn-progreso-dash {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-shrink: 0;
+  padding: 11px 18px;
+  border: none;
+  border-radius: 10px;
+  background: var(--color-primary);
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.btn-progreso-dash:hover:not(:disabled) {
+  background: var(--color-primary-2);
+  transform: translateY(-1px);
+}
+
+.btn-progreso-dash:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* Adaptación a móviles */
+@media (max-width: 576px) {
+  .progreso-caso-dash {
+    padding: 20px 10px;
+  }
+
+  .progreso-linea-dash {
+    margin-bottom: 20px;
+  }
+
+  .progreso-linea-dash::before {
+    top: 18px;
+  }
+
+  .progreso-paso-dash {
+    gap: 10px;
+    padding: 0 2px;
+    font-size: 10px;
+    overflow-wrap: anywhere;
+    text-align: center;
+  }
+
+  .progreso-circulo-dash {
+    width: 38px;
+    height: 38px;
+  }
+
+  .progreso-circulo-dash i {
+    font-size: 15px;
+  }
+
+  .progreso-accion-dash {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .btn-progreso-dash {
+    width: 100%;
+  }
+}
+

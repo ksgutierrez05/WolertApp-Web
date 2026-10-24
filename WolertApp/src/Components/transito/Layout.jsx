@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
 import SidebarDirector from './director-transito/Sidebar';
 import SidebarCentral from './central-transito/SideBar';
+import SidebarAgente from './agente-transito/SideBar';
 
 
 const ROLES = {
   director: { Sidebar: SidebarDirector, avatar: 'D',  notificaciones: '9+' },
   central: { Sidebar: SidebarCentral, avatar: 'C',  notificaciones: '9+' },
-  
+  agente: { Sidebar: SidebarAgente, avatar: 'A',  notificaciones: '9+' }
+
 };
 
 export default function Layout({ rol = 'director', titulo, activo, busqueda, claseTopbar = 'mb-5', avatar, notificaciones, children }) {
