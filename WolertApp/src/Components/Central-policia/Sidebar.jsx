@@ -21,7 +21,7 @@ const MENU_CENTRAL = [
     items: [
       { id: 'alertas', label: 'Alertas', to: `${RAIZ}/Alertas`, icon: 'bi-exclamation-triangle' },
       { id: 'asignaciones', label: 'Asignaciones', to: `${RAIZ}/Asignaciones`, icon: 'bi-diagram-3' },
-      { id: 'mapa', label: 'Mapa operativo', to: `${RAIZ}/Mapa`, icon: 'bi-geo-alt' },
+      { id: 'atencion-alertas', label: 'Atención a alertas', to: `${RAIZ}/AtencionAlertas`, icon: 'bi-telephone' },
       { id: 'unidades', label: 'Unidades', to: `${RAIZ}/Unidades`, icon: 'bi-car-front' },
     ],
   },

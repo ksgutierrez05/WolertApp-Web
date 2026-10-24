@@ -1,4 +1,3 @@
-
 export const KPIS_CENTRAL_CONFIG = {
   'centro-principal': {
     columnas: 'col-6 col-xl-3',
@@ -89,6 +88,34 @@ export const KPIS_CENTRAL_CONFIG = {
         clave: 'finalizadas',
         etiqueta: 'Finalizadas hoy',
         icono: 'bi-check-circle-fill',
+        tono: 'verde',
+      },
+    ],
+  },
+
+  'atencion-alertas': {
+    columnas: 'col-12 col-md-4',
+    claseFila: 'row g-3 mb-4',
+    items: [
+      {
+        clave: 'porRevisar',
+        etiqueta: 'Por revisar',
+        descripcion: 'Reportes recibidos',
+        icono: 'bi-inbox',
+        tono: 'ambar',
+      },
+      {
+        clave: 'enRevision',
+        etiqueta: 'En revisión',
+        descripcion: 'Atenciones abiertas',
+        icono: 'bi-clock',
+        tono: 'azul',
+      },
+      {
+        clave: 'finalizadas',
+        etiqueta: 'Finalizadas',
+        descripcion: 'Casos cerrados',
+        icono: 'bi-check-circle',
         tono: 'verde',
       },
     ],

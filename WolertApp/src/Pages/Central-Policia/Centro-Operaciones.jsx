@@ -1,67 +1,9 @@
-import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Topbar from '../../Components/Central-policia/Topbar';
 import Kpis from '../../Components/Central-policia/Kpicard';
 import '../../css/Policia/central-policia/css/centro-operaciones.css';
 
 function CentroOperaciones() {
-  const [fechaHora, setFechaHora] = useState(new Date());
-
-  /*
-   * Conecta estas listas con tus datos reales cuando estén disponibles.
-   * Mientras estén vacías, los KPI muestran 0 y las tablas muestran
-   * su estado vacío.
-   */
-  const alertasRecientes = [];
-  const atencionesActivas = [];
-  const unidades = [];
-
-  const alertasActivas = alertasRecientes.filter(
-    (alerta) => alerta.estado !== 'Resuelta'
-  ).length;
-
-  const alertasCriticas = alertasRecientes.filter(
-    (alerta) =>
-      String(alerta.prioridad || '').toLowerCase() === 'crítica' ||
-      String(alerta.prioridad || '').toLowerCase() === 'critica'
-  ).length;
-
-  const alertasSinAsignar = alertasRecientes.filter(
-    (alerta) => !alerta.unidad
-  ).length;
-
-  const unidadesDisponibles = unidades.filter(
-    (unidad) => unidad.estado === 'Disponible'
-  ).length;
-
-  // Valores que consume el componente <Kpis /> (grupo "centro-principal")
-  const valoresKpis = {
-    alertasActivas,
-    prioridadCritica: alertasCriticas,
-    sinAsignar: alertasSinAsignar,
-    unidadesDisponibles,
-  };
-
-  useEffect(() => {
-    const intervalo = setInterval(() => {
-      setFechaHora(new Date());
-    }, 1000);
-
-    return () => clearInterval(intervalo);
-  }, []);
-
-  const fechaFormateada = fechaHora.toLocaleDateString('es-CO', {
-    day: '2-digit',
-    month: 'long',
-    year: 'numeric',
-  });
-
-  const horaFormateada = fechaHora.toLocaleTimeString('es-CO', {
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-  });
-
   return (
     <>
       <Topbar
@@ -73,56 +15,49 @@ function CentroOperaciones() {
       <section className="hero-dash mb-4">
         <div className="hero-content-dash">
           <div className="eyebrow-dash">
-            CENTRAL DE RADIO · {fechaFormateada} · {horaFormateada}
+            CENTRAL DE RADIO · CENTRO DE OPERACIONES
           </div>
 
           <h1 className="hero-title-dash">
-            Turno en línea,{' '}
-            <span>{alertasActivas}</span>
+            Turno en línea,
             <br />
             alertas en curso
           </h1>
 
           <p className="hero-text-dash">
-            {alertasSinAsignar} casos siguen sin unidad asignada y{' '}
-            {atencionesActivas.length} unidades no han confirmado su atención.
+            Panel de monitoreo de alertas, unidades y atenciones.
           </p>
 
           <Link
-            to="/central-policia/alertas"
+            to="/Central-Policia/Alertas"
             className="hero-cta-dash"
           >
-            <span className="hero-cta-icon-dash" aria-hidden="true">
+            <span className="hero-cta-icon-dash">
               <i className="bi bi-exclamation-lg" />
             </span>
 
             <span>Ver alertas críticas</span>
 
-            <i
-              className="bi bi-arrow-right hero-cta-arrow-dash"
-              aria-hidden="true"
-            />
+            <i className="bi bi-arrow-right hero-cta-arrow-dash" />
           </Link>
         </div>
       </section>
 
-      {/* KPI */}
-      <Kpis grupo="centro-principal" valores={valoresKpis} />
+      {/* KPI: se generan desde Kpisconfig.jsx */}
+      <Kpis grupo="centro-principal" />
 
-      {/* Alertas recientes */}
+      {/* Tabla visual */}
       <section className="card-panel-dash p-4 mb-4">
         <div className="encabezado-panel-dash">
           <h2 className="section-title-dash">
-            <i className="bi bi-exclamation-triangle" />
-            Alertas recientes
+            <i className="bi bi-exclamation-triangle" /> Alertas recientes
           </h2>
 
           <Link
-            to="/central-policia/alertas"
+            to="/Central-Policia/Alertas"
             className="see-all-dash"
           >
-            Ver todas
-            <i className="bi bi-chevron-right" />
+            Ver todas <i className="bi bi-chevron-right" />
           </Link>
         </div>
 
@@ -130,119 +65,43 @@ function CentroOperaciones() {
           <table className="table tabla-dash tabla-alertas-dash align-middle">
             <thead>
               <tr>
-                <th className="col-caso">Caso</th>
-                <th className="col-tipo">Tipo</th>
-                <th className="col-prioridad">Prioridad</th>
-                <th className="col-ubicacion">Ubicación</th>
-                <th className="col-hora">Hora</th>
-                <th className="col-estado">Estado</th>
-                <th className="col-accion">Acción</th>
+                <th>Caso</th>
+                <th>Tipo</th>
+                <th>Prioridad</th>
+                <th>Ubicación</th>
+                <th>Hora</th>
+                <th>Estado</th>
+                <th>Acción</th>
               </tr>
             </thead>
 
             <tbody>
-              {alertasRecientes.length === 0 ? (
-                <tr>
-                  <td colSpan="7" className="estado-vacio-dash">
-                    <i className="bi bi-inbox" />
-                    No hay alertas recientes para mostrar.
-                  </td>
-                </tr>
-              ) : (
-                alertasRecientes.map((alerta) => (
-                  <tr key={alerta.id}>
-                    <td className="caso-dash">
-                      {alerta.codigo || `#${alerta.id}`}
-                    </td>
-
-                    <td>{alerta.tipo || 'Sin tipo'}</td>
-
-                    <td>{alerta.prioridad || 'Sin prioridad'}</td>
-
-                    <td className="meta-muted-dash">
-                      {alerta.ubicacion || 'Sin ubicación'}
-                    </td>
-
-                    <td>{alerta.hora || '—'}</td>
-
-                    <td>{alerta.estado || 'Pendiente'}</td>
-
-                    <td>
-                      <Link
-                        to={`/central-policia/alertas/${alerta.id}`}
-                        className="see-all-dash"
-                        aria-label={`Ver alerta ${alerta.codigo || alerta.id}`}
-                      >
-                        Ver
-                        <i className="bi bi-arrow-up-right" />
-                      </Link>
-                    </td>
-                  </tr>
-                ))
-              )}
+              <tr>
+                <td colSpan="7" className="estado-vacio-dash">
+                  <i className="bi bi-inbox" />
+                  Diseño de tabla de alertas
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
       </section>
 
-      {/* Atenciones y mapa */}
+      {/* Paneles inferiores */}
       <div className="row g-4">
         <div className="col-12 col-xl-7">
           <section className="card-panel-dash p-4 h-100">
             <div className="encabezado-panel-dash">
               <h2 className="section-title-dash">
-                <i className="bi bi-shield-check" />
-                Atenciones activas
+                <i className="bi bi-broadcast" /> Atenciones activas
               </h2>
 
-              <Link
-                to="/central-policia/asignaciones"
-                className="see-all-dash"
-              >
-                Ver todas
-                <i className="bi bi-chevron-right" />
-              </Link>
+              <span className="see-all-dash">Vista general</span>
             </div>
 
-            <div className="table-responsive">
-              <table className="table tabla-dash tabla-atenciones-dash align-middle">
-                <thead>
-                  <tr>
-                    <th>Caso</th>
-                    <th>Unidad</th>
-                    <th>Estado</th>
-                    <th>Ubicación</th>
-                    <th>Hora</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {atencionesActivas.length === 0 ? (
-                    <tr>
-                      <td colSpan="5" className="estado-vacio-dash">
-                        <i className="bi bi-clipboard-check" />
-                        No hay atenciones activas.
-                      </td>
-                    </tr>
-                  ) : (
-                    atencionesActivas.map((atencion) => (
-                      <tr key={atencion.id}>
-                        <td className="caso-dash">
-                          {atencion.codigo || `#${atencion.id}`}
-                        </td>
-
-                        <td>{atencion.unidad || 'Sin unidad'}</td>
-
-                        <td>{atencion.estado || 'En proceso'}</td>
-
-                        <td>{atencion.ubicacion || 'Sin ubicación'}</td>
-
-                        <td>{atencion.hora || '—'}</td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+            <div className="estado-vacio-dash">
+              <i className="bi bi-clipboard-check" />
+              Panel de atenciones
             </div>
           </section>
         </div>
@@ -251,17 +110,10 @@ function CentroOperaciones() {
           <section className="card-panel-dash p-4 h-100">
             <div className="encabezado-panel-dash">
               <h2 className="section-title-dash">
-                <i className="bi bi-geo-alt" />
-                Mapa operativo
+                <i className="bi bi-geo-alt" /> Mapa operativo
               </h2>
 
-              <Link
-                to="/central-policia/mapa"
-                className="see-all-dash"
-              >
-                Ver mapa
-                <i className="bi bi-chevron-right" />
-              </Link>
+              <span className="see-all-dash">Vista general</span>
             </div>
 
             <div className="mapa-proximamente-dash">
@@ -282,7 +134,7 @@ function CentroOperaciones() {
               </div>
 
               <p className="mapop-mini-text-dash">
-                Consulta la ubicación de las alertas y unidades en el mapa operativo.
+                Espacio visual para consultar alertas y unidades en el mapa.
               </p>
             </div>
 
@@ -293,13 +145,13 @@ function CentroOperaciones() {
             <div className="mapa-fila-dash">
               <span className="dot dot-disponible-dash" />
               <span className="lbl-dash">Disponibles</span>
-              <span className="num-dash">{unidadesDisponibles}</span>
+              <span className="num-dash">—</span>
             </div>
 
             <div className="mapa-fila-dash">
               <span className="dot dot-ocupada-dash" />
               <span className="lbl-dash">Atendiendo casos</span>
-              <span className="num-dash">{atencionesActivas.length}</span>
+              <span className="num-dash">—</span>
             </div>
           </section>
         </div>
