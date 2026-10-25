@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { obtenerUsuarios } from '../../utils/utils'
 
-function FormLogin({ onLoginSuccess }) {
+function FormLogin({ onLoginSuccess, aviso }) {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
@@ -10,14 +10,17 @@ function FormLogin({ onLoginSuccess }) {
     function handleSubmit(event) {
         event.preventDefault()
 
-        const usuarios = obtenerUsuarios()
+        if (!username.trim() || !password) {
+            setError('Escribe tu usuario y tu contraseña')
+            return
+        }
 
-        const encontrado = usuarios.find(
-            u => u.username.toLowerCase() === username.toLowerCase() && u.password === password
+        const encontrado = obtenerUsuarios().find(
+            u => u.username.toLowerCase() === username.trim().toLowerCase() && u.password === password
         )
 
         if (!encontrado) {
-            setError('Usuario o contraseña incorrectos')
+            setError('El usuario o la contraseña no coinciden.')
             return
         }
 
@@ -27,40 +30,49 @@ function FormLogin({ onLoginSuccess }) {
 
     return (
         <div className="form-box form-login">
-            <form onSubmit={handleSubmit}>
-                <h2>Iniciar sesión</h2>
+            <form onSubmit={handleSubmit} noValidate>
+                <h2>Iniciar Sesión</h2>
 
-                <input
-                    type="text"
-                    placeholder="Usuario"
-                    className="login-input"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                />
+                {aviso && <div className="form-ok" role="status">{aviso}</div>}
 
                 <div className="input-wrapper">
-                    <i className="bi bi-lock"></i>
+                    <i className="bi bi-person input-icon"></i>
+                    <input
+                        type="text"
+                        className="input"
+                        placeholder="Usuario"
+                        aria-label="Usuario"
+                        autoComplete="username"
+                        autoFocus
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                    />
+                </div>
+
+                <div className="input-wrapper">
+                    <i className="bi bi-lock-fill input-icon"></i>
                     <input
                         type={mostrarPassword ? 'text' : 'password'}
+                        className="input"
                         placeholder="Contraseña"
-                        className="login-input"
+                        aria-label="Contraseña"
+                        autoComplete="current-password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                     />
-                    <i
-                        className="bi bi-eye"
+                    <button
+                        type="button"
+                        className="toggle-pass"
                         onClick={() => setMostrarPassword(!mostrarPassword)}
-                    ></i>
+                        aria-label={mostrarPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                    >
+                        <i className={`bi ${mostrarPassword ? 'bi-eye-slash' : 'bi-eye'}`}></i>
+                    </button>
                 </div>
 
-                {error && (
-                    <div className="form-error" style={{ display: 'block' }}>
-                        {error}
-                    </div>
-                )}
+                {error && <div className="form-error" role="alert">{error}</div>}
 
-                <button type="submit" className="btn-login">Ingresar</button>
-                <a href="#" className="link-olvide">¿Olvidaste tu contraseña?</a>
+                <button type="submit" className="btn-primary">LOGIN</button>
             </form>
         </div>
     )
