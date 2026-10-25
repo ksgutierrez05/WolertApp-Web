@@ -7,6 +7,15 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Permite que el programa de WolertApp (en localhost, cualquier puerto) llame a la API
+builder.Services.AddCors(options =>
+{
+	options.AddPolicy("Frontend", policy =>
+		policy.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost")
+			  .AllowAnyHeader()
+			  .AllowAnyMethod());
+});
+
 builder.Services.AddDbContext<AppDBContext>(options =>
 	options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -19,5 +28,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors("Frontend");
 app.MapControllers();
 app.Run();
