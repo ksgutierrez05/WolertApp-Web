@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router-dom';
+import { cerrarSesion } from '../../Utils/utils';
 
 const menu = [
   { group: 'General', items: [{ label: 'Principal', href: '/ciudadano', icon: 'bi-house' }] },
@@ -35,7 +36,7 @@ export default function CiudadanoSidebar() {
       ))}
 
       <div className="sidebar__footer">
-        <button type="button" className="sidebar__logout" onClick={() => { /* TODO: logout */ }}>
+        <button type="button" className="sidebar__logout" onClick={() => { cerrarSesion(); window.location.href = '/login'; }}>
           <i className="bi bi-box-arrow-right sidebar__icon" />
           <span className="sidebar__label">Cerrar sesión</span>
         </button>
