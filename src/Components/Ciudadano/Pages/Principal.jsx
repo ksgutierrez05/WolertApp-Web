@@ -12,6 +12,7 @@ export default function Principal() {
   const [showUser, setShowUser] = useState(false);
   const [fecha, setFecha] = useState('');
   const [hora, setHora] = useState('');
+  const [buscar, setBuscar] = useState('');
 
   useEffect(() => {
     const tick = () => {
@@ -24,25 +25,29 @@ export default function Principal() {
     return () => clearInterval(timer);
   }, []);
 
+  const h = new Date().getHours();
+  const saludo = h < 12 ? 'Buenos días' : h < 19 ? 'Buenas tardes' : 'Buenas noches';
+
   return (
     <div className="container-fluid px-4 py-4">
       {/* topbar estilo admin */}
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <div className="top-bar__brand">
-          <span className="top-bar__brand-text">WolertApp</span>
-          <span className="top-bar__brand-sub">Panel de Ciudadano</span>
+      <div className="d-flex justify-content-between align-items-center gap-3 mb-3">
+        {/* BUSCADOR */}
+        <div className="input-group search-dash bg-white flex-grow-1">
+          <span className="input-group-text bg-white border-0"><i className="bi bi-search" /></span>
+          <input
+            type="text"
+            className="form-control border-0"
+            placeholder="Buscar por alerta, barrio o vecino..."
+            value={buscar}
+            onChange={(e) => setBuscar(e.target.value)}
+          />
         </div>
+
         <div className="d-flex align-items-center gap-3">
-          <div className="text-end">
-            <div style={{ fontSize: '13px', color: 'var(--muted)' }}>
-              <i className="bi bi-calendar3" style={{ color: 'var(--color-primary)' }} /> {fecha}
-            </div>
-            <div style={{ fontSize: '13px', color: 'var(--muted)' }}>
-              <i className="bi bi-clock" /> {hora}
-            </div>
-          </div>
+          {/* CAMPANA */}
           <div className="col-auto" style={{ position: 'relative' }}>
-            <div className="position-relative d-flex align-items-center justify-content-center rounded-circle bg-white" style={{ cursor: 'pointer', width: '40px', height: '40px', padding: 0, position: 'relative', borderRadius: '9999px', border: '1px solid #e2e8f0' }} onClick={() => setShowNotif((s) => !s)}>
+            <div className="position-relative d-flex align-items-center justify-content-center rounded-circle bg-white" style={{ cursor: 'pointer', width: '40px', height: '40px', padding: 0, borderRadius: '9999px', border: '1px solid #e2e8f0' }} onClick={() => setShowNotif((s) => !s)}>
               <i className="bi bi-bell"></i>
               <span className="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle">2</span>
             </div>
@@ -70,6 +75,8 @@ export default function Principal() {
               </div>
             )}
           </div>
+
+          {/* USUARIO */}
           <div style={{ position: 'relative' }}>
             <button
               type="button"
@@ -110,8 +117,10 @@ export default function Principal() {
         className="hero-dash hero-ciudadano-usu mb-4"
         style={{ '--hero-img': 'url("/img/Hero-ciudadano.jpg")' }}
       >
-        <div className="eyebrow-dash">11 de septiembre de 2026 · 08:14 a. m.</div>
-        <h1 className="hero-title-dash">Buenos días, Juan Carlos Pérez</h1>
+        <div className="eyebrow-dash">
+          <i className="bi bi-shield-check" /> Panel de ciudadano · {fecha}
+        </div>
+        <h1 className="hero-title-dash">{saludo}, Juan Carlos Pérez</h1>
         <p className="hero-text-dash">Tienes 2 alertas activas y 6 vecinos conectados cerca de ti. Este es tu resumen de seguridad.</p>
         <a href="#" className="btn btn-light rounded-pill fw-bold mt-3 hero-cta-dash">
           <span className="dot-danger-dash"></span> Reportar una alerta

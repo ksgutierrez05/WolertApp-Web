@@ -8,6 +8,7 @@ export default function Dashboard() {
   const [hora, setHora] = useState('');
   const [showNotif, setShowNotif] = useState(false);
   const [showUser, setShowUser] = useState(false);
+  const [buscar, setBuscar] = useState('');
 
   useEffect(() => {
     const tick = () => {
@@ -19,6 +20,9 @@ export default function Dashboard() {
     const timer = setInterval(tick, 1000);
     return () => clearInterval(timer);
   }, []);
+
+  const h = new Date().getHours();
+  const saludo = h < 12 ? 'Buenos días' : h < 19 ? 'Buenas tardes' : 'Buenas noches';
 
   const kpis = [
     { color: 'kpi-blue-dash', icon: 'bi-people', num: '25', label: 'Usuarios registrados', sub: 'Total en el sistema' },
@@ -41,41 +45,51 @@ export default function Dashboard() {
 
   return (
     <div className="container-fluid">
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <div className="top-bar__brand">
-          <span className="top-bar__brand-text">WolertApp</span>
-          <span className="top-bar__brand-sub">Panel de Administración</span>
+            {/* topbar */}
+      <div className="d-flex justify-content-between align-items-center gap-3 mb-3">
+        {/* BUSCADOR */}
+        <div className="input-group search-dash bg-white flex-grow-1">
+          <span className="input-group-text bg-white border-0"><i className="bi bi-search" /></span>
+          <input
+            type="text"
+            className="form-control border-0"
+            placeholder="Buscar por alerta, barrio, usuario..."
+            value={buscar}
+            onChange={(e) => setBuscar(e.target.value)}
+          />
         </div>
+
         <div className="d-flex align-items-center gap-3">
-          <div className="text-end">
-            <div style={{ fontSize: '13px', color: 'var(--muted)' }} id="fecha-actual">
-              <i className="bi bi-calendar3" style={{ color: 'var(--color-primary)' }} /> {fecha}
+          {/* CAMPANA */}
+          <div style={{ position: 'relative' }}>
+            <div
+              className="position-relative d-flex align-items-center justify-content-center rounded-circle bg-white"
+              style={{ cursor: 'pointer', width: '40px', height: '40px', padding: 0, borderRadius: '9999px', border: '1px solid #e2e8f0' }}
+              onClick={() => setShowNotif((s) => !s)}
+            >
+              <i className="bi bi-bell" style={{ fontSize: '18px' }} />
+              <span className="badge-red-dash position-absolute" style={{ top: '-4px', right: '-4px' }} />
             </div>
-            <div style={{ fontSize: '13px', color: 'var(--muted)' }} id="hora-actual">
-              <i className="bi bi-clock" /> {hora}
-            </div>
-          </div>
-          <div className="position-relative d-flex align-items-center justify-content-center rounded-circle bg-white" style={{ cursor: 'pointer', width: '40px', height: '40px', padding: 0, position: 'relative', borderRadius: '9999px', border: '1px solid #e2e8f0' }} onClick={() => setShowNotif((s) => !s)}>
-            <i className="bi bi-bell" style={{ fontSize: '18px' }} />
-            <span className="badge-red-dash position-absolute" style={{ top: '-4px', right: '-4px' }} />
-          </div>
-          {showNotif && (
-            <div className="top-bar__dropdown" style={{ right: 0, top: 'calc(100% + 8px)', width: '320px', position: 'absolute', zIndex: 1000 }}>
-              <div className="top-bar__dropdown-header">
-                <span className="top-bar__dropdown-title">Notificaciones</span>
-              </div>
-              <div className="top-bar__dropdown-list">
-                <div className="top-bar__notif-item unread">
-                  <div className="top-bar__notif-item-icon bg-blue"><i className="bi bi-bell" /></div>
-                  <div className="top-bar__notif-item-content">
-                    <div className="top-bar__notif-item-title">Alerta de HOMICIDIO</div>
-                    <div className="top-bar__notif-item-sub">Casimiro Raul Maestre</div>
-                    <div className="top-bar__notif-item-time">hace 10 min</div>
+            {showNotif && (
+              <div className="top-bar__dropdown" style={{ right: 0, top: 'calc(100% + 8px)', width: '320px' }}>
+                <div className="top-bar__dropdown-header">
+                  <span className="top-bar__dropdown-title">Notificaciones</span>
+                </div>
+                <div className="top-bar__dropdown-list">
+                  <div className="top-bar__notif-item unread">
+                    <div className="top-bar__notif-item-icon bg-blue"><i className="bi bi-bell" /></div>
+                    <div className="top-bar__notif-item-content">
+                      <div className="top-bar__notif-item-title">Alerta de HOMICIDIO</div>
+                      <div className="top-bar__notif-item-sub">Casimiro Raul Maestre</div>
+                      <div className="top-bar__notif-item-time">hace 10 min</div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
+
+          {/* USUARIO */}
           <div style={{ position: 'relative' }}>
             <button
               type="button"
@@ -111,8 +125,10 @@ export default function Dashboard() {
         className="hero-dash hero-admin-adm mb-3"
         style={{ '--hero-img': 'url("/img/Hero-admin.jpg")' }}
       >
-        <div className="eyebrow-dash">PANEL DE CONTROL</div>
-        <h1 className="hero-title-dash">Dashboard Administrativo</h1>
+        <div className="eyebrow-dash">
+          <i className="bi bi-shield-check" /> Panel de control · {fecha}
+        </div>
+        <h1 className="hero-title-dash">{saludo}, administrador</h1>
         <p className="hero-text-dash">Panel de control y monitoreo del sistema</p>
         <i className="bi bi-shield-check hero-icon-dash" style={{ fontSize: '90px' }} />
       </div>

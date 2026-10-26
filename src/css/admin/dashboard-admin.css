@@ -34,6 +34,7 @@
   opacity: 1;
   letter-spacing: 0.12em;
   color: #dbe5f5;
+  text-transform: uppercase;
 }
 
 .hero-admin-adm .hero-title-dash {
