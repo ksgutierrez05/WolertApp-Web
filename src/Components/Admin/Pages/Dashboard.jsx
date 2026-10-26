@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import '../../../css/global.css';
 import '../../../css/temas.css';
+import '../../../css/admin/dashboard-admin.css';
 
 export default function Dashboard() {
   const [fecha, setFecha] = useState('');
@@ -106,7 +107,10 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="hero-dash mb-3">
+      <div
+        className="hero-dash hero-admin-adm mb-3"
+        style={{ '--hero-img': 'url("/img/Hero-admin.jpg")' }}
+      >
         <div className="eyebrow-dash">PANEL DE CONTROL</div>
         <h1 className="hero-title-dash">Dashboard Administrativo</h1>
         <p className="hero-text-dash">Panel de control y monitoreo del sistema</p>

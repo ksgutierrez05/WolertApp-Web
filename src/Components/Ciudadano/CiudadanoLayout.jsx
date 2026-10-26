@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import CiudadanoSidebar from './CiudadanoSidebar';
-import './CiudadanoLayout.css';
-import '../Admin/AdminLayout.css';
+import '../../css/ciudadano/CiudadanoLayout.css';
+import '../../css/admin/AdminLayout.css';
 
 export default function CiudadanoLayout({ children }) {
   const [collapsed, setCollapsed] = useState(true);

@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import '../../../css/global.css';
 import '../../../css/temas.css';
 import '../../../css/admin/usuarios.css';
-import '../../Admin/AdminLayout.css';
+import '../../../css/admin/AdminLayout.css';
 
 const CLAVE = 'wolertapp_usuarios';
 const ejemplos = [

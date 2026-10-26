@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import TopBar from './Topbar';
-import './AdminLayout.css';
+import '../../css/admin/AdminLayout.css';
 
 const MOBILE = '(max-width: 768px)';
 

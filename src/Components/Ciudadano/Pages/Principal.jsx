@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import '../../../css/global.css';
 import '../../../css/temas.css';
 import '../../../css/ciudadano/pagina-principal.css';
+import heroImg from '/img/Hero-ciudadano.jpg';
 
 import { Link } from 'react-router-dom';
 
@@ -105,7 +106,10 @@ export default function Principal() {
       </div>
 
       {/* hero */}
-      <div className="hero-dash mb-4">
+      <div
+        className="hero-dash hero-ciudadano-usu mb-4"
+        style={{ '--hero-img': 'url("/img/Hero-ciudadano.jpg")' }}
+      >
         <div className="eyebrow-dash">11 de septiembre de 2026 · 08:14 a. m.</div>
         <h1 className="hero-title-dash">Buenos días, Juan Carlos Pérez</h1>
         <p className="hero-text-dash">Tienes 2 alertas activas y 6 vecinos conectados cerca de ti. Este es tu resumen de seguridad.</p>
