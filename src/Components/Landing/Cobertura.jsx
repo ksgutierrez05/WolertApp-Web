@@ -47,7 +47,7 @@ function Cobertura() {
 
         <div className="cobertura-mapa-wrap">
           <img
-            src="/img/mapa-valledupar.png"
+            src="/img/MapaValledupar.png"
             alt="Mapa de cobertura de WolertApp en Valledupar"
             className="cobertura-mapa"
           />

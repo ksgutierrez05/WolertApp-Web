@@ -63,7 +63,6 @@ function FormRegistro({onRegistroSuccess}) {
         <div className="form-box form-registro">
         <form onSubmit={handleSubmit}>
             <h2>Crear Cuenta</h2>
-            <p className="form-subtitle">Completa la información para registrarte</p>
             <hr className="form-divider" />
 
             <div className="seccion-titulo">DATOS PERSONALES</div>
@@ -111,7 +110,7 @@ function FormRegistro({onRegistroSuccess}) {
             <option value="ciudadano">Ciudadano</option>
             </select>
 
-            <button type="submit" className="btn-login">Registrarse</button>
+            <button type="submit" className="btn-login">Crear Cuenta</button>
         </form>
         </div>
     )

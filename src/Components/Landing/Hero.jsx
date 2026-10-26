@@ -7,13 +7,34 @@ function Hero() {
 
       <div className="hero-inner">
         <div className="hero-texto">
-          <h1>Alertas comunitarias en la palma de tu mano</h1>
+          <span className="hero-badge">
+            <span className="punto-activo"></span>
+            Activo en Valledupar
+          </span>
+
+          <h1>
+            Alertas comunitarias{' '}
+            <span className="resaltado">en la palma de tu mano</span>
+          </h1>
+
           <p>
             Gestiona y recibe alertas sobre eventos importantes en tu comunidad
-            de manera rápida y sencilla, inicia sesión para acceder a tu rol y
-            listo
+            de manera rápida y sencilla. Inicia sesión para acceder a tu rol y
+            listo.
           </p>
-          <Link to="/login" className="btn">Iniciar sesión</Link>
+
+          <div className="hero-acciones">
+            <Link to="/login" className="btn">Iniciar sesión</Link>
+            <a href="#como-funciona" className="btn btn-secundario">
+              Ver cómo funciona
+            </a>
+          </div>
+
+          <ul className="hero-confianza">
+            <li><i className="bi bi-incognito"></i> Reportes anónimos</li>
+            <li><i className="bi bi-bell"></i> Tiempo real</li>
+            <li><i className="bi bi-person-badge"></i> Acceso por rol</li>
+          </ul>
         </div>
 
         <div className="hero-visual">

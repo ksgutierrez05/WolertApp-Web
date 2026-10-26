@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import FormLogin from '../../Components/Login/FormLogin';
 import FormRegistro from '../../Components/Login/FormRegistro';
-import { guardarSesionActiva } from '../../Utils/utils';
+import { guardarSesionActiva } from '../../utils/utils';
 import '../../css/login/styles.css';
 
 function Login() {
@@ -46,7 +46,9 @@ function Login() {
         <img src="/img/logo.png" alt="WolertApp" className="login-logo" />
         <h1>WolertApp</h1>
         <p>Sistema de alertas comunitarias</p>
-        <p className="login-tagline">Seguridad para tu barrio y notificaciones en tiempo real</p>
+        <p className="login-tagline">
+          Seguridad para tu barrio<br />y notificaciones en tiempo real
+        </p>
         <button type="button" className="btn-registrarse" onClick={toggleFormulario}>
           {esRegistro ? 'Iniciar sesión' : 'Registrarse'}
         </button>

@@ -61,9 +61,9 @@ body.modo-registro .btn-volver {
     color: #ffffff;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     text-align: center;
-    padding: 48px;
+    padding: 10px 20px 0 20px;
     border-radius: 0 70px 70px 0;
     z-index: 5;
     transition: transform 0.6s ease-in-out, border-radius 0.6s ease-in-out;
@@ -74,42 +74,44 @@ body.modo-registro .btn-volver {
     flex-direction: column;
     align-items: center;
     width: 100%;
+    gap: 16px;
 }
 
 .panel-deslizante .login-logo {
-    width: 140px;
-    height: 140px;
+    width: 300px;
+    height: 300px;
     object-fit: contain;
-    margin-bottom: 22px;
+    margin-bottom: 10px;
 }
 
 .panel-deslizante h1 {
     font-family: 'Space Grotesk', sans-serif;
-    font-size: 36px;
+    font-size: 40px;
     font-weight: 700;
     color: #ffffff;
-    margin-bottom: 28px;
+    margin-bottom: 12px;
+    margin-top: -55px;
 }
 
 .panel-deslizante .panel-lema {
     font-size: 16px;
     color: #ffffff;
-    margin-bottom: 26px;
+    margin-bottom: 12px;
 }
 
 .panel-deslizante .login-tagline {
     font-size: 16px;
     line-height: 1.5;
     color: #ffffff;
-    margin-bottom: 40px;
+    margin-bottom: 24px;
 }
 
 .btn-registrarse {
     background: #ffffff;
     color: #12294a;
     border: none;
-    width: 180px;
-    height: 48px;
+    width: 200px;
+    height: 44px;
     border-radius: 100px;
     font-size: 15px;
     font-weight: 700;
@@ -117,6 +119,7 @@ body.modo-registro .btn-volver {
     text-transform: uppercase;
     cursor: pointer;
     transition: transform 0.15s ease, box-shadow 0.15s ease;
+    margin-top: 12px;
 }
 
 .btn-registrarse:hover {
@@ -232,16 +235,18 @@ body.modo-registro .btn-volver {
 .form-login .btn-primary {
     background: var(--azul-oscuro);
     color: #ffffff;
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1px;
     border: none;
-    width: 136px;
-    height: 48px;
+    width: 150px;
+    height: 50px;
     border-radius: 100px;
     cursor: pointer;
-    margin-top: 12px;
+    margin: 24px auto 0 auto;
+    margin-top: 10px;
+    display: block;
     transition: transform 0.15s ease, background 0.2s ease;
 }
 
@@ -249,6 +254,19 @@ body.modo-registro .btn-volver {
 .form-login .btn-primary:hover {
     background: #163a63;
     transform: translateY(-2px);
+}
+
+.form-registro .btn-login {
+    width: 300px;        /* antes 220px */
+    height: 50px;        /* antes 56px */
+    font-size: 16px;     /* antes 12px */
+    letter-spacing: 0.5px;
+    background: linear-gradient(90deg, #19263d 0%, #1f3d5e 100%);
+    box-shadow: 0 6px 16px rgba(25, 38, 61, 0.25);
+}
+
+.form-registro .btn-login:hover {
+    background: linear-gradient(90deg, #1d2d48 0%, #254a70 100%);
 }
 
 /* ---------- Mensajes ---------- */
@@ -298,9 +316,10 @@ body.modo-registro .btn-volver {
 }
 
 .form-registro h2 {
-    font-size: 26px;
-    margin-bottom: 4px;
-    align-self: flex-start;
+    font-size: 32px;
+    margin: 0 auto 20px auto;
+    text-align: center;
+    align-self: center;
 }
 
 .form-subtitle {
@@ -388,6 +407,7 @@ body.modo-registro .btn-volver {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    padding-bottom: 65px;
 }
 
 .auth-container .panel-contenido {
