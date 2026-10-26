@@ -1,1 +1,17 @@
-/* placeholder */
+/* Sobrescritura para el layout de ciudadano */
+.admin-layout__main.main-collapsed {
+  padding-top: 0;
+}
+
+.admin-layout__sidebar .sidebar {
+  justify-content: flex-start;
+}
+
+.admin-layout__sidebar .sidebar__footer {
+  margin-top: auto; /* el logout se queda abajo */
+}
+
+/* Cuando está colapsado, el label del grupo no ocupa espacio */
+.admin-layout__sidebar.collapsed:not(.peek) .sidebar__group-label {
+  display: none;
+}

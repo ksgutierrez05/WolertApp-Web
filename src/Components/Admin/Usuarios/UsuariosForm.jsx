@@ -29,7 +29,7 @@ export default function UsuariosForm() {
 
   return (
     <div className="container-fluid">
-      <h1 className="hero-title-dash" style={{ color: 'var(--ink)', fontSize: '26px' }}>Nuevo usuario</h1>
+      <h1 className="hero-title-dash" style={{ color: '#64748b', fontSize: '26px' }}>Nuevo usuario</h1>
       <div className="card-panel-dash p-3">
         <form onSubmit={submit}>
           <div className="row g-2 mb-2">
@@ -50,9 +50,10 @@ export default function UsuariosForm() {
           <div className="mb-2">
             <select className="form-select input-dash" required value={form.rol} onChange={(e) => set('rol', e.target.value)}>
               <option value="" disabled>Seleccionar Rol *</option>
-              <option value="ciudadano">Ciudadano</option>
-              <option value="policia">Policía</option>
-              <option value="admin">Administrador</option>
+              <option value="admin">Admin</option>
+              <option value="policia">Policia</option>
+              <option value="central-transito">Cent. Transito</option>
+              <option value="administrador">Administrador</option>
             </select>
           </div>
           {error && <div className="text-danger small mt-2">{error}</div>}

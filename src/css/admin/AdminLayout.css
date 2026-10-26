@@ -220,8 +220,8 @@
 
 .sidebar__link:hover,
 .sidebar__group-toggle:hover {
-  color: white;
-  background-color: rgba(59, 130, 246, 0.1);
+  color: #19263d;
+  background-color: rgba(25, 38, 61, 0.1);
 }
 
 .sidebar__link.active {

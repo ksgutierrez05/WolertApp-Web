@@ -29,7 +29,7 @@ export default function Principal() {
   const saludo = h < 12 ? 'Buenos días' : h < 19 ? 'Buenas tardes' : 'Buenas noches';
 
   return (
-    <div className="container-fluid px-4 py-4">
+    <div className="container-fluid px-4">
       {/* topbar estilo admin */}
       <div className="d-flex justify-content-between align-items-center gap-3 mb-3">
         {/* BUSCADOR */}

@@ -6,10 +6,10 @@ import '../../../css/admin/AdminLayout.css';
 
 const CLAVE = 'wolertapp_usuarios';
 const ejemplos = [
-  { nombre: 'Sofia Barliza Gutierrez', username: 'Sofia123', cedula: '4444555666', correo: 'sofia@gmail.com', telefono: '5555777444', rol: 'ciudadano', estado: 'activo', color: '#1f5fa8' },
-  { nombre: 'Yamil David Bustillo Contreras', username: 'Yamil123', cedula: '1055200333', correo: 'yamil@gmail.com', telefono: '3157859745', rol: 'ciudadano', estado: 'activo', color: '#1f5fa8' },
-  { nombre: 'Laura Sofia Daza Leon', username: 'lauf', cedula: '444', correo: 'lau@gmail.com', telefono: '555', rol: 'ciudadano', estado: 'activo', color: '#c81e2c' },
-  { nombre: 'Margarita Daza Jimenez', username: 'Margarita123', cedula: '8888999777', correo: 'margarita@gmail.com', telefono: '4552214463', rol: 'ciudadano', estado: 'activo', color: '#1f5fa8' },
+  { nombre: 'Sofia Barliza Gutierrez', username: 'Sofia123', cedula: '4444555666', correo: 'sofia@gmail.com', telefono: '5555777444', rol: 'admin', estado: 'activo', color: '#1f5fa8' },
+  { nombre: 'Yamil David Bustillo Contreras', username: 'Yamil123', cedula: '1055200333', correo: 'yamil@gmail.com', telefono: '3157859745', rol: 'policia', estado: 'activo', color: '#1f5fa8' },
+  { nombre: 'Laura Sofia Daza Leon', username: 'lauf', cedula: '444', correo: 'lau@gmail.com', telefono: '555', rol: 'central-transito', estado: 'activo', color: '#c81e2c' },
+  { nombre: 'Margarita Daza Jimenez', username: 'Margarita123', cedula: '8888999777', correo: 'margarita@gmail.com', telefono: '4552214463', rol: 'administrador', estado: 'activo', color: '#1f5fa8' },
   { nombre: 'Hernando Luis Garcia', username: 'hernan01', cedula: '55112236', correo: 'hernan01@gmail.com', telefono: '4445558552', rol: 'policia', estado: 'activo', color: '#1f9d5b' },
   { nombre: 'Luis Garcia Daza', username: 'luisgd', cedula: '9988776655', correo: 'luisgd@gmail.com', telefono: '3011112233', rol: 'admin', estado: 'activo', color: '#7c4fd1' },
 ];
@@ -23,8 +23,8 @@ function cargar() {
   return [...ejemplos];
 }
 
-const nombreRol = { admin: 'Administrador', policia: 'Policía', ciudadano: 'Ciudadano' };
-const badgeRol = { admin: 'badge-blue-dash', policia: 'badge-gray-dash', ciudadano: 'badge-green-dash' };
+const nombreRol = { admin: 'Admin', policia: 'Policia', 'central-transito': 'Cent. Transito', administrador: 'Administrador' };
+const badgeRol = { admin: 'badge-blue-dash', policia: 'badge-gray-dash', 'central-transito': 'badge-teal-dash', administrador: 'badge-purple-dash' };
 const claseEstado = { activo: 'status-active-dash', inactivo: 'status-inactive-dash', suspendido: 'status-inactive-dash' };
 const nombreEstado = { activo: 'Activo', inactivo: 'Inactivo', suspendido: 'Suspendido' };
 
@@ -118,8 +118,8 @@ export default function UsuariosList() {
     <div className="container-fluid">
       <div className="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-3">
         <div>
-          <h1 className="hero-title-dash" style={{ color: 'var(--ink)', fontSize: '26px' }}>Gestión de Usuarios</h1>
-          <p className="hero-text-dash" style={{ color: 'var(--muted)' }}>Administra los usuarios registrados en el sistema</p>
+          <h1 className="hero-title-dash" style={{ color: '#64748b', fontSize: '26px' }}>Gestión de Usuarios</h1>
+          <p className="hero-text-dash" style={{ color: '#94a3b8' }}>Administra los usuarios registrados en el sistema</p>
         </div>
         <button type="button" className="btn btn-cv-azul d-inline-flex align-items-center gap-2 px-3 py-2" style={{ borderRadius: '12px', fontSize: '13.5px', fontWeight: '700' }} onClick={abrirNuevo}>
           <i className="bi bi-plus-lg" /> Nuevo usuario
@@ -156,7 +156,7 @@ export default function UsuariosList() {
             <i className="bi bi-shield-lock kpi-icon-dash" />
             <div className="kpi-num-dash">4</div>
             <div className="kpi-label-dash">Roles configurados</div>
-            <div className="kpi-label-dash" style={{ marginTop: '2px' }}>Admin · Policía · Usuario</div>
+            <div className="kpi-label-dash" style={{ marginTop: '2px' }}>Admin · Policía · Cent. Transito · Administrador</div>
           </div>
         </div>
       </div>
@@ -180,9 +180,14 @@ export default function UsuariosList() {
           <div className="col-lg-2 col-6">
             <select className="filtro-select-dash form-select" value={filtroRol} onChange={(e) => setFiltroRol(e.target.value)}>
               <option value="">Rol: Todos</option>
-              <option value="admin">Administrador</option>
-              <option value="policia">Policía</option>
+              <option value="administrador">Administrador</option>
+              <option value="admin-policial">Admin. Policia</option>
+              <option value="central-policial">Central Policial</option>
+              <option value="policia">Policia</option>
+              <option value="central-transito">Cent. Transito</option>
+              <option value="agente-transito">Agente de Transito</option>
               <option value="ciudadano">Ciudadano</option>
+              <option value="director-transito">Director de Transito</option>
             </select>
           </div>
         </div>
@@ -211,7 +216,7 @@ export default function UsuariosList() {
                   <td>{u.cedula}</td>
                   <td>{u.correo || '—'}</td>
                   <td>{u.telefono || '—'}</td>
-                  <td><span className={`badge-dash ${badgeRol[u.rol]}`}>{nombreRol[u.rol].toUpperCase()}</span></td>
+                  <td><span className={`badge-dash ${badgeRol[u.rol] || 'badge-gray-dash'}`}>{(nombreRol[u.rol] || u.rol || 'Desconocido').toUpperCase()}</span></td>
                   <td>
                     <span className={`status-dot-dash ${claseEstado[u.estado]}`}>
                       <span className="dot" />{nombreEstado[u.estado].toUpperCase()}
@@ -268,9 +273,9 @@ export default function UsuariosList() {
                     <div className="mb-1">
                       <select className="form-select input-dash" required value={form.rol} onChange={(e) => setForm({ ...form, rol: e.target.value })}>
                         <option value="" disabled>Seleccionar Rol *</option>
-                        <option value="ciudadano">Ciudadano</option>
-                        <option value="policia">Policía</option>
-                        <option value="admin">Administrador</option>
+                        <option value="admin">Admin. Policia</option>
+                        <option value="central-transito">Cent. Transito</option>
+                        <option value="administrador">Administrador</option>
                       </select>
                     </div>
                     {error && <div className="text-danger small mt-2">{error}</div>}
@@ -304,7 +309,7 @@ export default function UsuariosList() {
                   <div className="fila-detalle-dash"><span className="etiqueta-detalle-dash">Cédula</span><span className="valor-detalle-dash">{modalVer.cedula}</span></div>
                   <div className="fila-detalle-dash"><span className="etiqueta-detalle-dash">Correo</span><span className="valor-detalle-dash">{modalVer.correo || '—'}</span></div>
                   <div className="fila-detalle-dash"><span className="etiqueta-detalle-dash">Teléfono</span><span className="valor-detalle-dash">{modalVer.telefono || '—'}</span></div>
-                  <div className="fila-detalle-dash"><span className="etiqueta-detalle-dash">Rol</span><span className="valor-detalle-dash">{nombreRol[modalVer.rol]}</span></div>
+                  <div className="fila-detalle-dash"><span className="etiqueta-detalle-dash">Rol</span><span className="valor-detalle-dash">{nombreRol[modalVer.rol] || modalVer.rol || 'Desconocido'}</span></div>
                   <div className="fila-detalle-dash" style={{ borderBottom: 'none' }}><span className="etiqueta-detalle-dash">Estado</span><span className="valor-detalle-dash">{nombreEstado[modalVer.estado]}</span></div>
                 </div>
               </div>

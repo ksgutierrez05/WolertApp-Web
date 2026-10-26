@@ -21,7 +21,7 @@ export default function CiudadanoLayout({ children }) {
       </div>
 
       <div className="admin-layout__content">
-        <main className="admin-layout__main">{children}</main>
+        <main className={`admin-layout__main ${collapsed ? 'main-collapsed' : ''}`}>{children}</main>
       </div>
     </div>
   );
