@@ -17,7 +17,7 @@ namespace backend.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.21")
+                .HasAnnotation("ProductVersion", "10.0.14")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -61,6 +61,41 @@ namespace backend.Migrations
                     b.HasKey("IdComuna");
 
                     b.ToTable("Comunas");
+                });
+
+            modelBuilder.Entity("backend.Models.Policia", b =>
+                {
+                    b.Property<int>("IdPolicia")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdPolicia"));
+
+                    b.Property<string>("Estado")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("IdUnidad")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdUsuario")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Placa")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Rango")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("IdPolicia");
+
+                    b.HasIndex("IdUnidad");
+
+                    b.HasIndex("IdUsuario");
+
+                    b.ToTable("Policias");
                 });
 
             modelBuilder.Entity("backend.Models.Rol", b =>
@@ -125,6 +160,38 @@ namespace backend.Migrations
                             IdRol = 8,
                             Nombre = "DirectorTransito"
                         });
+                });
+
+            modelBuilder.Entity("backend.Models.Unidad", b =>
+                {
+                    b.Property<int>("IdUnidad")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdUnidad"));
+
+                    b.Property<string>("Estado")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Latitud")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Longitud")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("idBarrio")
+                        .HasColumnType("int");
+
+                    b.HasKey("IdUnidad");
+
+                    b.HasIndex("idBarrio");
+
+                    b.ToTable("Unidades");
                 });
 
             modelBuilder.Entity("backend.Models.Usuario", b =>
@@ -245,6 +312,34 @@ namespace backend.Migrations
                     b.Navigation("Comuna");
                 });
 
+            modelBuilder.Entity("backend.Models.Policia", b =>
+                {
+                    b.HasOne("backend.Models.Unidad", "Unidad")
+                        .WithMany("Policias")
+                        .HasForeignKey("IdUnidad");
+
+                    b.HasOne("backend.Models.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("IdUsuario")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Unidad");
+
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("backend.Models.Unidad", b =>
+                {
+                    b.HasOne("backend.Models.Barrio", "Barrio")
+                        .WithMany()
+                        .HasForeignKey("idBarrio")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Barrio");
+                });
+
             modelBuilder.Entity("backend.Models.Usuario", b =>
                 {
                     b.HasOne("backend.Models.Barrio", "Barrio")
@@ -281,6 +376,11 @@ namespace backend.Migrations
             modelBuilder.Entity("backend.Models.Rol", b =>
                 {
                     b.Navigation("Usuarios");
+                });
+
+            modelBuilder.Entity("backend.Models.Unidad", b =>
+                {
+                    b.Navigation("Policias");
                 });
 #pragma warning restore 612, 618
         }

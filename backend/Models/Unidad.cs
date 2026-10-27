@@ -13,7 +13,7 @@ namespace backend.Models
         public string Estado { get; set; }
         public int Latitud { get; set; }
         public int Longitud { get; set; }
-        [ForeignKey("idBarrio")]
+        [ForeignKey("Barrio")]
         public int idBarrio { get; set; }
         public Barrio Barrio { get; set; }
         public ICollection<Policia> Policias { get; set; } = new List<Policia>();
