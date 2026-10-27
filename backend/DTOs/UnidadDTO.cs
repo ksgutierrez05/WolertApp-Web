@@ -1,24 +1,42 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace backend.DTOs
 {
-    public class UnidadCreateDTO
-    {
-         public string Nombre { get; set; } = null !;
-         public int IdBarrio { get; set; }
-        public double? Latitud { get; set; }
-        public double? Longitud { get; set; }
-    }
-
     public class UnidadDTO
     {
         public int IdUnidad { get; set; }
-        public string Nombre { get; set; } = null !;
-        public string Estado { get; set; } = null !;
-        public int IdBarrio { get; set; }
-        public string Barrio { get; set; } = null !;
-        public string Comuna { get; set; } = null !;
+        public string Nombre { get; set; } = null!;
+        public string Estado { get; set; } = null!;
         public double? Latitud { get; set; }
         public double? Longitud { get; set; }
+        public int IdBarrio { get; set; }
+        public string? NombreBarrio { get; set; }
+        public List<PoliciaDTO> Policias { get; set; } = new List<PoliciaDTO>();
+    }
+
+    public class UnidadListaDTO
+    {
+        public int IdUnidad { get; set; }
+        public string Nombre { get; set; } = null!;
+        public string Estado { get; set; } = null!;
+        public double? Latitud { get; set; }
+        public double? Longitud { get; set; }
+        public string? NombreBarrio { get; set; }
+        public int TotalPolicias { get; set; }
+    }
+
+    public class UnidadCreateDTO
+    {
+        public string Nombre { get; set; } = null!;
+        public double? Latitud { get; set; }
+        public double? Longitud { get; set; }
+        public int IdBarrio { get; set; }
+    }
+
+    public class UnidadUpdateDTO
+    {
+        public string Nombre { get; set; } = null!;
+        public string Estado { get; set; } = null!;
+        public double? Latitud { get; set; }
+        public double? Longitud { get; set; }
+        public int IdBarrio { get; set; }
     }
 }
