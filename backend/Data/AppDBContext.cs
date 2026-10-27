@@ -14,8 +14,11 @@ namespace backend.Data
 		public DbSet<Usuario> Usuarios { get; set; }
 		public DbSet<Comuna> Comunas { get; set; }
 		public DbSet<Barrio> Barrios { get; set; }
+        public DbSet<UnidadTransito> UnidadesTransito { get; set; }
+        public DbSet<AgentesTransito> AgentesTransito { get; set; }
+        
 
-		protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			base.OnModelCreating(modelBuilder);
 
