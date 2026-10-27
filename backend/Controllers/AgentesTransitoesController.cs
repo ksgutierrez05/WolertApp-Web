@@ -1,7 +1,9 @@
+using backend.Data;
+using backend.DTOs;
+using backend.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using backend.Models;
-using backend.Data;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -15,78 +17,194 @@ public class AgentesTransitoesController : ControllerBase
 
     // GET: api/AgentesTransito
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<AgentesTransito>>> GetAgentesTransito()
+   public async Task<ActionResult<IEnumerable<AgenteTransitoListaDTO>>> GetAgentesTransito()
     {
-        return await _context.AgentesTransito.ToListAsync();
+        return await _context.AgentesTransito.Select(a => new AgenteTransitoListaDTO
+        {
+            IdAgenteTransito = a.IdAgenteTransito,
+            NombreUsuario = a.Usuario.PrimerNombre + " " + a.Usuario.PrimerApellido,
+            Cedula = a.Usuario.Cedula,
+            Correo = a.Usuario.Correo,
+            Telefono = a.Usuario.Telefono,
+            Username = a.Usuario.Username,
+            BarrioNombre = a.Usuario.Barrio != null ? a.Usuario.Barrio.Nombre : null,
+            Placa = a.Placa,
+            Rango = a.Rango,
+            EstadoUsuario = a.Usuario.Estado,
+            EstadoAgente = a.Estado,
+            UnidadTransitoId = a.UnidadTransitoId,
+            NombreUnidad = a.UnidadTransito != null ? a.UnidadTransito.Nombre : null,
+            EstadoUnidad = a.UnidadTransito != null ? a.UnidadTransito.Estado : null
+        }).ToListAsync();
     }
 
-    // GET: api/AgentesTransito/5
-    [HttpGet("{idagentetransito}")]
-    public async Task<ActionResult<AgentesTransito>> GetAgentesTransito(int idagentetransito)
-    {
-        var agentestransito = await _context.AgentesTransito.FindAsync(idagentetransito);
 
-        if (agentestransito == null)
+    // GET: api/AgentesTransito/5
+    [HttpGet("{id}")]
+    public async Task<ActionResult<AgentesTransitoDTO>> GetAgenteTransito(int id)
+    {
+        var agente = await _context.AgentesTransito.Where(a => a.IdAgenteTransito == id)
+            .Select(a => new AgentesTransitoDTO
+            {
+                IdAgenteTransito = a.IdAgenteTransito,
+                NombreUsuario = a.Usuario.PrimerNombre + " " + a.Usuario.PrimerApellido,
+                PrimerNombre = a.Usuario.PrimerNombre,
+                SegundoNombre = a.Usuario.SegundoNombre,
+                PrimerApellido = a.Usuario.PrimerApellido,
+                SegundoApellido = a.Usuario.SegundoApellido,
+                Cedula = a.Usuario.Cedula,
+                Correo = a.Usuario.Correo,
+                Telefono = a.Usuario.Telefono,
+                Username = a.Usuario.Username,
+                Calle = a.Usuario.Calle,
+                Carrera = a.Usuario.Carrera,
+                Etapa = a.Usuario.Etapa,
+                Manzana = a.Usuario.Manzana,
+                Casa = a.Usuario.Casa,
+                BarrioNombre = a.Usuario.Barrio != null ? a.Usuario.Barrio.Nombre : null,
+                FechaCreacion = a.Usuario.FechaCreacion,
+                Placa = a.Placa,
+                Rango = a.Rango,
+                EstadoUsuario = a.Usuario.Estado,
+                EstadoAgente = a.Estado,
+                UnidadTransitoId = a.UnidadTransitoId,
+                NombreUnidad = a.UnidadTransito != null ? a.UnidadTransito.Nombre : null,
+                EstadoUnidad = a.UnidadTransito != null ? a.UnidadTransito.Estado : null
+            }).FirstOrDefaultAsync();
+
+        if (agente == null)
         {
             return NotFound();
         }
 
-        return agentestransito;
+        return agente;
     }
+
 
     // PUT: api/AgentesTransito/5
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-    [HttpPut("{idagentetransito}")]
-    public async Task<IActionResult> PutAgentesTransito(int? idagentetransito, AgentesTransito agentestransito)
+    [HttpPut("{id}")]
+    public async Task<IActionResult> PutAgenteTransito(int id, AgenteTransitoUpdateDTO agenteUpdate)
     {
-        if (idagentetransito != agentestransito.IdAgenteTransito)
-        {
-            return BadRequest();
-        }
-
-        _context.Entry(agentestransito).State = EntityState.Modified;
-
-        try
-        {
-            await _context.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!AgentesTransitoExists(idagentetransito))
-            {
-                return NotFound();
-            }
-            else
-            {
-                throw;
-            }
-        }
-
-        return NoContent();
-    }
-
-    // POST: api/AgentesTransito
-    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-    [HttpPost]
-    public async Task<ActionResult<AgentesTransito>> PostAgentesTransito(AgentesTransito agentestransito)
-    {
-        _context.AgentesTransito.Add(agentestransito);
-        await _context.SaveChangesAsync();
-
-        return CreatedAtAction("GetAgentesTransito", new { idagentetransito = agentestransito.IdAgenteTransito }, agentestransito);
-    }
-
-    // DELETE: api/AgentesTransito/5
-    [HttpDelete("{idagentetransito}")]
-    public async Task<IActionResult> DeleteAgentesTransito(int? idagentetransito)
-    {
-        var agentestransito = await _context.AgentesTransito.FindAsync(idagentetransito);
-        if (agentestransito == null)
+        var agente = await _context.AgentesTransito.FindAsync(id);
+        if (agente == null)
         {
             return NotFound();
         }
 
-        _context.AgentesTransito.Remove(agentestransito);
+       
+        var unidadId = agenteUpdate.UnidadTransitoId;
+        if (unidadId.HasValue && unidadId.Value <= 0)
+        {
+            unidadId = null;
+        }
+
+        if (unidadId.HasValue && !await _context.UnidadesTransito.AnyAsync(u => u.IdUnidadTransito == unidadId.Value))
+        {
+            return BadRequest("La unidad de transito indicada no existe.");
+        }
+
+        agente.Placa = agenteUpdate.Placa;
+        agente.Rango = agenteUpdate.Rango;
+        agente.Estado = agenteUpdate.EstadoAgente;
+        agente.UnidadTransitoId = unidadId;
+
+        await _context.SaveChangesAsync();
+
+        return NoContent();
+    }
+    // POST: api/AgentesTransito
+    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    [HttpPost]
+    public async Task<ActionResult<AgentesTransitoDTO>> PostAgenteTransito(AgenteTransitoCreateDTO agenteCreate)
+    {
+        var rol = await _context.Roles.FirstOrDefaultAsync(r => r.Nombre == "AgenteTransito");
+        if (rol == null)
+        {
+            return BadRequest("El rol AgenteTransito no existe.");
+        }
+
+        
+        var barrioId = agenteCreate.BarrioId;
+        if (barrioId.HasValue && barrioId.Value <= 0)
+        {
+            barrioId = null;
+        }
+
+        var unidadId = agenteCreate.UnidadTransitoId;
+        if (unidadId.HasValue && unidadId.Value <= 0)
+        {
+            unidadId = null;
+        }
+
+        if (barrioId.HasValue && !await _context.Barrios.AnyAsync(b => b.IdBarrio == barrioId.Value))
+        {
+            return BadRequest("El barrio indicado no existe.");
+        }
+
+        if (unidadId.HasValue && !await _context.UnidadesTransito.AnyAsync(u => u.IdUnidadTransito == unidadId.Value))
+        {
+            return BadRequest("La unidad de transito indicada no existe.");
+        }
+
+        var existe = await _context.Usuarios.AnyAsync(u =>
+            u.Cedula == agenteCreate.Cedula ||
+            u.Correo == agenteCreate.Correo ||
+            u.Username == agenteCreate.Username);
+        if (existe)
+        {
+            return Conflict("Ya existe un usuario con esa cedula, correo o username.");
+        }
+
+        var usuario = new Usuario
+        {
+            Cedula = agenteCreate.Cedula,
+            PrimerNombre = agenteCreate.PrimerNombre,
+            SegundoNombre = agenteCreate.SegundoNombre,
+            PrimerApellido = agenteCreate.PrimerApellido,
+            SegundoApellido = agenteCreate.SegundoApellido,
+            Correo = agenteCreate.Correo,
+            Telefono = agenteCreate.Telefono,
+            Username = agenteCreate.Username,
+            Calle = agenteCreate.Calle,
+            Carrera = agenteCreate.Carrera,
+            Etapa = agenteCreate.Etapa,
+            Manzana = agenteCreate.Manzana,
+            Casa = agenteCreate.Casa,
+            BarrioId = barrioId,
+            RolId = rol.IdRol
+        };
+        usuario.PasswordHash = new PasswordHasher<Usuario>().HashPassword(usuario, agenteCreate.Password);
+
+        var agente = new AgentesTransito
+        {
+            Usuario = usuario,
+            Placa = agenteCreate.Placa,
+            Rango = agenteCreate.Rango,
+            Estado = "disponible",
+            UnidadTransitoId = unidadId
+        };
+
+        _context.AgentesTransito.Add(agente);
+        await _context.SaveChangesAsync();
+
+       
+        var creado = await GetAgenteTransito(agente.IdAgenteTransito);
+
+        return CreatedAtAction("GetAgenteTransito", new { id = agente.IdAgenteTransito }, creado.Value);
+    }
+
+    // DELETE: api/AgentesTransito/5
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteAgentesTransito(int id)
+    {
+        var agente = await _context.AgentesTransito.FindAsync(id);
+        if (agente == null)
+        {
+            return NotFound();
+        }
+
+        _context.AgentesTransito.Remove(agente);
         await _context.SaveChangesAsync();
 
         return NoContent();
