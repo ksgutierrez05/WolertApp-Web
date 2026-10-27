@@ -11,7 +11,6 @@ namespace backend.DTOs
 
 	public class ComunaCreateDTO
 	{
-		[Required, MaxLength(50)]
 		public string Nombre { get; set; } = null!;
 	}
 }

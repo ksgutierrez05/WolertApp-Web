@@ -165,5 +165,79 @@ namespace backend.Controllers
 			var creado = await GetUsuario(usuario.IdUsuario);
 			return CreatedAtAction(nameof(GetUsuario), new { id = usuario.IdUsuario }, creado.Value);
 		}
+
+		// PUT: api/Usuarios/5
+		[Authorize]
+		[HttpPut("{id}")]
+		public async Task<IActionResult> PutUsuario(int id, UsuarioUpdateDTO dto)
+		{
+			var usuario = await _context.Usuarios.FindAsync(id);
+			if (usuario == null)
+			{
+				return NotFound();
+			}
+
+			// Cada usuario se edita a sí mismo; Admin puede editar a cualquiera
+			var rol = User.FindFirst(ClaimTypes.Role)?.Value;
+			var idActual = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+			if (rol != "Admin" && idActual != id.ToString())
+			{
+				return Forbid();
+			}
+
+			// Datos únicos, ignorando al propio usuario
+			var duplicado = await _context.Usuarios.AnyAsync(u => u.IdUsuario != id &&
+				(u.Cedula == dto.Cedula || u.Correo == dto.Correo || u.Username == dto.Username));
+			if (duplicado)
+			{
+				return Conflict("Ya existe un usuario con esa cédula, correo o username.");
+			}
+
+			if (dto.BarrioId != null && !await _context.Barrios.AnyAsync(b => b.IdBarrio == dto.BarrioId))
+			{
+				return BadRequest("El barrio indicado no existe.");
+			}
+
+			usuario.Cedula = dto.Cedula;
+			usuario.PrimerNombre = dto.PrimerNombre;
+			usuario.SegundoNombre = dto.SegundoNombre;
+			usuario.PrimerApellido = dto.PrimerApellido;
+			usuario.SegundoApellido = dto.SegundoApellido;
+			usuario.Correo = dto.Correo;
+			usuario.Telefono = dto.Telefono;
+			usuario.Username = dto.Username;
+			usuario.Calle = dto.Calle;
+			usuario.Carrera = dto.Carrera;
+			usuario.Etapa = dto.Etapa;
+			usuario.Manzana = dto.Manzana;
+			usuario.Casa = dto.Casa;
+			usuario.BarrioId = dto.BarrioId;
+
+			await _context.SaveChangesAsync();
+			return NoContent();
+		}
+
+		// DELETE: api/Usuarios/5  (desactiva, no borra)
+		[Authorize(Roles = "Admin")]
+		[HttpDelete("{id}")]
+		public async Task<IActionResult> DeleteUsuario(int id)
+		{
+			var usuario = await _context.Usuarios.FindAsync(id);
+			if (usuario == null)
+			{
+				return NotFound();
+			}
+
+			if (User.FindFirst(ClaimTypes.NameIdentifier)?.Value == id.ToString())
+			{
+				return BadRequest("No puedes desactivar tu propia cuenta.");
+			}
+
+			usuario.Estado = "inactivo";
+			await _context.SaveChangesAsync();
+
+			return NoContent();
+		}
+
 	}
 }

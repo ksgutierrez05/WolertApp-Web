@@ -1,6 +1,7 @@
 ﻿using backend.Data;
 using backend.DTOs;
 using backend.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,6 +9,7 @@ namespace backend.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
+	[Authorize(Roles = "Admin")]
 	public class ComunasController : ControllerBase
 	{
 		private readonly AppDBContext _context;
@@ -17,7 +19,8 @@ namespace backend.Controllers
 			_context = context;
 		}
 
-		// GET: api/Comunas
+		// GET: api/Comunas  (público: el registro necesita la lista)
+		[AllowAnonymous]
 		[HttpGet]
 		public async Task<ActionResult<IEnumerable<ComunaDTO>>> GetComunas()
 		{
@@ -32,7 +35,8 @@ namespace backend.Controllers
 				.ToListAsync();
 		}
 
-		// GET: api/Comunas/5
+		// GET: api/Comunas/5  (público)
+		[AllowAnonymous]
 		[HttpGet("{id}")]
 		public async Task<ActionResult<ComunaDTO>> GetComuna(int id)
 		{
@@ -54,7 +58,7 @@ namespace backend.Controllers
 			return comuna;
 		}
 
-		// POST: api/Comunas
+		// POST: api/Comunas  (solo Admin)
 		[HttpPost]
 		public async Task<ActionResult<ComunaDTO>> PostComuna(ComunaCreateDTO dto)
 		{
@@ -74,6 +78,50 @@ namespace backend.Controllers
 				TotalBarrios = 0
 			};
 			return CreatedAtAction(nameof(GetComuna), new { id = comuna.IdComuna }, creada);
+		}
+
+		// PUT: api/Comunas/5  (solo Admin)
+		[HttpPut("{id}")]
+		public async Task<IActionResult> PutComuna(int id, ComunaCreateDTO dto)
+		{
+			var comuna = await _context.Comunas.FindAsync(id);
+			if (comuna == null)
+			{
+				return NotFound();
+			}
+
+			// El nombre no puede repetirse en otra comuna
+			if (await _context.Comunas.AnyAsync(c => c.Nombre == dto.Nombre && c.IdComuna != id))
+			{
+				return Conflict("Ya existe una comuna con ese nombre.");
+			}
+
+			comuna.Nombre = dto.Nombre;
+			await _context.SaveChangesAsync();
+
+			return NoContent();
+		}
+
+		// DELETE: api/Comunas/5  (solo Admin)
+		[HttpDelete("{id}")]
+		public async Task<IActionResult> DeleteComuna(int id)
+		{
+			var comuna = await _context.Comunas.FindAsync(id);
+			if (comuna == null)
+			{
+				return NotFound();
+			}
+
+			// No borrar si todavía tiene barrios
+			if (await _context.Barrios.AnyAsync(b => b.ComunaId == id))
+			{
+				return Conflict("No se puede eliminar: la comuna tiene barrios asociados.");
+			}
+
+			_context.Comunas.Remove(comuna);
+			await _context.SaveChangesAsync();
+
+			return NoContent();
 		}
 	}
 }

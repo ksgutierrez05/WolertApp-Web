@@ -12,7 +12,6 @@ namespace backend.DTOs
 
 	public class BarrioCreateDTO
 	{
-		[Required, MaxLength(100)]
 		public string Nombre { get; set; } = null!;
 
 		[Required]
