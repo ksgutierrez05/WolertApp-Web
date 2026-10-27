@@ -5,6 +5,7 @@ namespace backend.Data
 {
 	public class AppDBContext : DbContext
 	{
+		public DbSet<backend.Models.Unidad> Unidad { get; set; } = default!;
 		public DbSet<backend.Models.Policia> Policia { get; set; } = default!;
 		public AppDBContext(DbContextOptions<AppDBContext> options) : base(options) { }
 

@@ -9,7 +9,7 @@ namespace backend.DTOs
         public double? Longitud { get; set; }
         public int IdBarrio { get; set; }
         public string? NombreBarrio { get; set; }
-        public List<PoliciaDTO> Policias { get; set; } = new List<PoliciaDTO>();
+        public List<PoliciaListaDTO> Policias { get; set; } = new List<PoliciaListaDTO>();
     }
 
     public class UnidadListaDTO
