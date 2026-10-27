@@ -69,8 +69,7 @@ namespace backend.Migrations
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("IdBarrio");
 
@@ -89,8 +88,7 @@ namespace backend.Migrations
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("IdComuna");
 
@@ -141,13 +139,11 @@ namespace backend.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdRol"));
 
                     b.Property<string>("Descripcion")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("IdRol");
 
@@ -196,46 +192,36 @@ namespace backend.Migrations
                         });
                 });
 
-            modelBuilder.Entity("backend.Models.Semaforos", b =>
+            modelBuilder.Entity("backend.Models.Unidad", b =>
                 {
-                    b.Property<int>("IdSemaforo")
+                    b.Property<int>("IdUnidad")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdSemaforo"));
-
-                    b.Property<int?>("BarrioId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Codigo")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Direccion")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdUnidad"));
 
                     b.Property<string>("Estado")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double?>("Latitud")
-                        .HasColumnType("float");
+                    b.Property<int>("Latitud")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Longitud")
+                    b.Property<int>("Longitud")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Observacion")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("idBarrio")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Tipo")
-                        .HasColumnType("nvarchar(max)");
+                    b.HasKey("IdUnidad");
 
-                    b.HasKey("IdSemaforo");
+                    b.HasIndex("idBarrio");
 
-                    b.HasIndex("BarrioId");
-
-                    b.ToTable("Semaforos");
+                    b.ToTable("Unidades");
                 });
 
             modelBuilder.Entity("backend.Models.UnidadTransito", b =>
@@ -269,38 +255,6 @@ namespace backend.Migrations
                     b.ToTable("UnidadesTransito");
                 });
 
-            modelBuilder.Entity("backend.Models.Unidad", b =>
-                {
-                    b.Property<int>("IdUnidad")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdUnidad"));
-
-                    b.Property<string>("Estado")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Latitud")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Longitud")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Nombre")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("idBarrio")
-                        .HasColumnType("int");
-
-                    b.HasKey("IdUnidad");
-
-                    b.HasIndex("idBarrio");
-
-                    b.ToTable("Unidades");
-                });
-
             modelBuilder.Entity("backend.Models.Usuario", b =>
                 {
                     b.Property<int>("IdUsuario")
@@ -313,80 +267,65 @@ namespace backend.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Calle")
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Carrera")
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Casa")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Cedula")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Correo")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int?>("CreadoPorId")
                         .HasColumnType("int");
 
                     b.Property<string>("Estado")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Etapa")
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("FechaCreacion")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Manzana")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PrimerApellido")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PrimerNombre")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("RolId")
                         .HasColumnType("int");
 
                     b.Property<string>("SegundoApellido")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SegundoNombre")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Telefono")
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Username")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("IdUsuario");
 
@@ -451,15 +390,6 @@ namespace backend.Migrations
                     b.Navigation("Unidad");
 
                     b.Navigation("Usuario");
-                });
-
-            modelBuilder.Entity("backend.Models.Semaforos", b =>
-                {
-                    b.HasOne("backend.Models.Barrio", "Barrio")
-                        .WithMany()
-                        .HasForeignKey("BarrioId");
-
-                    b.Navigation("Barrio");
                 });
 
             modelBuilder.Entity("backend.Models.Unidad", b =>
