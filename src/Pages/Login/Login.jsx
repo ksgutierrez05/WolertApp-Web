@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import FormLogin from '../../Components/Login/FormLogin';
 import FormRegistro from '../../Components/Login/FormRegistro';
-import { guardarSesionActiva } from '../../Utils/utils';
+import { guardarSesionActiva } from '../../utils/utils';
 import '../../css/login/styles.css';
 
 function Login() {
