@@ -49,9 +49,6 @@ export async function EditarBarrio(id,barrio){
         const mensaje = await respuesta.text();
         throw new Error(`Error en edición de barrio: ${mensaje}`);
     }
-
-    const datos = await respuesta.json();
-    return datos;
 };
 
 export async function EliminarBarrio(id){
@@ -64,9 +61,6 @@ export async function EliminarBarrio(id){
         const mensaje = await respuesta.text();
         throw new Error(`Error en eliminación de barrio: ${mensaje}`);
     }
-
-    const datos = await respuesta.json();
-    return datos;
 };
 
 export function ObtenerToken() {

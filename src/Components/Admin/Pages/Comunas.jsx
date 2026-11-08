@@ -1,80 +1,104 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import '../../../css/global.css';
 import '../../../css/temas.css';
 import '../../../css/admin/comunas.css';
+import { ListarComunas, CrearComuna, EditarComuna, EliminarComuna } from '../../../Service/ComunasAPI';
+
+const COLORES = ['#1f3a8a', '#5c4033', '#374151', '#166534', '#1d4ed8', '#14532d'];
 
 function iniciales(nombre) {
   const partes = nombre.trim().split(' ');
   return (partes[0][0] + (partes[1] || '')).toUpperCase();
 }
 
-const COMUNAS_INICIALES = [
-  { id: 1, nombre: 'Comuna 1', color: '#1f3a8a' },
-  { id: 2, nombre: 'Comuna 2', color: '#5c4033' },
-  { id: 3, nombre: 'Comuna 3', color: '#374151' },
-  { id: 4, nombre: 'Comuna 4', color: '#166534' },
-  { id: 5, nombre: 'Comuna 5', color: '#1d4ed8' },
-  { id: 6, nombre: 'Comuna 6', color: '#14532d' },
-];
+function colorPorId(id) {
+  return COLORES[id % COLORES.length];
+}
 
 export default function Comunas() {
-  const [comunas, setComunas] = useState(COMUNAS_INICIALES);
+  const [comunas, setComunas] = useState([]);
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState('');
   const [buscar, setBuscar] = useState('');
   const [modalAbierto, setModalAbierto] = useState(false);
   const [verAbierto, setVerAbierto] = useState(false);
   const [comunaVer, setComunaVer] = useState(null);
   const [idEnEdicion, setIdEnEdicion] = useState(null);
   const [nombre, setNombre] = useState('');
-  const [color, setColor] = useState('#1f3a8a');
 
-  const filtradas = comunas.filter((c) => c.nombre.toLowerCase().includes(buscar.trim().toLowerCase()));
+  const cargarComunas = async () => {
+    try {
+      setCargando(true);
+      setError('');
+      const datos = await ListarComunas();
+      setComunas(datos);
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setCargando(false);
+    }
+  };
+
+  useEffect(() => {
+    cargarComunas();
+  }, []);
+
+  const filtradas = comunas.filter((c) =>
+    c.nombre.toLowerCase().includes(buscar.trim().toLowerCase())
+  );
+
+  const totalBarrios = comunas.reduce((suma, c) => suma + (c.totalBarrios || 0), 0);
 
   const abrirCrear = () => {
     setIdEnEdicion(null);
     setNombre('');
-    setColor('#1f3a8a');
     setModalAbierto(true);
   };
 
   const abrirEditar = (id) => {
-    const c = comunas.find((x) => x.id === id);
+    const c = comunas.find((x) => x.idComuna === id);
     if (!c) return;
     setIdEnEdicion(id);
     setNombre(c.nombre);
-    setColor(c.color);
     setModalAbierto(true);
   };
 
   const abrirVer = (id) => {
-    const c = comunas.find((x) => x.id === id);
+    const c = comunas.find((x) => x.idComuna === id);
     if (!c) return;
     setComunaVer(c);
     setVerAbierto(true);
   };
 
-  const eliminar = (id) => {
-    setComunas((prev) => prev.filter((c) => c.id !== id));
-  };
-
-  const guardar = (e) => {
-    e.preventDefault();
-    if (idEnEdicion) {
-      setComunas((prev) => prev.map((c) => (c.id === idEnEdicion ? { ...c, nombre, color } : c)));
-    } else {
-      const nuevoId = comunas.length > 0 ? Math.max(...comunas.map((c) => c.id)) + 1 : 1;
-      setComunas((prev) => [...prev, { id: nuevoId, nombre, color }]);
+  const eliminar = async (id) => {
+    if (!window.confirm('¿Eliminar esta comuna?')) return;
+    try {
+      await EliminarComuna(id);
+      await cargarComunas();
+    } catch (e) {
+      alert(e.message);
     }
-    setModalAbierto(false);
-    setIdEnEdicion(null);
-    setNombre('');
-    setColor('#1f3a8a');
   };
 
   const cerrarModal = () => {
     setModalAbierto(false);
     setIdEnEdicion(null);
     setNombre('');
-    setColor('#1f3a8a');
+  };
+
+  const guardar = async (e) => {
+    e.preventDefault();
+    try {
+      if (idEnEdicion !== null) {
+        await EditarComuna(idEnEdicion, { idComuna: idEnEdicion, nombre });
+      } else {
+        await CrearComuna({ nombre });
+      }
+      await cargarComunas();
+      cerrarModal();
+    } catch (err) {
+      alert(err.message);
+    }
   };
 
   const esEdicion = idEnEdicion !== null;
@@ -102,10 +126,10 @@ export default function Comunas() {
         </div>
         <div className="col-md-4">
           <div className="kpi-dash kpi-green-dash">
-            <i className="bi bi-check-circle kpi-icon-dash" />
-            <div className="kpi-num-dash" id="kpi-comunas-activas">{comunas.length}</div>
-            <div className="kpi-label-dash">Comunas activas</div>
-            <div className="kpi-label-dash" style={{ marginTop: '2px' }}>En el sistema</div>
+            <i className="bi bi-houses kpi-icon-dash" />
+            <div className="kpi-num-dash" id="kpi-total-barrios">{totalBarrios}</div>
+            <div className="kpi-label-dash">Total barrios</div>
+            <div className="kpi-label-dash" style={{ marginTop: '2px' }}>En todas las comunas</div>
           </div>
         </div>
         <div className="col-md-4">
@@ -129,28 +153,32 @@ export default function Comunas() {
           <span className="text-end">ACCIONES</span>
         </div>
         <div id="lista-comunas">
-          {filtradas.length === 0 ? (
+          {cargando ? (
+            <div className="tabla-comunas-vacio">Cargando...</div>
+          ) : error ? (
+            <div className="tabla-comunas-vacio">{error}</div>
+          ) : filtradas.length === 0 ? (
             <div className="tabla-comunas-vacio">No se encontraron comunas.</div>
           ) : (
             filtradas.map((c) => (
-              <div key={c.id} className="tabla-comunas-fila">
+              <div key={c.idComuna} className="tabla-comunas-fila">
                 <div className="d-flex align-items-center gap-3">
-                  <div className="comuna-avatar-dash" style={{ backgroundColor: c.color }}>
+                  <div className="comuna-avatar-dash" style={{ backgroundColor: colorPorId(c.idComuna) }}>
                     {iniciales(c.nombre)}
                   </div>
                   <div>
                     <div className="comuna-nombre-dash">{c.nombre.toUpperCase()}</div>
-                    <div className="comuna-sub-dash">División territorial</div>
+                    <div className="comuna-sub-dash">{c.totalBarrios} barrios</div>
                   </div>
                 </div>
                 <div className="d-flex justify-content-end gap-2">
-                  <button type="button" className="btn-accion-dash btn-ver-dash" title="Ver" onClick={() => abrirVer(c.id)}>
+                  <button type="button" className="btn-accion-dash btn-ver-dash" title="Ver" onClick={() => abrirVer(c.idComuna)}>
                     <i className="bi bi-eye" />
                   </button>
-                  <button type="button" className="btn-accion-dash btn-editar-dash" title="Editar" onClick={() => abrirEditar(c.id)}>
+                  <button type="button" className="btn-accion-dash btn-editar-dash" title="Editar" onClick={() => abrirEditar(c.idComuna)}>
                     <i className="bi bi-pencil" />
                   </button>
-                  <button type="button" className="btn-accion-dash btn-eliminar-dash" title="Eliminar" onClick={() => eliminar(c.id)}>
+                  <button type="button" className="btn-accion-dash btn-eliminar-dash" title="Eliminar" onClick={() => eliminar(c.idComuna)}>
                     <i className="bi bi-trash" />
                   </button>
                 </div>
@@ -174,8 +202,6 @@ export default function Comunas() {
                   <form id="form-comuna" onSubmit={guardar}>
                     <label className="label-col-dash mb-1">Nombre de la comuna</label>
                     <input type="text" id="nombre-comuna" className="form-control mb-3" placeholder="Ej: Comuna 7" required value={nombre} onChange={(e) => setNombre(e.target.value)} />
-                    <label className="label-col-dash mb-1">Color identificador</label>
-                    <input type="color" id="color-comuna" className="form-control form-control-color mb-3" value={color} onChange={(e) => setColor(e.target.value)} />
                     <button type="submit" className="btn btn-cv-azul w-100" style={{ borderRadius: '12px', fontWeight: '700' }}>{esEdicion ? 'Guardar cambios' : 'Registrar comuna'}</button>
                   </form>
                 </div>
@@ -198,11 +224,8 @@ export default function Comunas() {
                 <div className="modal-body">
                   <div className="fila-detalle-dash"><span className="etiqueta-detalle-dash">Tipo</span><span className="valor-detalle-dash">División territorial</span></div>
                   <div className="fila-detalle-dash" style={{ borderBottom: 'none' }}>
-                    <span className="etiqueta-detalle-dash">Color identificador</span>
-                    <span className="valor-detalle-dash d-flex align-items-center gap-2">
-                      <span id="ver-comuna-color-muestra" style={{ width: '16px', height: '16px', borderRadius: '50%', display: 'inline-block', backgroundColor: comunaVer.color }} />
-                      <span id="ver-comuna-color-texto">{comunaVer.color}</span>
-                    </span>
+                    <span className="etiqueta-detalle-dash">Total de barrios</span>
+                    <span className="valor-detalle-dash">{comunaVer.totalBarrios}</span>
                   </div>
                 </div>
               </div>
