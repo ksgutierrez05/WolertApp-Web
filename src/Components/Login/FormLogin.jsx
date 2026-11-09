@@ -1,16 +1,28 @@
 import { useState } from 'react'
-import { useState } from 'react'
+import { useNavigate } from 'react-router-dom';
 import { login } from '../../Service/UsuariosAPI.js'
 
-cons [cargando, setCargando] = useState(false);
+// AJUSTA estas rutas a las que realmente tengas definidas en tu router.
+const RUTA_POR_ROL = {
+    Admin: '/admin',
+    AdminPolicia: '/admin-policia',
+    DirectorTransito: '/director-transito',
+    Policia: '/policia',
+    CentralPolicia: '/central-policia',
+    AgenteTransito: '/agente-transito',
+    CentralTransito: '/central-transito',
+    Ciudadano: '/ciudadano',
+};
 
 function FormLogin({ onLoginSuccess, aviso }) {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
     const [mostrarPassword, setMostrarPassword] = useState(false)
+    const [cargando, setCargando] = useState(false)
+    const navigate = useNavigate()
 
-    function handleSubmit(event) {
+    async function handleSubmit(event) {
         event.preventDefault()
 
         if (!username.trim() || !password) {
@@ -18,17 +30,22 @@ function FormLogin({ onLoginSuccess, aviso }) {
             return
         }
 
-        const encontrado = obtenerUsuarios().find(
-            u => u.username.toLowerCase() === username.trim().toLowerCase() && u.password === password
-        )
+        try {
+            setCargando(true)
+            setError('')
+            const datos = await login({ username: username.trim(), password })
+            
+            // 1) Primero avisamos a App para que actualice su estado de sesión
+            //    (así el guard de rutas ya ve al usuario autenticado)
+            if (onLoginSuccess) onLoginSuccess(datos)   // { token, idUsuario, username, rol }
 
-        if (!encontrado) {
-            setError('El usuario o la contraseña no coinciden.')
-            return
+            // 2) Luego navegamos según el rol
+            navigate(RUTA_POR_ROL[datos.rol] || '/', { replace: true })
+        } catch (err) {
+            setError(err.message)
+        } finally {
+            setCargando(false)
         }
-
-        setError('')
-        onLoginSuccess(encontrado)
     }
 
     return (
@@ -75,7 +92,10 @@ function FormLogin({ onLoginSuccess, aviso }) {
 
                 {error && <div className="form-error" role="alert">{error}</div>}
 
-                <button type="submit" className="btn-primary">LOGIN</button>
+                <button type="submit" className="btn-primary" disabled={cargando}>
+                    {cargando ? 'Iniciando sesión...' : 'Iniciar Sesión'}
+                </button>
+
             </form>
         </div>
     )

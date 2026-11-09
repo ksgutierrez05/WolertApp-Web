@@ -71,6 +71,8 @@ export async function login(usuario) {
     const datos = await respuesta.json();
     localStorage.setItem('token', datos.token);
     localStorage.setItem('rol', datos.rol);
+    localStorage.setItem('idUsuario', datos.idUsuario);
+    localStorage.setItem('username', datos.username);
     return datos;
 }
 

@@ -1,14 +1,16 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import FormLogin from '../../Components/Login/FormLogin';
 import FormRegistro from '../../Components/Login/FormRegistro';
-import { guardarSesionActiva } from '../../utils/utils';
+import { guardarSesionActiva } from '../../Utils/utils';
 import '../../css/login/styles.css';
 
 function Login() {
+    const navigate = useNavigate();
     const [esRegistro, setRegistro] = useState(false);
 
     function toggleFormulario(){
-        setRegistro(!esRegistro); 
+        setRegistro(!esRegistro);
     }
 
     function handleLoginSuccess(usuario) {
@@ -26,7 +28,7 @@ function Login() {
         }
 
         const ruta = rutas[usuario.rol] || '/';
-        window.location.href = ruta;
+        navigate(ruta);
     }
 
     function handleRegistroSuccess() {
