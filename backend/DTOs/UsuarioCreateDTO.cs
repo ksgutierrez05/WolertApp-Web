@@ -9,7 +9,6 @@ namespace backend.DTOs
 		public string? SegundoNombre { get; set; }
 		public string PrimerApellido { get; set; } = null!;
 		public string? SegundoApellido { get; set; }
-		[EmailAddress]
 		public string Correo { get; set; } = null!;
 		public string? Telefono { get; set; }
 		public string Username { get; set; } = null!;

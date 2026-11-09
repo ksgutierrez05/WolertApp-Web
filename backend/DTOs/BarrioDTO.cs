@@ -13,8 +13,6 @@ namespace backend.DTOs
 	public class BarrioCreateDTO
 	{
 		public string Nombre { get; set; } = null!;
-
-		[Required]
 		public int ComunaId { get; set; }
 	}
 }

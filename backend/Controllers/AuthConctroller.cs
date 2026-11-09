@@ -83,7 +83,7 @@ namespace backend.Controllers
 					new Claim(ClaimTypes.NameIdentifier, usuario.IdUsuario.ToString()),
 					new Claim(ClaimTypes.Name, usuario.Username),
 					new Claim(ClaimTypes.Role, usuario.Rol.Nombre)
-				}),
+				}),	
 				Expires = DateTime.UtcNow.AddHours(8),
 				Issuer = _config["Jwt:Issuer"],
 				Audience = _config["Jwt:Audience"],
