@@ -26,22 +26,6 @@ export async function obtenerUsuarioPorId(id) {
     return datos;
 }
 
-// pide token. La API responde 204 (sin contenido)
-export async function editarUsuario(id, usuario) {
-    const respuesta = await fetch(`${API}/api/usuarios/${id}`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${obtenerToken()}`
-        },
-        body: JSON.stringify(usuario)
-    });
-
-    if (!respuesta.ok) {
-        throw new Error('Error en edición del usuario');
-    }
-}
-
 // pide token (solo Admin). La API responde 204 (sin contenido)
 export async function eliminarUsuario(id) {
     const respuesta = await fetch(`${API}/api/usuarios/${id}`, {
@@ -54,22 +38,6 @@ export async function eliminarUsuario(id) {
     if (!respuesta.ok) {
         throw new Error('Error al eliminar el usuario');
     }
-}
-
-//se guarda el token para las demás peticiones
-export async function login(usuario) {
-    const respuesta = await fetch(`${API}/api/Auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(usuario)
-    });
-
-    if (!respuesta.ok) {
-        throw new Error('Error al crear el usuario');
-    }
-
-    const datos = await respuesta.json();
-    return datos;
 }
 
 // Pide token. La API responde 204 (sin contenido)
@@ -85,20 +53,6 @@ export async function editarUsuario(id, usuario) {
 
     if (!respuesta.ok) {
         throw new Error('Error en edición del usuario');
-    }
-}
-
-// pide token (solo Admin). La API responde 204 (sin contenido)
-export async function eliminarUsuario(id) {
-    const respuesta = await fetch(`${API}/api/usuarios/${id}`, {
-        method: 'DELETE',
-        headers: {
-            'Authorization': `Bearer ${obtenerToken()}`
-        }
-    });
-
-    if (!respuesta.ok) {
-        throw new Error('Error al eliminar el usuario');
     }
 }
 
@@ -141,6 +95,18 @@ export async function crearUsuarioPersonal(usuario) {
         };
 
         throw new Error(mensajes[respuesta.status] || 'Error al crear el usuario');
+    }
+
+    return await respuesta.json();
+}
+
+export async function listaRoles() {
+    const respuesta = await fetch(`${API}/api/roles`, {
+        headers: { 'Authorization': `Bearer ${obtenerToken()}` }
+    });
+
+    if (!respuesta.ok) {
+        throw new Error('Error al listar los roles');
     }
 
     return await respuesta.json();
