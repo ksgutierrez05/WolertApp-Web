@@ -16,6 +16,7 @@ namespace backend.Data
 		public DbSet<Barrio> Barrios { get; set; }
         public DbSet<UnidadTransito> UnidadesTransito { get; set; }
         public DbSet<AgentesTransito> AgentesTransito { get; set; }
+		public DbSet <Alerta> Alertas { get; set; }
         
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

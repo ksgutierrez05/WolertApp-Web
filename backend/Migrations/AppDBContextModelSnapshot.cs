@@ -56,6 +56,27 @@ namespace backend.Migrations
                     b.ToTable("AgentesTransito");
                 });
 
+            modelBuilder.Entity("backend.Models.Alerta", b =>
+                {
+                    b.Property<int>("idTipoAlerta")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("idTipoAlerta"));
+
+                    b.Property<string>("nombre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("prioridad")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("idTipoAlerta");
+
+                    b.ToTable("Alertas");
+                });
+
             modelBuilder.Entity("backend.Models.Barrio", b =>
                 {
                     b.Property<int>("IdBarrio")
