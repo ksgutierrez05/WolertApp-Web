@@ -114,3 +114,23 @@ export async function listaRoles() {
     return await respuesta.json();
 }
 
+export function logOut() {
+    ['token', 'rol', 'idUsuario', 'username', 'nombre', 'correo'].forEach((k) => localStorage.removeItem(k));
+}
+
+
+export async function cambiarPassword(id, passwordActual, passwordNueva) {
+    const respuesta = await fetch(`${API}/api/usuarios/${id}/password`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${obtenerToken()}`
+        },
+        body: JSON.stringify({ passwordActual, passwordNueva })
+    });
+
+    if (!respuesta.ok) {
+    const texto = await respuesta.text();
+    throw new Error(texto || 'Error al cambiar la contraseña');
+}
+}

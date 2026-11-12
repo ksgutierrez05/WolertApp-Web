@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import '../../../css/global.css';
 import '../../../css/temas.css';
 import '../../../css/admin/dashboard-admin.css';
+import {Link} from 'react-router-dom';
 import {listaUsuarios, obtenerUsuarioPorId} from '../../../Service/UsuariosAPI.js';
 
 export default function Dashboard() {
@@ -39,7 +40,7 @@ export default function Dashboard() {
         correo: usuario.correo
       });
     });
-  });
+  }, []);
 
   const h = new Date().getHours();
   const saludo = h < 12 ? 'Buenos días' : h < 19 ? 'Buenas tardes' : 'Buenas noches';
@@ -100,7 +101,7 @@ export default function Dashboard() {
                 </div>
                 <h3 className="section-title-dash">Alertas recientes</h3>
               </div>
-              <a href="#" className="see-all-dash">Ver todas <i className="bi bi-chevron-right" /></a>
+              <Link to="/admin/alertas" className="see-all-dash">Ver todas <i className="bi bi-chevron-right" /></Link>
             </div>
             {alertasRecientes.map((a, i) => (
               <div key={i} className="border-top pt-2 pb-2 d-flex justify-content-between align-items-center">
