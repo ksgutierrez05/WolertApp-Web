@@ -217,6 +217,46 @@ namespace backend.Controllers
 			return NoContent();
 		}
 
+		// PUT: api/usuarios/5/password  (solo el dueño de la cuenta)
+		[HttpPut("{id}/password")]
+		[Authorize]
+		public async Task<IActionResult> CambiarPassword(int id, CambiarPasswordDTO dto)
+		{
+			// Cada usuario solo cambia SU contraseña
+			var idToken = User.FindFirstValue(ClaimTypes.NameIdentifier);
+			if (idToken != id.ToString()) return Forbid();
+
+			if (string.IsNullOrWhiteSpace(dto.PasswordActual))
+				return BadRequest("Escribe tu contraseña actual.");
+
+			if (string.IsNullOrWhiteSpace(dto.PasswordNueva) || dto.PasswordNueva.Length < 8)
+				return BadRequest("La nueva contraseña debe tener al menos 8 caracteres.");
+
+			var usuario = await _context.Usuarios.FindAsync(id);
+			if (usuario == null) return NotFound();
+
+			var hasher = new PasswordHasher<Usuario>();
+
+			PasswordVerificationResult resultado;
+			try
+			{
+				resultado = hasher.VerifyHashedPassword(usuario, usuario.PasswordHash, dto.PasswordActual);
+			}
+			catch (FormatException)
+			{
+				// Hash inválido (usuario creado a mano)
+				return BadRequest("La contraseña actual es incorrecta.");
+			}
+
+			if (resultado == PasswordVerificationResult.Failed)
+				return BadRequest("La contraseña actual es incorrecta.");
+
+			usuario.PasswordHash = hasher.HashPassword(usuario, dto.PasswordNueva);
+			await _context.SaveChangesAsync();
+
+			return NoContent();
+		}
+
 		// DELETE: api/Usuarios/5  (desactiva, no borra)
 		[Authorize(Roles = "Admin")]
 		[HttpDelete("{id}")]
