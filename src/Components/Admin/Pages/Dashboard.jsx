@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import '../../../css/global.css';
 import '../../../css/temas.css';
 import '../../../css/admin/dashboard-admin.css';
+import {listaUsuarios, obtenerUsuarioPorId} from '../../../Service/UsuariosAPI.js';
 
 export default function Dashboard() {
   const [fecha, setFecha] = useState('');
@@ -9,6 +10,8 @@ export default function Dashboard() {
   const [showNotif, setShowNotif] = useState(false);
   const [showUser, setShowUser] = useState(false);
   const [buscar, setBuscar] = useState('');
+  const [totalUsuarios, setTotalUsuarios] = useState(null);
+  const [perfil, setPerfil] = useState({ nombre: '', correo: '' });
 
   useEffect(() => {
     const tick = () => {
@@ -21,11 +24,28 @@ export default function Dashboard() {
     return () => clearInterval(timer);
   }, []);
 
+  useEffect(() => {
+  listaUsuarios()
+    .then((datos) => setTotalUsuarios(datos.length))
+    .catch(() => setTotalUsuarios(0));
+  }, []); 
+
+  useEffect(() => {
+    const id = localStorage.getItem('idUsuario');
+    if (!id) return;
+    obtenerUsuarioPorId(id).then((usuario) => {
+      setPerfil({
+        nombre: usuario.nombre,
+        correo: usuario.correo
+      });
+    });
+  });
+
   const h = new Date().getHours();
   const saludo = h < 12 ? 'Buenos días' : h < 19 ? 'Buenas tardes' : 'Buenas noches';
 
   const kpis = [
-    { color: 'kpi-blue-dash', icon: 'bi-people', num: '25', label: 'Usuarios registrados', sub: 'Total en el sistema' },
+    { color: 'kpi-blue-dash', icon: 'bi-people', num: totalUsuarios !== null ? totalUsuarios.toString() : '0', label: 'Usuarios registrados', sub: 'Total en el sistema' },
     { color: 'kpi-red-dash', icon: 'bi-bell', num: '16', label: 'Alertas activas', sub: 'En este momento' },
     { color: 'kpi-amber-dash', icon: 'bi-graph-up', num: '15', label: 'Incidentes', sub: 'Pendientes de atención' },
     { color: 'kpi-green-dash', icon: 'bi-check-circle', num: '33', label: 'Resueltos', sub: 'Total histórico' },
@@ -45,82 +65,6 @@ export default function Dashboard() {
 
   return (
     <div className="container-fluid">
-            {/* topbar */}
-      <div className="d-flex justify-content-between align-items-center gap-3 mb-3">
-        {/* BUSCADOR */}
-        <div className="input-group search-dash bg-white flex-grow-1">
-          <span className="input-group-text bg-white border-0"><i className="bi bi-search" /></span>
-          <input
-            type="text"
-            className="form-control border-0"
-            placeholder="Buscar por alerta, barrio, usuario..."
-            value={buscar}
-            onChange={(e) => setBuscar(e.target.value)}
-          />
-        </div>
-
-        <div className="d-flex align-items-center gap-3">
-          {/* CAMPANA */}
-          <div style={{ position: 'relative' }}>
-            <div
-              className="position-relative d-flex align-items-center justify-content-center rounded-circle bg-white"
-              style={{ cursor: 'pointer', width: '40px', height: '40px', padding: 0, borderRadius: '9999px', border: '1px solid #e2e8f0' }}
-              onClick={() => setShowNotif((s) => !s)}
-            >
-              <i className="bi bi-bell" style={{ fontSize: '18px' }} />
-              <span className="badge-red-dash position-absolute" style={{ top: '-4px', right: '-4px' }} />
-            </div>
-            {showNotif && (
-              <div className="top-bar__dropdown" style={{ right: 0, top: 'calc(100% + 8px)', width: '320px' }}>
-                <div className="top-bar__dropdown-header">
-                  <span className="top-bar__dropdown-title">Notificaciones</span>
-                </div>
-                <div className="top-bar__dropdown-list">
-                  <div className="top-bar__notif-item unread">
-                    <div className="top-bar__notif-item-icon bg-blue"><i className="bi bi-bell" /></div>
-                    <div className="top-bar__notif-item-content">
-                      <div className="top-bar__notif-item-title">Alerta de HOMICIDIO</div>
-                      <div className="top-bar__notif-item-sub">Casimiro Raul Maestre</div>
-                      <div className="top-bar__notif-item-time">hace 10 min</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* USUARIO */}
-          <div style={{ position: 'relative' }}>
-            <button
-              type="button"
-              className={`top-bar__user ${showUser ? 'open' : ''}`}
-              onClick={() => setShowUser((s) => !s)}
-              aria-expanded={showUser}
-            >
-              <div className="top-bar__user-avatar"><i className="bi bi-person-circle" /></div>
-              <div className="top-bar__user-info">
-                <div className="top-bar__user-name">Administrador</div>
-                <div className="top-bar__user-email">admin@wolertapp.com</div>
-              </div>
-              <i className="bi bi-chevron-down top-bar__user-chevron" />
-            </button>
-            {showUser && (
-              <div className="top-bar__dropdown">
-                <div className="top-bar__dropdown-header">
-                  <span className="top-bar__dropdown-title">Cuenta</span>
-                </div>
-                <div className="top-bar__dropdown-list">
-                  <button type="button" className="top-bar__dropdown-link top-bar__dropdown-link--danger" onClick={() => setShowUser(false)}>
-                    <i className="bi bi-box-arrow-right top-bar__dropdown-link-icon" />
-                    Cerrar sesión
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
       <div
         className="hero-dash hero-admin-adm mb-3"
         style={{ '--hero-img': 'url("/img/Hero-admin.jpg")' }}

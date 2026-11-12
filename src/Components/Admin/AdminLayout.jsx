@@ -56,11 +56,9 @@ function AdminLayout({ children }) {
       </div>
 
       <div className="admin-layout__content">
-        {pathname !== '/admin' && pathname !== '/admin/dashboard' && (
-          <header className="admin-layout__header">
-            <TopBar onToggleSidebar={() => setCollapsed((c) => !c)} />
-          </header>
-        )}
+        <header className="admin-layout__header">
+          <TopBar onToggleSidebar={() => setCollapsed((c) => !c)} />
+        </header>
         <main className="admin-layout__main">{children}</main>
       </div>
     </div>
