@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import '../../../css/global.css';
 import '../../../css/temas.css';
 import '../../../css/admin/barrios.css';
+import { Link } from 'react-router-dom';
 import { ListarBarrios, CrearBarrio, EditarBarrio, EliminarBarrio } from '../../../Service/BarriosAPI';
 import { ListarComunas } from '../../../Service/ComunasAPI';
 
@@ -133,8 +134,7 @@ export default function Barrios() {
             <div className="kpi-num-dash" id="kpi-comunas-cubiertas">{comunasConBarrio}</div>
             <div className="kpi-label-dash">Comunas cubiertas</div>
             <div className="kpi-label-dash" style={{ marginTop: '2px' }}>Con barrios registrados</div>
-            <a href="#" className="kpi-label-dash" style={{ marginTop: '2px', color: 'var(--color-amber)', fontWeight: '700', textDecoration: 'underline' }}>Ver módulo Comunas</a>
-          </div>
+            <Link to="/admin/comunas" className="kpi-label-dash" style={{ marginTop: '2px', color: 'var(--color-amber)', fontWeight: '700', textDecoration: 'underline' }}> Ver módulo Comunas</Link>          </div>
         </div>
       </div>
 

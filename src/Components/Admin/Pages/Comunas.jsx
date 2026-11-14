@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import '../../../css/global.css';
 import '../../../css/temas.css';
 import '../../../css/admin/comunas.css';
+import { Link } from 'react-router-dom';
 import { ListarComunas, CrearComuna, EditarComuna, EliminarComuna } from '../../../Service/ComunasAPI';
 
 const COLORES = ['#1f3a8a', '#5c4033', '#374151', '#166534', '#1d4ed8', '#14532d'];
@@ -137,8 +138,8 @@ export default function Comunas() {
             <i className="bi bi-exclamation-triangle kpi-icon-dash" />
             <div className="kpi-num-dash" style={{ fontSize: '20px' }}>—</div>
             <div className="kpi-label-dash">Alertas por zona</div>
-            <a href="alertas.html" className="kpi-label-dash" style={{ marginTop: '2px', color: 'var(--color-danger)', fontWeight: '700', textDecoration: 'underline' }}>Ver módulo Alertas</a>
-          </div>
+            <Link to="/admin/alertas" className="kpi-label-dash" style={{ marginTop: '2px', color: 'var(--color-danger)', fontWeight: '700', textDecoration: 'underline' }}>Ver módulo Alertas</Link>          
+  </div>
         </div>
       </div>
 

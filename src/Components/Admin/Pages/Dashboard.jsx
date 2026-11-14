@@ -1,57 +1,53 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import '../../../css/global.css';
 import '../../../css/temas.css';
 import '../../../css/admin/dashboard-admin.css';
-import {Link} from 'react-router-dom';
-import {listaUsuarios, obtenerUsuarioPorId} from '../../../Service/UsuariosAPI.js';
+import { listaUsuarios, listaRoles } from '../../../Service/UsuariosAPI.js';
+
+// Roles que define la jerarquía del sistema (se usa si la API de roles no responde)
+const TOTAL_ROLES_POR_DEFECTO = 8;
 
 export default function Dashboard() {
-  const [fecha, setFecha] = useState('');
-  const [hora, setHora] = useState('');
-  const [showNotif, setShowNotif] = useState(false);
-  const [showUser, setShowUser] = useState(false);
-  const [buscar, setBuscar] = useState('');
-  const [totalUsuarios, setTotalUsuarios] = useState(null);
-  const [perfil, setPerfil] = useState({ nombre: '', correo: '' });
+  const [usuarios, setUsuarios] = useState(null); // null = todavía cargando
+  const [roles, setRoles] = useState(null);
 
   useEffect(() => {
-    const tick = () => {
-      const ahora = new Date();
-      setFecha(ahora.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }));
-      setHora(ahora.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
-    };
-    tick();
-    const timer = setInterval(tick, 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  useEffect(() => {
-  listaUsuarios()
-    .then((datos) => setTotalUsuarios(datos.length))
-    .catch(() => setTotalUsuarios(0));
-  }, []); 
-
-  useEffect(() => {
-    const id = localStorage.getItem('idUsuario');
-    if (!id) return;
-    obtenerUsuarioPorId(id).then((usuario) => {
-      setPerfil({
-        nombre: usuario.nombre,
-        correo: usuario.correo
+    listaUsuarios()
+      .then(setUsuarios)
+      .catch((err) => {
+        console.error('Error cargando usuarios:', err);
+        setUsuarios([]);
       });
-    });
+
+    listaRoles()
+      .then(setRoles)
+      .catch((err) => {
+        console.error('Error cargando roles:', err);
+        setRoles([]);
+      });
   }, []);
+
+  const fecha = new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
 
   const h = new Date().getHours();
   const saludo = h < 12 ? 'Buenos días' : h < 19 ? 'Buenas tardes' : 'Buenas noches';
 
+  // Números reales calculados a partir de la lista de usuarios
+  const cargando = usuarios === null;
+  const total = usuarios?.length ?? 0;
+  const activos = usuarios?.filter((u) => (u.estado || '').toLowerCase() === 'activo').length ?? 0;
+  const inactivos = total - activos;
+  const totalRoles = roles && roles.length > 0 ? roles.length : TOTAL_ROLES_POR_DEFECTO;
+
   const kpis = [
-    { color: 'kpi-blue-dash', icon: 'bi-people', num: totalUsuarios !== null ? totalUsuarios.toString() : '0', label: 'Usuarios registrados', sub: 'Total en el sistema' },
-    { color: 'kpi-red-dash', icon: 'bi-bell', num: '16', label: 'Alertas activas', sub: 'En este momento' },
-    { color: 'kpi-amber-dash', icon: 'bi-graph-up', num: '15', label: 'Incidentes', sub: 'Pendientes de atención' },
-    { color: 'kpi-green-dash', icon: 'bi-check-circle', num: '33', label: 'Resueltos', sub: 'Total histórico' },
+    { color: 'kpi-blue-dash', icon: 'bi-people', num: cargando ? '...' : String(total), label: 'Usuarios registrados', sub: 'Total en el sistema' },
+    { color: 'kpi-green-dash', icon: 'bi-person-check', num: cargando ? '...' : String(activos), label: 'Usuarios activos', sub: 'Con acceso al sistema' },
+    { color: 'kpi-amber-dash', icon: 'bi-person-exclamation', num: cargando ? '...' : String(inactivos), label: 'Inactivos / Suspendidos', sub: 'Requieren revisión' },
+    { color: 'kpi-purple-dash', icon: 'bi-shield-lock', num: String(totalRoles), label: 'Roles configurados', sub: 'Según la jerarquía del sistema' },
   ];
 
+  // Datos de ejemplo: pasarán a ser reales cuando exista la tabla de reportes de alerta
   const alertasRecientes = [
     { icon: 'bi-exclamation-triangle', color: 'var(--color-danger)', dotColor: null, title: 'HOMICIDIO en CASIMIRO RAUL MAESTRE', sub: 'Reportado por KATHERINE GUTIERREZ' },
     { icon: 'bi-shield-exclamation', color: 'var(--color-blue)', dotColor: 'var(--color-blue)', title: 'ROBO en CENTRO', sub: 'Reportado por SOFIA BARLIZA' },
@@ -120,6 +116,7 @@ export default function Dashboard() {
             ))}
           </div>
         </div>
+
         <div className="col-md-6">
           <div className="card-panel-dash p-3">
             <div className="d-flex align-items-center gap-2 mb-2">
