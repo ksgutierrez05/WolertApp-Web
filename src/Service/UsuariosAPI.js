@@ -102,6 +102,25 @@ export async function crearUsuarioPersonal(usuario) {
     return await respuesta.json();
 }
 
+export async function crearUsuario(usuario) {
+    const respuesta = await fetch(`${API}/api/usuarios`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(usuario)
+    });
+
+    if (!respuesta.ok) {
+        const mensajes = {
+            401: 'Tu sesión venció, inicia sesión nuevamente',
+            403: 'No tienes permisos para realizar esta acción',
+        }
+
+        throw new Error(mensajes[respuesta.status] || 'Error al crear el usuario');
+    }
+
+    return await respuesta.json();
+};
+
 export async function listaRoles() {
     const respuesta = await fetch(`${API}/api/roles`, {
         headers: { 'Authorization': `Bearer ${obtenerToken()}` }

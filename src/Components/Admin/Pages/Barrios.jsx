@@ -3,7 +3,7 @@ import '../../../css/global.css';
 import '../../../css/temas.css';
 import '../../../css/admin/barrios.css';
 import { Link } from 'react-router-dom';
-import { ListarBarrios, CrearBarrio, EditarBarrio, EliminarBarrio } from '../../../Service/BarriosAPI';
+import { ListarBarrios, CrearBarrio, EditarBarrio, EliminarBarrio } from '../../../Service/BarriosApi';
 import { ListarComunas } from '../../../Service/ComunasAPI';
 
 const COLORES = ['#1f3a8a', '#5c4033', '#374151', '#166534', '#1d4ed8', '#14532d'];
@@ -133,7 +133,6 @@ export default function Barrios() {
             <i className="bi bi-map kpi-icon-dash" />
             <div className="kpi-num-dash" id="kpi-comunas-cubiertas">{comunasConBarrio}</div>
             <div className="kpi-label-dash">Comunas cubiertas</div>
-            <div className="kpi-label-dash" style={{ marginTop: '2px' }}>Con barrios registrados</div>
             <Link to="/admin/comunas" className="kpi-label-dash" style={{ marginTop: '2px', color: 'var(--color-amber)', fontWeight: '700', textDecoration: 'underline' }}> Ver módulo Comunas</Link>          </div>
         </div>
       </div>

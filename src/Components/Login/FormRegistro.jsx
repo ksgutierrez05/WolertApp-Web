@@ -1,21 +1,41 @@
-import {useState} from 'react'
-import {obtenerUsuarios, guardarUsuariosLogin} from '../../utils/utils'
+import { useEffect, useState } from 'react'
+import { crearUsuario } from '../../Service/UsuariosAPI.js'
+// AJUSTA el nombre de la función al que exporta tu BarriosApi.js (ListarBarrios, listaBarrios...)
+import { ListarBarrios } from '../../Service/BarriosApi.js'
 
-function FormRegistro({onRegistroSuccess}) {
-    const [formData, setFormData] = useState({
-        primerNombre: '',
-        segundoNombre: '',
-        primerApellido: '',
-        segundoApellido: '',
-        cedula: '',
-        telefono: '',
-        correo: '',
-        username: '',
-        password: '',
-        rol: 'ciudadano'
-    })
+// El registro público siempre crea un Ciudadano (lo decide el backend),
+// por eso no hay selector de rol en este formulario.
+const FORM_VACIO = {
+    primerNombre: '',
+    segundoNombre: '',
+    primerApellido: '',
+    segundoApellido: '',
+    cedula: '',
+    telefono: '',
+    correo: '',
+    barrioId: '',
+    calle: '',
+    carrera: '',
+    etapa: '',
+    manzana: '',
+    casa: '',
+    username: '',
+    password: ''
+}
 
+function FormRegistro({ onRegistroSuccess }) {
+    const [formData, setFormData] = useState(FORM_VACIO)
+    const [barrios, setBarrios] = useState([])
+    const [errorBarrios, setErrorBarrios] = useState('')
     const [error, setError] = useState('')
+    const [cargando, setCargando] = useState(false)
+
+    // Cargar los barrios para que el usuario elija el suyo
+    useEffect(() => {
+        ListarBarrios()
+            .then(setBarrios)
+            .catch(() => setErrorBarrios('No se pudieron cargar los barrios'))
+    }, [])
 
     function handleChange(event) {
         setFormData({
@@ -24,41 +44,57 @@ function FormRegistro({onRegistroSuccess}) {
         })
     }
 
-    function handleSubmit(event) {
+    async function handleSubmit(event) {
         event.preventDefault()
 
-        const usuarios = obtenerUsuarios()
-
-        const yaExiste = usuarios.some(
-            u => u.username.toLowerCase() === formData.username.toLowerCase() || u.cedula === formData.cedula
-        )
-
-        if (yaExiste) {
-            setError('El nombre de usuario o la cédula ya están en uso')
-            return
-        }
-
-        if (!formData.primerNombre || !formData.primerApellido || !formData.cedula || !formData.telefono || !formData.correo || !formData.username || !formData.password) {
+        if (!formData.primerNombre.trim() || !formData.primerApellido.trim() || !formData.cedula.trim()
+            || !formData.telefono.trim() || !formData.correo.trim() || !formData.username.trim() || !formData.password) {
             setError('Por favor, complete todos los campos obligatorios')
             return
         }
 
-        setError('')
+        if (!formData.barrioId) {
+            setError('Selecciona tu barrio')
+            return
+        }
 
-        const nombre = [
-            formData.primerNombre,
-            formData.segundoNombre,
-            formData.primerApellido,
-            formData.segundoApellido
-        ].filter(Boolean).join(' ')
+        if (formData.password.length < 8) {
+            setError('La contraseña debe tener al menos 8 caracteres')
+            return
+        }
 
-        usuarios.push({ nombre, ...formData })
-        guardarUsuariosLogin(usuarios)
+        try {
+            setCargando(true)
+            setError('')
 
-        alert('Registro exitoso')
-        onRegistroSuccess()
+            await crearUsuario({
+                cedula: formData.cedula.trim(),
+                primerNombre: formData.primerNombre.trim(),
+                segundoNombre: formData.segundoNombre.trim() || null,
+                primerApellido: formData.primerApellido.trim(),
+                segundoApellido: formData.segundoApellido.trim() || null,
+                correo: formData.correo.trim(),
+                telefono: formData.telefono.trim() || null,
+                barrioId: Number(formData.barrioId),
+                calle: formData.calle.trim() || null,
+                carrera: formData.carrera.trim() || null,
+                etapa: formData.etapa.trim() || null,
+                manzana: formData.manzana.trim() || null,
+                casa: formData.casa.trim() || null,
+                username: formData.username.trim(),
+                password: formData.password
+            })
 
+            setFormData(FORM_VACIO)
+            alert('Registro exitoso')
+            if (onRegistroSuccess) onRegistroSuccess()
+        } catch (err) {
+            setError(err.message)
+        } finally {
+            setCargando(false)
+        }
     }
+
     return (
         <div className="form-box form-registro">
         <form onSubmit={handleSubmit}>
@@ -79,10 +115,32 @@ function FormRegistro({onRegistroSuccess}) {
 
             <div className="grid-2">
             <input type="text" placeholder="Cédula" className="input-gris" name="cedula" value={formData.cedula} onChange={handleChange} required />
-            <input type="tel" placeholder="Teléfono" className="input-gris" name="telefono" value={formData.telefono} onChange={handleChange} />
+            <input type="tel" placeholder="Teléfono" className="input-gris" name="telefono" value={formData.telefono} onChange={handleChange} required />
             </div>
 
-            <input type="email" placeholder="Correo Electrónico" className="input-gris" name="correo" value={formData.correo} onChange={handleChange} />
+            <input type="email" placeholder="Correo Electrónico" className="input-gris" name="correo" value={formData.correo} onChange={handleChange} required />
+
+            <div className="seccion-titulo">UBICACIÓN</div>
+
+            <select name="barrioId" className="input-gris" value={formData.barrioId} onChange={handleChange} required>
+                <option value="" disabled>Selecciona tu barrio *</option>
+                {barrios.map((b) => (
+                    <option key={b.idBarrio} value={b.idBarrio}>{b.nombre}</option>
+                ))}
+            </select>
+            {errorBarrios && <div className="form-error" style={{ display: 'block' }}>{errorBarrios}</div>}
+
+            <div className="grid-2">
+            <input type="text" placeholder="Calle" className="input-gris" name="calle" value={formData.calle} onChange={handleChange} />
+            <input type="text" placeholder="Carrera" className="input-gris" name="carrera" value={formData.carrera} onChange={handleChange} />
+            </div>
+
+            <div className="grid-2">
+            <input type="text" placeholder="Etapa" className="input-gris" name="etapa" value={formData.etapa} onChange={handleChange} />
+            <input type="text" placeholder="Manzana" className="input-gris" name="manzana" value={formData.manzana} onChange={handleChange} />
+            </div>
+
+            <input type="text" placeholder="Casa" className="input-gris" name="casa" value={formData.casa} onChange={handleChange} />
 
             <div className="seccion-titulo">CUENTA</div>
 
@@ -90,27 +148,28 @@ function FormRegistro({onRegistroSuccess}) {
 
             <div className="input-wrapper">
             <i className="bi bi-lock"></i>
-            <input type="password" placeholder="Contraseña" className="input-gris" name="password" value={formData.password} onChange={handleChange} required />
+            <input
+                type="password"
+                placeholder="Contraseña (mínimo 8 caracteres)"
+                className="input-gris"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                minLength={8}
+                title="La contraseña debe tener al menos 8 caracteres"
+            />
             </div>
 
             {error && (
-            <div className="form-error" style={{ display: 'block' }}>
+            <div className="form-error" style={{ display: 'block' }} role="alert">
                 {error}
             </div>
             )}
 
-            <select name="rol" className="input-gris" value={formData.rol} onChange={handleChange} required>
-            <option value="admin">Administrador</option>
-            <option value="admin-policia">Administrador Policía</option>
-            <option value="central">Central (Policía)</option>
-            <option value="policia">Policía</option>
-            <option value="Agente-transito">Agente de transito</option>
-            <option value="Central-transito">Central de transito</option>
-            <option value="Director-transito">Director de transito</option>
-            <option value="ciudadano">Ciudadano</option>
-            </select>
-
-            <button type="submit" className="btn-login">Crear Cuenta</button>
+            <button type="submit" className="btn-login" disabled={cargando}>
+                {cargando ? 'Creando cuenta...' : 'Crear Cuenta'}
+            </button>
         </form>
         </div>
     )
