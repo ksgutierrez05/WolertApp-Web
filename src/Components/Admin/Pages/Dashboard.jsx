@@ -4,13 +4,21 @@ import '../../../css/global.css';
 import '../../../css/temas.css';
 import '../../../css/admin/dashboard-admin.css';
 import { listaUsuarios, listaRoles } from '../../../Service/UsuariosAPI.js';
+import { listarAlertas } from '../../../Service/AlertasAPI.js';
 
 // Roles que define la jerarquía del sistema (se usa si la API de roles no responde)
 const TOTAL_ROLES_POR_DEFECTO = 8;
 
+const estiloPrioridad = {
+  alta: { icon: 'bi-exclamation-triangle', color: 'var(--color-danger)' },
+  media: { icon: 'bi-shield-exclamation', color: 'var(--color-amber)' },
+  baja: { icon: 'bi-shield-exclamation', color: 'var(--color-green)' },
+};
+
 export default function Dashboard() {
   const [usuarios, setUsuarios] = useState(null); // null = todavía cargando
   const [roles, setRoles] = useState(null);
+  const [alertas, setAlertas] = useState(null); // null = cargando
 
   useEffect(() => {
     listaUsuarios()
@@ -25,6 +33,13 @@ export default function Dashboard() {
       .catch((err) => {
         console.error('Error cargando roles:', err);
         setRoles([]);
+      });
+
+    listarAlertas()
+      .then((datos) => setAlertas(datos.slice(0, 3))) // solo las 3 más recientes
+      .catch((err) => {
+        console.error('Error cargando alertas:', err);
+        setAlertas([]);
       });
   }, []);
 
@@ -47,18 +62,28 @@ export default function Dashboard() {
     { color: 'kpi-purple-dash', icon: 'bi-shield-lock', num: String(totalRoles), label: 'Roles configurados', sub: 'Según la jerarquía del sistema' },
   ];
 
-  // Datos de ejemplo: pasarán a ser reales cuando exista la tabla de reportes de alerta
-  const alertasRecientes = [
-    { icon: 'bi-exclamation-triangle', color: 'var(--color-danger)', dotColor: null, title: 'HOMICIDIO en CASIMIRO RAUL MAESTRE', sub: 'Reportado por KATHERINE GUTIERREZ' },
-    { icon: 'bi-shield-exclamation', color: 'var(--color-blue)', dotColor: 'var(--color-blue)', title: 'ROBO en CENTRO', sub: 'Reportado por SOFIA BARLIZA' },
-    { icon: 'bi-shield-exclamation', color: 'var(--color-green)', dotColor: 'var(--color-green)', title: 'ROBO en CENTRO', sub: 'Reportado por SOFIA BARLIZA' },
-  ];
+  const alertasRecientes = (alertas || []).map((a) => {
+    const est = estiloPrioridad[(a.prioridad || '').toLowerCase()] || estiloPrioridad.baja;
+    return {
+      id: a.idAlerta,
+      icon: est.icon,
+      color: est.color,
+      title: `${(a.tipo || '').toUpperCase()}${a.barrioNombre ? ' en ' + a.barrioNombre.toUpperCase() : ''}`,
+      sub: `Reportado por ${(a.reportadoPor || '').toUpperCase()}`,
+    };
+  });
 
-  const actividad = [
-    { bg: '#fcf0da', icon: 'bi-bell-fill', color: 'var(--color-amber)', title: 'HOMICIDIO — CASIMIRO RAUL MAESTRE', sub: '2026-06-13' },
-    { bg: '#e8f0fb', icon: 'bi-bell-fill', color: 'var(--color-blue)', title: 'ROBO — CENTRO', sub: '2026-06-10' },
-    { bg: '#e3f8ec', icon: 'bi-bell-fill', color: 'var(--color-green)', title: 'ROBO — CENTRO', sub: '2026-06-10' },
-  ];
+  // Actividad reciente: las mismas alertas, con su fecha
+  const actividad = (alertas || []).map((a) => {
+    const est = estiloPrioridad[(a.prioridad || '').toLowerCase()] || estiloPrioridad.baja;
+    return {
+      id: a.idAlerta,
+      icon: 'bi-bell-fill',
+      color: est.color,
+      title: `${(a.tipo || '').toUpperCase()}${a.barrioNombre ? ' — ' + a.barrioNombre.toUpperCase() : ''}`,
+      sub: a.fecha ? new Date(a.fecha).toLocaleDateString() : '—',
+    };
+  });
 
   return (
     <div className="container-fluid">
@@ -99,10 +124,14 @@ export default function Dashboard() {
               </div>
               <Link to="/admin/alertas" className="see-all-dash">Ver todas <i className="bi bi-chevron-right" /></Link>
             </div>
-            {alertasRecientes.map((a, i) => (
-              <div key={i} className="border-top pt-2 pb-2 d-flex justify-content-between align-items-center">
+            {alertas === null && <div className="info-sub-dash border-top pt-2">Cargando alertas...</div>}
+            {alertas !== null && alertasRecientes.length === 0 && (
+              <div className="info-sub-dash border-top pt-2">No hay alertas registradas.</div>
+            )}
+            {alertasRecientes.map((a) => (
+              <div key={a.id} className="border-top pt-2 pb-2 d-flex justify-content-between align-items-center">
                 <div className="d-flex align-items-center gap-2">
-                  <span className="dot-danger-dash" style={a.dotColor ? { background: a.dotColor } : undefined} />
+                  <span className="dot-danger-dash" style={{ background: a.color }} />
                   <div className="icon-btn-dash d-flex align-items-center justify-content-center" style={{ width: '36px', height: '36px' }}>
                     <i className={`bi ${a.icon}`} style={{ color: a.color }} />
                   </div>
@@ -124,9 +153,12 @@ export default function Dashboard() {
               </div>
               <h3 className="section-title-dash">Actividad reciente</h3>
             </div>
-            {actividad.map((a, i) => (
-              <div key={i} className="border-top pt-2 pb-2 d-flex align-items-center gap-2">
-                <div className="icon-btn-dash d-flex align-items-center justify-content-center" style={{ width: '36px', height: '36px', background: a.bg }}>
+            {alertas !== null && actividad.length === 0 && (
+              <div className="info-sub-dash border-top pt-2">Sin actividad reciente.</div>
+            )}
+            {actividad.map((a) => (
+              <div key={a.id} className="border-top pt-2 pb-2 d-flex align-items-center gap-2">
+                <div className="icon-btn-dash d-flex align-items-center justify-content-center" style={{ width: '36px', height: '36px' }}>
                   <i className={`bi ${a.icon}`} style={{ color: a.color }} />
                 </div>
                 <div>
