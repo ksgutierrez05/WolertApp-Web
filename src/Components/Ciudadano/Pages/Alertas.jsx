@@ -1,104 +1,178 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import '../../../css/global.css';
 import '../../../css/temas.css';
-import '../../../css/ciudadano/panel-alertas.css';
+import '../../../css/admin/usuarios.css';
+import '../../../css/admin/alertas.css';
+import { listarAlertas } from '../../../Service/AlertasAPI.js';
 
-const alertasEjemplo = [
-  { id: 1, tipo: 'Riña en la vía pública', categoria: 'Disturbio', estado: 'En atención', descripcion: 'Discusión entre varias personas frente al parque principal.', reportadoPor: 'Carlos Ramírez', ubicacion: 'Calle 9 con Cra 12 · Los Fundadores', tiempo: 'Hace 2 h' },
-  { id: 2, tipo: 'Semáforo dañado', categoria: 'Infraestructura', estado: 'Pendiente', descripcion: 'Semáforo sin funcionar en la esquina principal.', reportadoPor: 'Laura Peña', ubicacion: 'Casimiro Raúl Maestre', tiempo: 'Hace 1 h' },
+const PRIORIDADES = [
+  { valor: 'alta', etiqueta: 'Alta' },
+  { valor: 'media', etiqueta: 'Media' },
+  { valor: 'baja', etiqueta: 'Baja' },
 ];
 
+const prioridadBadgeClase = {
+  alta: 'alerta-badge-pendiente-dash',
+  media: 'alerta-badge-asignada-dash',
+  baja: 'alerta-badge-resuelta-dash',
+};
+
+const prioridadEtiqueta = { alta: 'Alta', media: 'Media', baja: 'Baja' };
+
+const formatearFecha = (f) => (f ? new Date(f).toLocaleDateString() : '—');
+
 export default function Alertas() {
-  const [filtro, setFiltro] = useState('todas');
-  const total = alertasEjemplo.length;
-  const miComuna = alertasEjemplo.length;
-  const miBarrio = alertasEjemplo.length;
+  const [alertas, setAlertas] = useState([]);
+  const [cargando, setCargando] = useState(true);
+  const [errorLista, setErrorLista] = useState('');
+  const [buscar, setBuscar] = useState('');
+  const [filtroPrioridad, setFiltroPrioridad] = useState('');
+
+  useEffect(() => {
+    listarAlertas()
+      .then(setAlertas)
+      .catch((err) => setErrorLista(err.message))
+      .finally(() => setCargando(false));
+  }, []);
+
+  const filtrados = useMemo(() => alertas.filter((a) => {
+    const texto = buscar.trim().toLowerCase();
+    const coincideTexto = !texto
+      || (a.tipo || '').toLowerCase().includes(texto)
+      || (a.reportadoPor || '').toLowerCase().includes(texto)
+      || (a.barrioNombre || '').toLowerCase().includes(texto);
+    const coincidePrioridad = !filtroPrioridad || (a.prioridad || '').toLowerCase() === filtroPrioridad;
+    return coincideTexto && coincidePrioridad;
+  }), [alertas, buscar, filtroPrioridad]);
+
+  const contar = (p) => alertas.filter((a) => (a.prioridad || '').toLowerCase() === p).length;
 
   return (
     <div className="container-fluid">
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h1 className="page-title-dash"><i className="bi bi-broadcast"></i> Alertas</h1>
-        <div className="d-flex align-items-center gap-3">
-          <button className="btn icon-btn-dash rounded-circle border-0 bg-white">
-            <i className="bi bi-search"></i>
-          </button>
-          <div className="avatar-dash">JC</div>
-        </div>
+      <div className="mb-4">
+        <h1 className="hero-title-dash" style={{ color: 'var(--ink)', fontSize: '26px' }}>Alertas</h1>
+        <p className="hero-text-dash" style={{ color: 'var(--muted)' }}>Alertas reportadas por la comunidad</p>
       </div>
 
-      <div className="row g-3 mb-4">
-        <div className="col-6 col-md-4">
+      <div className="row g-3 mb-3">
+        <div className="col-md-4">
           <div className="kpi-dash kpi-red-dash">
-            <i className="bi bi-broadcast kpi-icon-dash"></i>
-            <p className="kpi-num-dash mb-0" id="kpiAlertasTotal">{total}</p>
-            <p className="kpi-label-dash">Alertas reportadas</p>
+            <i className="bi bi-exclamation-octagon kpi-icon-dash" />
+            <div className="kpi-num-dash">{cargando ? '...' : contar('alta')}</div>
+            <div className="kpi-label-dash">Prioridad alta</div>
+            <div className="kpi-label-dash" style={{ marginTop: '2px' }}>Atención inmediata</div>
           </div>
         </div>
-        <div className="col-6 col-md-4">
-          <div className="kpi-dash kpi-blue-dash">
-            <i className="bi bi-geo kpi-icon-dash"></i>
-            <p className="kpi-num-dash mb-0" id="kpiAlertasComuna">{miComuna}</p>
-            <p className="kpi-label-dash" id="kpiAlertasComunaLabel">Alertas en mi comuna</p>
-          </div>
-        </div>
-        <div className="col-6 col-md-4">
+        <div className="col-md-4">
           <div className="kpi-dash kpi-amber-dash">
-            <i className="bi bi-geo-alt kpi-icon-dash"></i>
-            <p className="kpi-num-dash mb-0" id="kpiAlertasBarrio">{miBarrio}</p>
-            <p className="kpi-label-dash" id="kpiAlertasBarrioLabel">Alertas en mi barrio</p>
+            <i className="bi bi-exclamation-triangle kpi-icon-dash" />
+            <div className="kpi-num-dash">{cargando ? '...' : contar('media')}</div>
+            <div className="kpi-label-dash">Prioridad media</div>
+            <div className="kpi-label-dash" style={{ marginTop: '2px' }}>Atención programada</div>
+          </div>
+        </div>
+        <div className="col-md-4">
+          <div className="kpi-dash kpi-green-dash">
+            <i className="bi bi-info-circle kpi-icon-dash" />
+            <div className="kpi-num-dash">{cargando ? '...' : contar('baja')}</div>
+            <div className="kpi-label-dash">Prioridad baja</div>
+            <div className="kpi-label-dash" style={{ marginTop: '2px' }}>Seguimiento</div>
           </div>
         </div>
       </div>
 
-      <div className="card-panel-dash p-0">
-        <div className="alertas-toolbar-dash">
-          <div className="alertas-tabs-dash">
-            {['todas','mi_barrio','mi_comuna'].map((f) => (
-              <button
-                key={f}
-                className={`alertas-tab-dash ${filtro === f ? 'active' : ''}`}
-                onClick={() => setFiltro(f)}
-              >
-                {f === 'todas' ? 'Todas' : f === 'mi_barrio' ? 'Mi barrio' : 'Mi comuna'}
-              </button>
-            ))}
+      <div className="card-panel-dash p-3 mb-3">
+        <div className="row g-2 align-items-center">
+          <div className="col-lg-8">
+            <div className="search-dash d-flex align-items-center bg-white">
+              <span className="input-group-text bg-white border-0"><i className="bi bi-search" /></span>
+              <input
+                type="text"
+                id="buscador-alertas"
+                className="form-control border-0"
+                placeholder="Buscar por tipo, reportante o barrio..."
+                value={buscar}
+                onChange={(e) => setBuscar(e.target.value)}
+              />
+            </div>
+          </div>
+          <div className="col-lg-4">
+            <select
+              id="filtro-prioridad-alerta"
+              className="filtro-select-dash form-select"
+              value={filtroPrioridad}
+              onChange={(e) => setFiltroPrioridad(e.target.value)}
+            >
+              <option value="">Prioridad: Todas</option>
+              {PRIORIDADES.map((p) => (
+                <option key={p.valor} value={p.valor}>{p.etiqueta}</option>
+              ))}
+            </select>
           </div>
         </div>
-        <div id="listaAlertas">
-          {alertasEjemplo.map((a) => (
-            <div key={a.id} className="card-panel-dash p-3 mb-3">
-              <div className="d-flex align-items-start gap-3">
-                <div className="alerta-tipo-icono-dash" style={{
-                  fontSize: '28px',
-                  width: '48px',
-                  height: '48px',
-                  borderRadius: '12px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#fff',
-                  backgroundColor: a.estado === 'Pendiente' ? '#f59e0b' : a.estado === 'En atención' ? '#3b82f6' : '#10b981',
-                }}>
-                  <i className="bi bi-exclamation-triangle-fill"></i>
-                </div>
-                <div className="flex-grow-1">
-                  <div className="d-flex justify-content-between align-items-start mb-2">
-                    <div>
-                      <h5 className="info-title-dash mb-0" style={{ fontSize: '11.5px' }}>{a.tipo}</h5>
-                      <span className="badge-dash badge-amber-dash me-2">{a.categoria}</span>
-                      <span className="badge-dash badge-blue-dash">{a.estado}</span>
+      </div>
+
+      <div className="card-panel-dash">
+        {errorLista && <div className="text-danger small p-3">{errorLista}</div>}
+        <div className="table-responsive">
+          <table className="tabla-alertas-dash">
+            <thead>
+              <tr>
+                <th>Tipo de alerta</th>
+                <th>Prioridad</th>
+                <th>Estado</th>
+                <th>Reportado por</th>
+                <th>Barrio</th>
+                <th>Fecha</th>
+              </tr>
+            </thead>
+            <tbody>
+              {cargando && (
+                <tr><td colSpan={6}>Cargando alertas...</td></tr>
+              )}
+
+              {!cargando && !errorLista && filtrados.length === 0 && (
+                <tr>
+                  <td colSpan={6}>
+                    <div className="alertas-vacio-dash">
+                      <i className="bi bi-inboxes" />
+                      <p>
+                        {alertas.length === 0
+                          ? 'Aún no hay alertas registradas.'
+                          : 'No se encontraron alertas con esos filtros.'}
+                      </p>
                     </div>
-                    <div className="info-sub-dash">{a.tiempo}</div>
-                  </div>
-                  <p className="mb-2">{a.descripcion}</p>
-                  <div className="info-sub-dash">
-                    Reportado por {a.reportadoPor}<br />
-                    <i className="bi bi-geo-alt me-1"></i>{a.ubicacion}
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
+                  </td>
+                </tr>
+              )}
+
+              {!cargando && filtrados.map((a) => {
+                const prioridad = (a.prioridad || '').toLowerCase();
+                const esAlta = prioridad === 'alta';
+                return (
+                  <tr key={a.idAlerta}>
+                    <td>
+                      <div className="alerta-tipo-celda-dash">
+                        <div className={`alerta-tipo-icono-dash ${esAlta ? 'alerta-tipo-icono-grave-dash' : 'alerta-tipo-icono-moderado-dash'}`}>
+                          <i className={`bi ${esAlta ? 'bi-exclamation-octagon-fill' : 'bi-exclamation-triangle-fill'}`} />
+                        </div>
+                        <span className="alerta-tipo-texto-dash">{(a.tipo || '').toUpperCase()}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <span className={`alerta-badge-dash ${prioridadBadgeClase[prioridad] || 'alerta-badge-asignada-dash'}`}>
+                        <span className="dot" />{prioridadEtiqueta[prioridad] || a.prioridad || '—'}
+                      </span>
+                    </td>
+                    <td>{a.estado || '—'}</td>
+                    <td>{a.reportadoPor || '—'}</td>
+                    <td>{a.barrioNombre || '—'}</td>
+                    <td>{formatearFecha(a.fecha)}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

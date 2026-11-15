@@ -53,4 +53,21 @@ export async function eliminarAlerta(id) {
     if (!respuesta.ok) {
         throw new Error(`Error al eliminar la alerta: ${await respuesta.text()}`);
     }
+    return await respuesta.json();
+}
+
+export async function listarAlertasPorAlcance(alcance = 'todas') {
+    const respuesta = await fetch(`${API}/api/alertas?alcance=${alcance}`, { headers: cabeceras() });
+    if (!respuesta.ok) {
+        throw new Error(`Error al listar las alertas: ${await respuesta.text()}`);
+    }
+    return await respuesta.json();
+}
+
+export async function resumenAlertas() {
+    const respuesta = await fetch(`${API}/api/alertas/resumen`, { headers: cabeceras() });
+    if (!respuesta.ok) {
+        throw new Error(`Error al obtener el resumen: ${await respuesta.text()}`);
+    }
+    return await respuesta.json(); // { total, comuna, barrio }
 }
