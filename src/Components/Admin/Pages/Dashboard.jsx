@@ -116,7 +116,6 @@ export default function Dashboard() {
             ))}
           </div>
         </div>
-
         <div className="col-md-6">
           <div className="card-panel-dash p-3">
             <div className="d-flex align-items-center gap-2 mb-2">
