@@ -2,9 +2,9 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Oracle.EntityFrameworkCore.Metadata;
 using backend.Data;
 
 #nullable disable
@@ -12,8 +12,8 @@ using backend.Data;
 namespace backend.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    [Migration("20261027032133_tablas_transito_2")]
-    partial class tablas_transito_2
+    [Migration("20261114234146_PasoUno")]
+    partial class PasoUno
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,32 +23,32 @@ namespace backend.Migrations
                 .HasAnnotation("ProductVersion", "10.0.14")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            OracleModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("backend.Models.AgentesTransito", b =>
                 {
                     b.Property<int>("IdAgenteTransito")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdAgenteTransito"));
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdAgenteTransito"));
 
                     b.Property<string>("Estado")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Placa")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Rango")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<int?>("UnidadTransitoId")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("UsuarioId")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("IdAgenteTransito");
 
@@ -59,21 +59,65 @@ namespace backend.Migrations
                     b.ToTable("AgentesTransito");
                 });
 
+            modelBuilder.Entity("backend.Models.AlertaTmp", b =>
+                {
+                    b.Property<int>("IdAlerta")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("NUMBER(10)");
+
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdAlerta"));
+
+                    b.Property<int?>("BarrioId")
+                        .HasColumnType("NUMBER(10)");
+
+                    b.Property<string>("Descripcion")
+                        .HasColumnType("NVARCHAR2(2000)");
+
+                    b.Property<string>("Estado")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("NVARCHAR2(30)");
+
+                    b.Property<DateTime>("Fecha")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<decimal?>("Latitud")
+                        .HasColumnType("decimal(10,6)");
+
+                    b.Property<decimal?>("Longitud")
+                        .HasColumnType("decimal(10,6)");
+
+                    b.Property<int>("TipoAlertaId")
+                        .HasColumnType("NUMBER(10)");
+
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("NUMBER(10)");
+
+                    b.HasKey("IdAlerta");
+
+                    b.HasIndex("BarrioId");
+
+                    b.HasIndex("TipoAlertaId");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("AlertasTmp");
+                });
+
             modelBuilder.Entity("backend.Models.Barrio", b =>
                 {
                     b.Property<int>("IdBarrio")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdBarrio"));
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdBarrio"));
 
                     b.Property<int>("ComunaId")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("IdBarrio");
 
@@ -86,36 +130,68 @@ namespace backend.Migrations
                 {
                     b.Property<int>("IdComuna")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdComuna"));
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdComuna"));
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("IdComuna");
 
                     b.ToTable("Comunas");
                 });
 
+            modelBuilder.Entity("backend.Models.Policia", b =>
+                {
+                    b.Property<int>("IdPolicia")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("NUMBER(10)");
+
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdPolicia"));
+
+                    b.Property<string>("Estado")
+                        .IsRequired()
+                        .HasColumnType("NVARCHAR2(2000)");
+
+                    b.Property<int?>("IdUnidad")
+                        .HasColumnType("NUMBER(10)");
+
+                    b.Property<int>("IdUsuario")
+                        .HasColumnType("NUMBER(10)");
+
+                    b.Property<string>("Placa")
+                        .IsRequired()
+                        .HasColumnType("NVARCHAR2(2000)");
+
+                    b.Property<string>("Rango")
+                        .IsRequired()
+                        .HasColumnType("NVARCHAR2(2000)");
+
+                    b.HasKey("IdPolicia");
+
+                    b.HasIndex("IdUnidad");
+
+                    b.HasIndex("IdUsuario");
+
+                    b.ToTable("Policias");
+                });
+
             modelBuilder.Entity("backend.Models.Rol", b =>
                 {
                     b.Property<int>("IdRol")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdRol"));
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdRol"));
 
                     b.Property<string>("Descripcion")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("IdRol");
 
@@ -164,71 +240,84 @@ namespace backend.Migrations
                         });
                 });
 
-            modelBuilder.Entity("backend.Models.Semaforos", b =>
+            modelBuilder.Entity("backend.Models.TipoAlerta", b =>
                 {
-                    b.Property<int>("IdSemaforo")
+                    b.Property<int>("IdTipoAlerta")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdSemaforo"));
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdTipoAlerta"));
 
-                    b.Property<int?>("BarrioId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Codigo")
+                    b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("NVARCHAR2(50)");
 
-                    b.Property<string>("Direccion")
+                    b.Property<string>("Prioridad")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(20)
+                        .HasColumnType("NVARCHAR2(20)");
+
+                    b.HasKey("IdTipoAlerta");
+
+                    b.ToTable("TiposAlerta");
+                });
+
+            modelBuilder.Entity("backend.Models.Unidad", b =>
+                {
+                    b.Property<int>("IdUnidad")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("NUMBER(10)");
+
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdUnidad"));
 
                     b.Property<string>("Estado")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
-                    b.Property<double?>("Latitud")
-                        .HasColumnType("float");
+                    b.Property<int>("Latitud")
+                        .HasColumnType("NUMBER(10)");
 
-                    b.Property<string>("Longitud")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Longitud")
+                        .HasColumnType("NUMBER(10)");
 
-                    b.Property<string>("Observacion")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("NVARCHAR2(2000)");
 
-                    b.Property<string>("Tipo")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("idBarrio")
+                        .HasColumnType("NUMBER(10)");
 
-                    b.HasKey("IdSemaforo");
+                    b.HasKey("IdUnidad");
 
-                    b.HasIndex("BarrioId");
+                    b.HasIndex("idBarrio");
 
-                    b.ToTable("Semaforos");
+                    b.ToTable("Unidades");
                 });
 
             modelBuilder.Entity("backend.Models.UnidadTransito", b =>
                 {
                     b.Property<int>("IdUnidadTransito")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdUnidadTransito"));
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdUnidadTransito"));
 
                     b.Property<int?>("BarrioId")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<string>("Estado")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<double?>("Latitud")
-                        .HasColumnType("float");
+                        .HasColumnType("BINARY_DOUBLE");
 
                     b.Property<double?>("Longitud")
-                        .HasColumnType("float");
+                        .HasColumnType("BINARY_DOUBLE");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("IdUnidadTransito");
 
@@ -241,88 +330,73 @@ namespace backend.Migrations
                 {
                     b.Property<int>("IdUsuario")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdUsuario"));
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdUsuario"));
 
                     b.Property<int?>("BarrioId")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<string>("Calle")
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Carrera")
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Casa")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Cedula")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasColumnType("NVARCHAR2(450)");
 
                     b.Property<string>("Correo")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("NVARCHAR2(450)");
 
                     b.Property<int?>("CreadoPorId")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<string>("Estado")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Etapa")
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<DateTime>("FechaCreacion")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("Manzana")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("PrimerApellido")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("PrimerNombre")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<int>("RolId")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<string>("SegundoApellido")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("SegundoNombre")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Telefono")
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Username")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("NVARCHAR2(450)");
 
                     b.HasKey("IdUsuario");
 
@@ -361,6 +435,31 @@ namespace backend.Migrations
                     b.Navigation("Usuario");
                 });
 
+            modelBuilder.Entity("backend.Models.AlertaTmp", b =>
+                {
+                    b.HasOne("backend.Models.Barrio", "Barrio")
+                        .WithMany()
+                        .HasForeignKey("BarrioId");
+
+                    b.HasOne("backend.Models.TipoAlerta", "TipoAlerta")
+                        .WithMany()
+                        .HasForeignKey("TipoAlertaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("backend.Models.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Barrio");
+
+                    b.Navigation("TipoAlerta");
+
+                    b.Navigation("Usuario");
+                });
+
             modelBuilder.Entity("backend.Models.Barrio", b =>
                 {
                     b.HasOne("backend.Models.Comuna", "Comuna")
@@ -372,11 +471,30 @@ namespace backend.Migrations
                     b.Navigation("Comuna");
                 });
 
-            modelBuilder.Entity("backend.Models.Semaforos", b =>
+            modelBuilder.Entity("backend.Models.Policia", b =>
+                {
+                    b.HasOne("backend.Models.Unidad", "Unidad")
+                        .WithMany("Policias")
+                        .HasForeignKey("IdUnidad");
+
+                    b.HasOne("backend.Models.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("IdUsuario")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Unidad");
+
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("backend.Models.Unidad", b =>
                 {
                     b.HasOne("backend.Models.Barrio", "Barrio")
                         .WithMany()
-                        .HasForeignKey("BarrioId");
+                        .HasForeignKey("idBarrio")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Barrio");
                 });
@@ -426,6 +544,11 @@ namespace backend.Migrations
             modelBuilder.Entity("backend.Models.Rol", b =>
                 {
                     b.Navigation("Usuarios");
+                });
+
+            modelBuilder.Entity("backend.Models.Unidad", b =>
+                {
+                    b.Navigation("Policias");
                 });
 
             modelBuilder.Entity("backend.Models.UnidadTransito", b =>

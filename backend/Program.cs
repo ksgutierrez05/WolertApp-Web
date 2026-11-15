@@ -35,7 +35,9 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddDbContext<AppDBContext>(options =>
-	options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+	options.UseOracle(
+		builder.Configuration.GetConnectionString("DefaultConnection"),
+		o => o.UseOracleSQLCompatibility(OracleSQLCompatibility.DatabaseVersion19)));
 
 // Validación del JWT en cada petición
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

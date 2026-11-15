@@ -2,9 +2,9 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Oracle.EntityFrameworkCore.Metadata;
 using backend.Data;
 
 #nullable disable
@@ -12,8 +12,8 @@ using backend.Data;
 namespace backend.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    [Migration("20261109191428_AgregarAlertas")]
-    partial class AgregarAlertas
+    [Migration("20261115010223_RenombrarAlertas")]
+    partial class RenombrarAlertas
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,32 +23,32 @@ namespace backend.Migrations
                 .HasAnnotation("ProductVersion", "10.0.14")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            OracleModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("backend.Models.AgentesTransito", b =>
                 {
                     b.Property<int>("IdAgenteTransito")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdAgenteTransito"));
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdAgenteTransito"));
 
                     b.Property<string>("Estado")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Placa")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Rango")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<int?>("UnidadTransitoId")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("UsuarioId")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("IdAgenteTransito");
 
@@ -61,21 +61,47 @@ namespace backend.Migrations
 
             modelBuilder.Entity("backend.Models.Alerta", b =>
                 {
-                    b.Property<int>("idTipoAlerta")
+                    b.Property<int>("IdAlerta")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("idTipoAlerta"));
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdAlerta"));
 
-                    b.Property<string>("nombre")
+                    b.Property<int?>("BarrioId")
+                        .HasColumnType("NUMBER(10)");
+
+                    b.Property<string>("Descripcion")
+                        .HasColumnType("NVARCHAR2(2000)");
+
+                    b.Property<string>("Estado")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(30)
+                        .HasColumnType("NVARCHAR2(30)");
 
-                    b.Property<string>("prioridad")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime>("Fecha")
+                        .HasColumnType("TIMESTAMP(7)");
 
-                    b.HasKey("idTipoAlerta");
+                    b.Property<decimal?>("Latitud")
+                        .HasColumnType("decimal(10,6)");
+
+                    b.Property<decimal?>("Longitud")
+                        .HasColumnType("decimal(10,6)");
+
+                    b.Property<int>("TipoAlertaId")
+                        .HasColumnType("NUMBER(10)");
+
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("NUMBER(10)");
+
+                    b.HasKey("IdAlerta");
+
+                    b.HasIndex("BarrioId");
+
+                    b.HasIndex("Fecha");
+
+                    b.HasIndex("TipoAlertaId");
+
+                    b.HasIndex("UsuarioId");
 
                     b.ToTable("Alertas");
                 });
@@ -84,16 +110,16 @@ namespace backend.Migrations
                 {
                     b.Property<int>("IdBarrio")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdBarrio"));
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdBarrio"));
 
                     b.Property<int>("ComunaId")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("IdBarrio");
 
@@ -106,13 +132,13 @@ namespace backend.Migrations
                 {
                     b.Property<int>("IdComuna")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdComuna"));
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdComuna"));
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("IdComuna");
 
@@ -123,27 +149,27 @@ namespace backend.Migrations
                 {
                     b.Property<int>("IdPolicia")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdPolicia"));
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdPolicia"));
 
                     b.Property<string>("Estado")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<int?>("IdUnidad")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("IdUsuario")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<string>("Placa")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Rango")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("IdPolicia");
 
@@ -158,16 +184,16 @@ namespace backend.Migrations
                 {
                     b.Property<int>("IdRol")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdRol"));
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdRol"));
 
                     b.Property<string>("Descripcion")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("IdRol");
 
@@ -216,30 +242,56 @@ namespace backend.Migrations
                         });
                 });
 
+            modelBuilder.Entity("backend.Models.TipoAlerta", b =>
+                {
+                    b.Property<int>("IdTipoAlerta")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("NUMBER(10)");
+
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdTipoAlerta"));
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("NVARCHAR2(50)");
+
+                    b.Property<string>("Prioridad")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("NVARCHAR2(20)");
+
+                    b.HasKey("IdTipoAlerta");
+
+                    b.HasIndex("Nombre")
+                        .IsUnique();
+
+                    b.ToTable("TiposAlerta");
+                });
+
             modelBuilder.Entity("backend.Models.Unidad", b =>
                 {
                     b.Property<int>("IdUnidad")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdUnidad"));
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdUnidad"));
 
                     b.Property<string>("Estado")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<int>("Latitud")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("Longitud")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<int>("idBarrio")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("IdUnidad");
 
@@ -252,25 +304,25 @@ namespace backend.Migrations
                 {
                     b.Property<int>("IdUnidadTransito")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdUnidadTransito"));
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdUnidadTransito"));
 
                     b.Property<int?>("BarrioId")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<string>("Estado")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<double?>("Latitud")
-                        .HasColumnType("float");
+                        .HasColumnType("BINARY_DOUBLE");
 
                     b.Property<double?>("Longitud")
-                        .HasColumnType("float");
+                        .HasColumnType("BINARY_DOUBLE");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("IdUnidadTransito");
 
@@ -283,73 +335,73 @@ namespace backend.Migrations
                 {
                     b.Property<int>("IdUsuario")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdUsuario"));
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdUsuario"));
 
                     b.Property<int?>("BarrioId")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<string>("Calle")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Carrera")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Casa")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Cedula")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("NVARCHAR2(450)");
 
                     b.Property<string>("Correo")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("NVARCHAR2(450)");
 
                     b.Property<int?>("CreadoPorId")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<string>("Estado")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Etapa")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<DateTime>("FechaCreacion")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("Manzana")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("PrimerApellido")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("PrimerNombre")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<int>("RolId")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<string>("SegundoApellido")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("SegundoNombre")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Telefono")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Username")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("NVARCHAR2(450)");
 
                     b.HasKey("IdUsuario");
 
@@ -384,6 +436,32 @@ namespace backend.Migrations
                         .IsRequired();
 
                     b.Navigation("UnidadTransito");
+
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("backend.Models.Alerta", b =>
+                {
+                    b.HasOne("backend.Models.Barrio", "Barrio")
+                        .WithMany()
+                        .HasForeignKey("BarrioId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("backend.Models.TipoAlerta", "TipoAlerta")
+                        .WithMany()
+                        .HasForeignKey("TipoAlertaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("backend.Models.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Barrio");
+
+                    b.Navigation("TipoAlerta");
 
                     b.Navigation("Usuario");
                 });

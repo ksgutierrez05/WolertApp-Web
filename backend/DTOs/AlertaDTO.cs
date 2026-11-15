@@ -2,14 +2,22 @@
 {
 	public class AlertaDTO
 	{
-		public int idTipoAlerta { get; set; }
-		public string nombre { get; set; }
-		public string prioridad { get; set; }
+		public int IdAlerta { get; set; }
+		public string Tipo { get; set; } = string.Empty;
+		public string Prioridad { get; set; } = string.Empty;
+		public string Estado { get; set; } = string.Empty;
+		public string? Descripcion { get; set; }
+		public string ReportadoPor { get; set; } = string.Empty;
+		public string? BarrioNombre { get; set; }
+		public decimal? Latitud { get; set; }
+		public decimal? Longitud { get; set; }
+		public DateTime Fecha { get; set; }
 	}
-
 	public class AlertaCreateDTO
 	{
-		public string nombre { get; set; }
-		public string prioridad { get; set; }
+		public int TipoAlertaId { get; set; }
+		public string? Descripcion { get; set; }
+		public decimal? Latitud { get; set; }
+		public decimal? Longitud { get; set; }
 	}
 }
