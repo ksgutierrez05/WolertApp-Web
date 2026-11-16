@@ -25,6 +25,11 @@ namespace backend.Data
         public DbSet<Semaforo> Semaforos => Set<Semaforo>();
         public DbSet<Alarma> Alarmas => Set<Alarma>();
         public DbSet<Suscripcion> Suscripciones => Set<Suscripcion>();
+        public DbSet<Notificacion> Notificaciones => Set<Notificacion>();
+        public DbSet<AsignacionUnidad> Asignaciones => Set<AsignacionUnidad>();
+        public DbSet<AtencionAlerta> AtencionesAlerta => Set<AtencionAlerta>();
+        public DbSet<AtencionTransito> AtencionesTransito => Set<AtencionTransito>();
+        public DbSet<SolicitudApoyo> SolicitudesApoyo => Set<SolicitudApoyo>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -45,6 +50,11 @@ namespace backend.Data
             modelBuilder.Entity<TipoAlerta>().Property(t => t.IdTipoAlerta).ValueGeneratedOnAdd();
             modelBuilder.Entity<TipoArma>().Property(t => t.IdTipoArma).ValueGeneratedOnAdd();
             modelBuilder.Entity<MedioTransporte>().Property(m => m.IdMedioTransporte).ValueGeneratedOnAdd();
+            modelBuilder.Entity<Notificacion>().Property(n => n.IdNotificacion).ValueGeneratedOnAdd();
+            modelBuilder.Entity<AsignacionUnidad>().Property(a => a.IdAsignacion).ValueGeneratedOnAdd();
+            modelBuilder.Entity<AtencionAlerta>().Property(a => a.IdAtencion).ValueGeneratedOnAdd();
+            modelBuilder.Entity<AtencionTransito>().Property(a => a.IdAtencionTransito).ValueGeneratedOnAdd();
+            modelBuilder.Entity<SolicitudApoyo>().Property(s => s.IdSolicitudApoyo).ValueGeneratedOnAdd();
 
             // SEMAFOROS: ID por trigger TRG_ID_SEMAFOROS (ejecutar antes SQL/TRG_ID_SEMAFOROS.sql)
             modelBuilder.Entity<Semaforo>(e =>
