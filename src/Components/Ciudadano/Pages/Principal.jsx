@@ -169,13 +169,17 @@ export default function Principal() {
             <div className="sos-panel-sub-usu">Envía tu ubicación en tiempo real a la policía y a tus vecinos conectados.</div>
           </div>
         </div>
-        <button className="sos-btn-usu" type="button" title="Enviar alerta de emergencia">
+        <Link
+          to="/ciudadano/reportar-emergencia"
+          className="sos-btn-usu"
+          title="Enviar alerta de emergencia"
+        >
           <span className="sos-pulso-usu"></span>
           <span className="sos-contenido-usu">
             <i className="bi bi-exclamation-triangle-fill"></i>
             <span>SOS</span>
           </span>
-        </button>
+        </Link>
       </div>
 
       {/* MIS ALERTAS */}
