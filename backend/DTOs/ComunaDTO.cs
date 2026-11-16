@@ -2,15 +2,16 @@
 
 namespace backend.DTOs
 {
-	public class ComunaDTO
-	{
-		public int IdComuna { get; set; }
-		public string Nombre { get; set; } = null!;
-		public int TotalBarrios { get; set; }
-	}
+    public class ComunaDTO
+    {
+        public int IdComuna { get; set; }
+        public string? Nombre { get; set; }
+        public int TotalBarrios { get; set; }
+    }
 
-	public class ComunaCreateDTO
-	{
-		public string Nombre { get; set; } = null!;
-	}
+    public class ComunaCreateDTO
+    {
+        [Required, StringLength(50)]
+        public string Nombre { get; set; } = null!;
+    }
 }
