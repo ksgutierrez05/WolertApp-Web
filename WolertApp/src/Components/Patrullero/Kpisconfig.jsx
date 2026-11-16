@@ -1,3 +1,4 @@
+
 export const KPIS_PATRULLERO_CONFIG = {
   // Centro de operaciones
   'centro-operaciones': {
@@ -8,59 +9,59 @@ export const KPIS_PATRULLERO_CONFIG = {
         clave: 'alertasAsignadas',
         etiqueta: 'Alertas asignadas',
         icono: 'bi-exclamation-triangle',
-        tono: 'rojo',
+        tono: 'rojo'
       },
       {
         clave: 'atencionActiva',
-        etiqueta: 'Atención activa',
+        etiqueta: 'Atenciones activas',
         icono: 'bi-car-front',
-        tono: 'ambar',
+        tono: 'ambar'
       },
       {
         clave: 'atendidasHoy',
         etiqueta: 'Atendidas hoy',
         icono: 'bi-check2-circle',
-        tono: 'verde',
+        tono: 'verde'
       },
       {
         clave: 'companeros',
         etiqueta: 'Compañeros en unidad',
         icono: 'bi-people',
-        tono: 'azul',
-      },
-    ],
+        tono: 'azul'
+      }
+    ]
   },
 
-  // Atenciones
-  atenciones: {
+  // Mis asignaciones
+  asignaciones: {
     columnas: 'col-6 col-md-3',
     claseFila: 'row g-3 mb-4',
     items: [
       {
         clave: 'total',
-        etiqueta: 'Atenciones activas',
+        etiqueta: 'En atención',
         icono: 'bi-list-check',
-        tono: 'azul',
+        tono: 'azul'
       },
       {
         clave: 'enCamino',
         etiqueta: 'En camino',
         icono: 'bi-signpost-split',
-        tono: 'ambar',
+        tono: 'ambar'
       },
       {
         clave: 'enSitio',
         etiqueta: 'En el sitio',
         icono: 'bi-geo-alt',
-        tono: 'rojo',
+        tono: 'rojo'
       },
       {
         clave: 'resueltasHoy',
-        etiqueta: 'Resueltas hoy',
+        etiqueta: 'Atenciones finalizadas hoy',
         icono: 'bi-clipboard-check',
-        tono: 'verde',
-      },
-    ],
+        tono: 'verde'
+      }
+    ]
   },
 
   // Mi unidad
@@ -72,27 +73,27 @@ export const KPIS_PATRULLERO_CONFIG = {
         clave: 'integrantes',
         etiqueta: 'Integrantes',
         icono: 'bi-people-fill',
-        tono: 'azul',
+        tono: 'azul'
       },
       {
         clave: 'disponibles',
         etiqueta: 'Disponibles',
         icono: 'bi-check-circle',
-        tono: 'verde',
+        tono: 'verde'
       },
       {
         clave: 'enAtencion',
-        etiqueta: 'En atención',
+        etiqueta: 'Asignaciones en atención',
         icono: 'bi-hourglass-split',
-        tono: 'ambar',
+        tono: 'ambar'
       },
       {
         clave: 'enCamino',
         etiqueta: 'En camino',
         icono: 'bi-signpost-split',
-        tono: 'rojo',
-      },
-    ],
+        tono: 'rojo'
+      }
+    ]
   },
 
   // Mis alertas
@@ -104,26 +105,26 @@ export const KPIS_PATRULLERO_CONFIG = {
         clave: 'total',
         etiqueta: 'Alertas asignadas',
         icono: 'bi-bell',
-        tono: 'azul',
+        tono: 'azul'
       },
       {
         clave: 'prioridadAlta',
         etiqueta: 'Prioridad alta',
         icono: 'bi-exclamation-triangle',
-        tono: 'rojo',
+        tono: 'rojo'
       },
       {
         clave: 'nuevas',
-        etiqueta: 'Nuevas',
+        etiqueta: 'Nuevas asignaciones',
         icono: 'bi-envelope-exclamation',
-        tono: 'ambar',
+        tono: 'ambar'
       },
       {
         clave: 'vistas',
         etiqueta: 'Vistas',
         icono: 'bi-eye',
-        tono: 'verde',
-      },
-    ],
-  },
+        tono: 'verde'
+      }
+    ]
+  }
 };

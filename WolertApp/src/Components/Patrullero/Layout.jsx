@@ -1,13 +1,20 @@
+
 import { useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Topbar from './Topbar';
 
-// Iniciales que se muestran en el avatar. Cámbialas por las del usuario logueado.
-const INICIALES = 'PT';
-
 function Layout() {
   const [busqueda, setBusqueda] = useState('');
+
+  const usuario = localStorage.getItem('usuario') || 'Patrullero';
+
+  const iniciales = usuario
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map(palabra => palabra.charAt(0).toUpperCase())
+    .join('');
 
   useEffect(() => {
     document.body.classList.add('rol-policia');
@@ -28,7 +35,7 @@ function Layout() {
               placeholder="Buscar alerta, atención o unidad…"
               valor={busqueda}
               onCambio={setBusqueda}
-              iniciales={INICIALES}
+              iniciales={iniciales}
             />
 
             <Outlet />

@@ -1,10 +1,50 @@
+
 import Kpis from '../../Components/Patrullero/Kpicard';
+import usePatrullero from '../../Utlis/usePatrullero';
+import {
+  EsHoy,
+  FormatearFecha
+} from '../../Services/PoliciaService';
+
 import '../../css/Policia/Patrullero/css/centro-operaciones.css';
 
-function CentroOperaciones() {
+export default function CentroOperaciones() {
+  const { datos, cargando, error, recargar } = usePatrullero();
+
+  const asignaciones = datos?.asignaciones || [];
+  const atenciones = datos?.atenciones || [];
+  const integrantes = datos?.unidad?.policias || [];
+
+  const activa = asignaciones.find(
+    a => a.estadoAsignacion === 'EN_ATENCION'
+  );
+
+  const nuevas = asignaciones.filter(
+    a => a.estadoAsignacion === 'ASIGNADA'
+  );
+
+  const hoy = atenciones.filter(
+    a => a.estadoFinal === 'FINALIZADA' &&
+      EsHoy(a.fechaAtencion)
+  );
+
+  const valores = {
+    alertasAsignadas: asignaciones.length,
+    atencionActiva: asignaciones.filter(
+      a => a.estadoAsignacion === 'EN_ATENCION'
+    ).length,
+    atendidasHoy: hoy.length,
+    companeros: integrantes.filter(
+      p => Number(p.idUsuario) !== Number(datos?.idUsuario)
+    ).length
+  };
+
   return (
     <div className="container-fluid centro-operaciones-patrullero">
-      <section className="hero-dash co-hero" aria-labelledby="co-titulo">
+      <section
+        className="hero-dash co-hero"
+        aria-labelledby="co-titulo"
+      >
         <div className="co-hero-copy">
           <p className="eyebrow-dash">
             CENTRO DE OPERACIONES · PATRULLERO
@@ -15,18 +55,31 @@ function CentroOperaciones() {
           </h1>
 
           <p className="hero-text-dash">
-            Consulta tus alertas asignadas, da seguimiento a tus
-            atenciones y revisa la actividad de tu unidad.
+            Consulta las alertas asignadas a tu unidad,
+            da seguimiento a tus atenciones y revisa
+            la actividad de tu unidad.
           </p>
-
         </div>
-
-
       </section>
 
-      {/* Las tarjetas se definen en Kpisconfig.js; aquí solo se llama al componente */}
+      {cargando && (
+        <p role="status">Cargando información...</p>
+      )}
+
+      {error && (
+        <div className="alert alert-danger" role="alert">
+          {error}
+          <button type="button" onClick={recargar}>
+            Reintentar
+          </button>
+        </div>
+      )}
+
       <section aria-label="Indicadores operativos">
-        <Kpis grupo="centro-operaciones" />
+        <Kpis
+          grupo="centro-operaciones"
+          valores={valores}
+        />
       </section>
 
       <div className="row g-3 mb-4 align-items-stretch">
@@ -48,7 +101,7 @@ function CentroOperaciones() {
             </h2>
 
             <span className="wait-dash co-estado-vacio">
-              Sin información activa
+              {activa?.estadoAsignacion || 'Sin información activa'}
             </span>
           </div>
 
@@ -56,12 +109,15 @@ function CentroOperaciones() {
             <div className="co-active-top">
               <div className="co-active-empty">
                 <p className="co-active-title">
-                  No hay una atención seleccionada
+                  {activa
+                    ? `Asignación #${activa.idAsignacion}`
+                    : 'No hay una atención activa'}
                 </p>
 
                 <p className="co-empty-description">
-                  Cuando tengas una atención asignada, aquí aparecerán
-                  sus detalles y estado.
+                  {activa
+                    ? `Alerta #${activa.idAlerta} · ${activa.observacion || 'Sin observaciones'}`
+                    : 'Cuando tu unidad tenga una atención activa, aquí aparecerán sus detalles.'}
                 </p>
               </div>
             </div>
@@ -69,17 +125,19 @@ function CentroOperaciones() {
             <div className="co-active-meta">
               <span>
                 <i className="bi bi-geo-alt" aria-hidden="true" />
-                Ubicación: —
+                {' '}Unidad: {activa?.unidadNombre ||
+                  datos?.unidad?.nombre || '—'}
               </span>
 
               <span>
                 <i className="bi bi-clock" aria-hidden="true" />
-                Hora de asignación: —
+                {' '}Hora de asignación:{' '}
+                {FormatearFecha(activa?.fecha)}
               </span>
 
               <span>
                 <i className="bi bi-person" aria-hidden="true" />
-                Origen del reporte: —
+                {' '}Alerta: {activa?.idAlerta ?? '—'}
               </span>
             </div>
 
@@ -95,8 +153,8 @@ function CentroOperaciones() {
                 <div>
                   <b>Ruta de atención</b>
                   <span>
-                    La información de ruta aparecerá cuando exista
-                    una atención activa.
+                    Consulta el detalle de la alerta para
+                    conocer su ubicación.
                   </span>
                 </div>
               </div>
@@ -127,23 +185,42 @@ function CentroOperaciones() {
             </h2>
 
             <span className="co-text-link">
-              Alertas asignadas
+              {nuevas.length} asignadas
             </span>
           </div>
 
           <div className="card-panel-dash co-alert-list h-100">
-            <div className="co-empty-state">
-              <span className="co-empty-icon">
-                <i className="bi bi-inbox" aria-hidden="true" />
-              </span>
+            {nuevas.length ? (
+              nuevas.slice(0, 5).map(a => (
+                <div className="co-alarma-item" key={a.idAsignacion}>
+                  <div className="co-alarma-icon">
+                    <i className="bi bi-bell" aria-hidden="true" />
+                  </div>
 
-              <h3>No hay alertas para mostrar</h3>
+                  <div>
+                    <p className="co-alarma-text mb-1">
+                      Alerta #{a.idAlerta}
+                    </p>
 
-              <p>
-                Las alertas asignadas estarán disponibles aquí
-                para consultar sus detalles.
-              </p>
-            </div>
+                    <span className="co-alarma-time">
+                      {FormatearFecha(a.fecha)}
+                    </span>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="co-empty-state">
+                <span className="co-empty-icon">
+                  <i className="bi bi-inbox" aria-hidden="true" />
+                </span>
+
+                <h3>No hay alertas para mostrar</h3>
+
+                <p>
+                  Las alertas asignadas a tu unidad aparecerán aquí.
+                </p>
+              </div>
+            )}
           </div>
         </section>
       </div>
@@ -166,27 +243,31 @@ function CentroOperaciones() {
               Resumen del día
             </h2>
 
-            <div className="co-timeline co-timeline-empty">
-              <div className="co-timeline-item">
-                <span className="co-timeline-time">—</span>
-                <p className="co-timeline-text">
-                  Aquí aparecerá el inicio del turno.
-                </p>
-              </div>
+            <div className="co-timeline">
+              {hoy.length ? (
+                hoy.slice(0, 5).map(a => (
+                  <div
+                    className="co-timeline-item"
+                    key={a.idAtencion}
+                  >
+                    <span className="co-timeline-time">
+                      {FormatearFecha(a.fechaAtencion)}
+                    </span>
 
-              <div className="co-timeline-item">
-                <span className="co-timeline-time">—</span>
-                <p className="co-timeline-text">
-                  Aquí aparecerán las atenciones registradas.
-                </p>
-              </div>
+                    <p className="co-timeline-text">
+                      Alerta #{a.idAlerta} · {a.estadoFinal}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <div className="co-timeline-item">
+                  <span className="co-timeline-time">—</span>
 
-              <div className="co-timeline-item">
-                <span className="co-timeline-time">—</span>
-                <p className="co-timeline-text">
-                  Aquí se mostrará la actividad más reciente.
-                </p>
-              </div>
+                  <p className="co-timeline-text">
+                    No hay atenciones finalizadas por ti hoy.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </section>
@@ -206,28 +287,57 @@ function CentroOperaciones() {
                 Mi unidad
               </h2>
 
-              <span className="co-text-link">Personal</span>
+              <span className="co-text-link">
+                {integrantes.length} integrantes
+              </span>
             </div>
 
             <p className="info-sub-dash mb-3">
-              Información de la unidad asignada
+              {datos?.unidad?.nombre ||
+                'Información de la unidad asignada'}
             </p>
 
-            <div className="co-empty-state co-empty-state-compact">
-              <span className="co-empty-icon">
-                <i
-                  className="bi bi-person-badge"
-                  aria-hidden="true"
-                />
-              </span>
+            {integrantes.length ? (
+              integrantes.map(p => (
+                <div
+                  className="co-alarma-item"
+                  key={p.idUsuario}
+                >
+                  <div className="co-alarma-icon">
+                    <i
+                      className="bi bi-person-badge"
+                      aria-hidden="true"
+                    />
+                  </div>
 
-              <h3>Sin información de integrantes</h3>
+                  <div>
+                    <p className="co-alarma-text mb-1">
+                      {p.nombreUsuario}
+                    </p>
 
-              <p>
-                Los integrantes y su disponibilidad aparecerán aquí
-                cuando estén disponibles.
-              </p>
-            </div>
+                    <span className="co-alarma-time">
+                      {p.rango || 'Policía'} ·{' '}
+                      {p.estado || 'Sin estado'}
+                    </span>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="co-empty-state co-empty-state-compact">
+                <span className="co-empty-icon">
+                  <i
+                    className="bi bi-person-badge"
+                    aria-hidden="true"
+                  />
+                </span>
+
+                <h3>Sin información de integrantes</h3>
+
+                <p>
+                  Los integrantes de tu unidad aparecerán aquí.
+                </p>
+              </div>
+            )}
           </div>
         </section>
 
@@ -254,16 +364,20 @@ function CentroOperaciones() {
 
             <div className="co-alarma-item">
               <div className="co-alarma-icon">
-                <i className="bi bi-megaphone" aria-hidden="true" />
+                <i
+                  className="bi bi-megaphone"
+                  aria-hidden="true"
+                />
               </div>
 
               <div>
                 <p className="co-alarma-text mb-1">
-                  No hay avisos nuevos.
+                  Consulta tus notificaciones.
                 </p>
 
                 <span className="co-alarma-time">
-                  Las comunicaciones de la Central aparecerán aquí.
+                  Las comunicaciones de la Central están
+                  en Notificaciones.
                 </span>
               </div>
             </div>
@@ -274,4 +388,3 @@ function CentroOperaciones() {
   );
 }
 
-export default CentroOperaciones;
