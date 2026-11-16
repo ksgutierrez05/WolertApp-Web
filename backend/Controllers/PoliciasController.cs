@@ -23,9 +23,8 @@ namespace backend.Controllers
         {
             return await _context.Policias.Select(p => new PoliciaListaDTO
             {
-                IdPolicia = p.IdPolicia,
                 IdUsuario = p.IdUsuario,
-                NombreUsuario = p.Usuario!.PrimerNombre + " " + p.Usuario.PrimerApellido,
+                NombreUsuario = ((p.Usuario!.PrimerNombre ?? "") + " " + (p.Usuario.PrimerApellido ?? "")).Trim(),
                 Cedula = p.Usuario.Cedula,
                 Correo = p.Usuario.Correo,
                 Telefono = p.Usuario.Telefono,
@@ -37,16 +36,15 @@ namespace backend.Controllers
             }).ToListAsync();
         }
 
-        // GET: api/Policias/5
+        // GET: api/Policias/5  (el id es el ID_USUARIO)
         [HttpGet("{id}")]
         public async Task<ActionResult<PoliciaDTO>> GetPolicia(int id)
         {
-            var policia = await _context.Policias.Where(p => p.IdPolicia == id)
+            var policia = await _context.Policias.Where(p => p.IdUsuario == id)
                 .Select(p => new PoliciaDTO
                 {
-                    IdPolicia = p.IdPolicia,
                     IdUsuario = p.IdUsuario,
-                    NombreUsuario = p.Usuario!.PrimerNombre + " " + p.Usuario.PrimerApellido,
+                    NombreUsuario = ((p.Usuario!.PrimerNombre ?? "") + " " + (p.Usuario.PrimerApellido ?? "")).Trim(),
                     PrimerNombre = p.Usuario.PrimerNombre,
                     SegundoNombre = p.Usuario.SegundoNombre,
                     PrimerApellido = p.Usuario.PrimerApellido,
@@ -62,7 +60,6 @@ namespace backend.Controllers
                     Casa = p.Usuario.Casa,
                     BarrioNombre = p.Usuario.Barrio != null ? p.Usuario.Barrio.Nombre : null,
                     EstadoUsuario = p.Usuario.Estado,
-                    FechaCreacion = p.Usuario.FechaCreacion,
                     Placa = p.Placa,
                     Rango = p.Rango,
                     Estado = p.Estado,
@@ -83,7 +80,7 @@ namespace backend.Controllers
         [HttpPost]
         public async Task<ActionResult<PoliciaListaDTO>> PostPolicia(PoliciaCreateDTO policiaCreate)
         {
-            // El usuario ya debe existir y tener el rol Policia
+            // El usuario ya debe existir y tener el rol POLICIA
             var usuario = await _context.Usuarios.Include(u => u.Rol)
                 .FirstOrDefaultAsync(u => u.IdUsuario == policiaCreate.IdUsuario);
             if (usuario == null)
@@ -91,37 +88,43 @@ namespace backend.Controllers
                 return BadRequest("El usuario no existe");
             }
 
-            if (usuario.Rol == null || usuario.Rol.Nombre != "Policia")
+            if (usuario.Rol?.Nombre != "POLICIA")
             {
-                return BadRequest("El usuario no tiene el rol Policia");
+                return BadRequest("El usuario no tiene el rol POLICIA");
             }
 
+            // La PK de POLICIAS es ID_USUARIO, así que un usuario solo puede ser policía una vez
             if (await _context.Policias.AnyAsync(p => p.IdUsuario == policiaCreate.IdUsuario))
             {
-                return BadRequest("Ese usuario ya está registrado como policía");
+                return Conflict("Ese usuario ya está registrado como policía");
             }
 
-            if (await _context.Policias.AnyAsync(p => p.Placa == policiaCreate.Placa))
+            var placa = policiaCreate.Placa.Trim().ToUpper();
+            var rango = policiaCreate.Rango?.Trim().ToUpper();
+            var estado = policiaCreate.Estado.Trim().ToUpper();
+
+            if (await _context.Policias.AnyAsync(p => p.Placa == placa))
             {
-                return BadRequest("Ya existe un policía con esa placa");
+                return Conflict("Ya existe un policía con esa placa");
             }
 
             Unidad? unidad = null;
             if (policiaCreate.IdUnidad != null)
             {
-                unidad = await _context.Unidades.FindAsync(policiaCreate.IdUnidad);
+                unidad = await _context.Unidades.FindAsync(policiaCreate.IdUnidad.Value);
                 if (unidad == null)
                 {
                     return BadRequest("La unidad no existe");
                 }
             }
 
+            // El ID no se genera: es el mismo ID_USUARIO
             var policia = new Policia
             {
                 IdUsuario = policiaCreate.IdUsuario,
-                Placa = policiaCreate.Placa,
-                Rango = policiaCreate.Rango,
-                Estado = policiaCreate.Estado,
+                Placa = placa,
+                Rango = rango,
+                Estado = estado,
                 IdUnidad = policiaCreate.IdUnidad
             };
             _context.Policias.Add(policia);
@@ -129,9 +132,8 @@ namespace backend.Controllers
 
             var respuesta = new PoliciaListaDTO
             {
-                IdPolicia = policia.IdPolicia,
                 IdUsuario = policia.IdUsuario,
-                NombreUsuario = usuario.PrimerNombre + " " + usuario.PrimerApellido,
+                NombreUsuario = ((usuario.PrimerNombre ?? "") + " " + (usuario.PrimerApellido ?? "")).Trim(),
                 Cedula = usuario.Cedula,
                 Correo = usuario.Correo,
                 Telefono = usuario.Telefono,
@@ -142,10 +144,10 @@ namespace backend.Controllers
                 NombreUnidad = unidad?.Nombre
             };
 
-            return CreatedAtAction("GetPolicia", new { id = policia.IdPolicia }, respuesta);
+            return CreatedAtAction("GetPolicia", new { id = policia.IdUsuario }, respuesta);
         }
 
-        // PUT: api/Policias/5
+        // PUT: api/Policias/5  (el id es el ID_USUARIO)
         [HttpPut("{id}")]
         public async Task<IActionResult> PutPolicia(int id, PoliciaUpdateDTO policiaUpdate)
         {
@@ -155,9 +157,11 @@ namespace backend.Controllers
                 return NotFound();
             }
 
-            if (await _context.Policias.AnyAsync(p => p.Placa == policiaUpdate.Placa && p.IdPolicia != id))
+            var placa = policiaUpdate.Placa.Trim().ToUpper();
+
+            if (await _context.Policias.AnyAsync(p => p.Placa == placa && p.IdUsuario != id))
             {
-                return BadRequest("Ya existe otro policía con esa placa");
+                return Conflict("Ya existe otro policía con esa placa");
             }
 
             if (policiaUpdate.IdUnidad != null &&
@@ -166,9 +170,9 @@ namespace backend.Controllers
                 return BadRequest("La unidad no existe");
             }
 
-            policia.Placa = policiaUpdate.Placa;
-            policia.Rango = policiaUpdate.Rango;
-            policia.Estado = policiaUpdate.Estado;
+            policia.Placa = placa;
+            policia.Rango = policiaUpdate.Rango?.Trim().ToUpper();
+            policia.Estado = policiaUpdate.Estado.Trim().ToUpper();
             policia.IdUnidad = policiaUpdate.IdUnidad;
 
             await _context.SaveChangesAsync();
@@ -176,7 +180,7 @@ namespace backend.Controllers
             return NoContent();
         }
 
-        // DELETE: api/Policias/5
+        // DELETE: api/Policias/5  (el id es el ID_USUARIO)
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePolicia(int id)
         {
@@ -187,8 +191,16 @@ namespace backend.Controllers
             }
 
             // Solo borra el registro de policía; el usuario sigue existiendo
-            _context.Policias.Remove(policia);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.Policias.Remove(policia);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                // ORA-02292: tiene asignaciones, atenciones u otros registros que lo referencian
+                return Conflict("No se puede eliminar: el policía tiene registros asociados");
+            }
 
             return NoContent();
         }

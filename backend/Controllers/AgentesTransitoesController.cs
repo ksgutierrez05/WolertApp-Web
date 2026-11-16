@@ -10,19 +10,20 @@ using Microsoft.EntityFrameworkCore;
 public class AgentesTransitoesController : ControllerBase
 {
     private readonly AppDBContext _context;
+
     public AgentesTransitoesController(AppDBContext context)
     {
         _context = context;
     }
 
-    // GET: api/AgentesTransito
+    // GET: api/AgentesTransitoes
     [HttpGet]
-   public async Task<ActionResult<IEnumerable<AgenteTransitoListaDTO>>> GetAgentesTransito()
+    public async Task<ActionResult<IEnumerable<AgenteTransitoListaDTO>>> GetAgentesTransito()
     {
         return await _context.AgentesTransito.Select(a => new AgenteTransitoListaDTO
         {
-            IdAgenteTransito = a.IdAgenteTransito,
-            NombreUsuario = a.Usuario.PrimerNombre + " " + a.Usuario.PrimerApellido,
+            IdUsuario = a.IdUsuario,
+            NombreUsuario = ((a.Usuario!.PrimerNombre ?? "") + " " + (a.Usuario.PrimerApellido ?? "")).Trim(),
             Cedula = a.Usuario.Cedula,
             Correo = a.Usuario.Correo,
             Telefono = a.Usuario.Telefono,
@@ -38,16 +39,15 @@ public class AgentesTransitoesController : ControllerBase
         }).ToListAsync();
     }
 
-
-    // GET: api/AgentesTransito/5
+    // GET: api/AgentesTransitoes/5  (el id es el ID_USUARIO)
     [HttpGet("{id}")]
     public async Task<ActionResult<AgentesTransitoDTO>> GetAgenteTransito(int id)
     {
-        var agente = await _context.AgentesTransito.Where(a => a.IdAgenteTransito == id)
+        var agente = await _context.AgentesTransito.Where(a => a.IdUsuario == id)
             .Select(a => new AgentesTransitoDTO
             {
-                IdAgenteTransito = a.IdAgenteTransito,
-                NombreUsuario = a.Usuario.PrimerNombre + " " + a.Usuario.PrimerApellido,
+                IdUsuario = a.IdUsuario,
+                NombreUsuario = ((a.Usuario!.PrimerNombre ?? "") + " " + (a.Usuario.PrimerApellido ?? "")).Trim(),
                 PrimerNombre = a.Usuario.PrimerNombre,
                 SegundoNombre = a.Usuario.SegundoNombre,
                 PrimerApellido = a.Usuario.PrimerApellido,
@@ -62,7 +62,6 @@ public class AgentesTransitoesController : ControllerBase
                 Manzana = a.Usuario.Manzana,
                 Casa = a.Usuario.Casa,
                 BarrioNombre = a.Usuario.Barrio != null ? a.Usuario.Barrio.Nombre : null,
-                FechaCreacion = a.Usuario.FechaCreacion,
                 Placa = a.Placa,
                 Rango = a.Rango,
                 EstadoUsuario = a.Usuario.Estado,
@@ -80,9 +79,7 @@ public class AgentesTransitoesController : ControllerBase
         return agente;
     }
 
-
-    // PUT: api/AgentesTransito/5
-    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    // PUT: api/AgentesTransitoes/5  (el id es el ID_USUARIO)
     [HttpPut("{id}")]
     public async Task<IActionResult> PutAgenteTransito(int id, AgenteTransitoUpdateDTO agenteUpdate)
     {
@@ -92,7 +89,12 @@ public class AgentesTransitoesController : ControllerBase
             return NotFound();
         }
 
-       
+        var placa = agenteUpdate.Placa.Trim().ToUpper();
+        if (await _context.AgentesTransito.AnyAsync(a => a.Placa == placa && a.IdUsuario != id))
+        {
+            return Conflict("Ya existe otro agente con esa placa.");
+        }
+
         var unidadId = agenteUpdate.UnidadTransitoId;
         if (unidadId.HasValue && unidadId.Value <= 0)
         {
@@ -104,27 +106,26 @@ public class AgentesTransitoesController : ControllerBase
             return BadRequest("La unidad de transito indicada no existe.");
         }
 
-        agente.Placa = agenteUpdate.Placa;
-        agente.Rango = agenteUpdate.Rango;
-        agente.Estado = agenteUpdate.EstadoAgente;
+        agente.Placa = placa;
+        agente.Rango = agenteUpdate.Rango?.Trim().ToUpper();
+        agente.Estado = agenteUpdate.EstadoAgente.Trim().ToUpper();
         agente.UnidadTransitoId = unidadId;
 
         await _context.SaveChangesAsync();
 
         return NoContent();
     }
-    // POST: api/AgentesTransito
-    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+
+    // POST: api/AgentesTransitoes
     [HttpPost]
     public async Task<ActionResult<AgentesTransitoDTO>> PostAgenteTransito(AgenteTransitoCreateDTO agenteCreate)
     {
-        var rol = await _context.Roles.FirstOrDefaultAsync(r => r.Nombre == "AgenteTransito");
+        var rol = await _context.Roles.FirstOrDefaultAsync(r => r.Nombre == "AGENTE_TRANSITO");
         if (rol == null)
         {
-            return BadRequest("El rol AgenteTransito no existe.");
+            return BadRequest("El rol AGENTE_TRANSITO no existe.");
         }
 
-        
         var barrioId = agenteCreate.BarrioId;
         if (barrioId.HasValue && barrioId.Value <= 0)
         {
@@ -156,6 +157,13 @@ public class AgentesTransitoesController : ControllerBase
             return Conflict("Ya existe un usuario con esa cedula, correo o username.");
         }
 
+        var placa = agenteCreate.Placa.Trim().ToUpper();
+        if (await _context.AgentesTransito.AnyAsync(a => a.Placa == placa))
+        {
+            return Conflict("Ya existe un agente con esa placa.");
+        }
+
+        // El ID_USUARIO lo genera el trigger TRG_ID_USUARIOS
         var usuario = new Usuario
         {
             Cedula = agenteCreate.Cedula,
@@ -172,29 +180,30 @@ public class AgentesTransitoesController : ControllerBase
             Manzana = agenteCreate.Manzana,
             Casa = agenteCreate.Casa,
             BarrioId = barrioId,
-            RolId = rol.IdRol
+            RolId = rol.IdRol,
+            Estado = "ACTIVO"
         };
         usuario.PasswordHash = new PasswordHasher<Usuario>().HashPassword(usuario, agenteCreate.Password);
 
+        // La PK del agente es el ID del usuario: EF la toma de la navegación al guardar
         var agente = new AgentesTransito
         {
             Usuario = usuario,
-            Placa = agenteCreate.Placa,
-            Rango = agenteCreate.Rango,
-            Estado = "disponible",
+            Placa = placa,
+            Rango = agenteCreate.Rango?.Trim().ToUpper(),
+            Estado = "ACTIVO",
             UnidadTransitoId = unidadId
         };
 
         _context.AgentesTransito.Add(agente);
         await _context.SaveChangesAsync();
 
-       
-        var creado = await GetAgenteTransito(agente.IdAgenteTransito);
+        var creado = await GetAgenteTransito(agente.IdUsuario);
 
-        return CreatedAtAction("GetAgenteTransito", new { id = agente.IdAgenteTransito }, creado.Value);
+        return CreatedAtAction("GetAgenteTransito", new { id = agente.IdUsuario }, creado.Value);
     }
 
-    // DELETE: api/AgentesTransito/5
+    // DELETE: api/AgentesTransitoes/5  (el id es el ID_USUARIO)
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteAgentesTransito(int id)
     {
@@ -204,14 +213,18 @@ public class AgentesTransitoesController : ControllerBase
             return NotFound();
         }
 
-        _context.AgentesTransito.Remove(agente);
-        await _context.SaveChangesAsync();
+        // Solo borra el registro de agente; el usuario sigue existiendo
+        try
+        {
+            _context.AgentesTransito.Remove(agente);
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateException)
+        {
+            // ORA-02292: tiene atenciones u otros registros que lo referencian
+            return Conflict("No se puede eliminar: el agente tiene registros asociados.");
+        }
 
         return NoContent();
-    }
-
-    private bool AgentesTransitoExists(int? idagentetransito)
-    {
-        return _context.AgentesTransito.Any(e => e.IdAgenteTransito == idagentetransito);
     }
 }

@@ -1,14 +1,13 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace backend.Models
 {
-	public class Rol
-	{
-		[Key]
-		public int IdRol { get; set; }
-		public string Nombre { get; set; } = null!;
-		public string? Descripcion { get; set; }
-
-		public ICollection<Usuario> Usuarios { get; set; } = new List<Usuario>();
-	}
+    [Table("ROLES_USUARIO")]
+    public class Rol
+    {
+        [Key, Column("ID_ROL")] public int IdRol { get; set; }
+        [Column("NOMBRE")] public string Nombre { get; set; } = null!;
+        public ICollection<Usuario> Usuarios { get; set; } = new List<Usuario>();
+    }
 }

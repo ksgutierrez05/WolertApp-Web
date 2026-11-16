@@ -1,23 +1,18 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace backend.Models
 {
+    [Table("POLICIAS")]
     public class Policia
     {
-        [Key]
-        public int IdPolicia { get; set; }
-        [ForeignKey("Usuario")]
-        public int IdUsuario { get; set; }
-        public Usuario Usuario { get; set; }
-        public string Placa { get; set; } = null!;
-        public string Rango { get; set; }
-        public string Estado { get; set; } = null!;
-        [ForeignKey("Unidad")]
-        public int? IdUnidad { get; set; }
-        public Unidad? Unidad { get; set; }
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [Column("ID_USUARIO")] public int IdUsuario { get; set; }
+        [ForeignKey(nameof(IdUsuario))] public Usuario? Usuario { get; set; }
+        [Column("PLACA")] public string? Placa { get; set; }
+        [Column("RANGO")] public string? Rango { get; set; }
+        [Column("ESTADO")] public string? Estado { get; set; }
+        [Column("ID_UNIDAD")] public int? IdUnidad { get; set; }
+        [ForeignKey(nameof(IdUnidad))] public Unidad? Unidad { get; set; }
     }
 }

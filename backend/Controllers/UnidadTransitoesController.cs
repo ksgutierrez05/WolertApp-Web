@@ -9,12 +9,13 @@ using backend.DTOs;
 public class UnidadTransitoesController : ControllerBase
 {
     private readonly AppDBContext _context;
+
     public UnidadTransitoesController(AppDBContext context)
     {
         _context = context;
     }
 
-    // GET: api/UnidadTransito
+    // GET: api/UnidadTransitoes
     [HttpGet]
     public async Task<ActionResult<IEnumerable<UnidadTransitoListaDTO>>> GetUnidadesTransito()
     {
@@ -27,12 +28,12 @@ public class UnidadTransitoesController : ControllerBase
             Longitud = u.Longitud,
             BarrioId = u.BarrioId,
             NombreBarrio = u.Barrio != null ? u.Barrio.Nombre : null,
-            NombreComuna = u.Barrio != null ? u.Barrio.Comuna.Nombre : null,
+            NombreComuna = u.Barrio != null && u.Barrio.Comuna != null ? u.Barrio.Comuna.Nombre : null,
             TotalAgentes = u.AgentesTransito.Count()
         }).ToListAsync();
     }
 
-    // GET: api/UnidadTransito/5
+    // GET: api/UnidadTransitoes/5
     [HttpGet("{id}")]
     public async Task<ActionResult<UnidadTransitoDTO>> GetUnidadTransito(int id)
     {
@@ -46,12 +47,12 @@ public class UnidadTransitoesController : ControllerBase
                 Longitud = u.Longitud,
                 BarrioId = u.BarrioId,
                 NombreBarrio = u.Barrio != null ? u.Barrio.Nombre : null,
-                NombreComuna = u.Barrio != null ? u.Barrio.Comuna.Nombre : null,
+                NombreComuna = u.Barrio != null && u.Barrio.Comuna != null ? u.Barrio.Comuna.Nombre : null,
                 TotalAgentes = u.AgentesTransito.Count(),
                 Agentes = u.AgentesTransito.Select(a => new AgentesTransitoDTO
                 {
-                    IdAgenteTransito = a.IdAgenteTransito,
-                    NombreUsuario = a.Usuario.PrimerNombre + " " + a.Usuario.PrimerApellido,
+                    IdUsuario = a.IdUsuario,
+                    NombreUsuario = ((a.Usuario!.PrimerNombre ?? "") + " " + (a.Usuario.PrimerApellido ?? "")).Trim(),
                     Cedula = a.Usuario.Cedula,
                     Correo = a.Usuario.Correo,
                     Telefono = a.Usuario.Telefono,
@@ -59,7 +60,8 @@ public class UnidadTransitoesController : ControllerBase
                     Placa = a.Placa,
                     Rango = a.Rango,
                     EstadoUsuario = a.Usuario.Estado,
-                    EstadoAgente = a.Estado
+                    EstadoAgente = a.Estado,
+                    UnidadTransitoId = a.UnidadTransitoId
                 }).ToList()
             }).FirstOrDefaultAsync();
 
@@ -71,45 +73,55 @@ public class UnidadTransitoesController : ControllerBase
         return unidad;
     }
 
-
-    // PUT: api/UnidadTransito/5
-    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    // PUT: api/UnidadTransitoes/5
     [HttpPut("{id}")]
     public async Task<IActionResult> PutUnidadTransito(int id, UnidadTransitoUpdateDTO unidadUpdate)
     {
-        
         var unidad = await _context.UnidadesTransito.FindAsync(id);
-
-      if (unidad == null)
+        if (unidad == null)
         {
             return NotFound();
         }
 
-        unidad.Nombre = unidadUpdate.Nombre;
-        unidad.Estado = unidadUpdate.Estado;
+        var barrioId = unidadUpdate.BarrioId;
+        if (barrioId.HasValue && barrioId.Value <= 0)
+        {
+            barrioId = null;
+        }
+
+        if (barrioId.HasValue && !await _context.Barrios.AnyAsync(b => b.IdBarrio == barrioId.Value))
+        {
+            return BadRequest("El barrio indicado no existe.");
+        }
+
+        var nombre = unidadUpdate.Nombre.Trim().ToUpper();
+        if (await _context.UnidadesTransito.AnyAsync(u =>
+                u.Nombre != null && u.Nombre.ToUpper() == nombre && u.IdUnidadTransito != id))
+        {
+            return Conflict("Ya existe otra unidad con ese nombre.");
+        }
+
+        unidad.Nombre = nombre;
+        unidad.Estado = unidadUpdate.Estado.Trim().ToUpper();
         unidad.Latitud = unidadUpdate.Latitud;
         unidad.Longitud = unidadUpdate.Longitud;
-        unidad.BarrioId = unidadUpdate.BarrioId;
+        unidad.BarrioId = barrioId;
 
-
-        
         await _context.SaveChangesAsync();
-       
 
         return NoContent();
     }
 
-    // POST: api/UnidadTransito
-    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    // POST: api/UnidadTransitoes
     [HttpPost]
     public async Task<ActionResult<UnidadTransitoDTO>> PostUnidadTransito(UnidadTransitoCreateDTO unidadCreate)
     {
-        if (await _context.UnidadesTransito.AnyAsync(u => u.Nombre == unidadCreate.Nombre))
+        var nombre = unidadCreate.Nombre.Trim().ToUpper();
+        if (await _context.UnidadesTransito.AnyAsync(u => u.Nombre != null && u.Nombre.ToUpper() == nombre))
         {
             return Conflict("Ya existe una unidad con ese nombre.");
         }
 
-       
         var barrioId = unidadCreate.BarrioId;
         if (barrioId.HasValue && barrioId.Value <= 0)
         {
@@ -121,10 +133,11 @@ public class UnidadTransitoesController : ControllerBase
             return BadRequest("El barrio indicado no existe.");
         }
 
+        // El ID lo genera el trigger TRG_ID_UNIDADES_TRANSITO
         var unidad = new UnidadTransito
         {
-            Nombre = unidadCreate.Nombre,
-            Estado = unidadCreate.Estado,
+            Nombre = nombre,
+            Estado = unidadCreate.Estado.Trim().ToUpper(),
             Latitud = unidadCreate.Latitud,
             Longitud = unidadCreate.Longitud,
             BarrioId = barrioId
@@ -133,15 +146,14 @@ public class UnidadTransitoesController : ControllerBase
         _context.UnidadesTransito.Add(unidad);
         await _context.SaveChangesAsync();
 
-       
         var creada = await GetUnidadTransito(unidad.IdUnidadTransito);
 
         return CreatedAtAction("GetUnidadTransito", new { id = unidad.IdUnidadTransito }, creada.Value);
     }
 
-    // DELETE: api/UnidadTransito/5
+    // DELETE: api/UnidadTransitoes/5
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteUnidadTransito(int? id)
+    public async Task<IActionResult> DeleteUnidadTransito(int id)
     {
         var unidad = await _context.UnidadesTransito.FindAsync(id);
         if (unidad == null)
@@ -149,14 +161,23 @@ public class UnidadTransitoesController : ControllerBase
             return NotFound();
         }
 
-        _context.UnidadesTransito.Remove(unidad);
-        await _context.SaveChangesAsync();
+        var totalAgentes = await _context.AgentesTransito.CountAsync(a => a.UnidadTransitoId == id);
+        if (totalAgentes > 0)
+        {
+            return Conflict("No se puede eliminar: la unidad tiene " + totalAgentes + " agente(s) asignado(s).");
+        }
+
+        try
+        {
+            _context.UnidadesTransito.Remove(unidad);
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateException)
+        {
+            // ORA-02292: la unidad tiene asignaciones o atenciones que la referencian
+            return Conflict("No se puede eliminar: la unidad tiene registros asociados.");
+        }
 
         return NoContent();
-    }
-
-    private bool UnidadTransitoExists(int? idunidadtransito)
-    {
-        return _context.UnidadesTransito.Any(e => e.IdUnidadTransito == idunidadtransito);
     }
 }

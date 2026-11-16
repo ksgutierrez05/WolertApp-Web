@@ -3,38 +3,30 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace backend.Models
 {
-	public class Usuario
-	{
-		[Key]
-		public int IdUsuario { get; set; }
-		public string Cedula { get; set; } = null!;
-		public string PrimerNombre { get; set; } = null!;
-		public string? SegundoNombre { get; set; }
-		public string PrimerApellido { get; set; } = null!;
-		public string? SegundoApellido { get; set; }
-		public string Correo { get; set; } = null!;
-		public string? Telefono { get; set; }
-		public string Username { get; set; } = null!;
-		public string PasswordHash { get; set; } = null!;
-		public string? Calle { get; set; }
-		public string? Carrera { get; set; }
-		public string? Etapa { get; set; }
-		public string? Manzana { get; set; }
-		 public string? Casa { get; set; }
-		public string Estado { get; set; } = "activo";
+    [Table("USUARIOS")]
+    public class Usuario
+    {
+        [Key, Column("ID_USUARIO")] public int IdUsuario { get; set; }
+        [Column("CEDULA")] public string? Cedula { get; set; }
+        [Column("PRIMER_NOMBRE")] public string? PrimerNombre { get; set; }
+        [Column("SEGUNDO_NOMBRE")] public string? SegundoNombre { get; set; }
+        [Column("PRIMER_APELLIDO")] public string? PrimerApellido { get; set; }
+        [Column("SEGUNDO_APELLIDO")] public string? SegundoApellido { get; set; }
+        [Column("EMAIL")] public string? Correo { get; set; }
+        [Column("TELEFONO")] public string? Telefono { get; set; }
+        [Column("USERNAME")] public string? Username { get; set; }
+        [Column("PASSWORD")] public string? PasswordHash { get; set; }
+        [Column("CALLE")] public string? Calle { get; set; }
+        [Column("CARRERA")] public string? Carrera { get; set; }
+        [Column("ETAPA")] public string? Etapa { get; set; }
+        [Column("MANZANA")] public string? Manzana { get; set; }
+        [Column("CASA")] public string? Casa { get; set; }
+        [Column("ACTIVO")] public string? Estado { get; set; } = "ACTIVO";
 
-		public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
+        [Column("ID_ROL")] public int? RolId { get; set; }
+        [ForeignKey(nameof(RolId))] public Rol? Rol { get; set; }
 
-		public int RolId { get; set; }
-		[ForeignKey(nameof(RolId))]
-		public Rol Rol { get; set; } = null!;
-
-		public int? BarrioId { get; set; }
-		[ForeignKey(nameof(BarrioId))]
-		public Barrio? Barrio { get; set; }
-
-		public int? CreadoPorId { get; set; }
-		[ForeignKey(nameof(CreadoPorId))]
-		public Usuario? CreadoPor { get; set; }
-	}
+        [Column("ID_BARRIO")] public int? BarrioId { get; set; }
+        [ForeignKey(nameof(BarrioId))] public Barrio? Barrio { get; set; }
+    }
 }

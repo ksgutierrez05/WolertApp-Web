@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace backend.Controllers
 {
-
     [Route("api/[controller]")]
     [ApiController]
     public class UnidadesController : ControllerBase
@@ -46,13 +45,12 @@ namespace backend.Controllers
                     Estado = u.Estado,
                     Latitud = u.Latitud,
                     Longitud = u.Longitud,
-                    IdBarrio = u.idBarrio,
+                    IdBarrio = u.IdBarrio,
                     NombreBarrio = u.Barrio != null ? u.Barrio.Nombre : null,
                     Policias = u.Policias.Select(p => new PoliciaListaDTO
                     {
-                        IdPolicia = p.IdPolicia,
                         IdUsuario = p.IdUsuario,
-                        NombreUsuario = p.Usuario!.PrimerNombre + " " + p.Usuario.PrimerApellido,
+                        NombreUsuario = ((p.Usuario!.PrimerNombre ?? "") + " " + (p.Usuario.PrimerApellido ?? "")).Trim(),
                         Cedula = p.Usuario.Cedula,
                         Correo = p.Usuario.Correo,
                         Telefono = p.Usuario.Telefono,
@@ -82,18 +80,20 @@ namespace backend.Controllers
                 return BadRequest("El barrio no existe");
             }
 
-            if (await _context.Unidades.AnyAsync(u => u.Nombre == unidadCreate.Nombre))
+            var nombre = unidadCreate.Nombre.Trim().ToUpper();
+            if (await _context.Unidades.AnyAsync(u => u.Nombre != null && u.Nombre.ToUpper() == nombre))
             {
-                return BadRequest("Ya existe una unidad con ese nombre");
+                return Conflict("Ya existe una unidad con ese nombre");
             }
 
+            // El ID lo genera el trigger TRG_ID_UNIDADES_POLICIALES
             var unidad = new Unidad
             {
-                Nombre = unidadCreate.Nombre,
+                Nombre = nombre,
                 Estado = "OPERATIVA",
-                Latitud = (int)unidadCreate.Latitud,
-                Longitud = (int)unidadCreate.Longitud,
-                idBarrio = unidadCreate.IdBarrio
+                Latitud = unidadCreate.Latitud,
+                Longitud = unidadCreate.Longitud,
+                IdBarrio = unidadCreate.IdBarrio
             };
             _context.Unidades.Add(unidad);
             await _context.SaveChangesAsync();
@@ -127,16 +127,17 @@ namespace backend.Controllers
                 return BadRequest("El barrio no existe");
             }
 
-            if (await _context.Unidades.AnyAsync(u => u.Nombre == unidadUpdate.Nombre && u.IdUnidad != id))
+            var nombre = unidadUpdate.Nombre.Trim().ToUpper();
+            if (await _context.Unidades.AnyAsync(u => u.Nombre != null && u.Nombre.ToUpper() == nombre && u.IdUnidad != id))
             {
-                return BadRequest("Ya existe otra unidad con ese nombre");
+                return Conflict("Ya existe otra unidad con ese nombre");
             }
 
-            unidad.Nombre = unidadUpdate.Nombre;
-            unidad.Estado = unidadUpdate.Estado;
-            unidad.Latitud = (int)unidadUpdate.Latitud;
-            unidad.Longitud = (int)unidadUpdate.Longitud;
-            unidad.idBarrio = unidadUpdate.IdBarrio;
+            unidad.Nombre = nombre;
+            unidad.Estado = unidadUpdate.Estado.Trim().ToUpper();
+            unidad.Latitud = unidadUpdate.Latitud;
+            unidad.Longitud = unidadUpdate.Longitud;
+            unidad.IdBarrio = unidadUpdate.IdBarrio;
 
             await _context.SaveChangesAsync();
 
@@ -156,11 +157,19 @@ namespace backend.Controllers
             var totalPolicias = await _context.Policias.CountAsync(p => p.IdUnidad == id);
             if (totalPolicias > 0)
             {
-                return BadRequest("No se puede eliminar: la unidad tiene " + totalPolicias + " policía(s) asignado(s)");
+                return Conflict("No se puede eliminar: la unidad tiene " + totalPolicias + " policía(s) asignado(s)");
             }
 
-            _context.Unidades.Remove(unidad);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.Unidades.Remove(unidad);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                // ORA-02292: la unidad tiene asignaciones u otros registros que la referencian
+                return Conflict("No se puede eliminar: la unidad tiene registros asociados");
+            }
 
             return NoContent();
         }

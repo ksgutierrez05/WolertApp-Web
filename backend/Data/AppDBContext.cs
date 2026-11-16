@@ -3,55 +3,55 @@ using backend.Models;
 
 namespace backend.Data
 {
-	public class AppDBContext : DbContext
-	{
-		public DbSet<backend.Models.Unidad> Unidades { get; set; } = default!;
-		public DbSet<backend.Models.Policia> Policias { get; set; } = default!;
-		public AppDBContext(DbContextOptions<AppDBContext> options) : base(options) { }
+    public class AppDBContext : DbContext
+    {
+        public AppDBContext(DbContextOptions<AppDBContext> options) : base(options) { }
 
-		// Tablas
-		public DbSet<Rol> Roles { get; set; }
-		public DbSet<Usuario> Usuarios { get; set; }
-		public DbSet<Comuna> Comunas { get; set; }
-		public DbSet<Barrio> Barrios { get; set; }
-        public DbSet<UnidadTransito> UnidadesTransito { get; set; }
-        public DbSet<AgentesTransito> AgentesTransito { get; set; }
-        
+        // Tablas
+        public DbSet<Rol> Roles { get; set; } = default!;
+        public DbSet<Usuario> Usuarios { get; set; } = default!;
+        public DbSet<Comuna> Comunas { get; set; } = default!;
+        public DbSet<Barrio> Barrios { get; set; } = default!;
+        public DbSet<Unidad> Unidades { get; set; } = default!;
+        public DbSet<Policia> Policias { get; set; } = default!;
+        public DbSet<UnidadTransito> UnidadesTransito { get; set; } = default!;
+        public DbSet<AgentesTransito> AgentesTransito { get; set; } = default!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
-		{
-			base.OnModelCreating(modelBuilder);
+        {
+            base.OnModelCreating(modelBuilder);
 
-			ConfigurarUsuarios(modelBuilder);
-			SembrarRoles(modelBuilder);
-		}
+            // Los IDs los generan los triggers + secuencias de la base:
+            // EF no debe enviarlos al insertar, solo leerlos de vuelta.
+            modelBuilder.Entity<Usuario>().Property(u => u.IdUsuario).ValueGeneratedOnAdd();
+            modelBuilder.Entity<Comuna>().Property(c => c.IdComuna).ValueGeneratedOnAdd();
+            modelBuilder.Entity<Barrio>().Property(b => b.IdBarrio).ValueGeneratedOnAdd();
+            modelBuilder.Entity<Rol>().Property(r => r.IdRol).ValueGeneratedOnAdd();
+            modelBuilder.Entity<Unidad>().Property(u => u.IdUnidad).ValueGeneratedOnAdd();
+            modelBuilder.Entity<UnidadTransito>().Property(u => u.IdUnidadTransito).ValueGeneratedOnAdd();
+            // POLICIAS y AGENTES_TRANSITO: la clave es ID_USUARIO (FK a USUARIOS), no se autogenera
+            modelBuilder.Entity<Policia>().Property(p => p.IdUsuario).ValueGeneratedNever();
+            modelBuilder.Entity<AgentesTransito>().Property(a => a.IdUsuario).ValueGeneratedNever();
 
-		// Reglas de la tabla Usuarios
-		private static void ConfigurarUsuarios(ModelBuilder modelBuilder)
-		{
-			var usuario = modelBuilder.Entity<Usuario>();
+            // No se puede borrar un rol si todavía tiene usuarios
+            modelBuilder.Entity<Usuario>()
+                .HasOne(u => u.Rol)
+                .WithMany(r => r.Usuarios)
+                .OnDelete(DeleteBehavior.Restrict);
 
-			// Estos datos no se pueden repetir entre usuarios
-			usuario.HasIndex(u => u.Cedula).IsUnique();
-			usuario.HasIndex(u => u.Correo).IsUnique();
-			usuario.HasIndex(u => u.Username).IsUnique();
-			// No se puede borrar un rol si todavía tiene usuarios
-			usuario.HasOne(u => u.Rol) .WithMany(r => r.Usuarios) .OnDelete(DeleteBehavior.Restrict);
-		}
+            // La base no tiene ON DELETE CASCADE: que EF no lo asuma.
+            // Si hay registros dependientes, el DELETE falla con ORA-02292 y el controlador responde 409.
+            modelBuilder.Entity<Policia>()
+                .HasOne(p => p.Usuario)
+                .WithMany()
+                .HasForeignKey(p => p.IdUsuario)
+                .OnDelete(DeleteBehavior.Restrict);
 
-		// Datos iniciales de la tabla Roles
-		private static void SembrarRoles(ModelBuilder modelBuilder)
-		{
-			modelBuilder.Entity<Rol>().HasData(
-				new Rol { IdRol = 1, Nombre = "Admin" },
-				new Rol { IdRol = 2, Nombre = "Ciudadano" },
-				new Rol { IdRol = 3, Nombre = "Policia" },
-				new Rol { IdRol = 4, Nombre = "AdminPolicia" },
-				new Rol { IdRol = 5, Nombre = "CentralPolicia" },
-				new Rol { IdRol = 6, Nombre = "AgenteTransito" },
-				new Rol { IdRol = 7, Nombre = "CentralTransito"},
-				new Rol { IdRol = 8, Nombre = "DirectorTransito" }
-			);
-		}
-	}
+            modelBuilder.Entity<Policia>()
+                .HasOne(p => p.Unidad)
+                .WithMany(u => u.Policias)
+                .HasForeignKey(p => p.IdUnidad)
+                .OnDelete(DeleteBehavior.Restrict);
+        }
+    }
 }
