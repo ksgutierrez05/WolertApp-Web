@@ -5,6 +5,7 @@ namespace backend.Data
 {
     public class AppDBContext : DbContext
     {
+     
         public AppDBContext(DbContextOptions<AppDBContext> options) : base(options) { }
 
         // Tablas
@@ -16,6 +17,8 @@ namespace backend.Data
         public DbSet<Policia> Policias { get; set; } = default!;
         public DbSet<UnidadTransito> UnidadesTransito { get; set; } = default!;
         public DbSet<AgentesTransito> AgentesTransito { get; set; } = default!;
+        public DbSet<Alerta> Alertas { get; set; } = default!;
+        public DbSet<TipoAlerta> TiposAlerta { get; set; } = default!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -32,6 +35,8 @@ namespace backend.Data
             // POLICIAS y AGENTES_TRANSITO: la clave es ID_USUARIO (FK a USUARIOS), no se autogenera
             modelBuilder.Entity<Policia>().Property(p => p.IdUsuario).ValueGeneratedNever();
             modelBuilder.Entity<AgentesTransito>().Property(a => a.IdUsuario).ValueGeneratedNever();
+            modelBuilder.Entity<Alerta>().Property(a => a.IdAlerta).ValueGeneratedOnAdd();
+            modelBuilder.Entity<TipoAlerta>().Property(t => t.IdTipoAlerta).ValueGeneratedOnAdd();
 
             // No se puede borrar un rol si todavía tiene usuarios
             modelBuilder.Entity<Usuario>()
