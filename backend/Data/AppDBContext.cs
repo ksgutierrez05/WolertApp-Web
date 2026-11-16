@@ -1,5 +1,6 @@
-using Microsoft.EntityFrameworkCore;
 using backend.Models;
+using Microsoft.EntityFrameworkCore;
+using WolertApp.Models;
 
 namespace backend.Data
 {
@@ -19,6 +20,11 @@ namespace backend.Data
         public DbSet<AgentesTransito> AgentesTransito { get; set; } = default!;
         public DbSet<Alerta> Alertas { get; set; } = default!;
         public DbSet<TipoAlerta> TiposAlerta { get; set; } = default!;
+        public DbSet<TipoArma> TiposArma => Set<TipoArma>();
+        public DbSet<MedioTransporte> MediosTransporte => Set<MedioTransporte>();
+        public DbSet<Semaforo> Semaforos => Set<Semaforo>();
+        public DbSet<Alarma> Alarmas => Set<Alarma>();
+        public DbSet<Suscripcion> Suscripciones => Set<Suscripcion>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -37,7 +43,28 @@ namespace backend.Data
             modelBuilder.Entity<AgentesTransito>().Property(a => a.IdUsuario).ValueGeneratedNever();
             modelBuilder.Entity<Alerta>().Property(a => a.IdAlerta).ValueGeneratedOnAdd();
             modelBuilder.Entity<TipoAlerta>().Property(t => t.IdTipoAlerta).ValueGeneratedOnAdd();
+            modelBuilder.Entity<TipoArma>().Property(t => t.IdTipoArma).ValueGeneratedOnAdd();
+            modelBuilder.Entity<MedioTransporte>().Property(m => m.IdMedioTransporte).ValueGeneratedOnAdd();
 
+            // SEMAFOROS: ID por trigger TRG_ID_SEMAFOROS (ejecutar antes SQL/TRG_ID_SEMAFOROS.sql)
+            modelBuilder.Entity<Semaforo>(e =>
+            {
+                e.Property(s => s.IdSemaforo).ValueGeneratedOnAdd();
+                e.Property(s => s.Latitud).HasPrecision(10, 7);
+                e.Property(s => s.Longitud).HasPrecision(10, 7);
+            });
+
+            modelBuilder.Entity<Alarma>(e =>
+            {
+                e.Property(a => a.IdAlarma).ValueGeneratedOnAdd();
+                e.Property(a => a.Latitud).HasColumnType("NUMBER");
+                e.Property(a => a.Longitud).HasColumnType("NUMBER");
+                e.Property(a => a.RadioCobertura).HasColumnType("NUMBER");
+                // La escribe el trigger TRG_FECHA_ACTIVACION_ALARMA: EF no la envía y la vuelve a leer
+                e.Property(a => a.FechaActivacion).ValueGeneratedOnAddOrUpdate();
+            });
+
+            modelBuilder.Entity<Suscripcion>().Property(s => s.IdSuscripcion).ValueGeneratedOnAdd();
             // No se puede borrar un rol si todavía tiene usuarios
             modelBuilder.Entity<Usuario>()
                 .HasOne(u => u.Rol)
