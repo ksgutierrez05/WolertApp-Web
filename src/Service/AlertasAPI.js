@@ -1,4 +1,4 @@
-const API = 'http://localhost:5000';
+const API = 'http://localhost:5039';
 
 function obtenerToken() {
     return localStorage.getItem('token');
@@ -53,7 +53,7 @@ export async function eliminarAlerta(id) {
     if (!respuesta.ok) {
         throw new Error(`Error al eliminar la alerta: ${await respuesta.text()}`);
     }
-    return await respuesta.json();
+    return respuesta.status === 204 ? null : await respuesta.json();
 }
 
 export async function listarAlertasPorAlcance(alcance = 'todas') {

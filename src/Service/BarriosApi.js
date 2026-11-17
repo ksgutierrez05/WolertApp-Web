@@ -1,4 +1,4 @@
-const API = 'localhost:5000';
+const API = 'http://localhost:5039';
 
 export async function ListarBarrios(){
     const respuesta = await fetch(`http://${API}/api/barrios`);

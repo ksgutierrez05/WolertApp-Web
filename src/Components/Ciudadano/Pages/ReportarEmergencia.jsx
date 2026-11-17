@@ -8,7 +8,7 @@ import '../../../css/ciudadano/reportar-emergencia.css';
 import { crearAlerta } from '../../../Service/AlertasAPI.js';
 import { listarTiposAlerta } from '../../../Service/TipoAlertasAPI.js';
 
-const API = 'http://localhost:5000';
+const API = 'http://localhost:5039';
 const CENTRO_INICIAL = [10.4731, -73.2446]; // Valledupar
 
 // Token público de Mapbox (empieza con pk.). Va en el archivo .env: VITE_MAPBOX_TOKEN=pk.xxxxx
