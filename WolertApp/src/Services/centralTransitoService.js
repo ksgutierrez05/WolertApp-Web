@@ -2,10 +2,12 @@
 import { consultarTransito } from "../Services/transitoApi";
 
 const RUTAS = {
+
   agentes: "/api/AgentesTransitoes",
   unidades: "/api/UnidadTransitoes",
   atenciones: "/api/AtencionesTransito",
   alertas: "/api/Alertas",
+  tiposAlerta: "/api/TipoAlertas",
 };
 
 function convertirLista(datos) {

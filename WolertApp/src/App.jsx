@@ -1,52 +1,45 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-// import PanelPrincipal from '../src/Pages/director-transito/PanelPrincipal';
-// import Casos from '../src/pages/director-transito/Casos';
-// import Agentes from '../src/Pages/director-transito/Agentes';
-// import Semaforos from '../src/Pages/director-transito/Semaforos';
-// import Reportes from '../src/Pages/director-transito/Reportes';
-// import Catalogo from '../src/Pages/director-transito/Catalogo';
-// import Configuracion from '../src/Pages/director-transito/Configuracion';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import RutaProtegida from './Components/RutaProtegida';
+import Landing from './Pages/Landing/Landing';
+import Login from './Pages/Login/Login';
+import Admin from './Pages/Admin/admin';
+import Ciudadano from './Pages/Ciudadano/ciudadano';
 
-import CentralPanel from './Pages/central-transito/PanelPrincipal';
- import CentralCasos from './Pages/central-transito/Casos';
-import CentralAgentes from './Pages/central-transito/Agentes';
- import CentralHistorial from './Pages/central-transito/Historial';
- import CentralInforme from './Pages/central-transito/Reportes';
- import CentralConfiguracion from './Pages/central-transito/Configuracion';
+// Tránsito
+import Director from './Pages/transito/Director';
+import Central from './Pages/transito/Central';
+import Agente from './Pages/transito/Agente';
 
-//import AgentePanel from './Pages/agentes-transito/PanelPrincipal';
-//import AgenteGrupo from './Pages/agentes-transito/Grupo';
-//import AgenteHistorial from './Pages/agentes-transito/Historial';
-//import AgenteConfiguracion from './Pages/agentes-transito/Configuracion';
-
-export default function App() {
+function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* <Route path="/" element={<Navigate to="/transito/director/panel" replace />} />
-        <Route path="/transito/director/panel" element={<PanelPrincipal />} />
-        <Route path="/transito/director/casos" element={<Casos />} />
-        <Route path="/transito/director/agentes" element={<Agentes />} />
-        <Route path="/transito/director/semaforos" element={<Semaforos />} />
-        <Route path="/transito/director/reportes" element={<Reportes />} />
-        <Route path="/transito/director/catalogo" element={<Catalogo />} />
-        <Route path="/transito/director/configuracion" element={<Configuracion />} /> */}
-        
-         <Route path="/" element={<Navigate to="/transito/central/panel" replace/>} />
-        <Route path="/transito/central/panel" element={<CentralPanel />} />
-        <Route path="/transito/central/asignar" element={<CentralCasos />} />
-        <Route path="/transito/central/agentes" element={<CentralAgentes />} />
-        <Route path="/transito/central/historial" element={<CentralHistorial />} />
-        <Route path="/transito/central/reportes" element={<CentralInforme />} />
-        <Route path="/transito/central/configuracion" element={<CentralConfiguracion />} /> 
-        
-        {/*<Route path="/" element={<Navigate to="/transito/agente/panel" replace/>} />
-        <Route path="/transito/agente/panel" element={<AgentePanel />} />
-        <Route path="/transito/agente/grupo" element={<AgenteGrupo />} />
-        <Route path="/transito/agente/historial" element={<AgenteHistorial />} />
-        <Route path="/transito/agente/configuracion" element={<AgenteConfiguracion />} />*/}
-      
+        <Route path="/" element={<Landing />} />
+        <Route path="/login" element={<Login />} />
+
+        <Route element={<RutaProtegida roles={['ADMIN']} />}>
+          <Route path="/admin/*" element={<Admin />} />
+        </Route>
+
+        <Route element={<RutaProtegida roles={['CIUDADANO']} />}>
+          <Route path="/ciudadano/*" element={<Ciudadano />} />
+        </Route>
+
+        {/* Tránsito */}
+        <Route element={<RutaProtegida roles={['ADMIN_TRANSITO', 'DirectorTransito']} />}>
+          <Route path="/transito/director/*" element={<Director />} />
+        </Route>
+
+        <Route element={<RutaProtegida roles={['CENTRAL_TRANSITO']} />}>
+          <Route path="/transito/central/*" element={<Central />} />
+        </Route>
+
+        <Route element={<RutaProtegida roles={['AGENTE_TRANSITO']} />}>
+          <Route path="/transito/agente/*" element={<Agente />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );
 }
+
+export default App;
