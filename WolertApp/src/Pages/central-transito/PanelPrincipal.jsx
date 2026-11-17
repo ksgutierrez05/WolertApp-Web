@@ -1,198 +1,758 @@
-import { useState } from 'react';
-import Layout from '../../Components/transito/Layout';
-import KpiCard from '../../Components/transito/KpiCard';
 
-const COLA = [
-  { tipo: 'SEMÁFORO DAÑADO', color: 'amber', lugar: 'Barrio El Poblado', quien: 'Camila Restrepo', espera: '15 min', urgente: true },
-  { tipo: 'ACCIDENTE', color: 'red', lugar: 'Calle 33 con Av. Regional', quien: 'Andrés Salazar', espera: '6 min', urgente: true },
-  { tipo: 'CHOQUE', color: 'blue', lugar: 'Barrio Belén', quien: 'Mariana Ríos', espera: '4 min', urgente: false },
-  { tipo: 'EMBOTELLAMIENTO', color: 'amber', lugar: 'Barrio Laureles', quien: 'Julián Herrera', espera: '2 min', urgente: false },
-  { tipo: 'VÍA OBSTRUIDA', color: 'blue', lugar: 'Barrio Manrique', quien: 'Sofía Londoño', espera: '1 min', urgente: false },
-];
+import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 
-const AGENTES = [
-  { ini: 'AC', nombre: 'Andrea Cárdenas', zona: 'Zona Norte · Moto 14', estado: 'Disponible', badge: 'green' },
-  { ini: 'FO', nombre: 'Felipe Ossa', zona: 'Zona Centro · Moto 07', estado: 'En ruta', badge: 'blue' },
-  { ini: 'MZ', nombre: 'Manuela Zapata', zona: 'Zona Sur · Moto 22', estado: 'En atención', badge: 'purple' },
-  { ini: 'JR', nombre: 'Jorge Iván Ruiz', zona: 'Zona Oriente · Moto 11', estado: 'Disponible', badge: 'green' },
-  { ini: 'PG', nombre: 'Paula Andrea Gómez', zona: 'Zona Norte · Moto 03', estado: 'Fuera de servicio', badge: 'gray' },
-];
+import Layout from "../../Components/transito/Layout";
+import KpiCard from "../../Components/transito/KpiCard";
 
-const DESPACHOS = [
-  { grupo: 'semaforo', agente: 'Andrea Cárdenas', fecha: '14/9/2026 · 08:50 a.m.', tipo: 'SEMÁFORO DAÑADO', tc: 'amber', barrio: 'El Poblado', estado: 'En atención', ec: 'amber' },
-  { grupo: 'accidente', agente: 'Felipe Ossa', fecha: '14/9/2026 · 08:20 a.m.', tipo: 'ACCIDENTE', tc: 'red', barrio: 'Calle 33 con Av. Regional', estado: 'Crítica', ec: 'red' },
-  { grupo: 'choque', agente: 'Manuela Zapata', fecha: '13/9/2026 · 09:40 p.m.', tipo: 'CHOQUE', tc: 'blue', barrio: 'Belén', estado: 'En camino', ec: 'blue' },
-  { grupo: 'otras', agente: 'Jorge Iván Ruiz', fecha: '13/9/2026 · 07:10 p.m.', tipo: 'EMBOTELLAMIENTO', tc: 'amber', barrio: 'Laureles', estado: 'Resuelta', ec: 'green' },
-];
+import {
+  listarAgentesCentral,
+  listarUnidadesCentral,
+  listarAtencionesCentral,
+  listarAlertasCentral,
+  prepararColaCentral,
+  prepararAgentesCentral,
+  finalizadaCentral,
+  fechaRegistroCentral,
+  fechaCentral,
+  tipoCentral,
+  lugarCentral,
+  reportanteCentral,
+  badgeTipoCentral,
+  tiempoEsperaCentral,
+  idAlertaCentral,
+  idAtencionCentral,
+  normalizarCentral,
+} from "../../Services/centralTransitoService";
 
-const TABS = [
-  { id: 'todas', label: 'Todas (32)' },
-  { id: 'semaforo', label: 'Semáforo dañado (11)' },
-  { id: 'accidente', label: 'Accidente (8)' },
-  { id: 'choque', label: 'Choque (7)' },
-  { id: 'otras', label: 'Otras (6)' },
-];
+const ESTADOS = {
+  disponible: {
+    texto: "Disponible",
+    color: "green",
+  },
+  atencion: {
+    texto: "En atención",
+    color: "amber",
+  },
+  "no-disponible": {
+    texto: "No disponible",
+    color: "gray",
+  },
+  desconocido: {
+    texto: "No informado",
+    color: "gray",
+  },
+};
 
 export default function PanelPrincipal() {
-  const [tab, setTab] = useState('todas');
-  const filas = tab === 'todas' ? DESPACHOS : DESPACHOS.filter((d) => d.grupo === tab);
-  const fecha = new Date().toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase();
+  const [agentes, setAgentes] = useState([]);
+  const [unidades, setUnidades] = useState([]);
+  const [atenciones, setAtenciones] = useState([]);
+  const [alertas, setAlertas] = useState([]);
+
+  const [cargando, setCargando] = useState(true);
+  const [errores, setErrores] = useState([]);
+  const [alertasCargadas, setAlertasCargadas] =
+    useState(false);
+  const [atencionesCargadas, setAtencionesCargadas] =
+    useState(false);
+  const [agentesCargados, setAgentesCargados] =
+    useState(false);
+  const [tab, setTab] = useState("todas");
+
+  useEffect(() => {
+    let activo = true;
+
+    async function cargarDatos() {
+      const resultados = await Promise.allSettled([
+        listarAgentesCentral(),
+        listarUnidadesCentral(),
+        listarAtencionesCentral(),
+        listarAlertasCentral(),
+      ]);
+
+      if (!activo) return;
+
+      const [
+        resultadoAgentes,
+        resultadoUnidades,
+        resultadoAtenciones,
+        resultadoAlertas,
+      ] = resultados;
+
+      const mensajes = [];
+
+      if (resultadoAgentes.status === "fulfilled") {
+        setAgentes(resultadoAgentes.value);
+        setAgentesCargados(true);
+      } else {
+        mensajes.push(
+          `Agentes: ${resultadoAgentes.reason?.message || "Error de consulta"}`
+        );
+      }
+
+      if (resultadoUnidades.status === "fulfilled") {
+        setUnidades(resultadoUnidades.value);
+      } else {
+        mensajes.push(
+          `Unidades: ${resultadoUnidades.reason?.message || "Error de consulta"}`
+        );
+      }
+
+      if (resultadoAtenciones.status === "fulfilled") {
+        setAtenciones(resultadoAtenciones.value);
+        setAtencionesCargadas(true);
+      } else {
+        mensajes.push(
+          `Atenciones: ${resultadoAtenciones.reason?.message || "Error de consulta"}`
+        );
+      }
+
+      if (resultadoAlertas.status === "fulfilled") {
+        setAlertas(resultadoAlertas.value);
+        setAlertasCargadas(true);
+      } else {
+        mensajes.push(
+          `Alertas: ${resultadoAlertas.reason?.message || "Error de consulta"}`
+        );
+      }
+
+      setErrores(mensajes);
+      setCargando(false);
+    }
+
+    cargarDatos();
+
+    return () => {
+      activo = false;
+    };
+  }, []);
+
+  const cola = useMemo(
+    () => prepararColaCentral(alertas, atenciones),
+    [alertas, atenciones]
+  );
+
+  const agentesVista = useMemo(
+    () =>
+      prepararAgentesCentral(
+        agentes,
+        unidades,
+        atenciones
+      ),
+    [agentes, unidades, atenciones]
+  );
+
+  const despachos = useMemo(
+    () =>
+      [...atenciones].sort((a, b) => {
+        const fechaA = new Date(
+          fechaRegistroCentral(a) || 0
+        ).getTime();
+
+        const fechaB = new Date(
+          fechaRegistroCentral(b) || 0
+        ).getTime();
+
+        return fechaB - fechaA;
+      }),
+    [atenciones]
+  );
+
+  const tipos = useMemo(
+    () =>
+      [
+        ...new Set(
+          despachos.map((item) => tipoCentral(item))
+        ),
+      ],
+    [despachos]
+  );
+
+  const despachosFiltrados = despachos.filter(
+    (item) =>
+      tab === "todas" ||
+      normalizarCentral(tipoCentral(item)) ===
+      normalizarCentral(tab)
+  );
+
+  const agentesEnServicio = agentesVista.filter(
+    (agente) =>
+      agente.estado === "disponible" ||
+      agente.estado === "atencion"
+  ).length;
+
+  const completadosHoy = atenciones.filter(
+    (atencion) => {
+      if (!finalizadaCentral(atencion)) {
+        return false;
+      }
+
+      const valor =
+        atencion.fechaFinalizacion ||
+        atencion.fechaCierre ||
+        atencion.fechaAtencion;
+
+      if (!valor) return false;
+
+      const fecha = new Date(valor);
+
+      return (
+        !Number.isNaN(fecha.getTime()) &&
+        fecha.toDateString() ===
+        new Date().toDateString()
+      );
+    }
+  ).length;
+
+  function nombreAgenteAsignado(atencion) {
+    const id =
+      atencion.idAgenteTransito ??
+      atencion.agenteTransitoId;
+
+    const agente = agentesVista.find(
+      (item) =>
+        id != null &&
+        item.id != null &&
+        String(item.id) === String(id)
+    );
+
+    return (
+      agente?.nombre ||
+      atencion.nombreAgente ||
+      "No identificado"
+    );
+  }
+
+  const fechaActual = new Date()
+    .toLocaleDateString("es-CO", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    })
+    .toUpperCase();
 
   return (
-    <Layout rol="central" titulo="Panel Central de Despacho" activo="panel" claseTopbar="mb-4"
-      busqueda={{ placeholder: 'Buscar por caso, agente o barrio...' }}>
-
-      {/* hero */}
+    <Layout
+      rol="central"
+      titulo="Panel Central de Despacho"
+      activo="panel"
+      claseTopbar="mb-4"
+      busqueda={{
+        placeholder:
+          "Buscar por caso, agente o barrio...",
+      }}
+    >
+      {/* BIENVENIDA */}
       <div className="hero-dash hero-img-dash mb-4">
         <div className="eyebrow-dash eyebrow-img-dash">
-          <i className="bi bi-shield-check"></i>
-          <span>CENTRAL DE DESPACHO · {fecha}</span>
+          <i className="bi bi-shield-check me-2" />
+          <span>
+            CENTRAL DE DESPACHO · {fechaActual}
+          </span>
         </div>
-        <h1 className="hero-title-dash">¡Bienvenido,<br />central de despacho!</h1>
+
+        <h1 className="hero-title-dash">
+          ¡Bienvenido,
+          <br />
+          central de despacho!
+        </h1>
+
         <p className="hero-text-dash">
-          Hay 9 reportes en cola y 5 agentes en ruta en este momento. Sistema operativo con monitoreo en tiempo real.
+          {alertasCargadas && atencionesCargadas
+            ? `Hay ${cola.length} reportes en cola y ${agentesEnServicio} agentes en servicio.`
+            : "Consulta los reportes, agentes y despachos registrados."}
         </p>
-        <a href="#" className="btn btn-light rounded-pill fw-bold mt-3 hero-cta-dash">
-          <span className="dot-danger-dash"></span> Ver cola de despacho
+
+        <a
+          href="#colaDespacho"
+          className="btn btn-light rounded-pill fw-bold mt-3 hero-cta-dash"
+        >
+          <span className="dot-danger-dash" />
+          {" "}Ver cola de despacho
         </a>
       </div>
 
-      {/* KPI */}
-      <div className="row g-3 mb-4">
-        <KpiCard variante="panel" color="red"   valor="9"       label="Reportes en cola"           icono="bi-inboxes" />
-        <KpiCard variante="panel" color="blue"  valor="1.4 min" label="Tiempo prom. de despacho"   icono="bi-stopwatch" />
-        <KpiCard variante="panel" color="green" valor="32"      label="Despachos completados hoy"  icono="bi-check2-circle" />
-        <KpiCard variante="panel" color="amber" valor="13/15"   label="Agentes en servicio"        icono="bi-shield-check" />
-      </div>
-
-      {/* cola de despacho */}
-      <div className="sec-head-pd">
-        <h2 id="tituloSinAsignar">Cola de despacho</h2>
-        <a className="see-all-dash" href="#">Ver todos <i className="bi bi-chevron-right"></i></a>
-      </div>
-      <div className="panel-pd mb-4">
-        <table className="tabla-pd">
-          <thead>
-            <tr><th>Tipo</th><th>Ubicación / reportante</th><th>Espera</th><th className="text-end">&nbsp;</th></tr>
-          </thead>
-          <tbody>
-            {COLA.map((c) => (
-              <tr key={c.lugar} className="unassigned-row-pd">
-                <td><span className={`badge-dash badge-${c.color}-dash`}>{c.tipo}</span></td>
-                <td>
-                  <div className="info-title-dash">{c.lugar}</div>
-                  <div className="info-sub-dash">Reportado por {c.quien}</div>
-                </td>
-                <td><span className={`wait-dash ${c.urgente ? 'wait-urgent-dash' : 'wait-warn-dash'}`}>{c.espera}</span></td>
-                <td className="text-end"><button className="assign-btn-pd">Despachar agente</button></td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* mapa */}
-      <div className="sec-head-pd"><h2 className="titulos">Mapa de despacho en tiempo real</h2></div>
-      <div className="panel-pd mb-4">
-        <div className="mapa-canvas-pd">
-          <svg className="base-pd" viewBox="0 0 600 320" preserveAspectRatio="none">
-            <rect width="600" height="320" fill="#eef2e6" />
-            <ellipse cx="470" cy="70" rx="110" ry="80" fill="#dcead2" />
-            <ellipse cx="90" cy="240" rx="100" ry="90" fill="#dcead2" />
-            <path d="M560,0 C500,60 520,140 470,200 C430,250 460,300 420,320 L600,320 L600,0 Z" fill="#cfe6f0" />
-            <g stroke="#d7d2c2" strokeWidth="6">
-              <line x1="0" y1="80" x2="600" y2="80" />
-              <line x1="0" y1="170" x2="600" y2="170" />
-              <line x1="0" y1="250" x2="600" y2="250" />
-              <line x1="120" y1="0" x2="120" y2="320" />
-              <line x1="260" y1="0" x2="260" y2="320" />
-              <line x1="400" y1="0" x2="400" y2="320" />
-            </g>
-            <line x1="0" y1="130" x2="600" y2="200" stroke="#e7c98a" strokeWidth="9" />
-          </svg>
-          <div className="map-pin-pd" style={{ left: '22%', top: '26%' }}><span className="dot-pd green"></span></div>
-          <div className="map-pin-pd" style={{ left: '41%', top: '18%' }}><span className="dot-pd blue"></span></div>
-          <div className="map-pin-pd" style={{ left: '63%', top: '38%' }}><span className="dot-pd purple"></span></div>
-          <div className="map-pin-pd" style={{ left: '33%', top: '64%' }}><span className="dot-pd green"></span></div>
-          <div className="map-pin-pd" style={{ left: '78%', top: '68%' }}><span className="dot-pd amber"></span></div>
-          <div className="map-pin-pd" style={{ left: '17%', top: '83%' }}><span className="dot-pd gray"></span></div>
+      {/* MENSAJES DE API */}
+      {cargando && (
+        <div className="alert alert-info">
+          <i className="bi bi-arrow-repeat me-2" />
+          Cargando información de Central de Tránsito...
         </div>
-        <div className="map-legend-pd">
-          <b>Estado de agentes</b>
-          <ul>
-            <li><span className="sw-pd" style={{ backgroundColor: 'var(--color-green)' }}></span>Disponible</li>
-            <li><span className="sw-pd" style={{ backgroundColor: 'var(--color-blue)' }}></span>En ruta</li>
-            <li><span className="sw-pd" style={{ backgroundColor: '#7c4fc9' }}></span>En atención</li>
-            <li><span className="sw-pd" style={{ backgroundColor: 'var(--color-amber)' }}></span>En pausa</li>
-            <li><span className="sw-pd" style={{ backgroundColor: '#8a94a6' }}></span>Fuera de servicio</li>
+      )}
+
+      {errores.length > 0 && (
+        <div
+          className="alert alert-warning"
+          role="alert"
+        >
+          <strong>
+            Algunas consultas no se completaron:
+          </strong>
+
+          <ul className="mb-0 mt-2">
+            {errores.map((error, indice) => (
+              <li key={indice}>{error}</li>
+            ))}
           </ul>
         </div>
-        <a href="#" className="map-cta-pd"><i className="bi bi-map"></i> Ver mapa completo</a>
+      )}
+
+      {/* INDICADORES */}
+      <div className="row g-3 mb-4">
+        <KpiCard
+          variante="panel"
+          color="red"
+          valor={
+            alertasCargadas && atencionesCargadas
+              ? cola.length
+              : "—"
+          }
+          label="Reportes en cola"
+          icono="bi-inboxes"
+        />
+
+        <KpiCard
+          variante="panel"
+          color="blue"
+          valor="—"
+          label="Tiempo prom. de despacho"
+          icono="bi-stopwatch"
+        />
+
+        <KpiCard
+          variante="panel"
+          color="green"
+          valor={
+            atencionesCargadas
+              ? completadosHoy
+              : "—"
+          }
+          label="Despachos completados hoy"
+          icono="bi-check2-circle"
+        />
+
+        <KpiCard
+          variante="panel"
+          color="amber"
+          valor={
+            agentesCargados
+              ? `${agentesEnServicio}/${agentes.length}`
+              : "—"
+          }
+          label="Agentes en servicio"
+          icono="bi-shield-check"
+        />
       </div>
 
-      {/* agentes en servicio */}
-      <div className="sec-head-pd">
-        <h2 className="titulos">Agentes en servicio</h2>
-        <span className="text-muted small">Actualizado hace 1 min</span>
-      </div>
-      <div className="agentes-pd mb-4">
-        {AGENTES.map((a) => (
-          <div key={a.ini} className="agente-row-pd">
-            <div className="agente-info-pd">
-              <span className="agente-avatar-pd">{a.ini}</span>
-              <div>
-                <div className="agente-nombre-pd">{a.nombre}</div>
-                <div className="agente-zona-pd">{a.zona}</div>
-              </div>
-            </div>
-            <span className={`badge-dash badge-${a.badge}-dash`}>{a.estado}</span>
+      {/* COLA DE DESPACHO */}
+      <section id="colaDespacho">
+        <div className="sec-head-pd">
+          <h2 id="tituloSinAsignar">
+            Cola de despacho
+          </h2>
+
+          <Link
+            className="see-all-dash"
+            to="/transito/central/asignar"
+          >
+            Ver todos
+            <i className="bi bi-chevron-right ms-1" />
+          </Link>
+        </div>
+
+        <div className="panel-pd mb-4">
+          <div className="table-responsive">
+            <table className="tabla-pd">
+              <thead>
+                <tr>
+                  <th>Tipo</th>
+                  <th>Ubicación / reportante</th>
+                  <th>Espera</th>
+                  <th className="text-end">
+                    Acción
+                  </th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {cola.slice(0, 5).map(
+                  (caso, indice) => {
+                    const espera = tiempoEsperaCentral(
+                      fechaRegistroCentral(caso)
+                    );
+
+                    const urgente = (() => {
+                      const horas = espera.match(/(\d+)\s*h/);
+                      const minutos = espera.match(/(\d+)\s*min/);
+
+                      const totalMinutos =
+                        (horas ? Number(horas[1]) * 60 : 0) +
+                        (minutos ? Number(minutos[1]) : 0);
+
+                      return espera !== "Sin fecha" && totalMinutos >= 10;
+                    })();
+
+                    return (
+                      <tr
+                        key={
+                          idAlertaCentral(caso) ??
+                          indice
+                        }
+                        className="unassigned-row-pd"
+                      >
+                        <td>
+                          <span
+                            className={`badge-dash badge-${badgeTipoCentral(
+                              tipoCentral(caso)
+                            )}-dash`}
+                          >
+                            {tipoCentral(caso)}
+                          </span>
+                        </td>
+
+                        <td>
+                          <div className="info-title-dash">
+                            {lugarCentral(caso)}
+                          </div>
+
+                          <div className="info-sub-dash">
+                            Reportado por{" "}
+                            {reportanteCentral(caso)}
+                          </div>
+                        </td>
+
+                        <td>
+                          <span
+                            className={`wait-dash ${urgente
+                                ? "wait-urgent-dash"
+                                : "wait-warn-dash"
+                              }`}
+                          >
+                            {espera}
+                          </span>
+                        </td>
+
+                        <td className="text-end">
+                          <Link
+                            className="assign-btn-pd"
+                            to="/transito/central/asignar"
+                          >
+                            Despachar agente
+                          </Link>
+                        </td>
+                      </tr>
+                    );
+                  }
+                )}
+              </tbody>
+            </table>
           </div>
-        ))}
+
+          {cola.length === 0 && (
+            <p className="text-center text-muted py-4 mb-0">
+              {alertasCargadas &&
+                atencionesCargadas
+                ? "No hay casos pendientes de asignación."
+                : "No se pudo determinar la cola de despacho."}
+            </p>
+          )}
+        </div>
+      </section>
+
+      {/* MAPA ILUSTRATIVO */}
+      <div className="sec-head-pd">
+        <h2 className="titulos">
+          Mapa de despacho
+        </h2>
       </div>
 
-      {/* últimos despachos */}
-      <div className="sec-head-pd">
-        <h2 className="titulos">Últimos despachos</h2>
-        <a className="see-all-dash" href="#">Ver todos <i className="bi bi-chevron-right"></i></a>
+      <div className="panel-pd mb-4">
+        <div className="mapa-canvas-pd">
+          <svg
+            className="base-pd"
+            viewBox="0 0 600 320"
+            preserveAspectRatio="none"
+            role="img"
+            aria-label="Mapa ilustrativo de despacho"
+          >
+            <rect
+              width="600"
+              height="320"
+              fill="#eef2e6"
+            />
+
+            <ellipse
+              cx="470"
+              cy="70"
+              rx="110"
+              ry="80"
+              fill="#dcead2"
+            />
+
+            <ellipse
+              cx="90"
+              cy="240"
+              rx="100"
+              ry="90"
+              fill="#dcead2"
+            />
+
+            <path
+              d="M560,0 C500,60 520,140 470,200 C430,250 460,300 420,320 L600,320 L600,0 Z"
+              fill="#cfe6f0"
+            />
+
+            <g
+              stroke="#d7d2c2"
+              strokeWidth="6"
+            >
+              <line
+                x1="0"
+                y1="80"
+                x2="600"
+                y2="80"
+              />
+              <line
+                x1="0"
+                y1="170"
+                x2="600"
+                y2="170"
+              />
+              <line
+                x1="0"
+                y1="250"
+                x2="600"
+                y2="250"
+              />
+              <line
+                x1="120"
+                y1="0"
+                x2="120"
+                y2="320"
+              />
+              <line
+                x1="260"
+                y1="0"
+                x2="260"
+                y2="320"
+              />
+              <line
+                x1="400"
+                y1="0"
+                x2="400"
+                y2="320"
+              />
+            </g>
+
+            <line
+              x1="0"
+              y1="130"
+              x2="600"
+              y2="200"
+              stroke="#e7c98a"
+              strokeWidth="9"
+            />
+          </svg>
+        </div>
+
+        <div className="map-legend-pd">
+          <strong>Mapa ilustrativo</strong>
+
+          <p className="text-muted small mb-0">
+            Para mostrar posiciones reales
+            necesitamos coordenadas de la API.
+          </p>
+        </div>
       </div>
+
+      {/* AGENTES */}
+      <div className="sec-head-pd">
+        <h2 className="titulos">
+          Agentes en servicio
+        </h2>
+
+        <Link
+          className="see-all-dash"
+          to="/transito/central/agentes"
+        >
+          Ver todos
+          <i className="bi bi-chevron-right ms-1" />
+        </Link>
+      </div>
+
+      <div className="agentes-pd mb-4">
+        {agentesVista.slice(0, 5).map(
+          (agente, indice) => {
+            const estado =
+              ESTADOS[agente.estado] ||
+              ESTADOS.desconocido;
+
+            return (
+              <div
+                key={agente.id ?? indice}
+                className="agente-row-pd"
+              >
+                <div className="agente-info-pd">
+                  <span className="agente-avatar-pd">
+                    {agente.iniciales}
+                  </span>
+
+                  <div>
+                    <div className="agente-nombre-pd">
+                      {agente.nombre}
+                    </div>
+
+                    <div className="agente-zona-pd">
+                      {agente.zona} ·{" "}
+                      {agente.grupo}
+                    </div>
+                  </div>
+                </div>
+
+                <span
+                  className={`badge-dash badge-${estado.color}-dash`}
+                >
+                  {estado.texto}
+                </span>
+              </div>
+            );
+          }
+        )}
+
+        {agentesVista.length === 0 && (
+          <p className="text-center text-muted py-4 mb-0">
+            No hay agentes para mostrar.
+          </p>
+        )}
+      </div>
+
+      {/* ÚLTIMOS DESPACHOS */}
+      <div className="sec-head-pd">
+        <h2 className="titulos">
+          Últimos despachos
+        </h2>
+
+        <Link
+          className="see-all-dash"
+          to="/transito/central/historial"
+        >
+          Ver todos
+          <i className="bi bi-chevron-right ms-1" />
+        </Link>
+      </div>
+
       <div className="tabs-pd">
-        {TABS.map((t) => (
-          <button key={t.id} className={`tab-pd ${tab === t.id ? 'active-pd' : ''}`} onClick={() => setTab(t.id)}>
-            {t.label}
+        <button
+          type="button"
+          className={`tab-pd ${tab === "todas" ? "active-pd" : ""
+            }`}
+          onClick={() => setTab("todas")}
+        >
+          Todas ({despachos.length})
+        </button>
+
+        {tipos.map((tipo) => (
+          <button
+            key={tipo}
+            type="button"
+            className={`tab-pd ${tab === tipo ? "active-pd" : ""
+              }`}
+            onClick={() => setTab(tipo)}
+          >
+            {tipo}
           </button>
         ))}
       </div>
+
       <div className="panel-pd">
-        <table className="tabla-pd">
-          <thead>
-            <tr><th>Agente asignado</th><th>Tipo</th><th>Barrio</th><th>Estado</th><th></th></tr>
-          </thead>
-          <tbody>
-            {filas.map((d) => (
-              <tr key={d.agente}>
-                <td>
-                  <div className="info-title-dash">{d.agente}</div>
-                  <div className="info-sub-dash">{d.fecha}</div>
-                </td>
-                <td><span className={`badge-dash badge-${d.tc}-dash`}>{d.tipo}</span></td>
-                <td>{d.barrio}</td>
-                <td><span className={`badge-dash badge-${d.ec}-dash`}>{d.estado}</span></td>
-                <td className="text-end"><a href="#" className="link-btn-dash">Ver detalle</a></td>
+        <div className="table-responsive">
+          <table className="tabla-pd">
+            <thead>
+              <tr>
+                <th>Agente asignado</th>
+                <th>Tipo</th>
+                <th>Barrio</th>
+                <th>Estado</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-        {filas.length === 0 && (
-          <p className="text-center text-muted small mb-0" style={{ padding: 20 }}>Ningún despacho coincide con este filtro.</p>
+            </thead>
+
+            <tbody>
+              {despachosFiltrados
+                .slice(0, 5)
+                .map((despacho, indice) => (
+                  <tr
+                    key={
+                      idAtencionCentral(despacho) ??
+                      indice
+                    }
+                  >
+                    <td>
+                      <div className="info-title-dash">
+                        {nombreAgenteAsignado(
+                          despacho
+                        )}
+                      </div>
+
+                      <div className="info-sub-dash">
+                        {fechaCentral(
+                          fechaRegistroCentral(
+                            despacho
+                          )
+                        )}
+                      </div>
+                    </td>
+
+                    <td>
+                      <span
+                        className={`badge-dash badge-${badgeTipoCentral(
+                          tipoCentral(despacho)
+                        )}-dash`}
+                      >
+                        {tipoCentral(despacho)}
+                      </span>
+                    </td>
+
+                    <td>
+                      {lugarCentral(despacho)}
+                    </td>
+
+                    <td>
+                      <span
+                        className={`badge-dash badge-${finalizadaCentral(
+                          despacho
+                        )
+                            ? "green"
+                            : "amber"
+                          }-dash`}
+                      >
+                        {despacho.estadoFinal ||
+                          despacho.estado ||
+                          "No informado"}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        </div>
+
+        {despachosFiltrados.length === 0 && (
+          <p className="text-center text-muted py-4 mb-0">
+            No hay despachos registrados.
+          </p>
         )}
+
         <div className="paginacion-pd">
-          <span>Mostrando 1–4 de 32 despachos</span>
-          <div className="paginas-pd">
-            <button className="active-pd">1</button>
-            <button>2</button>
-            <button>3</button>
-            <button><i className="bi bi-chevron-right"></i></button>
-          </div>
+          <span>
+            Mostrando{" "}
+            {Math.min(
+              5,
+              despachosFiltrados.length
+            )}{" "}
+            de {despachosFiltrados.length}{" "}
+            despachos
+          </span>
         </div>
       </div>
     </Layout>
