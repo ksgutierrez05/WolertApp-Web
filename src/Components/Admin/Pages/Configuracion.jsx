@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../../../css/global.css';
 import '../../../css/temas.css';
-import '../../../css/admin/configuracion.css';
+import '../../../css/admin/configuracion.css'; // mismos estilos que el panel del admin
 import {
   logOut,
   obtenerUsuarioPorId,
@@ -30,6 +30,11 @@ const CAMPOS = [
   { name: 'correo', label: 'Correo electrónico', type: 'email' },
   { name: 'telefono', label: 'Teléfono', type: 'tel' },
   { name: 'username', label: 'Usuario', type: 'text' },
+  { name: 'calle', label: 'Calle', type: 'text' },
+  { name: 'carrera', label: 'Carrera', type: 'text' },
+  { name: 'etapa', label: 'Etapa', type: 'text' },
+  { name: 'manzana', label: 'Manzana', type: 'text' },
+  { name: 'casa', label: 'Casa', type: 'text' },
 ];
 
 const aForm = (u = {}) => ({
@@ -40,6 +45,11 @@ const aForm = (u = {}) => ({
   correo: u.correo || '',
   telefono: u.telefono || '',
   username: u.username || '',
+  calle: u.calle || '',
+  carrera: u.carrera || '',
+  etapa: u.etapa || '',
+  manzana: u.manzana || '',
+  casa: u.casa || '',
 });
 
 const PREFS_POR_DEFECTO = { notificaciones: true, sonido: true, compacto: false };
@@ -112,20 +122,33 @@ export default function Configuracion() {
       return;
     }
 
-    // El PUT reemplaza TODOS los campos: reenviamos cédula y dirección tal como vinieron del GET
-    const { cedula, calle, carrera, etapa, manzana, casa, barrioId } = detalle;
+    // Protección: el PUT reemplaza el barrio. Si la API no lo devolvió, guardar lo borraría.
+    if (detalle.barrioId === undefined) {
+      setError('No se puede guardar todavía: la API no está devolviendo tu barrio y se perdería. Falta actualizar el backend.');
+      return;
+    }
+
+    // El PUT reemplaza TODOS los campos: reenviamos cédula y barrio tal como vinieron del GET
+    const { cedula, barrioId } = detalle;
+    const textoONulo = (v) => v.trim() || null;
 
     try {
       setGuardando(true);
       await editarUsuario(idActual, {
-        cedula, calle, carrera, etapa, manzana, casa, barrioId,
+        cedula,
+        barrioId,
         primerNombre: form.primerNombre.trim(),
-        segundoNombre: form.segundoNombre.trim() || null,
+        segundoNombre: textoONulo(form.segundoNombre),
         primerApellido: form.primerApellido.trim(),
-        segundoApellido: form.segundoApellido.trim() || null,
+        segundoApellido: textoONulo(form.segundoApellido),
         correo: form.correo.trim(),
-        telefono: form.telefono.trim() || null,
+        telefono: textoONulo(form.telefono),
         username: form.username.trim(),
+        calle: textoONulo(form.calle),
+        carrera: textoONulo(form.carrera),
+        etapa: textoONulo(form.etapa),
+        manzana: textoONulo(form.manzana),
+        casa: textoONulo(form.casa),
       });
 
       const actualizado = await obtenerUsuarioPorId(idActual);
@@ -204,6 +227,10 @@ export default function Configuracion() {
   const estado = (detalle.estado || '').toLowerCase();
   const claseEstado = estado === 'activo' ? 'badge-green-dash' : 'badge-gray-dash';
 
+  // La API de "un usuario" no trae el nombre completo armado: se arma aquí
+  const nombreBanner =
+    [detalle.primerNombre, detalle.primerApellido].filter(Boolean).join(' ') || detalle.username || '';
+
   return (
     <div className="container-fluid">
       <div className="config-banner-dash mb-4">
@@ -211,7 +238,7 @@ export default function Configuracion() {
           <div className="config-avatar-grande-dash"><i className="bi bi-person-fill" /></div>
           <div>
             <div className="config-banner-nombre-dash" id="perfil-nombre">
-              {(detalle.nombreCompleto || detalle.username || '').toUpperCase()}
+              {nombreBanner.toUpperCase()}
             </div>
             <div className="config-banner-estado-dash">
               <span className="dot-online-dash" /> {estado === 'activo' ? 'Cuenta activa' : 'Cuenta ' + (estado || 'sin estado')} · {nombreRol[detalle.rolNombre] || detalle.rolNombre}
@@ -225,7 +252,7 @@ export default function Configuracion() {
         <div className="col-lg-7">
           <div className="card-panel-dash">
             <div className="info-card-header-dash">
-              <h3 className="section-title-dash">Información personal y operativa</h3>
+              <h3 className="section-title-dash">Información personal</h3>
               {!editando && (
                 <button
                   type="button"
@@ -257,6 +284,10 @@ export default function Configuracion() {
               ))}
 
               {/* Campos que no se editan desde aquí */}
+              <div className="info-fila-dash">
+                <span className="info-fila-label-dash">Barrio</span>
+                <span className="info-fila-valor-dash">{detalle.barrioNombre || '—'}</span>
+              </div>
               <div className="info-fila-dash">
                 <span className="info-fila-label-dash">Cédula</span>
                 <span className="info-fila-valor-dash">{detalle.cedula || '—'}</span>

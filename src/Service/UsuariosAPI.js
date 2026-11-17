@@ -153,3 +153,17 @@ export async function cambiarPassword(id, passwordActual, passwordNueva) {
     throw new Error(texto || 'Error al cambiar la contraseña');
 }
 }
+
+export async function listarVecinos() {
+    const respuesta = await fetch(`${API}/api/usuarios/vecinos`, {
+        headers: { 'Authorization': `Bearer ${obtenerToken()}` }
+    });
+
+    if (respuesta.status === 401) {
+        throw new Error('Tu sesión venció, inicia sesión nuevamente');
+    }
+    if (!respuesta.ok) {
+        throw new Error('No se pudieron cargar tus vecinos');
+    }
+    return await respuesta.json();
+}

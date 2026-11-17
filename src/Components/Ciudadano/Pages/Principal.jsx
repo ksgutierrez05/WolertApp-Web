@@ -3,8 +3,8 @@ import '../../../css/global.css';
 import '../../../css/temas.css';
 import '../../../css/ciudadano/pagina-principal.css';
 import heroImg from '/img/Hero-ciudadano.jpg';
-
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { logOut, obtenerUsuarioPorId } from '../../../Service/UsuariosAPI.js';
 
 export default function Principal() {
   const [tab, setTab] = useState('todas');
@@ -13,6 +13,27 @@ export default function Principal() {
   const [fecha, setFecha] = useState('');
   const [hora, setHora] = useState('');
   const [buscar, setBuscar] = useState('');
+  const [usuario, setUsuario] = useState(null);
+  const [errorUsuario, setErrorUsuario] = useState('');
+
+  useEffect(() => {
+    const id = localStorage.getItem('idUsuario');
+    if (!id) {
+      setErrorUsuario('No hay una sesión iniciada.');
+      return;
+    }
+    obtenerUsuarioPorId(id)
+      .then(setUsuario)
+      .catch(() => setErrorUsuario('No se pudieron cargar tus datos.'));
+  }, []); 
+
+  const navigate = useNavigate();
+
+  const cerrarSesion = () => {
+    document.body.classList.remove('modo-compacto');
+    logOut();
+    navigate('/login', { replace: true });
+  };
 
   useEffect(() => {
     const tick = () => {
@@ -27,6 +48,15 @@ export default function Principal() {
 
   const h = new Date().getHours();
   const saludo = h < 12 ? 'Buenos días' : h < 19 ? 'Buenas tardes' : 'Buenas noches';
+
+  const nombreCorto = usuario
+  ? [usuario.primerNombre, usuario.primerApellido].filter(Boolean).join(' ')
+  : (localStorage.getItem('username') || '');
+
+  const nombreCompleto = usuario
+    ? [usuario.primerNombre, usuario.segundoNombre, usuario.primerApellido, usuario.segundoApellido]
+        .filter(Boolean).join(' ')
+    : nombreCorto;
 
   return (
     <div className="container-fluid px-4">
@@ -86,8 +116,8 @@ export default function Principal() {
             >
               <div className="top-bar__user-avatar"><i className="bi bi-person-circle" /></div>
               <div className="top-bar__user-info">
-                <div className="top-bar__user-name">Juan Carlos Pérez</div>
-                <div className="top-bar__user-email">ciudadano@wolertapp.com</div>
+                <div className="top-bar__user-name">{nombreCompleto}</div>
+                <div className="top-bar__user-email">{usuario?.correo || ''}</div>
               </div>
               <i className="bi bi-chevron-down top-bar__user-chevron" />
             </button>
@@ -101,7 +131,7 @@ export default function Principal() {
                     <i className="bi bi-person-gear top-bar__dropdown-link-icon" />
                     Configuración de perfil
                   </Link>
-                  <button type="button" className="top-bar__dropdown-link top-bar__dropdown-link--danger" onClick={() => setShowUser(false)}>
+                  <button type="button" className="top-bar__dropdown-link top-bar__dropdown-link--danger" onClick={cerrarSesion}>
                     <i className="bi bi-box-arrow-right top-bar__dropdown-link-icon" />
                     Cerrar sesión
                   </button>
@@ -120,7 +150,7 @@ export default function Principal() {
         <div className="eyebrow-dash">
           <i className="bi bi-shield-check" /> Panel de ciudadano · {fecha}
         </div>
-        <h1 className="hero-title-dash">{saludo}, Juan Carlos Pérez</h1>
+        <h1 className="hero-title-dash">{saludo}, {nombreCorto}</h1>
         <p className="hero-text-dash">Tienes 2 alertas activas y 6 vecinos conectados cerca de ti. Este es tu resumen de seguridad.</p>
         <a href="#" className="btn btn-light rounded-pill fw-bold mt-3 hero-cta-dash">
           <span className="dot-danger-dash"></span> Reportar una alerta

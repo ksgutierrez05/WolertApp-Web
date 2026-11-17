@@ -71,3 +71,7 @@ export async function resumenAlertas() {
     }
     return await respuesta.json(); // { total, comuna, barrio }
 }
+
+export async function listarMisAlertas() {
+    return await listarAlertasPorAlcance('mias');
+}
