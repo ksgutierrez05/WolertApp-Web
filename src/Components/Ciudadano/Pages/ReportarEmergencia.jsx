@@ -18,13 +18,14 @@ const estiloMapbox = (id) =>
 const ATRIB_MAPBOX =
   '&copy; <a href="https://www.mapbox.com/about/maps/">Mapbox</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
 
-// IMPORTANTE: pon aquí el IdTipoAlerta real de cada tipo (tabla TiposAlerta de tu BD).
-// Mientras estén en null, el botón de pánico avisará que falta configurarlos.
+// Los "nombreBD" deben coincidir con la columna NOMBRE de la tabla TiposAlerta
+// del backend (se comparan sin importar mayúsculas, tildes ni guiones bajos).
+// Si no coinciden, el tipo aparece deshabilitado.
 const TIPOS_CONFIG = [
   {
     clave: 'robo',
     nombre: 'Robo / Asalto',
-    nombreBD: 'Robo',
+    nombreBD: 'ROBO',
     icono: 'bi-person-x-fill',
     color: '#e5484d',
     subtipos: [],
@@ -33,7 +34,7 @@ const TIPOS_CONFIG = [
   {
     clave: 'sospechoso',
     nombre: 'Persona sospechosa',
-    nombreBD: 'Persona sospechosa',
+    nombreBD: 'PERSONA_SOSPECHOSA',
     icono: 'bi-person-badge-fill',
     color: '#1f9d5b',
     subtipos: [],
@@ -42,7 +43,7 @@ const TIPOS_CONFIG = [
   {
     clave: 'ruido',
     nombre: 'Ruido / Alteración',
-    nombreBD: 'Ruido excesivo',
+    nombreBD: 'RUIDO',
     icono: 'bi-volume-up-fill',
     color: '#e08a1e',
     subtipos: [],
@@ -51,7 +52,7 @@ const TIPOS_CONFIG = [
   {
     clave: 'incendio',
     nombre: 'Incendio',
-    nombreBD: 'Incendio',
+    nombreBD: 'INCENDIO',
     icono: 'bi-fire',
     color: '#e5484d',
     tituloSubtipo: 'Tipo de incendio',
@@ -66,7 +67,7 @@ const TIPOS_CONFIG = [
   {
     clave: 'medica',
     nombre: 'Emergencia médica',
-    nombreBD: 'Emergencia médica',
+    nombreBD: 'EMERGENCIA_MEDICA',
     icono: 'bi-plus-lg',
     color: '#1f9d5b',
     tituloSubtipo: 'Tipo de emergencia',
@@ -81,7 +82,7 @@ const TIPOS_CONFIG = [
   {
     clave: 'accidente',
     nombre: 'Accidente',
-    nombreBD: 'Accidente de tránsito',
+    nombreBD: 'ACCIDENTE',
     icono: 'bi-exclamation-triangle-fill',
     color: '#2563c9',
     tituloSubtipo: 'Tipo de accidente',
@@ -136,9 +137,11 @@ const obtenerUbicacion = () => new Promise((resolve, reject) => {
 });
 
 const normalizar = (texto) =>
-  texto
+  String(texto ?? '')
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[_-]+/g, ' ')
+    .replace(/\s+/g, ' ')
     .trim()
     .toLowerCase();
 
@@ -154,7 +157,10 @@ export default function ReportarEmergencia() {
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState('');
   const [enviada, setEnviada] = useState(false);
-  const [tipos, setTipos] = useState([]);
+  // Se muestran las tarjetas desde el inicio (deshabilitadas hasta obtener el Id real).
+  const [tipos, setTipos] = useState(() =>
+    TIPOS_CONFIG.map((t) => ({ ...t, tipoAlertaId: null }))
+  );
   const [cargandoTipos, setCargandoTipos] = useState(true);
   const [errorTipos, setErrorTipos] = useState('');
 
@@ -162,7 +168,6 @@ export default function ReportarEmergencia() {
     listarBarrios().then(setBarrios).catch(() => setBarrios([]));
   }, []);
 
-  useEffect(() => {
   async function cargarTipos() {
     try {
       setCargandoTipos(true);
@@ -187,14 +192,15 @@ export default function ReportarEmergencia() {
 
     } catch (error) {
       console.error('Error cargando tipos de alerta:', error);
-      setErrorTipos('No se pudieron cargar los tipos de alerta.');
+      setErrorTipos('No se pudieron cargar los tipos de alerta. Verifica que el backend esté encendido y vuelve a intentarlo.');
     } finally {
       setCargandoTipos(false);
     }
   }
 
-  cargarTipos();
-}, []);
+  useEffect(() => {
+    cargarTipos();
+  }, []);
 
   const barrioNombre = useMemo(
     () => barrios.find((b) => String(b.idBarrio) === String(barrioId))?.nombre || '',
@@ -406,6 +412,14 @@ export default function ReportarEmergencia() {
         <div className="re-fondo" role="dialog" aria-modal="true" aria-labelledby="re-titulo-tipo">
           <div className="re-modal re-modal-tipos">
             <h2 id="re-titulo-tipo">¿Qué tipo de emergencia tienes?</h2>
+            {errorTipos && (
+              <p className="re-error" role="alert">
+                {errorTipos}{' '}
+                <button type="button" className="re-btn-oscuro" onClick={cargarTipos}>
+                  Reintentar
+                </button>
+              </p>
+            )}
             <div className="re-boton-grande" aria-hidden="true">
               <i className="bi bi-shield-fill-exclamation" />
             </div>
