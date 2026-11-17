@@ -1,0 +1,203 @@
+/* =========================================
+   KPI CARDS · CENTRAL DE OPERACIONES
+   Mismo diseño en todas las páginas de Central.
+   Única variante: .es-destacada (Alertas activas)
+   ========================================= */
+
+.kpi-central-card {
+  --kpi-color: #0f5c6e;
+  --kpi-fondo: #dff0f3;
+
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+
+  width: 100%;
+  min-height: 112px;
+  height: 100%;
+  padding: 19px 17px;
+
+  background: #fff;
+  border: 1px solid #e5eaf0;
+  border-left: 5px solid var(--kpi-color);
+  border-radius: 15px;
+
+  box-shadow: 0 3px 10px rgba(24, 44, 64, 0.055);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.kpi-central-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 22px rgba(24, 44, 64, 0.11);
+}
+
+.kpi-central-icono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+
+  color: var(--kpi-color);
+  background: var(--kpi-fondo);
+}
+
+.kpi-central-icono i {
+  font-size: 1.55rem;
+  line-height: 1;
+}
+
+.kpi-central-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 7px;
+  min-width: 0;
+}
+
+.kpi-central-titulo {
+  color: #53647b;
+  font-size: 0.83rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.kpi-central-valor {
+  color: #263d58;
+  font-size: 1.9rem;
+  font-weight: 750;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.kpi-central-descripcion {
+  color: #7a8a9f;
+  font-size: 0.75rem;
+  line-height: 1.3;
+}
+
+.kpi-central-flecha {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  color: var(--kpi-color);
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+/* ---------- Variantes de color ---------- */
+
+.kpi-central-card.tono-petroleo { --kpi-color: #0f5c6e; --kpi-fondo: #dff0f3; }
+.kpi-central-card.tono-verde    { --kpi-color: #07835b; --kpi-fondo: #dff5e9; }
+.kpi-central-card.tono-rojo     { --kpi-color: #dc3545; --kpi-fondo: #fde7eb; }
+.kpi-central-card.tono-ambar    { --kpi-color: #e68a00; --kpi-fondo: #fff0d8; }
+.kpi-central-card.tono-azul     { --kpi-color: #2475d5; --kpi-fondo: #e2edff; }
+
+/* ---------- Variante exclusiva: "Alertas activas" ---------- */
+
+.kpi-central-card.es-destacada {
+  background: linear-gradient(135deg, #e04656, #b3202f);
+  border-color: transparent;
+  box-shadow: 0 8px 22px rgba(179, 32, 47, 0.28);
+}
+
+.kpi-central-card.es-destacada:hover {
+  box-shadow: 0 12px 28px rgba(179, 32, 47, 0.38);
+}
+
+.kpi-central-card.es-destacada .kpi-central-icono {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.kpi-central-card.es-destacada .kpi-central-titulo {
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.kpi-central-card.es-destacada .kpi-central-descripcion {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.kpi-central-card.es-destacada .kpi-central-valor,
+.kpi-central-card.es-destacada .kpi-central-flecha {
+  color: #fff;
+}
+
+/* Tipografía de las KPI cards */
+.kpi-central-titulo {
+  font-family: "Space Grotesk", sans-serif;
+  color: #33475f;
+  font-size: 0.98rem;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.kpi-central-valor {
+  font-family: "Space Grotesk", sans-serif;
+  color: #1c3149;
+  font-size: 2.3rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.kpi-central-descripcion {
+  font-family: "Space Grotesk", sans-serif;
+  color: #6b7c92;
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 576px) {
+  .kpi-central-card {
+    gap: 10px;
+    min-height: 100px;
+    padding: 13px 10px;
+    border-radius: 12px;
+  }
+
+  .kpi-central-icono {
+    width: 42px;
+    height: 42px;
+  }
+
+  .kpi-central-icono i {
+    font-size: 1.2rem;
+  }
+
+  .kpi-central-titulo {
+    font-size: 0.75rem;
+  }
+
+  .kpi-central-valor {
+    font-size: 1.55rem;
+  }
+
+  .kpi-central-descripcion {
+    font-size: 0.68rem;
+  }
+
+  .kpi-central-flecha {
+    font-size: 0.7rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kpi-central-card {
+    transition: none;
+  }
+
+  .kpi-central-card:hover {
+    transform: none;
+  }
+}

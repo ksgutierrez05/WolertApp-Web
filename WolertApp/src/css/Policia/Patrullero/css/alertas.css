@@ -1,126 +1,365 @@
-/* Patrullero/css/alertas.css
-   Estilos propios de "Mis Alertas". Usa solo variables ya definidas
-   en global.css / temas.css. Prefijo "al-" para no chocar con nada
-   del global ni con "co-" de Centro de Operaciones. */
+
+
+.mis-alertas-patrullero {
+  padding-bottom: 28px;
+}
+
+/* ---------- Filtros ---------- */
 
 .al-filterbar {
   display: flex;
-  gap: 8px;
   flex-wrap: wrap;
+  gap: 8px;
   margin-bottom: 20px;
 }
 
 .al-chip {
-  border: 1px solid var(--line);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: 1px solid #e0e6ed;
+  border-radius: 999px;
   background: #fff;
-  color: var(--muted);
-  font-size: 12.5px;
+  color: #5d6f84;
+  font-size: 0.8rem;
   font-weight: 700;
-  padding: 7px 16px;
-  border-radius: 100px;
-  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  transition: background 0.15s ease, color 0.15s ease,
+    border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .al-chip:hover {
-  background: var(--fog);
-  color: var(--ink);
+  background: #f4f7f9;
+  color: #1f3348;
 }
 
 .al-chip.active {
-  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-2));
   border-color: transparent;
+  background: linear-gradient(
+    135deg,
+    var(--color-primary, #08765a),
+    var(--color-primary-2, #0b8f6e)
+  );
+  box-shadow: 0 4px 12px rgba(8, 118, 90, 0.25);
   color: #fff;
 }
 
+.al-chip-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #eef2f6;
+  color: #5d6f84;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.al-chip.active .al-chip-count {
+  background: rgba(255, 255, 255, 0.22);
+  color: #fff;
+}
+
+/* ---------- Lista ---------- */
+
+.al-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ---------- Tarjeta de alerta ---------- */
+
 .al-card {
-  padding: 18px 20px;
+  --al-color: #2475d5;
+  --al-fondo: #e2edff;
+
+  position: relative;
+  overflow: hidden;
+  padding: 22px 24px 20px 28px;
+  border-radius: 16px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.al-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 5px;
+  background: var(--al-color);
+}
+
+.al-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px rgba(24, 44, 64, 0.1);
+}
+
+.al-card--alta {
+  --al-color: #dc3545;
+  --al-fondo: #fde7eb;
+}
+
+.al-card--media {
+  --al-color: #e68a00;
+  --al-fondo: #fff0d8;
+}
+
+.al-card--baja {
+  --al-color: #2475d5;
+  --al-fondo: #e2edff;
 }
 
 .al-card-top {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 12px;
+  gap: 14px;
   flex-wrap: wrap;
 }
 
+.al-card-id {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
 .al-type-icon {
-  width: 42px;
-  height: 42px;
-  border-radius: 12px;
-  background: var(--fog);
-  color: var(--color-primary);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
   flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: var(--al-fondo);
+  color: var(--al-color);
+  font-size: 1.3rem;
 }
 
 .al-title {
-  font-family: "Space Grotesk", sans-serif;
+  margin: 0 0 3px;
+  color: #1f3348;
+  font-family: "Space Grotesk", "Inter", sans-serif;
+  font-size: 1.08rem;
   font-weight: 700;
-  font-size: 15px;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
 }
 
 .al-meta-inline {
-  font-size: 11.5px;
-  color: var(--muted);
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
+  color: #6b7c90;
+  font-size: 0.78rem;
+  font-weight: 500;
 }
+
+/* ---------- Etiquetas de prioridad y estado ---------- */
+
+.al-badges {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.al-prioridad {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--al-fondo);
+  color: var(--al-color);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.al-prioridad-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--al-color);
+}
+
+.al-estado {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.al-estado--nueva {
+  background: #e2edff;
+  color: #1f64bd;
+}
+
+.al-estado--vista {
+  background: #e8f5ee;
+  color: #1f7a4d;
+}
+
+/* ---------- Ubicación y distancia ---------- */
 
 .al-meta {
   display: flex;
   align-items: center;
-  gap: 16px;
   flex-wrap: wrap;
-  margin: 14px 0 12px;
-  font-size: 12.5px;
-  color: var(--muted);
+  gap: 10px;
+  margin: 16px 0 14px;
 }
 
-.al-meta span:not(.badge-dash) {
+.al-meta-chip {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
+  padding: 7px 12px;
+  border-radius: 9px;
+  background: #f4f7f9;
+  color: #4a5d73;
+  font-size: 0.8rem;
+  font-weight: 500;
 }
+
+.al-meta-chip i {
+  color: #7d8da1;
+  font-size: 0.9rem;
+}
+
+/* ---------- Descripción ---------- */
 
 .al-desc-box {
   display: flex;
-  gap: 10px;
-  background: var(--fog);
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 14px 16px;
   border-radius: 12px;
-  padding: 12px 14px;
-  font-size: 13px;
-  color: var(--ink);
-  margin-bottom: 12px;
+  background: #f8fafb;
+  border: 1px solid #edf1f5;
+  color: #34495e;
+  font-size: 0.88rem;
+  line-height: 1.65;
 }
 
 .al-desc-box i {
-  color: var(--subtle);
-  font-size: 15px;
+  flex-shrink: 0;
   margin-top: 1px;
+  color: var(--al-color);
+  font-size: 1.1rem;
+  opacity: 0.75;
+}
+
+/* ---------- Pie: evidencias y acciones ---------- */
+
+.al-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .al-evidence {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  color: var(--color-blue);
+  gap: 7px;
+  color: #1f64bd;
+  font-size: 0.8rem;
   font-weight: 600;
-  margin-bottom: 14px;
+}
+
+.al-evidence--vacia {
+  color: #8696a9;
+  font-weight: 500;
 }
 
 .al-card-actions {
   display: flex;
   gap: 10px;
-  justify-content: flex-end;
 }
 
+/* ---------- Estado vacío ---------- */
+
+.al-vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.al-vacio-icono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  height: 54px;
+  margin-bottom: 14px;
+  border-radius: 16px;
+  background: #e5f3ec;
+  color: #08765a;
+  font-size: 1.4rem;
+}
+
+.al-vacio h3 {
+  margin: 0 0 6px;
+  color: #1f3348;
+  font-family: "Space Grotesk", "Inter", sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.al-vacio p {
+  margin: 0;
+  color: #5d6f84;
+  font-size: 0.85rem;
+}
+
+/* ---------- Responsive ---------- */
+
 @media (max-width: 575px) {
-  .al-card-actions { justify-content: stretch; }
-  .al-card-actions .btn { flex: 1; }
+  .al-card {
+    padding: 18px 16px 16px 20px;
+  }
+
+  .al-type-icon {
+    width: 42px;
+    height: 42px;
+    font-size: 1.15rem;
+  }
+
+  .al-card-footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .al-card-actions {
+    width: 100%;
+  }
+
+  .al-card-actions .btn {
+    flex: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .al-card,
+  .al-chip {
+    transition: none;
+  }
+
+  .al-card:hover {
+    transform: none;
+  }
 }
