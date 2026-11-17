@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
-import '../../../css/global.css';
-import '../../../css/temas.css';
-import '../../../css/admin/usuarios.css';
-import '../../../css/admin/alertas.css';
-import { listarAlertas } from '../../../Service/AlertasAPI.js';
+import '../../css/global.css';
+import '../../css/temas.css';
+import '../../css/admin/usuarios.css';
+import '../../css/admin/alertas.css';
+import { listarAlertas } from '../../Service/AlertasAPI.js';
 
 const PRIORIDADES = [
   { valor: 'alta', etiqueta: 'Alta' },

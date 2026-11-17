@@ -1,10 +1,10 @@
-import Header from '../../components/Landing/Header'
-import Hero from '../../components/Landing/Hero'
-import Producto from '../../components/Landing/Producto'
-import ComoFunciona from '../../components/Landing/ComoFunciona'
-import Cobertura from '../../components/Landing/Cobertura'
-import Seguridad from '../../components/Landing/Seguridad'
-import Footer from '../../components/Landing/Footer'
+import Header from '../../Components/Landing/Header'
+import Hero from '../../Components/Landing/Hero'
+import Producto from '../../Components/Landing/Producto'
+import ComoFunciona from '../../Components/Landing/ComoFunciona'
+import Cobertura from '../../Components/Landing/Cobertura'
+import Seguridad from '../../Components/Landing/Seguridad'
+import Footer from '../../Components/Landing/Footer'
 import '../../css/landing/styles.css'
 
 function Landing() {

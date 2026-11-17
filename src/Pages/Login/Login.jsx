@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import FormLogin from '../../Components/Login/FormLogin';
 import FormRegistro from '../../Components/Login/FormRegistro';
 import { guardarSesionActiva } from '../../Utils/utils';
+import { rutaDelRol } from '../../Utils/roles';
 import '../../css/login/styles.css';
 
 function Login() {
@@ -16,14 +17,7 @@ function Login() {
     function handleLoginSuccess(usuario) {
         guardarSesionActiva(usuario);
 
-        // Nombres EXACTOS de rol que devuelve el backend (Rol.Nombre en Oracle).
-        // Solo ADMIN y CIUDADANO tienen panel implementado por ahora.
-        const rutas = {
-          ADMIN: '/admin',
-          CIUDADANO: '/ciudadano'
-        }
-
-        const ruta = rutas[usuario.rol] || '/';
+        const ruta = rutaDelRol(usuario.rol);
         navigate(ruta, { replace: true });
     }
 

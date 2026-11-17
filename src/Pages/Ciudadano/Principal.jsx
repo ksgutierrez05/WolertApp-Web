@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import '../../../css/global.css';
-import '../../../css/temas.css';
-import '../../../css/ciudadano/pagina-principal.css';
+import '../../css/global.css';
+import '../../css/temas.css';
+import '../../css/ciudadano/pagina-principal.css';
 import heroImg from '/img/Hero-ciudadano.jpg';
 import { Link, useNavigate } from 'react-router-dom';
-import { logOut, obtenerUsuarioPorId } from '../../../Service/UsuariosAPI.js';
+import { logOut, obtenerUsuarioPorId } from '../../Service/UsuariosAPI.js';
 
 export default function Principal() {
   const [tab, setTab] = useState('todas');

@@ -1,3 +1,4 @@
+@scope (.dt) {
 /* ==========================================================================
    WolertApp - Panel de Semáforos
    Misma identidad visual que panel-casos.css (Director de Tránsito)
@@ -326,4 +327,5 @@
 .form-control-dash[readonly] {
   color: #8a97ab;
   cursor: not-allowed;
+}
 }

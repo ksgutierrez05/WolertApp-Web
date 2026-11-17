@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import '../../../css/global.css';
-import '../../../css/temas.css';
-import '../../../css/admin/dashboard-admin.css';
-import { listaUsuarios, listaRoles } from '../../../Service/UsuariosAPI.js';
-import { listarAlertas } from '../../../Service/AlertasAPI.js';
+import '../../css/global.css';
+import '../../css/temas.css';
+import '../../css/admin/dashboard-admin.css';
+import { listaUsuarios, listaRoles } from '../../Service/UsuariosAPI.js';
+import { listarAlertas } from '../../Service/AlertasAPI.js';
 
 // Roles que define la jerarquía del sistema (se usa si la API de roles no responde)
 const TOTAL_ROLES_POR_DEFECTO = 8;

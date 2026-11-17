@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import '../../../css/global.css';
-import '../../../css/temas.css';
-import '../../../css/admin/barrios.css';
+import '../../css/global.css';
+import '../../css/temas.css';
+import '../../css/admin/barrios.css';
 import { Link } from 'react-router-dom';
-import { ListarBarrios, CrearBarrio, EditarBarrio, EliminarBarrio } from '../../../Service/BarriosApi';
-import { ListarComunas } from '../../../Service/ComunasAPI';
+import { ListarBarrios, CrearBarrio, EditarBarrio, EliminarBarrio } from '../../Service/BarriosApi';
+import { ListarComunas } from '../../Service/ComunasAPI';
 
 const COLORES = ['#1f3a8a', '#5c4033', '#374151', '#166534', '#1d4ed8', '#14532d'];
 

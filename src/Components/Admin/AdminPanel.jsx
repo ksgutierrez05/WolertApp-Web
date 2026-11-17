@@ -1,5 +1,5 @@
-import AdminLayout from '../Components/Admin/AdminLayout';
-import UsuariosList from '../Components/Admin/Usuarios/UsuariosList';
+import AdminLayout from './AdminLayout';
+import UsuariosList from './Usuarios/UsuariosList';
 
 function AdminPanel() {
   return (

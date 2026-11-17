@@ -33,7 +33,7 @@ export default function Layout({ rol = 'director', titulo, activo, busqueda, cla
 
   return (
     // pg-... no hace nada hoy; queda por si después quieres limitar un CSS a una sola página
-    <div className={`d-flex pg-${rol}-${activo}`} id="wrapperDash">
+    <div className={`d-flex pg-${rol}-${activo} ${rol === 'director' ? 'dt' : rol === 'central' ? 'ct' : rol === 'agente' ? 'ag' : ''}`} id="wrapperDash">
       <Sidebar activo={activo} />
       <main className="main-dash flex-grow-1">
         <div className="container-fluid px-4 py-4">

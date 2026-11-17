@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../../../css/global.css';
-import '../../../css/temas.css';
-import '../../../css/admin/configuracion.css'; // mismos estilos que el panel del admin
+import '../../css/global.css';
+import '../../css/temas.css';
+import '../../css/admin/configuracion.css'; // mismos estilos que el panel del admin
 import {
   logOut,
   obtenerUsuarioPorId,
   editarUsuario,
   cambiarPassword,
-} from '../../../Service/UsuariosAPI.js';
+} from '../../Service/UsuariosAPI.js';
 
 const nombreRol = {
   ADMIN: 'Administrador',
