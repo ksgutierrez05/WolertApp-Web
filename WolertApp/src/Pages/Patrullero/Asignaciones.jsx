@@ -2,7 +2,7 @@
 import { useMemo, useState } from 'react';
 import PageHeader from '../../Components/Patrullero/Pageheader';
 import Kpis from '../../Components/Patrullero/Kpicard';
-import usePatrullero from '../../Utlis/usePatrullero';
+import usePatrullero from '../../Utils/usePatrullero';
 
 import {
   EsHoy,

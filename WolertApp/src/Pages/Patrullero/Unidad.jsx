@@ -1,7 +1,7 @@
 
 import PageHeader from '../../Components/Patrullero/Pageheader';
 import Kpis from '../../Components/Patrullero/Kpicard';
-import usePatrullero from '../../Utlis/usePatrullero';
+import usePatrullero from '../../Utils/usePatrullero';
 
 import '../../css/Policia/Patrullero/css/unidad.css';
 

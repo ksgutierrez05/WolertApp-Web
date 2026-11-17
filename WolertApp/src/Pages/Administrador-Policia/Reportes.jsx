@@ -1,181 +1,436 @@
 
-import { useState } from 'react';
-import Topbar from '../../Components/Administrador-policia/Topbar';
-import Kpis from '../../Components/Administrador-policia/Kpicard';
-import '../../css/Policia/administrador-policia/css/reportes.css';
+import { useEffect, useMemo, useState } from "react";
+
+import Kpis from "../../Components/Administrador-policia/Kpicard";
+import { obtenerDatosEstadisticas } from "../../Services/HistorialEstadisticasService";
+
+import "../../css/Policia/administrador-policia/css/reportes.css";
+
+function campo(obj, ...claves) {
+  for (const clave of claves) {
+    if (obj?.[clave] !== undefined && obj?.[clave] !== null) {
+      return obj[clave];
+    }
+  }
+  return "";
+}
+
+function normalizar(valor) {
+  return String(valor ?? "").trim().toUpperCase();
+}
+
+function fechaValida(fecha) {
+  if (!fecha) return null;
+  const resultado = new Date(fecha);
+  return Number.isNaN(resultado.getTime()) ? null : resultado;
+}
+
+function fechaRegistro(alerta) {
+  return campo(
+    alerta,
+    "fechaReporte",
+    "FechaReporte",
+    "fechaCreacion",
+    "FechaCreacion",
+    "fecha",
+    "Fecha"
+  );
+}
 
 function Reportes() {
-  const [busqueda, setBusqueda] = useState('');
-  const [tipo, setTipo] = useState('');
-  const [estado, setEstado] = useState('');
-  const [barrio, setBarrio] = useState('');
-  const [desde, setDesde] = useState('');
-  const [hasta, setHasta] = useState('');
+  const [datos, setDatos] = useState({
+    alertas: [],
+    atenciones: [],
+    asignaciones: [],
+    policias: [],
+    unidades: [],
+    alarmas: [],
+  });
 
-  const limpiarFiltros = () => {
-    setBusqueda('');
-    setTipo('');
-    setEstado('');
-    setBarrio('');
-    setDesde('');
-    setHasta('');
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState("");
+  const [erroresParciales, setErroresParciales] = useState([]);
+  const [recarga, setRecarga] = useState(0);
+
+  const [busqueda, setBusqueda] = useState("");
+  const [estado, setEstado] = useState("todos");
+  const [fecha, setFecha] = useState("todas");
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function cargar() {
+      try {
+        const resultado = await obtenerDatosEstadisticas(
+          controller.signal
+        );
+
+        if (controller.signal.aborted) return;
+
+        setDatos(resultado.datos);
+        setErroresParciales(resultado.errores || []);
+        setError("");
+      } catch (err) {
+        if (!controller.signal.aborted) {
+          setError(err.message || "No se pudieron cargar los reportes.");
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setCargando(false);
+        }
+      }
+    }
+
+    cargar();
+
+    return () => controller.abort();
+  }, [recarga]);
+
+  const registros = useMemo(() => {
+    return (datos.alertas || []).map((alerta) => {
+      const estadoAlerta = campo(
+        alerta,
+        "estado",
+        "Estado"
+      ) || "SIN ESTADO";
+
+      const id = campo(
+        alerta,
+        "idAlerta",
+        "IdAlerta"
+      );
+
+      return {
+        id,
+        tipo: campo(
+          alerta,
+          "nombreTipoAlerta",
+          "NombreTipoAlerta",
+          "tipoAlerta",
+          "TipoAlerta"
+        ) || "Alerta",
+        barrio: campo(
+          alerta,
+          "nombreBarrio",
+          "NombreBarrio",
+          "barrioNombre",
+          "BarrioNombre"
+        ) || "No disponible",
+        fecha: fechaRegistro(alerta),
+        estado: estadoAlerta,
+        prioridad: campo(
+          alerta,
+          "prioridad",
+          "Prioridad"
+        ) || "No disponible",
+        original: alerta,
+      };
+    });
+  }, [datos.alertas]);
+
+  const clasificar = (valor) => {
+    const e = normalizar(valor);
+
+    if (
+      ["RESUELTA", "RESUELTO", "FINALIZADA",
+        "FINALIZADO", "ATENDIDA", "ATENDIDO", "CERRADA"].includes(e)
+    ) return "finalizados";
+
+    if (
+      ["EN ATENCION", "EN PROCESO", "ASIGNADA",
+        "EN CAMINO", "ACTIVA"].includes(e)
+    ) return "enProceso";
+
+    return "pendientes";
   };
 
-  const exportarCsv = () => {
-    // La exportación se conectará cuando estén disponibles los datos reales.
-  };
+  const valoresKpi = useMemo(() => ({
+    totalReportes: registros.length,
+    pendientes: registros.filter(
+      (r) => clasificar(r.estado) === "pendientes"
+    ).length,
+    enProceso: registros.filter(
+      (r) => clasificar(r.estado) === "enProceso"
+    ).length,
+    finalizados: registros.filter(
+      (r) => clasificar(r.estado) === "finalizados"
+    ).length,
+  }), [registros]);
 
-  const hayFiltros = Boolean(
-    busqueda || tipo || estado || barrio || desde || hasta
-  );
+  const registrosFiltrados = useMemo(() => {
+    const texto = normalizar(busqueda);
+
+    return registros.filter((r) => {
+      const coincideEstado =
+        estado === "todos" || clasificar(r.estado) === estado;
+
+      let coincideFecha = true;
+      const fechaDato = fechaValida(r.fecha);
+      const hoy = new Date();
+
+      if (fecha !== "todas") {
+        if (!fechaDato) {
+          coincideFecha = false;
+        } else if (fecha === "hoy") {
+          coincideFecha =
+            fechaDato.toDateString() === hoy.toDateString();
+        } else if (fecha === "mes") {
+          coincideFecha =
+            fechaDato.getMonth() === hoy.getMonth() &&
+            fechaDato.getFullYear() === hoy.getFullYear();
+        } else if (fecha === "anio") {
+          coincideFecha =
+            fechaDato.getFullYear() === hoy.getFullYear();
+        }
+      }
+
+      const contenido = normalizar([
+        r.id,
+        r.tipo,
+        r.barrio,
+        r.estado,
+        r.prioridad,
+      ].join(" "));
+
+      return coincideEstado && coincideFecha &&
+        (!texto || contenido.includes(texto));
+    }).sort((a, b) => {
+      return (fechaValida(b.fecha)?.getTime() || 0) -
+        (fechaValida(a.fecha)?.getTime() || 0);
+    });
+  }, [registros, busqueda, estado, fecha]);
+
+  function actualizar() {
+    setCargando(true);
+    setError("");
+    setRecarga((v) => v + 1);
+  }
+
+  function exportarCSV() {
+    if (!registrosFiltrados.length) return;
+
+    const columnas = [
+      "ID",
+      "TIPO DE ALERTA",
+      "BARRIO",
+      "FECHA",
+      "PRIORIDAD",
+      "ESTADO",
+    ];
+
+    const escapar = (valor) =>
+      `"${String(valor ?? "").replace(/"/g, '""')}"`;
+
+    const filas = registrosFiltrados.map((r) => [
+      r.id,
+      r.tipo,
+      r.barrio,
+      r.fecha,
+      r.prioridad,
+      r.estado,
+    ]);
+
+    const contenido = [
+      columnas,
+      ...filas,
+    ].map((fila) => fila.map(escapar).join(";")).join("\n");
+
+    const blob = new Blob(
+      ["\uFEFF" + contenido],
+      { type: "text/csv;charset=utf-8;" }
+    );
+
+    const url = URL.createObjectURL(blob);
+    const enlace = document.createElement("a");
+
+    enlace.href = url;
+    enlace.download = `reporte-policial-${new Date()
+      .toISOString().slice(0, 10)}.csv`;
+
+    enlace.click();
+    URL.revokeObjectURL(url);
+  }
 
   return (
-    <>
-      <Topbar placeholder="Buscar por alerta, barrio, unidad, policía..." />
+    <main className="reportes-page">
 
-      <main className="main-dash reportes-page">
-        <div className="container-fluid">
+      <header className="reportes-header">
+        <div>
+          <span className="reportes-etiqueta">
+            ADMINISTRACIÓN POLICIAL
+          </span>
 
-          {/* Encabezado */}
-          <div className="header-vista-dash mb-4">
-            <div>
-              <h1>Reportes del Sistema</h1>
-              <p>Resumen general de actividad operativa.</p>
-            </div>
+          <h1>Reportes</h1>
 
-            <button
-              type="button"
-              className="btn-cv-verde"
-              onClick={exportarCsv}
-            >
-              <i className="bi bi-download" aria-hidden="true" />
-              Exportar CSV
-            </button>
+          <p>
+            Consulta y exporta información de la actividad policial.
+          </p>
+        </div>
+
+        <button
+          className="btn btn-outline-primary"
+          type="button"
+          onClick={actualizar}
+          disabled={cargando}
+        >
+          <i className="bi bi-arrow-clockwise me-2" />
+          Actualizar
+        </button>
+      </header>
+
+      {error && (
+        <div className="alert alert-danger">
+          {error}
+          <button
+            className="btn btn-sm btn-outline-danger ms-3"
+            onClick={actualizar}
+            type="button"
+          >
+            Reintentar
+          </button>
+        </div>
+      )}
+
+      {erroresParciales.length > 0 && (
+        <div className="alert alert-warning">
+          Algunos recursos no pudieron consultarse:
+          <ul className="mb-0 mt-2">
+            {erroresParciales.map((e, i) => (
+              <li key={i}>{e}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <Kpis
+        grupo="reportes"
+        valores={valoresKpi}
+        cargando={cargando}
+      />
+
+      <section className="reportes-panel">
+
+        <div className="reportes-panel-header">
+          <div>
+            <h2>Generación de reportes</h2>
+            <p>
+              Filtra las alertas registradas en el sistema.
+            </p>
           </div>
 
-          {/* KPI compartidos */}
-          <section id="kpisReportes" className="mb-4">
-            <Kpis grupo="reportes" />
-          </section>
+          <button
+            type="button"
+            className="btn btn-success"
+            onClick={exportarCSV}
+            disabled={cargando || registrosFiltrados.length === 0}
+          >
+            <i className="bi bi-file-earmark-spreadsheet me-2" />
+            Exportar CSV
+          </button>
+        </div>
 
-          {/* Filtros */}
-          <section className="filtros-toolbar-dash mb-3">
-            <div className="search-dash flex-grow-1 d-flex align-items-center input-group">
-              <span className="input-group-text bg-transparent border-0">
+        <div className="reportes-filtros">
+
+          <label>
+            <span>Buscar</span>
+            <div className="input-group">
+              <span className="input-group-text">
                 <i className="bi bi-search" />
               </span>
 
               <input
-                type="search"
-                id="filtroBuscarReporte"
-                className="form-control border-0 bg-transparent"
-                placeholder="Buscar en la descripción de las alertas..."
+                className="form-control"
+                placeholder="ID, alerta o barrio..."
                 value={busqueda}
                 onChange={(e) => setBusqueda(e.target.value)}
               />
             </div>
+          </label>
 
+          <label>
+            <span>Fecha</span>
             <select
-              id="filtroTipo"
               className="form-select"
-              value={tipo}
-              onChange={(e) => setTipo(e.target.value)}
+              value={fecha}
+              onChange={(e) => setFecha(e.target.value)}
             >
-              <option value="">Todos los tipos</option>
+              <option value="todas">Todas las fechas</option>
+              <option value="hoy">Hoy</option>
+              <option value="mes">Este mes</option>
+              <option value="anio">Este año</option>
             </select>
+          </label>
 
+          <label>
+            <span>Estado</span>
             <select
-              id="filtroEstadoReporte"
               className="form-select"
               value={estado}
               onChange={(e) => setEstado(e.target.value)}
             >
-              <option value="">Todos los estados</option>
-              <option value="PENDIENTE">Pendiente</option>
-              <option value="EN_PROCESO">En proceso</option>
-              <option value="FINALIZADA">Finalizada</option>
-              <option value="CANCELADA">Cancelada</option>
+              <option value="todos">Todos</option>
+              <option value="pendientes">Pendientes</option>
+              <option value="enProceso">En proceso</option>
+              <option value="finalizados">Finalizados</option>
             </select>
-
-            <select
-              id="filtroBarrioReporte"
-              className="form-select"
-              value={barrio}
-              onChange={(e) => setBarrio(e.target.value)}
-            >
-              <option value="">Todos los barrios</option>
-            </select>
-
-            <div className="rango-fechas-dash">
-              <input
-                type="date"
-                id="filtroDesde"
-                title="Desde"
-                value={desde}
-                onChange={(e) => setDesde(e.target.value)}
-              />
-
-              <span>—</span>
-
-              <input
-                type="date"
-                id="filtroHasta"
-                title="Hasta"
-                value={hasta}
-                onChange={(e) => setHasta(e.target.value)}
-              />
-            </div>
-
-            {hayFiltros && (
-              <button
-                type="button"
-                className="btn-limpiar-link-dash"
-                onClick={limpiarFiltros}
-              >
-                <i className="bi bi-x-circle me-1" />
-                Limpiar filtros
-              </button>
-            )}
-          </section>
-
-          {/* Tabla de reportes */}
-          <section className="card-panel-dash mb-4">
-            <div className="tabla-header-dash">
-              <span style={{ width: '36px' }}>#</span>
-              <span style={{ width: '110px' }}>Tipo</span>
-              <span style={{ width: '110px' }}>Barrio</span>
-              <span style={{ width: '130px' }}>Estado</span>
-              <span style={{ width: '130px' }}>Fecha y hora</span>
-              <span className="flex-grow-1">Descripción</span>
-              <span style={{ width: '110px' }}>Unidad</span>
-              <span style={{ width: '130px' }}>Atendida por</span>
-            </div>
-
-            <div className="table-responsive">
-              <table className="tabla-dash">
-                <tbody id="tablaReportes">
-                  {/* Aquí se mostrarán los reportes reales. */}
-                </tbody>
-              </table>
-            </div>
-
-            <div className="tabla-vacio-dash">
-              No hay reportes para mostrar.
-            </div>
-
-            <div className="tabla-footer-dash">
-              <span className="celda-sub-dash" id="reportesMostrando" />
-
-              <div
-                className="paginacion-dash"
-                id="reportesPaginacion"
-              />
-            </div>
-          </section>
-
+          </label>
         </div>
-      </main>
-    </>
+
+        <div className="reportes-tabla-contenedor">
+          <table className="table reportes-tabla">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Tipo de alerta</th>
+                <th>Barrio</th>
+                <th>Fecha</th>
+                <th>Prioridad</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {cargando ? (
+                <tr>
+                  <td colSpan="6" className="text-center py-5">
+                    Cargando reportes...
+                  </td>
+                </tr>
+              ) : registrosFiltrados.length === 0 ? (
+                <tr>
+                  <td colSpan="6" className="text-center py-5">
+                    No se encontraron reportes.
+                  </td>
+                </tr>
+              ) : (
+                registrosFiltrados.map((r, index) => (
+                  <tr key={r.id || index}>
+                    <td>#{r.id || "—"}</td>
+                    <td>{r.tipo}</td>
+                    <td>{r.barrio}</td>
+                    <td>
+                      {fechaValida(r.fecha)
+                        ? fechaValida(r.fecha).toLocaleDateString("es-CO")
+                        : "No disponible"}
+                    </td>
+                    <td>{r.prioridad}</td>
+                    <td>
+                      <span className={`reporte-estado ${clasificar(r.estado)}`}>
+                        {r.estado}
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        <footer className="reportes-footer">
+          Mostrando {registrosFiltrados.length} de {registros.length} registros
+        </footer>
+      </section>
+    </main>
   );
 }
 

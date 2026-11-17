@@ -1,7 +1,7 @@
 
 import { useNavigate } from 'react-router-dom';
 import PageHeader from '../../Components/Patrullero/Pageheader';
-import usePatrullero from '../../Utlis/usePatrullero';
+import usePatrullero from '../../Utils/usePatrullero';
 
 import '../../css/Policia/Patrullero/css/configuracion.css';
 

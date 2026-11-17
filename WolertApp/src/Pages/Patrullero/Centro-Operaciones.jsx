@@ -1,6 +1,6 @@
 
 import Kpis from '../../Components/Patrullero/Kpicard';
-import usePatrullero from '../../Utlis/usePatrullero';
+import usePatrullero from '../../Utils/usePatrullero';
 import {
   EsHoy,
   FormatearFecha

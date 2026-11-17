@@ -1,113 +1,129 @@
-/* Piezas de Estadísticas que no existen en global.css: encabezado,
-   barras horizontales de comparación y filas de estado con punto de
-   color + porcentaje. */
 
-.header-vista-dash {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  flex-wrap: wrap;
+/* ===== ESTADISTICAS DINAMICAS ===== */
+
+.estadistica-barras {
+  display: grid;
   gap: 14px;
 }
 
-.header-vista-dash h1 {
-  font-family: "Space Grotesk", sans-serif;
-  font-weight: 700;
-  font-size: 24px;
-  margin: 0 0 4px;
-  color: var(--ink);
-}
-
-.header-vista-dash p {
-  margin: 0;
-  color: var(--muted);
-  font-size: 13.5px;
-}
-
-/* ---------- Barras horizontales ---------- */
-.barra-fila-dash {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 7px 0;
-}
-
-.barra-etiqueta-dash {
-  width: 150px;
-  flex-shrink: 0;
-  font-size: 11.5px;
-  font-weight: 600;
-  color: var(--muted);
-  text-align: right;
-}
-
-.barra-track-dash {
-  flex: 1;
-  height: 11px;
-  background: var(--fog);
-  border-radius: 6px;
-  overflow: hidden;
-}
-
-.barra-fill-dash {
-  height: 100%;
-  border-radius: 6px;
-  width: 0%; /* arranca en 0 y se anima con JS al cargar */
-  transition: width 0.6s ease;
-}
-
-.barra-valor-dash {
-  width: auto;
-  min-width: 26px;
-  flex-shrink: 0;
-  text-align: right;
-  font-size: 12.5px;
-  font-weight: 700;
-  color: var(--ink);
-  white-space: nowrap;
-}
-
-.barra-pct-dash {
-  font-size: 10.5px;
-  font-weight: 500;
-  color: var(--muted);
-  margin-left: 3px;
-}
-
-/* ---------- Filas de estado (punto + nombre + valor) ---------- */
-.estado-fila-dash {
-  display: flex;
+.estadistica-barra-fila {
+  display: grid;
+  grid-template-columns: minmax(90px, 140px) minmax(60px, 1fr) 35px 40px;
   align-items: center;
   gap: 10px;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--line);
 }
 
-.estado-fila-dash:last-child {
-  border-bottom: none;
-}
-
-.estado-dot-dash {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.estado-nombre-dash {
-  flex: 1;
-  font-size: 13px;
-  color: var(--ink);
-}
-
-.estado-valor-dash {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--ink);
-}
-
-.estado-pct-dash {
-  font-size: 11.5px;
+.estadistica-barra-etiqueta {
   color: var(--muted);
-  margin-left: 3px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.estadistica-barra-track {
+  height: 12px;
+  overflow: hidden;
+  border-radius: 20px;
+  background: var(--fog);
+}
+
+.estadistica-barra-fill {
+  height: 100%;
+  min-width: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #08765a, #25ad84);
+  transition: width .5s ease;
+}
+
+.estadistica-barra-fila strong {
+  text-align: right;
+  color: var(--ink);
+  font-size: 13px;
+}
+
+.estadistica-barra-fila small {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.estadistica-vacio {
+  padding: 22px 10px;
+  text-align: center;
+  color: var(--muted);
+}
+
+.estadistica-subtitulo {
+  margin-bottom: 12px;
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.estadistica-resumen {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 15px;
+}
+
+.estadistica-resumen > div {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--fog);
+}
+
+.estadistica-resumen strong {
+  color: var(--ink);
+  font-size: 27px;
+  font-weight: 800;
+}
+
+.estadistica-resumen span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.estadistica-actualizacion {
+  margin: 15px 0;
+  text-align: right;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.estadistica-alerta-error {
+  display: flex;
+  gap: 12px;
+  padding: 15px;
+  margin-bottom: 18px;
+  border: 1px solid #f0d5a7;
+  border-radius: 10px;
+  background: #fff8e9;
+  color: #795313;
+}
+
+.estadistica-alerta-error > i {
+  font-size: 20px;
+}
+
+.estadistica-alerta-error p {
+  margin: 5px 0;
+  font-size: 12px;
+}
+
+@media(max-width: 650px) {
+  .estadistica-resumen {
+    grid-template-columns: 1fr;
+  }
+
+  .estadistica-barra-fila {
+    grid-template-columns: 90px minmax(40px, 1fr) 25px;
+    gap: 6px;
+  }
+
+  .estadistica-barra-fila small {
+    display: none;
+  }
 }

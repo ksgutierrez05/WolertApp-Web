@@ -1,489 +1,238 @@
 
+import { useEffect, useMemo, useState } from 'react';
 import Topbar from '../../Components/Administrador-policia/Topbar';
+import { ListarPolicias } from '../../Services/AdminPoliciaApi';
+
 import '../../css/Policia/administrador-policia/css/policias.css';
 
 function Policias() {
-    return (
-        <>
-            {/* Topbar */}
-            <Topbar
-                iniciales="SG"
-                placeholder="Buscar por alerta, barrio, unidad, policía…"
-            />
+  const [policias, setPolicias] = useState([]);
+  const [busqueda, setBusqueda] = useState('');
+  const [estado, setEstado] = useState('');
+  const [unidad, setUnidad] = useState('');
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState('');
 
-            {/* Encabezado */}
-            <div className="header-vista-dash mb-4">
-                <div>
-                    <h1>Policías</h1>
-                    <p>
-                        Administra el personal policial y su asignación a unidades.
-                    </p>
-                </div>
+  useEffect(() => {
+    let activo = true;
 
-                <button
-                    type="button"
-                    className="btn-cv-verde"
-                    id="btnNuevoPolicia"
-                >
-                    <i className="bi bi-plus-lg"></i>
-                    Nuevo policía
-                </button>
+    ListarPolicias()
+      .then(datos => {
+        if (activo) setPolicias(datos);
+      })
+      .catch(err => {
+        if (activo) setError(err.message);
+      })
+      .finally(() => {
+        if (activo) setCargando(false);
+      });
+
+    return () => {
+      activo = false;
+    };
+  }, []);
+
+  const unidades = useMemo(() => {
+    const mapa = new Map();
+
+    policias.forEach(p => {
+      if (p.idUnidad != null) {
+        mapa.set(String(p.idUnidad), p.nombreUnidad);
+      }
+    });
+
+    return [...mapa.entries()];
+  }, [policias]);
+
+  const filtrados = useMemo(() => {
+    const texto = busqueda.trim().toLowerCase();
+
+    return policias.filter(p => {
+      const coincideTexto = [
+        p.nombreUsuario,
+        p.cedula,
+        p.placa,
+        p.rango
+      ].some(valor =>
+        String(valor ?? '').toLowerCase().includes(texto)
+      );
+
+      const coincideEstado =
+        !estado ||
+        String(p.estado ?? '').toUpperCase() === estado;
+
+      const coincideUnidad =
+        !unidad || String(p.idUnidad) === unidad;
+
+      return coincideTexto && coincideEstado && coincideUnidad;
+    });
+  }, [policias, busqueda, estado, unidad]);
+
+  return (
+    <>
+      <Topbar
+        iniciales="AP"
+        placeholder="Buscar policía, cédula o placa..."
+        valor={busqueda}
+        onCambio={setBusqueda}
+      />
+
+      <div className="header-vista-dash mb-4">
+        <div>
+          <h1>Policías</h1>
+          <p>
+            Consulta el personal policial y su asignación a unidades.
+          </p>
+        </div>
+      </div>
+
+      <div className="row g-3 mb-4">
+        <div className="col-md-4">
+          <div className="card-panel-dash p-3">
+            <span>Total de policías</span>
+            <h2>{cargando ? '...' : error ? '—' : policias.length}</h2>
+          </div>
+        </div>
+
+        <div className="col-md-4">
+          <div className="card-panel-dash p-3">
+            <span>Disponibles</span>
+            <h2>
+              {cargando || error
+                ? '—'
+                : policias.filter(
+                    p => String(p.estado).toUpperCase() === 'DISPONIBLE'
+                  ).length}
+            </h2>
+          </div>
+        </div>
+
+        <div className="col-md-4">
+          <div className="card-panel-dash p-3">
+            <span>Unidades con policías</span>
+            <h2>{cargando || error ? '—' : unidades.length}</h2>
+          </div>
+        </div>
+      </div>
+
+      <div className="panel-filtros-policias mb-4">
+        <div className="panel-filtros-header">
+          <div className="panel-filtros-icono">
+            <i className="bi bi-funnel" />
+          </div>
+          <div>
+            <h3>Filtros de policías</h3>
+            <p>Busca y organiza el personal policial</p>
+          </div>
+        </div>
+
+        <div className="panel-filtros-body">
+          <div className="buscador-unidades">
+            <label htmlFor="buscarPolicia">
+              Buscar policía
+            </label>
+            <div className="buscador-unidades-input">
+              <i className="bi bi-search" />
+              <input
+                id="buscarPolicia"
+                type="text"
+                placeholder="Nombre, cédula o placa..."
+                value={busqueda}
+                onChange={e => setBusqueda(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="filtros-unidades-selects">
+            <div className="filtro-unidad-card">
+              <label htmlFor="filtroEstadoPolicia">
+                Estado del policía
+              </label>
+              <select
+                id="filtroEstadoPolicia"
+                className="form-select"
+                value={estado}
+                onChange={e => setEstado(e.target.value)}
+              >
+                <option value="">Todos los estados</option>
+                {[...new Set(
+                  policias.map(p => p.estado).filter(Boolean)
+                )].map(e => (
+                  <option key={e} value={String(e).toUpperCase()}>
+                    {e}
+                  </option>
+                ))}
+              </select>
             </div>
 
-            {/* KPIs */}
-            <div className="row g-3 mb-4" id="kpisPolicias"></div>
+            <div className="filtro-unidad-card">
+              <label htmlFor="filtroUnidadPolicia">
+                Unidad policial
+              </label>
+              <select
+                id="filtroUnidadPolicia"
+                className="form-select"
+                value={unidad}
+                onChange={e => setUnidad(e.target.value)}
+              >
+                <option value="">Todas las unidades</option>
+                {unidades.map(([id, nombre]) => (
+                  <option key={id} value={id}>
+                    {nombre || `Unidad #${id}`}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
 
+      {cargando && <p role="status">Cargando policías...</p>}
 
+      {error && (
+        <div className="alert alert-danger" role="alert">
+          {error}
+        </div>
+      )}
 
-            {/* Panel de filtros */}
-            <div className="panel-filtros-policias mb-4">
-                <div className="panel-filtros-header">
-                    <div className="panel-filtros-icono">
-                        <i className="bi bi-funnel"></i>
-                    </div>
+      <div className="card-panel-dash mb-4">
+        <div className="tabla-header-dash">
+          <span className="flex-grow-1">Policía</span>
+          <span style={{ width: '110px' }}>Placa</span>
+          <span style={{ width: '130px' }}>Rango</span>
+          <span style={{ width: '150px' }}>Unidad</span>
+          <span style={{ width: '150px' }}>Estado</span>
+        </div>
 
+        <div className="table-responsive">
+          <table className="tabla-dash">
+            <tbody>
+              {!cargando && !error && filtrados.map(p => (
+                <tr key={p.idUsuario}>
+                  <td>
+                    <strong>{p.nombreUsuario || 'Sin nombre'}</strong>
                     <div>
-                        <h3>Filtros de policías</h3>
-                        <p>Busca y organiza el personal policial</p>
+                      <small>{p.cedula || 'Sin cédula'}</small>
                     </div>
+                  </td>
+                  <td>{p.placa || '—'}</td>
+                  <td>{p.rango || '—'}</td>
+                  <td>{p.nombreUnidad || 'Sin unidad'}</td>
+                  <td>{p.estado || '—'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
-                    <span className="filtros-etiqueta">
-                        <i className="bi bi-shield-check"></i>
-                        Gestión de personal
-                    </span>
-                </div>
-
-                <div className="panel-filtros-body">
-                    {/* Buscador */}
-                    <div className="buscador-unidades">
-                        <label htmlFor="buscarPolicia">
-                            <i className="bi bi-search"></i>
-                            Buscar policía
-                        </label>
-
-                        <div className="buscador-unidades-input">
-                            <i className="bi bi-search"></i>
-                            <input
-                                type="text"
-                                id="buscarPolicia"
-                                placeholder="Nombre, cédula o placa..."
-                            />
-                        </div>
-                    </div>
-
-                    {/* Selectores */}
-                    <div className="filtros-unidades-selects">
-                        <div className="filtro-unidad-card">
-                            <label htmlFor="filtroEstadoPolicia">
-                                <span className="filtro-unidad-icono estado">
-                                    <i className="bi bi-person-check"></i>
-                                </span>
-                                <span>
-                                    <strong>Estado del policía</strong>
-                                    <small>Filtra según su disponibilidad</small>
-                                </span>
-                            </label>
-
-                            <select
-                                id="filtroEstadoPolicia"
-                                className="form-select"
-                                defaultValue=""
-                            >
-                                <option value="">Todos los estados</option>
-                                <option value="DISPONIBLE">Disponible</option>
-                                <option value="EN_SERVICIO">En servicio</option>
-                                <option value="OCUPADO">Ocupado</option>
-                                <option value="FUERA_DE_SERVICIO">Fuera de servicio</option>
-                            </select>
-                        </div>
-
-                        <div className="filtro-unidad-card">
-                            <label htmlFor="filtroUnidadPolicia">
-                                <span className="filtro-unidad-icono ubicacion">
-                                    <i className="bi bi-geo-alt"></i>
-                                </span>
-                                <span>
-                                    <strong>Unidad policial</strong>
-                                    <small>Filtra por unidad asignada</small>
-                                </span>
-                            </label>
-
-                            <select
-                                id="filtroUnidadPolicia"
-                                className="form-select"
-                                defaultValue=""
-                            >
-                                <option value="">Todas las unidades</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
-
-            {/* Tabla */}
-            <div className="card-panel-dash mb-4">
-                <div className="tabla-header-dash">
-                    <span className="flex-grow-1">Policía</span>
-                    <span style={{ width: '110px' }}>Placa</span>
-                    <span style={{ width: '130px' }}>Rango</span>
-                    <span style={{ width: '150px' }}>Unidad</span>
-                    <span style={{ width: '150px' }}>Estado</span>
-                    <span style={{ width: '110px' }}>Acciones</span>
-                </div>
-
-                <table className="tabla-dash">
-                    <tbody id="tablaPolicias"></tbody>
-                </table>
-
-                <div
-                    className="tabla-vacio-dash d-none"
-                    id="policiasVacio"
-                >
-                    No se encontraron policías con esos filtros.
-                </div>
-            </div>
-
-            {/* Modal crear/editar policía */}
-            <div
-                className="modal fade"
-                id="modalPolicia"
-                tabIndex="-1"
-                aria-hidden="true"
-            >
-                <div className="modal-dialog modal-dialog-centered modal-lg">
-                    <div className="modal-content">
-                        <div className="modal-header modal-header-dash">
-                            <div>
-                                <div
-                                    className="modal-title"
-                                    id="modalPoliciaTitulo"
-                                >
-                                    Nuevo policía
-                                </div>
-
-                                <div className="modal-subtitle">
-                                    Registra un agente y asígnalo a una unidad
-                                </div>
-                            </div>
-
-                            <button
-                                type="button"
-                                className="btn-close"
-                                data-bs-dismiss="modal"
-                                aria-label="Cerrar"
-                            ></button>
-                        </div>
-
-                        <form id="formPolicia">
-                            <div className="modal-body modal-body-dash">
-                                <input type="hidden" id="policiaId" />
-
-                                <div className="row g-3">
-                                    <div className="col-md-6 form-field-dash">
-                                        <label htmlFor="policiaCedula">
-                                            Cédula *
-                                        </label>
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            id="policiaCedula"
-                                            required
-                                        />
-                                    </div>
-
-                                    <div className="col-md-6 form-field-dash">
-                                        <label htmlFor="policiaPlaca">
-                                            Placa *
-                                        </label>
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            id="policiaPlaca"
-                                            placeholder="Ej: P-1042"
-                                            required
-                                        />
-                                    </div>
-
-                                    <div className="col-md-6 form-field-dash">
-                                        <label htmlFor="policiaNombre1">
-                                            Primer nombre *
-                                        </label>
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            id="policiaNombre1"
-                                            required
-                                        />
-                                    </div>
-
-                                    <div className="col-md-6 form-field-dash">
-                                        <label htmlFor="policiaNombre2">
-                                            Segundo nombre
-                                        </label>
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            id="policiaNombre2"
-                                        />
-                                    </div>
-
-                                    <div className="col-md-6 form-field-dash">
-                                        <label htmlFor="policiaApellido1">
-                                            Primer apellido *
-                                        </label>
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            id="policiaApellido1"
-                                            required
-                                        />
-                                    </div>
-
-                                    <div className="col-md-6 form-field-dash">
-                                        <label htmlFor="policiaApellido2">
-                                            Segundo apellido
-                                        </label>
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            id="policiaApellido2"
-                                        />
-                                    </div>
-
-                                    <div className="col-md-6 form-field-dash">
-                                        <label htmlFor="policiaRango">
-                                            Rango *
-                                        </label>
-                                        <select
-                                            className="form-select"
-                                            id="policiaRango"
-                                            defaultValue="Patrullero"
-                                            required
-                                        >
-                                            <option value="Patrullero">
-                                                Patrullero
-                                            </option>
-                                            <option value="Subintendente">
-                                                Subintendente
-                                            </option>
-                                            <option value="Intendente">
-                                                Intendente
-                                            </option>
-                                            <option value="Comandante">
-                                                Comandante
-                                            </option>
-                                        </select>
-                                    </div>
-
-                                    <div className="col-md-6 form-field-dash">
-                                        <label htmlFor="policiaUnidad">
-                                            Unidad asignada *
-                                        </label>
-                                        <select
-                                            className="form-select"
-                                            id="policiaUnidad"
-                                            defaultValue=""
-                                            required
-                                        ></select>
-                                    </div>
-
-                                    <div className="col-md-6 form-field-dash">
-                                        <label htmlFor="policiaEstado">
-                                            Estado *
-                                        </label>
-                                        <select
-                                            className="form-select"
-                                            id="policiaEstado"
-                                            defaultValue="DISPONIBLE"
-                                            required
-                                        >
-                                            <option value="DISPONIBLE">
-                                                Disponible
-                                            </option>
-                                            <option value="EN_SERVICIO">
-                                                En servicio
-                                            </option>
-                                            <option value="OCUPADO">
-                                                Ocupado
-                                            </option>
-                                            <option value="FUERA_DE_SERVICIO">
-                                                Fuera de servicio
-                                            </option>
-                                        </select>
-                                    </div>
-
-                                    <div className="col-md-6 form-field-dash">
-                                        <label htmlFor="policiaTelefono">
-                                            Teléfono
-                                        </label>
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            id="policiaTelefono"
-                                        />
-                                    </div>
-
-                                    <div className="col-md-6 form-field-dash">
-                                        <label htmlFor="policiaCorreo">
-                                            Correo
-                                        </label>
-                                        <input
-                                            type="email"
-                                            className="form-control"
-                                            id="policiaCorreo"
-                                        />
-                                    </div>
-
-                                    <div className="col-md-6 form-field-dash">
-                                        <label htmlFor="policiaUsername">
-                                            Username *
-                                        </label>
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            id="policiaUsername"
-                                            required
-                                        />
-                                    </div>
-
-                                    <div className="col-md-6 form-field-dash">
-                                        <label htmlFor="policiaPassword">
-                                            Contraseña{' '}
-                                            <span id="passwordHint">*</span>
-                                        </label>
-                                        <input
-                                            type="password"
-                                            className="form-control"
-                                            id="policiaPassword"
-                                            placeholder="••••••••"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="modal-footer modal-footer-dash">
-                                <button
-                                    type="button"
-                                    className="btn-secundario-dash"
-                                    data-bs-dismiss="modal"
-                                >
-                                    Cancelar
-                                </button>
-
-                                <button
-                                    type="submit"
-                                    className="btn-cv-verde"
-                                >
-                                    <i className="bi bi-check-lg"></i>
-                                    Guardar policía
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            {/* Modal ver policía */}
-            <div
-                className="modal fade"
-                id="modalVerPolicia"
-                tabIndex="-1"
-                aria-hidden="true"
-            >
-                <div className="modal-dialog modal-dialog-centered">
-                    <div className="modal-content">
-                        <div className="modal-header modal-header-dash">
-                            <div className="detalle-header-dash w-100">
-                                <div
-                                    className="avatar-lg-dash"
-                                    id="verPoliciaAvatar"
-                                >
-                                    —
-                                </div>
-
-                                <div
-                                    className="modal-title"
-                                    id="verPoliciaNombre"
-                                >
-                                    —
-                                </div>
-
-                                <span
-                                    className="badge-dash"
-                                    id="verPoliciaEstado"
-                                >
-                                    —
-                                </span>
-                            </div>
-
-                            <button
-                                type="button"
-                                className="btn-close position-absolute top-0 end-0 m-3"
-                                data-bs-dismiss="modal"
-                                aria-label="Cerrar"
-                            ></button>
-                        </div>
-
-                        <div className="modal-body modal-body-dash">
-                            <div className="detalle-fila-dash">
-                                <span className="k">Cédula</span>
-                                <span className="v" id="verPoliciaCedula">
-                                    —
-                                </span>
-                            </div>
-
-                            <div className="detalle-fila-dash">
-                                <span className="k">Placa</span>
-                                <span className="v" id="verPoliciaPlaca">
-                                    —
-                                </span>
-                            </div>
-
-                            <div className="detalle-fila-dash">
-                                <span className="k">Rango</span>
-                                <span className="v" id="verPoliciaRango">
-                                    —
-                                </span>
-                            </div>
-
-                            <div className="detalle-fila-dash">
-                                <span className="k">Unidad</span>
-                                <span className="v" id="verPoliciaUnidad">
-                                    —
-                                </span>
-                            </div>
-
-                            <div className="detalle-fila-dash">
-                                <span className="k">Teléfono</span>
-                                <span className="v" id="verPoliciaTelefono">
-                                    —
-                                </span>
-                            </div>
-
-                            <div className="detalle-fila-dash">
-                                <span className="k">Correo</span>
-                                <span className="v" id="verPoliciaCorreo">
-                                    —
-                                </span>
-                            </div>
-                        </div>
-
-                        <div className="modal-footer modal-footer-dash">
-                            <button
-                                type="button"
-                                className="btn-secundario-dash"
-                                data-bs-dismiss="modal"
-                            >
-                                Cerrar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </>
-    );
+        {!cargando && !error && filtrados.length === 0 && (
+          <div className="tabla-vacio-dash p-4 text-center">
+            No se encontraron policías con esos filtros.
+          </div>
+        )}
+      </div>
+    </>
+  );
 }
 
 export default Policias;
