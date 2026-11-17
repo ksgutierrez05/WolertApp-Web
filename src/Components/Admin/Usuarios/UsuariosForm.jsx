@@ -8,20 +8,20 @@ import { crearUsuarioPersonal, listaRoles } from '../../../Service/UsuariosAPI.j
 // Mismo mapa que "Permitidos" en UsuariosController.cs (quién puede crear a quién).
 // El backend es quien manda: esto solo evita mostrar opciones que darían 403.
 const PERMITIDOS = {
-  Admin: ['Admin', 'AdminPolicia', 'DirectorTransito'],
-  AdminPolicia: ['Policia', 'CentralPolicia'],
-  DirectorTransito: ['AgenteTransito', 'CentralTransito'],
+  ADMIN: ['ADMIN', 'ADMIN_POLICIA', 'ADMIN_TRANSITO'],
+  ADMIN_POLICIA: ['POLICIA', 'CENTRAL_POLICIA'],
+  ADMIN_TRANSITO: ['AGENTE_TRANSITO', 'CENTRAL_TRANSITO'],
 };
 
 const nombreRol = {
-  Admin: 'Admin',
-  AdminPolicia: 'Admin. Policía',
-  DirectorTransito: 'Director Tránsito',
-  Policia: 'Policía',
-  CentralPolicia: 'Central Policial',
-  AgenteTransito: 'Agente Tránsito',
-  CentralTransito: 'Cent. Tránsito',
-  Ciudadano: 'Ciudadano',
+  ADMIN: 'Admin',
+  ADMIN_POLICIA: 'Admin. Policía',
+  ADMIN_TRANSITO: 'Admin. Tránsito',
+  POLICIA: 'Policía',
+  CENTRAL_POLICIA: 'Central Policial',
+  AGENTE_TRANSITO: 'Agente Tránsito',
+  CENTRAL_TRANSITO: 'Cent. Tránsito',
+  CIUDADANO: 'Ciudadano',
 };
 
 const FORM_VACIO = {

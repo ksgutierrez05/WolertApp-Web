@@ -11,14 +11,14 @@ import {
 } from '../../../Service/UsuariosAPI.js';
 
 const nombreRol = {
-  Admin: 'Administrador',
-  AdminPolicia: 'Admin. Policía',
-  DirectorTransito: 'Director Tránsito',
-  Policia: 'Policía',
-  CentralPolicia: 'Central Policial',
-  AgenteTransito: 'Agente Tránsito',
-  CentralTransito: 'Cent. Tránsito',
-  Ciudadano: 'Ciudadano',
+  ADMIN: 'Administrador',
+  ADMIN_POLICIA: 'Admin. Policía',
+  ADMIN_TRANSITO: 'Admin. Tránsito',
+  POLICIA: 'Policía',
+  CENTRAL_POLICIA: 'Central Policial',
+  AGENTE_TRANSITO: 'Agente Tránsito',
+  CENTRAL_TRANSITO: 'Cent. Tránsito',
+  CIUDADANO: 'Ciudadano',
 };
 
 // Campos editables del perfil (se generan desde este arreglo)

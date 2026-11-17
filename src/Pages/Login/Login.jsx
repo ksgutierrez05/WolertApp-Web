@@ -15,20 +15,16 @@ function Login() {
 
     function handleLoginSuccess(usuario) {
         guardarSesionActiva(usuario);
-         
+
+        // Nombres EXACTOS de rol que devuelve el backend (Rol.Nombre en Oracle).
+        // Solo ADMIN y CIUDADANO tienen panel implementado por ahora.
         const rutas = {
-          'admin': '/admin',
-          'policia': '/policia/centro-operaciones',
-          'central': '/policia/central/centro-operaciones',
-          'admin-policia': '/policia/admin/centro-operaciones',
-          'ciudadano': '/ciudadano',
-          'Agente-transito': '/transito/agente',
-          'Central-transito': '/transito/central',
-          'Director-transito': '/transito/director'
+          ADMIN: '/admin',
+          CIUDADANO: '/ciudadano'
         }
 
         const ruta = rutas[usuario.rol] || '/';
-        navigate(ruta);
+        navigate(ruta, { replace: true });
     }
 
     function handleRegistroSuccess() {

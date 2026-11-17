@@ -12,27 +12,27 @@ import {
   listaRoles,
 } from '../../../Service/UsuariosAPI.js';
 
-// Las llaves son los nombres de rol EXACTOS que devuelve el backend (Rol.Nombre)
+// Las llaves son los nombres de rol EXACTOS que devuelve el backend (Rol.Nombre en Oracle)
 const nombreRol = {
-  Admin: 'Admin',
-  AdminPolicia: 'Admin. Policía',
-  DirectorTransito: 'Director Tránsito',
-  Policia: 'Policía',
-  CentralPolicia: 'Central Policial',
-  AgenteTransito: 'Agente Tránsito',
-  CentralTransito: 'Cent. Tránsito',
-  Ciudadano: 'Ciudadano',
+  ADMIN: 'Admin',
+  ADMIN_POLICIA: 'Admin. Policía',
+  ADMIN_TRANSITO: 'Admin. Tránsito',
+  POLICIA: 'Policía',
+  CENTRAL_POLICIA: 'Central Policial',
+  AGENTE_TRANSITO: 'Agente Tránsito',
+  CENTRAL_TRANSITO: 'Cent. Tránsito',
+  CIUDADANO: 'Ciudadano',
 };
 
 const badgeRol = {
-  Admin: 'badge-blue-dash',
-  AdminPolicia: 'badge-blue-dash',
-  DirectorTransito: 'badge-purple-dash',
-  Policia: 'badge-gray-dash',
-  CentralPolicia: 'badge-gray-dash',
-  AgenteTransito: 'badge-teal-dash',
-  CentralTransito: 'badge-teal-dash',
-  Ciudadano: 'badge-gray-dash',
+  ADMIN: 'badge-blue-dash',
+  ADMIN_POLICIA: 'badge-blue-dash',
+  ADMIN_TRANSITO: 'badge-purple-dash',
+  POLICIA: 'badge-gray-dash',
+  CENTRAL_POLICIA: 'badge-gray-dash',
+  AGENTE_TRANSITO: 'badge-teal-dash',
+  CENTRAL_TRANSITO: 'badge-teal-dash',
+  CIUDADANO: 'badge-gray-dash',
 };
 
 const claseEstado = {
@@ -44,9 +44,9 @@ const nombreEstado = { activo: 'Activo', inactivo: 'Inactivo', suspendido: 'Susp
 // Mismo mapa que "Permitidos" en UsuariosController.cs (quién puede crear a quién).
 // El backend es quien manda: esto solo evita mostrar opciones que darían 403.
 const PERMITIDOS = {
-  Admin: ['Admin', 'AdminPolicia', 'DirectorTransito'],
-  AdminPolicia: ['Policia', 'CentralPolicia'],
-  DirectorTransito: ['AgenteTransito', 'CentralTransito'],
+  ADMIN: ['ADMIN', 'ADMIN_POLICIA', 'ADMIN_TRANSITO'],
+  ADMIN_POLICIA: ['POLICIA', 'CENTRAL_POLICIA'],
+  ADMIN_TRANSITO: ['AGENTE_TRANSITO', 'CENTRAL_TRANSITO'],
 };
 
 const PALETA = ['#1f5fa8', '#1f9d5b', '#7c4fd1', '#c81e2c', '#c9821c', '#0a2f5c'];
@@ -124,10 +124,10 @@ export default function UsuariosList() {
 
   const puedeCrear = !!PERMITIDOS[rolActual];
   // Admin edita a cualquiera; los demás solo a sí mismos (igual que PutUsuario)
-  const puedeEditar = (u) => rolActual === 'Admin' || String(u.idUsuario) === idActual;
+  const puedeEditar = (u) => rolActual === 'ADMIN' || String(u.idUsuario) === idActual;
   // Solo Admin desactiva, y no su propia cuenta
   const puedeDesactivar = (u) =>
-    rolActual === 'Admin' && String(u.idUsuario) !== idActual && (u.estado || '').toLowerCase() === 'activo';
+    rolActual === 'ADMIN' && String(u.idUsuario) !== idActual && (u.estado || '').toLowerCase() === 'activo';
 
   const desactivar = async (id) => {
     if (!window.confirm('¿Seguro que quieres desactivar este usuario?')) return;

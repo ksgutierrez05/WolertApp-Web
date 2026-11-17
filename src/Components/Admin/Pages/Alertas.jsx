@@ -30,7 +30,7 @@ const mensajeAmigable = (err) => {
 const formatearFecha = (f) => (f ? new Date(f).toLocaleDateString() : '—');
 
 export default function Alertas() {
-  const esAdmin = localStorage.getItem('rol') === 'Admin';
+  const esAdmin = localStorage.getItem('rol') === 'ADMIN';
 
   const [alertas, setAlertas] = useState([]);
   const [cargando, setCargando] = useState(true);

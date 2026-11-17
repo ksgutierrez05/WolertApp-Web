@@ -1,18 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom';
 import { login } from '../../Service/UsuariosAPI.js'
-
-// AJUSTA estas rutas a las que realmente tengas definidas en tu router.
-const RUTA_POR_ROL = {
-    Admin: '/admin',
-    AdminPolicia: '/admin-policia',
-    DirectorTransito: '/director-transito',
-    Policia: '/policia',
-    CentralPolicia: '/central-policia',
-    AgenteTransito: '/agente-transito',
-    CentralTransito: '/central-transito',
-    Ciudadano: '/ciudadano',
-};
 
 function FormLogin({ onLoginSuccess, aviso }) {
     const [username, setUsername] = useState('')
@@ -20,7 +7,6 @@ function FormLogin({ onLoginSuccess, aviso }) {
     const [error, setError] = useState('')
     const [mostrarPassword, setMostrarPassword] = useState(false)
     const [cargando, setCargando] = useState(false)
-    const navigate = useNavigate()
 
     async function handleSubmit(event) {
         event.preventDefault()
@@ -34,13 +20,10 @@ function FormLogin({ onLoginSuccess, aviso }) {
             setCargando(true)
             setError('')
             const datos = await login({ username: username.trim(), password })
-            
-            // 1) Primero avisamos a App para que actualice su estado de sesión
-            //    (así el guard de rutas ya ve al usuario autenticado)
-            if (onLoginSuccess) onLoginSuccess(datos)   // { token, idUsuario, username, rol }
 
-            // 2) Luego navegamos según el rol
-            navigate(RUTA_POR_ROL[datos.rol] || '/', { replace: true })
+            // El padre (Login.jsx) guarda la sesión y navega según el rol.
+            // No navegar aquí para evitar redirecciones duplicadas.
+            if (onLoginSuccess) onLoginSuccess(datos)   // { token, idUsuario, username, rol }
         } catch (err) {
             setError(err.message)
         } finally {
