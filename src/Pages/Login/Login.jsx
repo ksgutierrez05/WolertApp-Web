@@ -1,0 +1,60 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import FormLogin from '../../Components/Login/FormLogin';
+import FormRegistro from '../../Components/Login/FormRegistro';
+import { guardarSesionActiva } from '../../Utils/utils';
+import '../../css/login/styles.css';
+
+function Login() {
+    const navigate = useNavigate();
+    const [esRegistro, setRegistro] = useState(false);
+
+    function toggleFormulario(){
+        setRegistro(!esRegistro);
+    }
+
+    function handleLoginSuccess(usuario) {
+        guardarSesionActiva(usuario);
+
+        // Nombres EXACTOS de rol que devuelve el backend (Rol.Nombre en Oracle).
+        // Solo ADMIN y CIUDADANO tienen panel implementado por ahora.
+        const rutas = {
+          ADMIN: '/admin',
+          CIUDADANO: '/ciudadano'
+        }
+
+        const ruta = rutas[usuario.rol] || '/';
+        navigate(ruta, { replace: true });
+    }
+
+    function handleRegistroSuccess() {
+        setRegistro(false);
+    }
+
+    return (
+    <div className={`auth-container ${esRegistro ? 'active' : ''}`}>
+      <a href="/" className="btn-volver">
+        <i className="bi bi-arrow-left"></i>
+        Volver
+      </a>
+
+      <FormLogin onLoginSuccess={handleLoginSuccess} />
+
+      <div className="panel-deslizante">
+        <img src="/img/logo.png" alt="WolertApp" className="login-logo" />
+        <h1>WolertApp</h1>
+        <p>Sistema de alertas comunitarias</p>
+        <p className="login-tagline">
+          Seguridad para tu barrio<br />y notificaciones en tiempo real
+        </p>
+        <button type="button" className="btn-registrarse" onClick={toggleFormulario}>
+          {esRegistro ? 'Iniciar sesión' : 'Registrarse'}
+        </button>
+      </div>
+
+      <FormRegistro onRegistroSuccess={handleRegistroSuccess} />
+    </div>
+    );
+};
+
+export default Login;

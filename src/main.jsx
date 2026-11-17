@@ -32,6 +32,9 @@ import './css/transito/agente-transito/panel-historial.css';
 import './css/transito/agente-transito/panel-configuracion.css';
 
 import App from './App.jsx';
+import './css/global.css';
+import './css/temas.css';
+import './index.css';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

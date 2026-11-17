@@ -108,7 +108,7 @@
 .seccion-titulo-dash {
     font-size: 12px;
     font-weight: 700;
-    color: var(--ink);
+    color: #64748b;
     letter-spacing: 0.03em;
     margin: 18px 0 12px;
 }
@@ -171,6 +171,7 @@
     font-weight: 700;
     font-size: 19px;
     margin: 0;
+    color: white;
 }
 
 .modal-header-dash .modal-subtitle-dash {
@@ -209,5 +210,5 @@
 .valor-detalle-dash {
     font-size: 13.5px;
     font-weight: 700;
-    color: var(--ink);
+    color: #64748b;
 }
