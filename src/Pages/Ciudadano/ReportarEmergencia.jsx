@@ -2,11 +2,11 @@ import { useEffect, useMemo, useState } from 'react';
 import { MapContainer, TileLayer, LayersControl, Marker, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import '../../../css/global.css';
-import '../../../css/temas.css';
-import '../../../css/ciudadano/reportar-emergencia.css';
-import { crearAlerta } from '../../../Service/AlertasAPI.js';
-import { listarTiposAlerta } from '../../../Service/TipoAlertasAPI.js';
+import '../../css/global.css';
+import '../../css/temas.css';
+import '../../css/ciudadano/reportar-emergencia.css';
+import { crearAlerta } from '../../Service/AlertasAPI.js';
+import { listarTiposAlerta } from '../../Service/TipoAlertasAPI.js';
 
 const API = 'http://localhost:5039';
 const CENTRO_INICIAL = [10.4731, -73.2446]; // Valledupar

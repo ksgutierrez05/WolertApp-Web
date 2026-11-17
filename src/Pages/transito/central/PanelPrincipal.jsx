@@ -462,7 +462,7 @@ export default function PanelPrincipal() {
 
       {/* MAPA ILUSTRATIVO */}
       <div className="sec-head-pd">
-        <h2 className="titulos">
+        <h2 className="titulos-ct">
           Mapa de despacho
         </h2>
       </div>
@@ -568,7 +568,7 @@ export default function PanelPrincipal() {
 
       {/* AGENTES */}
       <div className="sec-head-pd">
-        <h2 className="titulos">
+        <h2 className="titulos-ct">
           Agentes en servicio
         </h2>
 
@@ -629,7 +629,7 @@ export default function PanelPrincipal() {
 
       {/* ÚLTIMOS DESPACHOS */}
       <div className="sec-head-pd">
-        <h2 className="titulos">
+        <h2 className="titulos-ct">
           Últimos despachos
         </h2>
 

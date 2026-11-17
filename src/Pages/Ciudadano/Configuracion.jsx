@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import '../../../css/global.css';
-import '../../../css/temas.css';
-import '../../../css/ciudadano/panel-configuracion.css';
+import '../../css/global.css';
+import '../../css/temas.css';
+import '../../css/ciudadano/panel-configuracion.css';
 
 export default function Configuracion() {
   const [nombre, setNombre] = useState('Juan Carlos Pérez');

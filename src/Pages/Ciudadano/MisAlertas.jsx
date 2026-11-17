@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import '../../../css/global.css';
-import '../../../css/temas.css';
-import '../../../css/ciudadano/panel-mis-alertas.css';
-import { listarMisAlertas } from '../../../Service/AlertasAPI.js';
+import '../../css/global.css';
+import '../../css/temas.css';
+import '../../css/ciudadano/panel-mis-alertas.css';
+import { listarMisAlertas } from '../../Service/AlertasAPI.js';
 
 // ---------- Utilidades ----------
 

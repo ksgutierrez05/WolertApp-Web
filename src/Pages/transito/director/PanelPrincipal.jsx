@@ -348,7 +348,7 @@ const accidentesPorComuna = useMemo(() => {
       </section>
 
       <div className="sec-head-pd">
-        <h2 className="titulos">
+        <h2 className="titulos-dir">
           Mapa de tránsito
         </h2>
       </div>
@@ -400,7 +400,7 @@ const accidentesPorComuna = useMemo(() => {
       </div>
 
       <div className="sec-head-pd">
-        <h2 className="titulos">
+        <h2 className="titulos-dir">
           Accidentes por comuna
         </h2>
         <span className="text-muted small">
@@ -441,7 +441,7 @@ const accidentesPorComuna = useMemo(() => {
       </div>
 
       <div className="sec-head-pd">
-        <h2 className="titulos">
+        <h2 className="titulos-dir">
           Últimos casos de tránsito
         </h2>
         <span className="text-muted small">

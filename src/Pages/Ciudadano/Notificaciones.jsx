@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import '../../../css/global.css';
-import '../../../css/temas.css';
-import '../../../css/ciudadano/panel-notificaciones.css';
+import '../../css/global.css';
+import '../../css/temas.css';
+import '../../css/ciudadano/panel-notificaciones.css';
 
 const notifs = [
   { id: 1, tipo: 'alerta_vecino', titulo: 'Nueva alerta cerca', mensaje: 'Laura Peña reportó un accidente a 120m.', leida: false, tiempo: 'Hace 5 min' },

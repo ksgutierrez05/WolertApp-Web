@@ -1,12 +1,12 @@
 import { Routes, Route } from 'react-router-dom';
 import CiudadanoLayout from '../../Components/Ciudadano/CiudadanoLayout';
-import Principal from '../../Components/Ciudadano/Pages/Principal';
-import Alertas from '../../Components/Ciudadano/Pages/Alertas';
-import MisAlertas from '../../Components/Ciudadano/Pages/MisAlertas';
-import Configuracion from '../../Components/Ciudadano/Pages/Configuracion';
-import Notificaciones from '../../Components/Ciudadano/Pages/Notificaciones';
-import Vecinos from '../../Components/Ciudadano/Pages/Vecinos';
-import ReportarEmergencia from '../../Components/Ciudadano/Pages/ReportarEmergencia';
+import Principal from './Principal';
+import Alertas from './Alertas';
+import MisAlertas from './MisAlertas';
+import Configuracion from './Configuracion';
+import Notificaciones from './Notificaciones';
+import Vecinos from './Vecinos';
+import ReportarEmergencia from './ReportarEmergencia';
 
 export default function Ciudadano() {
   return (

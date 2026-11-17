@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
-import '../../../css/global.css';
-import '../../../css/temas.css';
-import '../../../css/admin/notificaciones.css';
+import '../../css/global.css';
+import '../../css/temas.css';
+import '../../css/admin/notificaciones.css';
 
 const STORAGE_KEY_NOTI = 'wolertapp_notificaciones';
 
