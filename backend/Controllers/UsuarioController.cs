@@ -56,8 +56,41 @@ namespace backend.Controllers
                 .ToListAsync();
         }
 
-        // GET: api/Usuarios/5
-        [HttpGet("{id}")]
+		// GET: api/Usuarios/vecinos  (ciudadanos activos del mismo barrio, sin contar al propio usuario)
+		[HttpGet("vecinos")]
+		[Authorize]
+		public async Task<IActionResult> GetVecinos()
+		{
+			var idTexto = User.FindFirstValue(ClaimTypes.NameIdentifier);
+			if (!int.TryParse(idTexto, out var idUsuario)) return Unauthorized();
+
+			var barrioId = await _context.Usuarios
+				.Where(u => u.IdUsuario == idUsuario)
+				.Select(u => u.BarrioId)
+				.FirstOrDefaultAsync();
+
+			if (barrioId == null) return Ok(new List<object>());
+
+			var vecinos = await _context.Usuarios
+				.AsNoTracking()
+				.Where(u => u.BarrioId == barrioId
+					&& u.IdUsuario != idUsuario
+					&& u.Rol.Nombre == "Ciudadano"
+					&& u.Estado.ToLower() == "activo")
+				.OrderBy(u => u.PrimerNombre)
+				.Select(u => new
+				{
+					u.IdUsuario,
+					Nombre = u.PrimerNombre + " " + u.PrimerApellido,
+					BarrioNombre = u.Barrio.Nombre
+				})
+				.ToListAsync();
+
+			return Ok(vecinos);
+		}
+
+		// GET: api/Usuarios/5
+		[HttpGet("{id}")]
         public async Task<ActionResult<UsuarioDTO>> GetUsuario(int id)
         {
             var usuario = await _context.Usuarios
@@ -200,8 +233,48 @@ namespace backend.Controllers
             return NoContent();
         }
 
-        // DELETE: api/Usuarios/5  (desactiva, no borra)
-        [Authorize(Roles = Admin)]
+		// PUT: api/usuarios/5/password  (solo el dueño de la cuenta)
+		[HttpPut("{id}/password")]
+		[Authorize]
+		public async Task<IActionResult> CambiarPassword(int id, CambiarPasswordDTO dto)
+		{
+			// Cada usuario solo cambia SU contraseña
+			var idToken = User.FindFirstValue(ClaimTypes.NameIdentifier);
+			if (idToken != id.ToString()) return Forbid();
+
+			if (string.IsNullOrWhiteSpace(dto.PasswordActual))
+				return BadRequest("Escribe tu contraseña actual.");
+
+			if (string.IsNullOrWhiteSpace(dto.PasswordNueva) || dto.PasswordNueva.Length < 8)
+				return BadRequest("La nueva contraseña debe tener al menos 8 caracteres.");
+
+			var usuario = await _context.Usuarios.FindAsync(id);
+			if (usuario == null) return NotFound();
+
+			var hasher = new PasswordHasher<Usuario>();
+
+			PasswordVerificationResult resultado;
+			try
+			{
+				resultado = hasher.VerifyHashedPassword(usuario, usuario.PasswordHash, dto.PasswordActual);
+			}
+			catch (FormatException)
+			{
+				// Hash inválido (usuario creado a mano)
+				return BadRequest("La contraseña actual es incorrecta.");
+			}
+
+			if (resultado == PasswordVerificationResult.Failed)
+				return BadRequest("La contraseña actual es incorrecta.");
+
+			usuario.PasswordHash = hasher.HashPassword(usuario, dto.PasswordNueva);
+			await _context.SaveChangesAsync();
+
+			return NoContent();
+		}
+
+		// DELETE: api/Usuarios/5  (desactiva, no borra)
+		[Authorize(Roles = Admin)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUsuario(int id)
         {
