@@ -45,6 +45,39 @@ namespace backend.Controllers
 				.ToListAsync();
 		}
 
+		// GET: api/Usuarios/vecinos  (ciudadanos activos del mismo barrio, sin contar al propio usuario)
+		[HttpGet("vecinos")]
+		[Authorize]
+		public async Task<IActionResult> GetVecinos()
+		{
+			var idTexto = User.FindFirstValue(ClaimTypes.NameIdentifier);
+			if (!int.TryParse(idTexto, out var idUsuario)) return Unauthorized();
+
+			var barrioId = await _context.Usuarios
+				.Where(u => u.IdUsuario == idUsuario)
+				.Select(u => u.BarrioId)
+				.FirstOrDefaultAsync();
+
+			if (barrioId == null) return Ok(new List<object>());
+
+			var vecinos = await _context.Usuarios
+				.AsNoTracking()
+				.Where(u => u.BarrioId == barrioId
+					&& u.IdUsuario != idUsuario
+					&& u.Rol.Nombre == "Ciudadano"
+					&& u.Estado.ToLower() == "activo")
+				.OrderBy(u => u.PrimerNombre)
+				.Select(u => new
+				{
+					u.IdUsuario,
+					Nombre = u.PrimerNombre + " " + u.PrimerApellido,
+					BarrioNombre = u.Barrio.Nombre
+				})
+				.ToListAsync();
+
+			return Ok(vecinos);
+		}
+
 		// GET: api/Usuarios/5
 		[HttpGet("{id}")]
 		public async Task<ActionResult<UsuarioDTO>> GetUsuario(int id)

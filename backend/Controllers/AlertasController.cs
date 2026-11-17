@@ -40,10 +40,13 @@ namespace backend.Controllers
 			return (zona?.BarrioId, zona?.ComunaId);
 		}
 
-		// GET: api/Alertas?alcance=todas|barrio|comuna
+		// GET: api/Alertas?alcance=todas|barrio|comuna|Mias
 		[HttpGet]
 		public async Task<ActionResult<IEnumerable<AlertaDTO>>> GetAlertas([FromQuery] string alcance = "todas")
 		{
+			alcance = (alcance ?? "todas").Trim().ToLowerInvariant();
+
+
 			var (barrioId, comunaId) = await ZonaDelUsuario();
 
 			var consulta = _context.Alertas.AsNoTracking().AsQueryable();
@@ -57,6 +60,17 @@ namespace backend.Controllers
 			{
 				if (comunaId == null) return Ok(new List<AlertaDTO>());
 				consulta = consulta.Where(a => a.Barrio != null && a.Barrio.ComunaId == comunaId);
+			}
+			else if (alcance == "mias")
+			{
+				var idTexto = User.FindFirstValue(ClaimTypes.NameIdentifier);
+				if (!int.TryParse(idTexto, out var idUsuario)) return Unauthorized();
+				consulta = consulta.Where(a => a.UsuarioId == idUsuario);
+			}
+
+			else if (alcance != "todas")
+			{
+				return BadRequest("El alcance debe ser todas, barrio, comuna o mias.");
 			}
 
 			var alertas = await consulta
@@ -155,4 +169,4 @@ namespace backend.Controllers
 		}
 
 	}
-}
+}	
