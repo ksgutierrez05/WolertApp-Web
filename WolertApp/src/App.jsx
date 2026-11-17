@@ -51,7 +51,7 @@ function App() {
       <Route
         path="/"
         element={
-          <Navigate to="/Central-Policia" replace />
+          <Navigate to="/Administrador-Policia" replace />
         }
       />
 
