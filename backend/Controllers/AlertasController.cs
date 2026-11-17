@@ -44,7 +44,9 @@ namespace backend.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<AlertaDTO>>> GetAlertas([FromQuery] string alcance = "todas")
         {
-            var (barrioId, comunaId) = await ZonaDelUsuario();
+			alcance = (alcance ?? "todas").Trim().ToLowerInvariant();
+
+			var (barrioId, comunaId) = await ZonaDelUsuario();
 
             var consulta = _context.Alertas.AsNoTracking().AsQueryable();
 
@@ -58,8 +60,14 @@ namespace backend.Controllers
                 if (comunaId == null) return Ok(new List<AlertaDTO>());
                 consulta = consulta.Where(a => a.Barrio != null && a.Barrio.ComunaId == comunaId);
             }
+			else if (alcance == "mias")
+			{
+				var idTexto = User.FindFirstValue(ClaimTypes.NameIdentifier);
+				if (!int.TryParse(idTexto, out var idUsuario)) return Unauthorized();
+				consulta = consulta.Where(a => a.UsuarioId == idUsuario);
+			}
 
-            var alertas = await consulta
+			var alertas = await consulta
                 .OrderByDescending(a => a.Fecha)
                 .Take(200)
                 .Select(a => new AlertaDTO
