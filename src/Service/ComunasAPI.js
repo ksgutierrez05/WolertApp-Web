@@ -1,7 +1,7 @@
 const API = 'http://localhost:5039';
 
 export async function ListarComunas(){
-    const respuesta = await fetch(`http://${API}/api/comunas`);
+    const respuesta = await fetch(`${API}/api/comunas`);
 
     if(!respuesta.ok){
         throw new Error('Error en listado de comunas');
@@ -12,7 +12,7 @@ export async function ListarComunas(){
 }
 
 export async function ObtenerComunaPorId(id){
-    const respuesta = await fetch(`http://${API}/api/comunas/${id}`);
+    const respuesta = await fetch(`${API}/api/comunas/${id}`);
 
     if(!respuesta.ok){
         throw new Error('Error en obtención de comuna por ID');
@@ -23,7 +23,7 @@ export async function ObtenerComunaPorId(id){
 }
 
 export async function CrearComuna(comuna){
-    const respuesta = await fetch(`http://${API}/api/comunas`, {
+    const respuesta = await fetch(`${API}/api/comunas`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json' ,  'Authorization': `Bearer ${ObtenerToken()}`},
         body: JSON.stringify(comuna)
@@ -40,7 +40,7 @@ export async function CrearComuna(comuna){
 }
 
 export async function EditarComuna(id,comuna){
-    const respuesta = await fetch(`http://${API}/api/comunas/${id}`, {
+    const respuesta = await fetch(`${API}/api/comunas/${id}`, {
         method: 'PUT',
         headers: {'Content-Type': 'application/json' ,  'Authorization': `Bearer ${ObtenerToken()}`},
         body: JSON.stringify(comuna)
@@ -53,7 +53,7 @@ export async function EditarComuna(id,comuna){
 }
 
 export async function EliminarComuna(id){
-    const respuesta = await fetch(`http://${API}/api/comunas/${id}`, {
+    const respuesta = await fetch(`${API}/api/comunas/${id}`, {
         headers: {'Authorization': `Bearer ${ObtenerToken()}`},
         method: 'DELETE'
     });

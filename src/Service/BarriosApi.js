@@ -1,7 +1,7 @@
 const API = 'http://localhost:5039';
 
 export async function ListarBarrios(){
-    const respuesta = await fetch(`http://${API}/api/barrios`);
+    const respuesta = await fetch(`${API}/api/barrios`);
 
     if(!respuesta.ok){
         throw new Error('Error en listado de barrios ')
@@ -12,7 +12,7 @@ export async function ListarBarrios(){
 };
 
 export async function ObtenerBarrioPorId(id){
-    const respuesta = await fetch(`http://${API}/api/barrios/${id}`);
+    const respuesta = await fetch(`${API}/api/barrios/${id}`);
 
     if(!respuesta.ok){
         throw new Error('Error en obtención de barrio por ID');
@@ -23,7 +23,7 @@ export async function ObtenerBarrioPorId(id){
 };
 
 export async function CrearBarrio(barrio){
-    const respuesta = await fetch (`http://${API}/api/barrios`, {
+    const respuesta = await fetch (`${API}/api/barrios`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json' ,  'Authorization': `Bearer ${ObtenerToken()}`},
         body: JSON.stringify(barrio)
@@ -39,7 +39,7 @@ export async function CrearBarrio(barrio){
 };
 
 export async function EditarBarrio(id,barrio){
-    const respuesta = await fetch(`http://${API}/api/barrios/${id}`, {
+    const respuesta = await fetch(`${API}/api/barrios/${id}`, {
         method: 'PUT',
         headers: {'Content-Type': 'application/json' ,  'Authorization': `Bearer ${ObtenerToken()}`},
         body: JSON.stringify(barrio)
@@ -52,7 +52,7 @@ export async function EditarBarrio(id,barrio){
 };
 
 export async function EliminarBarrio(id){
-    const respuesta = await fetch(`http://${API}/api/barrios/${id}`, {
+    const respuesta = await fetch(`${API}/api/barrios/${id}`, {
         method: 'DELETE',
         headers: {'Authorization': `Bearer ${ObtenerToken()}`}
     });
