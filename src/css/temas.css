@@ -10,6 +10,10 @@
   --color-primary-2: #0b4a3f;
 }
 
+body.rol-policia { background-color: #f6f7fa !important; }
+
+body.rol-transito { background-color: #f6f7fa !important; }
+
 .rol-administrador {
  --color-primary: #0e2f57;
   --color-primary-2: #184a8c;

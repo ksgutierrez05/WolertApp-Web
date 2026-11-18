@@ -56,6 +56,10 @@ html {
   scrollbar-color: rgba(16, 24, 40, 0.18) transparent;
 }
 
+.root{
+  --background: #f9fafb;
+}
+
 body {
   min-height: 100%;
   overflow-x: hidden;

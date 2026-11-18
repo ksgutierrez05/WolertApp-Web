@@ -3,7 +3,6 @@ import { Outlet } from 'react-router-dom';
 import SidebarPolicia from '../Administrador-policia/Sidebar';
 
 function Layout() {
-  
   useEffect(() => {
     document.body.classList.add('rol-policia');
     return () => document.body.classList.remove('rol-policia');
