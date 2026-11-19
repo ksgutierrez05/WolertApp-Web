@@ -1,9 +1,9 @@
 import { Routes, Route } from 'react-router-dom';
 import CiudadanoLayout from '../../Components/Ciudadano/CiudadanoLayout';
-import Principal from './Principal';
-import Alertas from './Alertas';
-import MisAlertas from './MisAlertas';
-import Configuracion from './Configuracion';
+import Principal from '../../Pages/Ciudadano/Principal';
+import Alertas from '../../Pages/Ciudadano/Alertas';
+import MisAlertas from '../../Pages/Ciudadano/MisAlertas';
+import Configuracion from '../../Pages/Ciudadano/Configuracion';
 import Notificaciones from './Notificaciones';
 import Vecinos from './Vecinos';
 import ReportarEmergencia from './ReportarEmergencia';

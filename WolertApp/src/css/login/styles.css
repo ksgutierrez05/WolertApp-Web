@@ -1,0 +1,462 @@
+:root {
+    --azul-oscuro: #19263d;
+    --azul-panel-1: #081a32;
+    --azul-panel-2: #06213ff3;
+    --texto: #1f2937;
+    --muted: #9aa1ab;
+    --gris-input: #eef0f3;
+    --background: #f9fafb;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+}
+
+.auth-container {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    background: #ffffff;
+}
+
+/* ---------- Volver ---------- */
+.btn-volver {
+    position: fixed;
+    top: 24px;
+    left: 24px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 10;
+    transition: color 0.3s ease;
+}
+
+.btn-volver:hover {
+    text-decoration: underline;
+}
+
+body.modo-registro .btn-volver {
+    color: var(--azul-oscuro);
+}
+
+/* ---------- Panel azul deslizante ---------- */
+.panel-deslizante {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(145deg, var(--azul-panel-1) 0%, #153f70 55%, var(--azul-panel-2) 100%);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: center;
+    padding: 10px 20px 0 20px;
+    border-radius: 0 70px 70px 0;
+    z-index: 5;
+    transition: transform 0.6s ease-in-out, border-radius 0.6s ease-in-out;
+}
+
+.panel-contenido {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 16px;
+}
+
+.panel-deslizante .login-logo {
+    width: 300px;
+    height: 300px;
+    object-fit: contain;
+    margin-bottom: 10px;
+}
+
+.panel-deslizante h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 40px;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 12px;
+    margin-top: -55px;
+}
+
+.panel-deslizante .panel-lema {
+    font-size: 16px;
+    color: #ffffff;
+    margin-bottom: 12px;
+}
+
+.panel-deslizante .login-tagline {
+    font-size: 16px;
+    line-height: 1.5;
+    color: #ffffff;
+    margin-bottom: 24px;
+}
+
+.btn-registrarse {
+    background: #ffffff;
+    color: #12294a;
+    border: none;
+    width: 200px;
+    height: 44px;
+    border-radius: 100px;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    margin-top: 12px;
+}
+
+.btn-registrarse:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+}
+
+/* ---------- Caja de formularios ---------- */
+.form-box {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 50%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 48px;
+    background: #ffffff;
+    transition: transform 0.6s ease-in-out, opacity 0.6s ease-in-out;
+}
+
+.form-login {
+    z-index: 2;
+}
+
+.form-login form {
+    width: 100%;
+    max-width: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.form-login h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 34px;
+    font-weight: 800;
+    color: var(--texto);
+    text-align: center;
+    margin-bottom: 34px;
+}
+
+/* ---------- Inputs tipo píldora ---------- */
+.input-wrapper {
+    position: relative;
+    width: 100%;
+    margin-bottom: 18px;
+}
+
+.login-input,
+.form-login .input {
+    width: 100%;
+    height: 54px;
+    padding: 0 48px 0 46px;
+    border: none;
+    outline: none;
+    border-radius: 100px;
+    background: var(--gris-input);
+    color: var(--texto);
+    font-size: 15px;
+    margin-bottom: 0;
+    transition: box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.login-input::placeholder,
+.form-login .input::placeholder {
+    color: var(--muted);
+}
+
+.login-input:focus,
+.form-login .input:focus {
+    background: #e8ebf0;
+    box-shadow: 0 0 0 2px rgba(21, 63, 112, 0.35);
+}
+
+.input-wrapper i {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    font-size: 15px;
+    pointer-events: none;
+}
+
+.input-wrapper #toggle-password,
+.input-wrapper .toggle-pass {
+    position: absolute;
+    left: auto;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: none;
+    color: var(--muted);
+    font-size: 15px;
+    cursor: pointer;
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+}
+
+.input-wrapper .toggle-pass i {
+    position: static;
+    transform: none;
+    pointer-events: none;
+}
+
+/* ---------- Botón LOGIN ---------- */
+.btn-login,
+.form-login .btn-primary {
+    background: var(--azul-oscuro);
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: none;
+    width: 150px;
+    height: 50px;
+    border-radius: 100px;
+    cursor: pointer;
+    margin: 24px auto 0 auto;
+    margin-top: 10px;
+    display: block;
+    transition: transform 0.15s ease, background 0.2s ease;
+}
+
+.btn-login:hover,
+.form-login .btn-primary:hover {
+    background: #163a63;
+    transform: translateY(-2px);
+}
+
+.form-registro .btn-login {
+    width: 300px;        /* antes 220px */
+    height: 50px;        /* antes 56px */
+    font-size: 16px;     /* antes 12px */
+    letter-spacing: 0.5px;
+    background: linear-gradient(90deg, #19263d 0%, #1f3d5e 100%);
+    box-shadow: 0 6px 16px rgba(25, 38, 61, 0.25);
+}
+
+.form-registro .btn-login:hover {
+    background: linear-gradient(90deg, #1d2d48 0%, #254a70 100%);
+}
+
+/* ---------- Mensajes ---------- */
+.form-error,
+.form-ok {
+    width: 100%;
+    font-size: 13px;
+    margin-bottom: 14px;
+    padding: 10px 14px;
+    border-radius: 14px;
+    text-align: center;
+}
+
+.form-error {
+    background: #fdecec;
+    color: #c81e2c;
+}
+
+.form-ok {
+    background: #e8f6ee;
+    color: #1a7f4b;
+}
+
+.link-olvide {
+    display: block;
+    text-align: center;
+    margin-top: 16px;
+    font-size: 14px;
+    color: var(--muted);
+    text-decoration: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.link-olvide:hover {
+    text-decoration: underline;
+    color: var(--azul-oscuro);
+}
+
+/* ---------- Formulario de registro ---------- */
+.form-registro {
+    overflow-y: auto;
+    padding-top: 40px;
+    padding-bottom: 40px;
+    justify-content: flex-start;
+}
+
+.form-registro h2 {
+    font-size: 32px;
+    margin: 0 auto 20px auto;
+    text-align: center;
+    align-self: center;
+}
+
+.form-subtitle {
+    color: #6b7280;
+    font-size: 13.5px;
+    margin-bottom: 18px;
+    align-self: flex-start;
+}
+
+.form-divider {
+    width: 100%;
+    border: none;
+    border-top: 1px solid #e5e7eb;
+    margin-bottom: 20px;
+}
+
+.seccion-titulo {
+    width: 100%;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 10px 0 12px;
+}
+
+.grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    width: 100%;
+    margin-bottom: 14px;
+}
+
+.input-gris {
+    width: 100%;
+    padding: 15px 16px;
+    border: none;
+    border-radius: 12px;
+    background-color: var(--gris-input);
+    font-size: 14px;
+    color: var(--texto);
+    margin-bottom: 14px;
+}
+
+.input-gris::placeholder {
+    color: var(--muted);
+}
+
+.input-gris:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--azul-oscuro);
+}
+
+.grid-2 .input-gris {
+    margin-bottom: 0;
+}
+
+.form-registro .input-wrapper .input-gris {
+    padding-left: 42px;
+}
+
+/* ---------- Estado activo: "Registrarse" ---------- */
+.auth-container.active .panel-deslizante {
+    transform: translateX(100%);
+    border-radius: 70px 0 0 70px;
+}
+
+.auth-container.active .form-login {
+    transform: translateX(-100%);
+    opacity: 0;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.auth-container.active .form-registro {
+    transform: translateX(-100%);
+    opacity: 1;
+    z-index: 2;
+    pointer-events: auto;
+}
+
+/* ---------- Refuerzos (mayor especificidad) ---------- */
+.auth-container .panel-deslizante {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 65px;
+}
+
+.auth-container .panel-contenido {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+    max-width: 380px;
+}
+
+.auth-container .panel-contenido > * {
+    max-width: 100%;
+}
+
+.auth-container .form-login .campo,
+.auth-container .form-login .input-wrapper {
+    position: relative;
+    width: 100%;
+    margin-bottom: 18px;
+}
+
+.auth-container .form-login .input-wrapper input {
+    width: 100%;
+    height: 54px;
+    padding: 0 48px 0 46px;
+    border: none;
+    border-radius: 100px;
+    background: var(--gris-input);
+    font-size: 15px;
+}
+
+.auth-container .form-login .input-wrapper > i.bi {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+    color: var(--muted);
+    line-height: 1;
+}
+
+.auth-container .form-login .toggle-pass {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: none;
+    cursor: pointer;
+}
