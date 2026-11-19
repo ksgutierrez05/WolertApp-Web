@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
-import { MapContainer, TileLayer, LayersControl, Marker, useMap, useMapEvents } from 'react-leaflet';
+import { MapContainer, TileLayer, LayersControl, Marker, useMapEvents, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import '../../css/global.css';
 import '../../css/temas.css';
 import '../../css/ciudadano/reportar-emergencia.css';
-import { crearAlerta } from '../../Service/AlertasAPI.js';
-import { listarTiposAlerta } from '../../Service/TipoAlertasAPI.js';
+import { crearAlerta } from '../../Services/AlertasAPI.js';
+import { listarTiposAlerta } from '../../Services/TipoAlertasAPI.js';
 
 const API = 'http://localhost:5039';
 const CENTRO_INICIAL = [10.4731, -73.2446]; // Valledupar
@@ -145,7 +145,7 @@ const normalizar = (texto) =>
     .trim()
     .toLowerCase();
 
-export default function ReportarEmergencia() {
+export default function ReportarEmergencia({ onClose }) {
   const [tipo, setTipo] = useState(null);
   const [subtipo, setSubtipo] = useState('');
   const [extra, setExtra] = useState(false);
@@ -157,7 +157,6 @@ export default function ReportarEmergencia() {
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState('');
   const [enviada, setEnviada] = useState(false);
-  // Se muestran las tarjetas desde el inicio (deshabilitadas hasta obtener el Id real).
   const [tipos, setTipos] = useState(() =>
     TIPOS_CONFIG.map((t) => ({ ...t, tipoAlertaId: null }))
   );
@@ -272,189 +271,178 @@ export default function ReportarEmergencia() {
     : 'Marca el punto en el mapa o usa tu ubicación actual';
 
   return (
-    <div className="re-pagina">
-      <header className="re-cabecera">
-        <div className="re-marca">
-          <strong>WolertApp</strong>
-        </div>
-        <span className={`re-estado ${pos ? 're-estado-ok' : ''}`}>{mensajeCabecera}</span>
-      </header>
-
-      <div className="re-cuerpo">
-        <div className="re-mapa">
-          <MapContainer center={CENTRO_INICIAL} zoom={13} style={{ height: '100%', width: '100%' }}>
-            <LayersControl position="topright">
-              <LayersControl.BaseLayer checked name="Calles">
-                <TileLayer url={estiloMapbox('streets-v12')} tileSize={512} zoomOffset={-1} maxZoom={19} attribution={ATRIB_MAPBOX} />
-              </LayersControl.BaseLayer>
-              <LayersControl.BaseLayer name="Claro">
-                <TileLayer url={estiloMapbox('light-v11')} tileSize={512} zoomOffset={-1} maxZoom={19} attribution={ATRIB_MAPBOX} />
-              </LayersControl.BaseLayer>
-              <LayersControl.BaseLayer name="Oscuro">
-                <TileLayer url={estiloMapbox('dark-v11')} tileSize={512} zoomOffset={-1} maxZoom={19} attribution={ATRIB_MAPBOX} />
-              </LayersControl.BaseLayer>
-              <LayersControl.BaseLayer name="Satélite">
-                <TileLayer url={estiloMapbox('satellite-streets-v12')} tileSize={512} zoomOffset={-1} maxZoom={19} attribution={ATRIB_MAPBOX} />
-              </LayersControl.BaseLayer>
-            </LayersControl>
-            <ClickMapa onPick={setPos} />
-            <Volar destino={volarA} />
-            {pos && (
-              <Marker
-                position={[pos.lat, pos.lng]}
-                icon={iconoPin}
-                draggable
-                eventHandlers={{
-                  dragend: (e) => {
-                    const { lat, lng } = e.target.getLatLng();
-                    setPos({ lat, lng });
-                  },
-                }}
-              />
-            )}
-          </MapContainer>
-          {pos && (
-            <div className="re-chip-coords">
-              <i className="bi bi-geo-alt-fill" /> {pos.lat.toFixed(5)}, {pos.lng.toFixed(5)}
-            </div>
-          )}
-          <button type="button" className="re-btn-gps" onClick={usarMiUbicacion}>
-            <i className="bi bi-crosshair" /> Usar mi ubicación
+    <div className="re-modal-fondo" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="re-titulo-modal">
+      <div className="re-modal-contenedor" onClick={(e) => e.stopPropagation()}>
+        <div className="re-modal-cabecera">
+          <h2 id="re-titulo-modal">Reportar emergencia</h2>
+          <button type="button" className="re-modal-cerrar" onClick={onClose} aria-label="Cerrar">
+            <i className="bi bi-x-lg" />
+          </button>
+          <button type="button" className="re-modal-volver" onClick={onClose}>
+            Volver al menú principal
           </button>
         </div>
 
-        <aside className="re-panel">
-          <div className="re-panel-titulo">
-            <span className="re-icono-campana"><i className="bi bi-bell-fill" /></span>
-            <div>
-              <h1>Reportar emergencia</h1>
-              <p>Marca el mapa, elige el tipo y pulsa el botón de pánico</p>
-            </div>
-          </div>
-
-          {tipo && (
-            <div className="re-panel-scroll">
-              <div className="re-tipo-actual">
-                <span className="re-tipo-icono" style={{ background: tipo.color }}><i className={`bi ${tipo.icono}`} /></span>
-                <strong>{tipo.nombre}</strong>
-                <button type="button" className="re-link" onClick={() => setTipo(null)}>Cambiar tipo</button>
-              </div>
-
-              {tipo.subtipos.length > 0 && (
-                <section className="re-caja">
-                  <h2>{tipo.tituloSubtipo}</h2>
-                  <div className="re-subtipos">
-                    {tipo.subtipos.map((s) => (
-                      <button
-                        key={s.nombre}
-                        type="button"
-                        className={`re-subtipo ${subtipo === s.nombre ? 'activo' : ''}`}
-                        onClick={() => setSubtipo(s.nombre)}
-                        aria-pressed={subtipo === s.nombre}
-                      >
-                        <span className="re-subtipo-icono" style={{ background: s.color }}><i className={`bi ${s.icono}`} /></span>
-                        {s.nombre}
-                      </button>
-                    ))}
-                  </div>
-                  {tipo.pregunta && (
-                    <label className="re-switch">
-                      <input type="checkbox" checked={extra} onChange={(e) => setExtra(e.target.checked)} />
-                      <span className="re-switch-pista" />
-                      <span>{tipo.pregunta}</span>
-                    </label>
-                  )}
-                </section>
-              )}
-
-              <label className="re-campo">
-                <span><i className="bi bi-pencil-fill" /> Descripción del incidente</span>
-                <textarea
-                  rows={3}
-                  maxLength={400}
-                  placeholder="Describe brevemente la emergencia..."
-                  value={descripcion}
-                  onChange={(e) => setDescripcion(e.target.value)}
-                />
-              </label>
-
-              <label className="re-campo">
-                <span>Barrio del incidente</span>
-                <select value={barrioId} onChange={(e) => setBarrioId(e.target.value)}>
-                  <option value="">Seleccionar barrio</option>
-                  {barrios.map((b) => (
-                    <option key={b.idBarrio} value={b.idBarrio}>{b.nombre}</option>
+        <div className="re-modal-cuerpo">
+          {!tipo && !enviada ? (
+            <div className="re-paso-tipo">
+              <div className="re-seleccion-tipo">
+                <h2>¿Qué tipo de emergencia tienes?</h2>
+                {errorTipos && (
+                  <p className="re-error" role="alert">
+                    {errorTipos}{' '}
+                    <button type="button" className="re-btn-oscuro" onClick={cargarTipos}>
+                      Reintentar
+                    </button>
+                  </p>
+                )}
+                <div className="re-grilla-tipos">
+                  {tipos.map((t) => (
+                    <button
+                      key={t.clave}
+                      type="button"
+                      className="re-tipo-card"
+                      onClick={() => elegirTipo(t)}
+                      disabled={t.tipoAlertaId == null || cargandoTipos}
+                    >
+                      <i
+                        className={`bi ${t.icono}`}
+                        style={{ color: t.color }}
+                      />
+                      {t.nombre}
+                    </button>
                   ))}
-                </select>
-              </label>
-
-              <div className="re-coords-caja">
-                <i className="bi bi-pin-map-fill" />
-                <div>
-                  <strong>Coordenadas del incidente</strong>
-                  <span>{pos ? `${pos.lat.toFixed(5)}, ${pos.lng.toFixed(5)}` : 'Aún sin marcar'}</span>
                 </div>
               </div>
+            </div>
+          ) : (
+            <div className="re-contenido-tipo-mapa">
+              <div className="re-mapa">
+                <MapContainer center={CENTRO_INICIAL} zoom={13} style={{ height: '100%', width: '100%' }}>
+                  <LayersControl position="topright">
+                    <LayersControl.BaseLayer checked name="Calles">
+                      <TileLayer url={estiloMapbox('streets-v12')} tileSize={512} zoomOffset={-1} maxZoom={19} attribution={ATRIB_MAPBOX} />
+                    </LayersControl.BaseLayer>
+                    <LayersControl.BaseLayer name="Claro">
+                      <TileLayer url={estiloMapbox('light-v11')} tileSize={512} zoomOffset={-1} maxZoom={19} attribution={ATRIB_MAPBOX} />
+                    </LayersControl.BaseLayer>
+                    <LayersControl.BaseLayer name="Oscuro">
+                      <TileLayer url={estiloMapbox('dark-v11')} tileSize={512} zoomOffset={-1} maxZoom={19} attribution={ATRIB_MAPBOX} />
+                    </LayersControl.BaseLayer>
+                    <LayersControl.BaseLayer name="Satélite">
+                      <TileLayer url={estiloMapbox('satellite-streets-v12')} tileSize={512} zoomOffset={-1} maxZoom={19} attribution={ATRIB_MAPBOX} />
+                    </LayersControl.BaseLayer>
+                  </LayersControl>
+                  <ClickMapa onPick={setPos} />
+                  <Volar destino={volarA} />
+                  {pos && (
+                    <Marker
+                      position={[pos.lat, pos.lng]}
+                      icon={iconoPin}
+                      draggable
+                      eventHandlers={{
+                        dragend: (e) => {
+                          const { lat, lng } = e.target.getLatLng();
+                          setPos({ lat, lng });
+                        },
+                      }}
+                    />
+                  )}
+                </MapContainer>
+                {pos && (
+                  <div className="re-chip-coords">
+                    <i className="bi bi-geo-alt-fill" /> {pos.lat.toFixed(5)}, {pos.lng.toFixed(5)}
+                  </div>
+                )}
+                <button type="button" className="re-btn-gps" onClick={usarMiUbicacion}>
+                  <i className="bi bi-crosshair" /> Usar mi ubicación
+                </button>
+              </div>
 
-              {error && <div className="re-error" role="alert">{error}</div>}
+              <aside className="re-panel">
+                <div className="re-tipo-actual">
+                  <span className="re-tipo-icono" style={{ background: tipo.color }}><i className={`bi ${tipo.icono}`} /></span>
+                  <strong>{tipo.nombre}</strong>
+                  <button type="button" className="re-link" onClick={() => setTipo(null)}>Cambiar tipo</button>
+                </div>
 
-              <button type="button" className="re-panico" onClick={enviar} disabled={enviando}>
-                <i className="bi bi-shield-fill-exclamation" />
-                {enviando ? 'Enviando alerta...' : 'Enviar alerta'}
-              </button>
+                {tipo.subtipos.length > 0 && (
+                  <section className="re-caja">
+                    <h2>{tipo.tituloSubtipo}</h2>
+                    <div className="re-subtipos">
+                      {tipo.subtipos.map((s) => (
+                        <button
+                          key={s.nombre}
+                          type="button"
+                          className={`re-subtipo ${subtipo === s.nombre ? 'activo' : ''}`}
+                          onClick={() => setSubtipo(s.nombre)}
+                          aria-pressed={subtipo === s.nombre}
+                        >
+                          <span className="re-subtipo-icono" style={{ background: s.color }}><i className={`bi ${s.icono}`} /></span>
+                          {s.nombre}
+                        </button>
+                      ))}
+                    </div>
+                    {tipo.pregunta && (
+                      <label className="re-switch">
+                        <input type="checkbox" checked={extra} onChange={(e) => setExtra(e.target.checked)} />
+                        <span className="re-switch-pista" />
+                        <span>{tipo.pregunta}</span>
+                      </label>
+                    )}
+                  </section>
+                )}
+
+                <label className="re-campo">
+                  <span><i className="bi bi-pencil-fill" /> Descripción del incidente</span>
+                  <textarea
+                    rows={3}
+                    maxLength={400}
+                    placeholder="Describe brevemente la emergencia..."
+                    value={descripcion}
+                    onChange={(e) => setDescripcion(e.target.value)}
+                  />
+                </label>
+
+                <label className="re-campo">
+                  <span>Barrio del incidente</span>
+                  <select value={barrioId} onChange={(e) => setBarrioId(e.target.value)}>
+                    <option value="">Seleccionar barrio</option>
+                    {barrios.map((b) => (
+                      <option key={b.idBarrio} value={b.idBarrio}>{b.nombre}</option>
+                    ))}
+                  </select>
+                </label>
+
+                <div className="re-coords-caja">
+                  <i className="bi bi-pin-map-fill" />
+                  <div>
+                    <strong>Coordenadas del incidente</strong>
+                    <span>{pos ? `${pos.lat.toFixed(5)}, ${pos.lng.toFixed(5)}` : 'Aún sin marcar'}</span>
+                  </div>
+                </div>
+
+                {error && <div className="re-error" role="alert">{error}</div>}
+
+                <button type="button" className="re-panico" onClick={enviar} disabled={enviando}>
+                  <i className="bi bi-shield-fill-exclamation" />
+                  {enviando ? 'Enviando alerta...' : 'Enviar alerta'}
+                </button>
+              </aside>
             </div>
           )}
-        </aside>
-      </div>
-
-      {/* Paso 1: elegir el tipo de emergencia */}
-      {!tipo && !enviada && (
-        <div className="re-fondo" role="dialog" aria-modal="true" aria-labelledby="re-titulo-tipo">
-          <div className="re-modal re-modal-tipos">
-            <h2 id="re-titulo-tipo">¿Qué tipo de emergencia tienes?</h2>
-            {errorTipos && (
-              <p className="re-error" role="alert">
-                {errorTipos}{' '}
-                <button type="button" className="re-btn-oscuro" onClick={cargarTipos}>
-                  Reintentar
-                </button>
-              </p>
-            )}
-            <div className="re-boton-grande" aria-hidden="true">
-              <i className="bi bi-shield-fill-exclamation" />
-            </div>
-            <div className="re-grilla-tipos">
-              {tipos.map((t) => (
-                <button
-                  key={t.clave}
-                  type="button"
-                  className="re-tipo-card"
-                  onClick={() => elegirTipo(t)}
-                  disabled={t.tipoAlertaId == null || cargandoTipos}
-                >
-                  <i
-                    className={`bi ${t.icono}`}
-                    style={{ color: t.color }}
-                  />
-                  {t.nombre}
-                </button>
-              ))}
-            </div>
-          </div>
         </div>
-      )}
 
-      {/* Resultado */}
-      {enviada && (
-        <div className="re-fondo" role="dialog" aria-modal="true" aria-labelledby="re-titulo-ok">
-          <div className="re-modal re-modal-ok">
+        {/* Resultado */}
+        {enviada && (
+          <div className="re-modal-ok">
             <i className="bi bi-check-circle-fill re-ok-icono" />
             <h2 id="re-titulo-ok">Tu alerta fue registrada</h2>
             <p>Mantente en un lugar seguro. Las autoridades pueden ver tu ubicación en el mapa.</p>
             <button type="button" className="re-btn-oscuro" onClick={reiniciar}>Entendido</button>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

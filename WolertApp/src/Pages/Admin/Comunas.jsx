@@ -3,7 +3,7 @@ import '../../css/global.css';
 import '../../css/temas.css';
 import '../../css/admin/comunas.css';
 import { Link } from 'react-router-dom';
-import { ListarComunas, CrearComuna, EditarComuna, EliminarComuna } from '../../Service/ComunasAPI';
+import { ListarComunas, CrearComuna, EditarComuna, EliminarComuna } from '../../Services/ComunasAPI';
 
 const COLORES = ['#1f3a8a', '#5c4033', '#374151', '#166534', '#1d4ed8', '#14532d'];
 

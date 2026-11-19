@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
-import { crearUsuario } from '../../Service/UsuariosAPI.js'
+import { crearUsuario } from '../../Services/UsuariosAPI.js'
 // AJUSTA el nombre de la función al que exporta tu BarriosApi.js (ListarBarrios, listaBarrios...)
-import { ListarBarrios } from '../../Service/BarriosApi.js'
+import { ListarBarrios } from '../../Services/BarriosApi.js'
 
 // El registro público siempre crea un Ciudadano (lo decide el backend),
 // por eso no hay selector de rol en este formulario.

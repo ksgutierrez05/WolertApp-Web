@@ -10,7 +10,7 @@ import {
   editarUsuario,
   eliminarUsuario,
   listaRoles,
-} from '../../../Service/UsuariosAPI.js';
+} from '../../../Services/UsuariosAPI.js';
 
 // Las llaves son los nombres de rol EXACTOS que devuelve el backend (Rol.Nombre en Oracle)
 const nombreRol = {

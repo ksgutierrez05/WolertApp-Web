@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../../css/admin/dashboard-admin.css';
-import { obtenerUsuarioPorId } from '../../Service/UsuariosAPI.js';
+import { obtenerUsuarioPorId } from '../../Services/UsuariosAPI.js';
 
 export default function TopBarAdmin({ onToggleSidebar }) {
   const navigate = useNavigate();

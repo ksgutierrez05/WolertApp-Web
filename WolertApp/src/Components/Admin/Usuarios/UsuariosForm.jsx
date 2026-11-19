@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import '../../../css/global.css';
 import '../../../css/temas.css';
 import '../../../css/admin/usuarios.css';
-import { crearUsuarioPersonal, listaRoles } from '../../../Service/UsuariosAPI.js';
+import { crearUsuarioPersonal, listaRoles } from '../../../Services/UsuariosAPI.js';
 
 // Mismo mapa que "Permitidos" en UsuariosController.cs (quién puede crear a quién).
 // El backend es quien manda: esto solo evita mostrar opciones que darían 403.

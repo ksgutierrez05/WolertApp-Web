@@ -8,7 +8,7 @@ import {
   obtenerUsuarioPorId,
   editarUsuario,
   cambiarPassword,
-} from '../../Service/UsuariosAPI.js';
+} from '../../Services/UsuariosAPI.js';
 
 const nombreRol = {
   ADMIN: 'Administrador',

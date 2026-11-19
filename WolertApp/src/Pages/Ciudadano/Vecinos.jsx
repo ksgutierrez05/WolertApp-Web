@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import '../../css/global.css';
 import '../../css/temas.css';
 import '../../css/ciudadano/panel-vecinos.css';
-import { listarVecinos } from '../../Service/UsuariosAPI.js';
+import { listarVecinos } from '../../Services/UsuariosAPI.js';
 
 export default function Vecinos() {
   const [vecinos, setVecinos] = useState([]);

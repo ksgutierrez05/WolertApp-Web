@@ -4,7 +4,7 @@ import '../../css/temas.css';
 import '../../css/ciudadano/pagina-principal.css';
 import heroImg from '/img/Hero-ciudadano.jpg';
 import { Link, useNavigate } from 'react-router-dom';
-import { logOut, obtenerUsuarioPorId } from '../../Service/UsuariosAPI.js';
+import { logOut, obtenerUsuarioPorId } from '../../Services/UsuariosAPI.js';
 
 export default function Principal() {
   const [tab, setTab] = useState('todas');

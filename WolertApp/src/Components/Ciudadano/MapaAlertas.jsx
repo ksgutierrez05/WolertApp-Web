@@ -5,7 +5,7 @@ import 'leaflet/dist/leaflet.css';
 import '../../../css/global.css';
 import '../../../css/temas.css';
 import '../../../css/ciudadano/mapa-alertas.css';
-import { listarAlertasPorAlcance } from '../../../Service/AlertasAPI.js';
+import { listarAlertasPorAlcance } from '../../../Services/AlertasAPI.js';
 
 const CENTRO_INICIAL = [10.4731, -73.2446]; // Valledupar
 const REFRESCO_MS = 15000; // cada cuánto se vuelven a pedir las alertas

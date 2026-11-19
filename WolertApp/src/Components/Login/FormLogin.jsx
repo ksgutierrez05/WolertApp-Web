@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { login } from '../../Service/UsuariosAPI.js'
+import { login } from '../../Services/UsuariosAPI.js'
 
 function FormLogin({ onLoginSuccess, aviso }) {
     const [username, setUsername] = useState('')
