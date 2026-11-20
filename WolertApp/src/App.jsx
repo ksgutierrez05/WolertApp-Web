@@ -1,3 +1,4 @@
+
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import RutaProtegida from './Components/RutaProtegida';
 import Landing from './Pages/Landing/Landing';
@@ -51,10 +52,12 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+
+        {/* Landing y Login */}
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
 
-        {/* Admin y Ciudadano */}
+        {/* Administrador y Ciudadano */}
         <Route element={<RutaProtegida roles={['ADMIN']} />}>
           <Route path="/admin/*" element={<Admin />} />
         </Route>
@@ -63,15 +66,17 @@ function App() {
           <Route path="/ciudadano/*" element={<Ciudadano />} />
         </Route>
 
-        {/* Tránsito */}
+        {/* Director de Tránsito */}
         <Route element={<RutaProtegida roles={['ADMIN_TRANSITO', 'DirectorTransito']} />}>
           <Route path="/transito/director/*" element={<Director />} />
         </Route>
 
+        {/* Central de Tránsito */}
         <Route element={<RutaProtegida roles={['CENTRAL_TRANSITO']} />}>
           <Route path="/transito/central/*" element={<Central />} />
         </Route>
 
+        {/* Agente de Tránsito */}
         <Route element={<RutaProtegida roles={['AGENTE_TRANSITO']} />}>
           <Route path="/transito/agente/*" element={<Agente />} />
         </Route>
@@ -123,6 +128,7 @@ function App() {
 
         {/* Rutas no encontradas */}
         <Route path="*" element={<Navigate to="/" replace />} />
+
       </Routes>
     </BrowserRouter>
   );
