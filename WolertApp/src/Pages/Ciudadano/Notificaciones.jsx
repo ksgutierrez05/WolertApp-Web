@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import '../../css/global.css';
 import '../../css/temas.css';
+import '../../css/ciudadano/encabezados-ciudadano.css';
 import '../../css/ciudadano/panel-notificaciones.css';
 
 const notifs = [
@@ -22,16 +23,13 @@ export default function Notificaciones() {
   });
 
   return (
-    <div className="container-fluid">
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h1 className="page-title-dash"><i className="bi bi-bell"></i> Notificaciones</h1>
-        <div className="d-flex align-items-center gap-3">
-          <button className="btn icon-btn-dash rounded-circle border-0 bg-white">
-            <i className="bi bi-search"></i>
-          </button>
-          <div className="avatar-dash">JC</div>
+    <div className="container-fluid ciudadano-pagina-refinada">
+      <header className="ciudadano-page-heading">
+        <div>
+          <h1>Notificaciones</h1>
+          <p>Consulta las novedades de tu comunidad y el seguimiento de tus alertas.</p>
         </div>
-      </div>
+      </header>
 
       <div className="row g-3 mb-4">
         <div className="col-6 col-md-4">
@@ -57,7 +55,7 @@ export default function Notificaciones() {
         </div>
       </div>
 
-      <div className="card-panel-dash p-0">
+      <div className="card-panel-dash ciudadano-pagina-panel p-0">
         <div className="notif-header-dash p-3">
           <div className="notif-tabs-dash" id="tabsNotif">
             {[

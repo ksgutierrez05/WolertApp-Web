@@ -30,8 +30,8 @@ export default function TopBarAdmin({ onToggleSidebar }) {
   };
 
   return (
-    <div className="container-fluid">
-      <div className="d-flex justify-content-between align-items-center gap-3 mb-3">
+    <div className="container-fluid admin-topbar-alineada">
+      <div className="d-flex justify-content-between align-items-center gap-3 admin-topbar-alineada__fila">
         {onToggleSidebar && (
           <button type="button" className="btn btn-light d-md-none" onClick={onToggleSidebar} aria-label="Abrir menú">
             <i className="bi bi-list" />

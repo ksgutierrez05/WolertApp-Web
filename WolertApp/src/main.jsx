@@ -22,7 +22,6 @@ import './css/transito/central-transito/panel-configuracion.css';
 import './css/transito/agente-transito/panel-principal.css';
 import './css/transito/agente-transito/panel-grupo.css';
 import './css/transito/agente-transito/panel-historial.css';
-import './css/transito/agente-transito/panel-configuracion.css';
 
 import App from './App';
 

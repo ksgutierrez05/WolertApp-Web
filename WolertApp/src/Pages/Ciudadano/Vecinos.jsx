@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import '../../css/global.css';
 import '../../css/temas.css';
+import '../../css/ciudadano/listados-unificados.css';
 import '../../css/ciudadano/panel-vecinos.css';
 import { listarVecinos } from '../../Services/UsuariosAPI.js';
 
@@ -27,18 +28,42 @@ export default function Vecinos() {
   const iniciales = (localStorage.getItem('username') || '').slice(0, 2).toUpperCase();
 
   return (
-    <div className="container-fluid">
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h1 className="page-title-dash"><i className="bi bi-people"></i> Mis Vecinos</h1>
-        <div className="d-flex align-items-center gap-3">
-          <button className="btn icon-btn-dash rounded-circle border-0 bg-white">
-            <i className="bi bi-search"></i>
-          </button>
-          <div className="avatar-dash">{iniciales}</div>
+    <div className="container-fluid ciudadano-listado ciudadano-vecinos">
+      <header className="ciudadano-page-heading">
+        <div>
+          <h1>Mis vecinos</h1>
+          <p>Conoce a las personas registradas en tu barrio y fortalece tu comunidad.</p>
+        </div>
+      </header>
+
+      <div className="row g-3 mb-4">
+        <div className="col-12 col-sm-6 col-lg-4">
+          <div className="kpi-dash kpi-blue-dash">
+            <i className="bi bi-people kpi-icon-dash" />
+            <div className="kpi-num-dash">{cargando ? '—' : vecinos.length}</div>
+            <div className="kpi-label-dash">Vecinos registrados</div>
+            <div className="kpi-label-dash ciudadano-kpi-sub">En tu comunidad</div>
+          </div>
+        </div>
+        <div className="col-12 col-sm-6 col-lg-4">
+          <div className="kpi-dash kpi-green-dash">
+            <i className="bi bi-geo-alt kpi-icon-dash" />
+            <div className="kpi-num-dash">{cargando ? '—' : new Set(vecinos.map((v) => v.barrioNombre).filter(Boolean)).size}</div>
+            <div className="kpi-label-dash">Barrios representados</div>
+            <div className="kpi-label-dash ciudadano-kpi-sub">Según los registros</div>
+          </div>
+        </div>
+        <div className="col-12 col-sm-6 col-lg-4">
+          <div className="kpi-dash kpi-purple-dash">
+            <i className="bi bi-person-check kpi-icon-dash" />
+            <div className="kpi-num-dash">{cargando ? '—' : vecinos.filter((v) => v.nombre).length}</div>
+            <div className="kpi-label-dash">Perfiles identificados</div>
+            <div className="kpi-label-dash ciudadano-kpi-sub">Con nombre registrado</div>
+          </div>
         </div>
       </div>
 
-      <div className="card-panel-dash p-0">
+      <div className="card-panel-dash ciudadano-table-panel p-0">
         <div id="listaVecinos">
           {cargando && (
             <p className="text-center text-muted small m-4">Cargando tus vecinos...</p>

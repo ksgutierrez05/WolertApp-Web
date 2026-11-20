@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import '../../css/global.css';
 import '../../css/temas.css';
 import '../../css/admin/dashboard-admin.css';
+import '../../css/admin/dashboard-refinado.css';
 import { listaUsuarios, listaRoles } from '../../Services/UsuariosAPI.js';
 import { listarAlertas } from '../../Services/AlertasAPI.js';
 
@@ -86,7 +87,7 @@ export default function Dashboard() {
   });
 
   return (
-    <div className="container-fluid">
+    <div className="container-fluid dashboard-admin-refinado">
       <div
         className="hero-dash hero-admin-adm mb-3"
         style={{ '--hero-img': 'url("/img/Hero-admin.jpg")' }}

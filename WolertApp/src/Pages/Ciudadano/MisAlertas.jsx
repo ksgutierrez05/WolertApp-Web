@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import '../../css/global.css';
 import '../../css/temas.css';
+import '../../css/ciudadano/listados-unificados.css';
 import '../../css/ciudadano/panel-mis-alertas.css';
 import { listarMisAlertas } from '../../Services/AlertasAPI.js';
 
@@ -118,33 +119,33 @@ export default function MisAlertas() {
   const iniciales = (localStorage.getItem('username') || '').slice(0, 2).toUpperCase();
 
   return (
-    <div className="container-fluid">
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h1 className="page-title-dash"><i className="bi bi-exclamation-triangle"></i> Mis Alertas</h1>
-        <div className="d-flex align-items-center gap-3">
-          <button className="btn icon-btn-dash rounded-circle border-0 bg-white">
-            <i className="bi bi-search"></i>
-          </button>
-          <div className="avatar-dash">{iniciales}</div>
+    <div className="container-fluid ciudadano-listado ciudadano-mis-alertas">
+      <header className="ciudadano-page-heading">
+        <div>
+          <h1>Mis alertas</h1>
+          <p>Consulta el estado y seguimiento de las emergencias que has reportado.</p>
         </div>
-      </div>
+        <Link to="/ciudadano/reportar-emergencia" className="ciudadano-page-action">
+          <i className="bi bi-plus-lg" /> Nueva alerta
+        </Link>
+      </header>
 
       <div className="row g-3 mb-4">
-        <div className="col-6 col-md-4">
+        <div className="col-12 col-sm-6 col-lg-4">
           <div className="kpi-dash kpi-blue-dash">
             <i className="bi bi-clipboard-data kpi-icon-dash"></i>
             <p className="kpi-num-dash mb-0">{total}</p>
             <p className="kpi-label-dash">Alertas que he reportado</p>
           </div>
         </div>
-        <div className="col-6 col-md-4">
+        <div className="col-12 col-sm-6 col-lg-4">
           <div className="kpi-dash kpi-amber-dash">
             <i className="bi bi-hourglass-split kpi-icon-dash"></i>
             <p className="kpi-num-dash mb-0">{abiertas}</p>
             <p className="kpi-label-dash">Activas / en atención</p>
           </div>
         </div>
-        <div className="col-6 col-md-4">
+        <div className="col-12 col-sm-6 col-lg-4">
           <div className="kpi-dash kpi-green-dash">
             <i className="bi bi-check2-circle kpi-icon-dash"></i>
             <p className="kpi-num-dash mb-0">{cerradas}</p>
@@ -153,7 +154,7 @@ export default function MisAlertas() {
         </div>
       </div>
 
-      <div className="card-panel-dash p-0">
+      <div className="card-panel-dash ciudadano-table-panel p-0">
         <div className="misalertas-toolbar-dash">
           <div className="misalertas-tabs-dash">
             {['todas', 'activa', 'cerrada'].map((f) => (

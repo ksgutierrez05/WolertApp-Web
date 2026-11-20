@@ -1,3 +1,6 @@
+/* Aislamiento: las reglas de Central de Policía solo aplican en el rol Policía.
+   Evita que .hero-dash y .kpi-dash cambien el diseño original de Tránsito. */
+@scope (body.rol-policia) {
 
 
 .hero-dash {
@@ -758,4 +761,6 @@
   .mapop-mini-pin-dash {
     animation: none;
   }
+}
+
 }

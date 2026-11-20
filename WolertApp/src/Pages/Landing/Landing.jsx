@@ -9,7 +9,7 @@ import '../../css/landing/styles.css'
 
 function Landing() {
   return (
-    <>
+    <div className="landing-shell">
       <Header />
       <main>
         <Hero />
@@ -19,7 +19,7 @@ function Landing() {
         <Seguridad />
       </main>
       <Footer />
-    </>
+    </div>
   )
 }
 

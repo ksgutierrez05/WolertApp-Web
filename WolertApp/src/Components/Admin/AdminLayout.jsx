@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import TopBar from './Topbar';
 import '../../css/admin/AdminLayout.css';
+import '../../css/admin/sidebar-unificado.css';
 
 const MOBILE = '(max-width: 768px)';
 
@@ -34,7 +35,7 @@ function AdminLayout({ children }) {
   const peek = collapsed && hovered;
 
   return (
-    <div className="admin-layout">
+    <div className="admin-layout admin-shell-refinado">
       {/* Backdrop para cerrar el menú en móvil al hacer clic fuera */}
       {!collapsed && (
         <div

@@ -1,0 +1,88 @@
+
+/* Dashboard administrador: lenguaje visual consistente con Tránsito,
+   sin modificar el panel del Director ni las otras páginas. */
+.dashboard-admin-refinado {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 16px 4px 32px;
+}
+.dashboard-admin-refinado .hero-dash.hero-admin-adm {
+  min-height: 310px;
+  height: auto;
+  padding: 42px clamp(28px, 3.2vw, 55px);
+  border-radius: 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  background: #184a8c var(--hero-img) right center / cover no-repeat;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+.dashboard-admin-refinado .hero-dash.hero-admin-adm::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(90deg, rgba(14,47,87,.98) 0%, rgba(24,74,140,.93) 37%, rgba(24,74,140,.55) 66%, rgba(24,74,140,.06) 100%);
+}
+.dashboard-admin-refinado .hero-admin-adm .eyebrow-dash {
+  color: #b9f3f5;
+  font-size: 12px;
+  letter-spacing: .085em;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+.dashboard-admin-refinado .hero-admin-adm .hero-title-dash {
+  font-size: clamp(30px, 3.1vw, 47px);
+  line-height: 1.14;
+  font-weight: 800;
+  max-width: 780px;
+  margin: 0 0 14px;
+}
+.dashboard-admin-refinado .hero-admin-adm .hero-text-dash {
+  font-size: 15px;
+  line-height: 1.6;
+  max-width: 550px;
+  color: #f0f6ff;
+}
+.dashboard-admin-refinado .hero-admin-adm .hero-icon-dash {
+  display: none;
+}
+.dashboard-admin-refinado .kpi-dash {
+  display: block;
+  min-height: 122px;
+  padding: 19px 20px;
+  border-radius: 18px;
+  position: relative;
+  overflow: hidden;
+}
+.dashboard-admin-refinado .kpi-dash .kpi-num-dash {
+  display: block;
+  font-size: 29px;
+  line-height: 1.2;
+  margin-bottom: 6px;
+  font-weight: 800;
+}
+.dashboard-admin-refinado .kpi-dash .kpi-label-dash {
+  display: block;
+  font-size: 12px;
+  margin-top: 2px;
+  color: #536782;
+}
+.dashboard-admin-refinado .kpi-dash .kpi-icon-dash {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  font-size: 80px;
+  opacity: .13;
+}
+.dashboard-admin-refinado > .row > .col-md-6 > .card-panel-dash {
+  border-radius: 18px;
+  min-height: 230px;
+}
+@media (max-width: 767px) {
+  .dashboard-admin-refinado .hero-dash.hero-admin-adm { min-height: 270px; padding: 28px 24px; }
+}

@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import CiudadanoSidebar from './CiudadanoSidebar';
-import '../../css/ciudadano/CiudadanoLayout.css';
 import '../../css/admin/AdminLayout.css';
+import '../../css/ciudadano/CiudadanoLayout.css';
+import '../../css/ciudadano/identidad-ciudadano.css';
 
 export default function CiudadanoLayout({ children }) {
   const [collapsed, setCollapsed] = useState(true);
@@ -9,7 +10,7 @@ export default function CiudadanoLayout({ children }) {
   const peek = collapsed && hovered;
 
   return (
-    <div className="admin-layout">
+    <div className="admin-layout ciudadano-shell rol-ciudadano">
       <div
         className={`admin-layout__sidebar-slot ${collapsed ? 'collapsed' : ''} ${peek ? 'peek' : ''}`}
         onMouseEnter={() => setHovered(true)}

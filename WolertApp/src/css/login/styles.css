@@ -1,4 +1,5 @@
-:root {
+/* Aislado por modulo: evita colisiones entre Landing, Login y paneles. */
+.auth-container {
     --azul-oscuro: #19263d;
     --azul-panel-1: #081a32;
     --azul-panel-2: #06213ff3;
@@ -8,14 +9,14 @@
     --background: #f9fafb;
 }
 
-* {
+.auth-container * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-body {
-    font-family: 'Inter', sans-serif;
+.auth-container {
+    font-family: "Inter", sans-serif;
     margin: 0;
 }
 
@@ -28,7 +29,7 @@ body {
 }
 
 /* ---------- Volver ---------- */
-.btn-volver {
+.auth-container .btn-volver {
     position: fixed;
     top: 24px;
     left: 24px;
@@ -43,16 +44,16 @@ body {
     transition: color 0.3s ease;
 }
 
-.btn-volver:hover {
+.auth-container .btn-volver:hover {
     text-decoration: underline;
 }
 
-body.modo-registro .btn-volver {
+body.modo-registro .auth-container .btn-volver {
     color: var(--azul-oscuro);
 }
 
 /* ---------- Panel azul deslizante ---------- */
-.panel-deslizante {
+.auth-container .panel-deslizante {
     position: absolute;
     top: 0;
     left: 0;
@@ -70,7 +71,7 @@ body.modo-registro .btn-volver {
     transition: transform 0.6s ease-in-out, border-radius 0.6s ease-in-out;
 }
 
-.panel-contenido {
+.auth-container .panel-contenido {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -78,15 +79,15 @@ body.modo-registro .btn-volver {
     gap: 16px;
 }
 
-.panel-deslizante .login-logo {
+.auth-container .panel-deslizante .login-logo {
     width: 300px;
     height: 300px;
     object-fit: contain;
     margin-bottom: 10px;
 }
 
-.panel-deslizante h1 {
-    font-family: 'Space Grotesk', sans-serif;
+.auth-container .panel-deslizante h1 {
+    font-family: "Space Grotesk", sans-serif;
     font-size: 40px;
     font-weight: 700;
     color: #ffffff;
@@ -94,20 +95,20 @@ body.modo-registro .btn-volver {
     margin-top: -55px;
 }
 
-.panel-deslizante .panel-lema {
+.auth-container .panel-deslizante .panel-lema {
     font-size: 16px;
     color: #ffffff;
     margin-bottom: 12px;
 }
 
-.panel-deslizante .login-tagline {
+.auth-container .panel-deslizante .login-tagline {
     font-size: 16px;
     line-height: 1.5;
     color: #ffffff;
     margin-bottom: 24px;
 }
 
-.btn-registrarse {
+.auth-container .btn-registrarse {
     background: #ffffff;
     color: #12294a;
     border: none;
@@ -123,13 +124,13 @@ body.modo-registro .btn-volver {
     margin-top: 12px;
 }
 
-.btn-registrarse:hover {
+.auth-container .btn-registrarse:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
 }
 
 /* ---------- Caja de formularios ---------- */
-.form-box {
+.auth-container .form-box {
     position: absolute;
     top: 0;
     left: 50%;
@@ -144,11 +145,11 @@ body.modo-registro .btn-volver {
     transition: transform 0.6s ease-in-out, opacity 0.6s ease-in-out;
 }
 
-.form-login {
+.auth-container .form-login {
     z-index: 2;
 }
 
-.form-login form {
+.auth-container .form-login form {
     width: 100%;
     max-width: 300px;
     display: flex;
@@ -156,8 +157,8 @@ body.modo-registro .btn-volver {
     align-items: center;
 }
 
-.form-login h2 {
-    font-family: 'Space Grotesk', sans-serif;
+.auth-container .form-login h2 {
+    font-family: "Space Grotesk", sans-serif;
     font-size: 34px;
     font-weight: 800;
     color: var(--texto);
@@ -166,14 +167,13 @@ body.modo-registro .btn-volver {
 }
 
 /* ---------- Inputs tipo píldora ---------- */
-.input-wrapper {
+.auth-container .input-wrapper {
     position: relative;
     width: 100%;
     margin-bottom: 18px;
 }
 
-.login-input,
-.form-login .input {
+.auth-container .login-input, .auth-container .form-login .input {
     width: 100%;
     height: 54px;
     padding: 0 48px 0 46px;
@@ -187,18 +187,16 @@ body.modo-registro .btn-volver {
     transition: box-shadow 0.2s ease, background 0.2s ease;
 }
 
-.login-input::placeholder,
-.form-login .input::placeholder {
+.auth-container .login-input::placeholder, .auth-container .form-login .input::placeholder {
     color: var(--muted);
 }
 
-.login-input:focus,
-.form-login .input:focus {
+.auth-container .login-input:focus, .auth-container .form-login .input:focus {
     background: #e8ebf0;
     box-shadow: 0 0 0 2px rgba(21, 63, 112, 0.35);
 }
 
-.input-wrapper i {
+.auth-container .input-wrapper i {
     position: absolute;
     left: 18px;
     top: 50%;
@@ -208,8 +206,7 @@ body.modo-registro .btn-volver {
     pointer-events: none;
 }
 
-.input-wrapper #toggle-password,
-.input-wrapper .toggle-pass {
+.auth-container .input-wrapper #toggle-password, .auth-container .input-wrapper .toggle-pass {
     position: absolute;
     left: auto;
     right: 16px;
@@ -225,15 +222,14 @@ body.modo-registro .btn-volver {
     align-items: center;
 }
 
-.input-wrapper .toggle-pass i {
+.auth-container .input-wrapper .toggle-pass i {
     position: static;
     transform: none;
     pointer-events: none;
 }
 
 /* ---------- Botón LOGIN ---------- */
-.btn-login,
-.form-login .btn-primary {
+.auth-container .btn-login, .auth-container .form-login .btn-primary {
     background: var(--azul-oscuro);
     color: #ffffff;
     font-size: 12px;
@@ -251,13 +247,12 @@ body.modo-registro .btn-volver {
     transition: transform 0.15s ease, background 0.2s ease;
 }
 
-.btn-login:hover,
-.form-login .btn-primary:hover {
+.auth-container .btn-login:hover, .auth-container .form-login .btn-primary:hover {
     background: #163a63;
     transform: translateY(-2px);
 }
 
-.form-registro .btn-login {
+.auth-container .form-registro .btn-login {
     width: 300px;        /* antes 220px */
     height: 50px;        /* antes 56px */
     font-size: 16px;     /* antes 12px */
@@ -266,13 +261,12 @@ body.modo-registro .btn-volver {
     box-shadow: 0 6px 16px rgba(25, 38, 61, 0.25);
 }
 
-.form-registro .btn-login:hover {
+.auth-container .form-registro .btn-login:hover {
     background: linear-gradient(90deg, #1d2d48 0%, #254a70 100%);
 }
 
 /* ---------- Mensajes ---------- */
-.form-error,
-.form-ok {
+.auth-container .form-error, .auth-container .form-ok {
     width: 100%;
     font-size: 13px;
     margin-bottom: 14px;
@@ -281,17 +275,17 @@ body.modo-registro .btn-volver {
     text-align: center;
 }
 
-.form-error {
+.auth-container .form-error {
     background: #fdecec;
     color: #c81e2c;
 }
 
-.form-ok {
+.auth-container .form-ok {
     background: #e8f6ee;
     color: #1a7f4b;
 }
 
-.link-olvide {
+.auth-container .link-olvide {
     display: block;
     text-align: center;
     margin-top: 16px;
@@ -303,41 +297,41 @@ body.modo-registro .btn-volver {
     cursor: pointer;
 }
 
-.link-olvide:hover {
+.auth-container .link-olvide:hover {
     text-decoration: underline;
     color: var(--azul-oscuro);
 }
 
 /* ---------- Formulario de registro ---------- */
-.form-registro {
+.auth-container .form-registro {
     overflow-y: auto;
     padding-top: 40px;
     padding-bottom: 40px;
     justify-content: flex-start;
 }
 
-.form-registro h2 {
+.auth-container .form-registro h2 {
     font-size: 32px;
     margin: 0 auto 20px auto;
     text-align: center;
     align-self: center;
 }
 
-.form-subtitle {
+.auth-container .form-subtitle {
     color: #6b7280;
     font-size: 13.5px;
     margin-bottom: 18px;
     align-self: flex-start;
 }
 
-.form-divider {
+.auth-container .form-divider {
     width: 100%;
     border: none;
     border-top: 1px solid #e5e7eb;
     margin-bottom: 20px;
 }
 
-.seccion-titulo {
+.auth-container .seccion-titulo {
     width: 100%;
     font-size: 11.5px;
     font-weight: 700;
@@ -347,7 +341,7 @@ body.modo-registro .btn-volver {
     margin: 10px 0 12px;
 }
 
-.grid-2 {
+.auth-container .grid-2 {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 14px;
@@ -355,7 +349,7 @@ body.modo-registro .btn-volver {
     margin-bottom: 14px;
 }
 
-.input-gris {
+.auth-container .input-gris {
     width: 100%;
     padding: 15px 16px;
     border: none;
@@ -366,20 +360,20 @@ body.modo-registro .btn-volver {
     margin-bottom: 14px;
 }
 
-.input-gris::placeholder {
+.auth-container .input-gris::placeholder {
     color: var(--muted);
 }
 
-.input-gris:focus {
+.auth-container .input-gris:focus {
     outline: none;
     box-shadow: 0 0 0 2px var(--azul-oscuro);
 }
 
-.grid-2 .input-gris {
+.auth-container .grid-2 .input-gris {
     margin-bottom: 0;
 }
 
-.form-registro .input-wrapper .input-gris {
+.auth-container .form-registro .input-wrapper .input-gris {
     padding-left: 42px;
 }
 
@@ -424,8 +418,7 @@ body.modo-registro .btn-volver {
     max-width: 100%;
 }
 
-.auth-container .form-login .campo,
-.auth-container .form-login .input-wrapper {
+.auth-container .form-login .campo, .auth-container .form-login .input-wrapper {
     position: relative;
     width: 100%;
     margin-bottom: 18px;
@@ -459,4 +452,58 @@ body.modo-registro .btn-volver {
     border: none;
     background: none;
     cursor: pointer;
+}
+
+/* Corrección puntual del Login: distribución, contraste y espaciado.
+   Solo aplica al Login, sin afectar los paneles de ningún rol. */
+.auth-container .btn-volver {
+    color: #15243c;
+    background: #fff;
+    border-radius: 999px;
+    padding: 9px 14px;
+    font-weight: 700;
+    box-shadow: 0 3px 14px rgba(0, 0, 0, .12);
+}
+.auth-container .btn-volver:hover {
+    color: #0e2f57;
+    background: #eef4ff;
+    text-decoration: none;
+}
+.auth-container .panel-deslizante {
+    gap: 0;
+    padding: 32px 36px;
+}
+.auth-container .panel-deslizante .login-logo {
+    width: clamp(155px, 16vw, 235px);
+    height: clamp(155px, 16vw, 235px);
+    margin: 0 0 8px;
+}
+.auth-container .panel-deslizante h1 {
+    margin: 0 0 10px;
+    line-height: 1.1;
+    letter-spacing: -.035em;
+    color: #fff; /* Sobre el panel oscuro debe conservar contraste */
+}
+.auth-container .panel-deslizante > p {
+    margin: 0 0 14px;
+    line-height: 1.45;
+}
+.auth-container .panel-deslizante .login-tagline {
+    margin: 2px 0 24px;
+    line-height: 1.5;
+}
+.auth-container .panel-deslizante .btn-registrarse {
+    margin: 0;
+    min-height: 46px;
+    color: #172b47;
+    background: #fff;
+    font-weight: 800;
+}
+.auth-container .form-login h2,
+.auth-container .form-registro h2 {
+    color: #172235;
+}
+@media (max-width: 700px) {
+    .auth-container .panel-deslizante { padding: 24px 18px; }
+    .auth-container .btn-volver { top: 12px; left: 12px; }
 }

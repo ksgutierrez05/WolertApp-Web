@@ -24,7 +24,7 @@ export default function Sidebar({ collapsed = false }) {
   return (
     <nav className="sidebar">
       <div className="sidebar__brand">
-        <div className="sidebar__brand-mark" style={{ background: '#1e293b', padding: '4px', borderRadius: '8px' }}>
+        <div className="sidebar__brand-mark">
           <img src="/img/logo.png" alt="WolertApp" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
         </div>
         <span className="sidebar__brand-text">WolertApp</span>

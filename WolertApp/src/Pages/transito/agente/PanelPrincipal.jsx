@@ -105,8 +105,7 @@ export default function PanelPrincipal() {
         </h1>
 
         <p className="hero-text-dash">
-          Consulta tus atenciones y el estado de tu unidad
-          de tránsito.
+          Tienes {pendientes.length} {pendientes.length === 1 ? "caso asignado" : "casos asignados"} en proceso. Este es el resumen de tu turno.
         </p>
 
         <a
@@ -114,7 +113,7 @@ export default function PanelPrincipal() {
           className="btn btn-light rounded-pill fw-bold mt-3 hero-cta-dash"
         >
           <span className="dot-danger-dash" />
-          {" "}Ver mis atenciones
+          {" "}Ver mis casos
         </a>
       </div>
 
@@ -136,7 +135,7 @@ export default function PanelPrincipal() {
           variante="panel"
           color="red"
           valor={pendientes.length}
-          label="Atenciones en proceso"
+          label="Casos asignados"
           icono="bi-file-earmark-text"
         />
 
@@ -144,7 +143,7 @@ export default function PanelPrincipal() {
           variante="panel"
           color="blue"
           valor={atenciones.length}
-          label="Total de atenciones"
+          label="Total de casos"
           icono="bi-clipboard-data"
         />
 
@@ -152,7 +151,7 @@ export default function PanelPrincipal() {
           variante="panel"
           color="green"
           valor={terminadas.length}
-          label="Atenciones finalizadas"
+          label="Casos resueltos"
           icono="bi-check2-circle"
         />
 
@@ -170,7 +169,8 @@ export default function PanelPrincipal() {
 
       <section id="mis-atenciones">
         <div className="sec-head-ag">
-          <h2>Mis atenciones en proceso</h2>
+          <h2>Mis casos asignados</h2>
+          <a className="see-all-dash" href="/transito/agente/grupo">Ver todos <i className="bi bi-chevron-right" /></a>
         </div>
 
         <div className="panel-ag mb-4">
@@ -230,7 +230,7 @@ export default function PanelPrincipal() {
 
       <div className="sec-head-ag">
         <h2 className="titulos-ag">
-          Mapa de referencia
+          Mapa en tiempo real
         </h2>
       </div>
 
@@ -241,7 +241,7 @@ export default function PanelPrincipal() {
             viewBox="0 0 600 320"
             preserveAspectRatio="none"
             role="img"
-            aria-label="Ilustración de vías, sin ubicaciones reales"
+            aria-label="Mapa de referencia de la zona"
           >
             <rect
               width="600"
@@ -288,20 +288,24 @@ export default function PanelPrincipal() {
               strokeWidth="9"
             />
           </svg>
+          <div className="map-pin-ag" style={{ left: "20%", top: "28%" }}><span className="dot-ag amber" /></div>
+          <div className="map-pin-ag" style={{ left: "44%", top: "20%" }}><span className="dot-ag blue" /></div>
+          <div className="map-pin-ag" style={{ left: "66%", top: "35%" }}><span className="dot-ag purple" /></div>
+          <div className="map-pin-ag" style={{ left: "35%", top: "62%" }}><span className="dot-ag green" /></div>
         </div>
 
         <div className="map-legend-ag">
-          <b>Mapa ilustrativo</b>
+          <b>Mis casos</b>
 
           <p className="text-muted small mb-0">
-            Las ubicaciones reales aparecerán cuando
-            estén disponibles en la API.
+            Vista ilustrativa de las vías. Las ubicaciones de los casos dependen de la información disponible en la API.
           </p>
         </div>
       </div>
 
       <div className="sec-head-ag">
         <h2 className="titulos-ag">Mi grupo</h2>
+        <a className="see-all-dash" href="/transito/agente/grupo">Ver grupo <i className="bi bi-chevron-right" /></a>
       </div>
 
       <div className="grupo-ag mb-4">
@@ -343,8 +347,9 @@ export default function PanelPrincipal() {
 
       <div className="sec-head-ag">
         <h2 className="titulos-ag">
-          Historial de atenciones
+          Historial de casos
         </h2>
+        <a className="see-all-dash" href="/transito/agente/historial">Ver todos <i className="bi bi-chevron-right" /></a>
       </div>
 
       <div className="tabs-ag">
