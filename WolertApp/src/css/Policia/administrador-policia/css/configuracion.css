@@ -1,0 +1,229 @@
+/* ============================================================
+   MI-CUENTA.CSS
+   Estilos exclusivos de Configuración → Mi cuenta.
+   Reutiliza las variables de css/global.css y css/temas.css
+   (var(--color-primary), var(--ink), var(--muted), var(--line), etc.)
+   para mantenerse 100% consistente con el resto del módulo Policía.
+   ============================================================ */
+
+/* ---------- Encabezado de la sección ---------- */
+.eyebrow-cuenta {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+  margin-bottom: 6px;
+}
+
+.cuenta-title {
+  font-weight: 800;
+  font-size: 24px;
+  color: var(--ink);
+  margin: 0;
+}
+
+.cuenta-subtitle {
+  color: var(--muted);
+  font-size: 13.5px;
+  margin-top: 6px;
+}
+
+/* ---------- Tarjeta de foto de perfil ---------- */
+.cuenta-photo-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.cuenta-avatar-wrap {
+  position: relative;
+  width: 112px;
+  height: 112px;
+}
+
+.cuenta-avatar-img,
+.cuenta-avatar-fallback {
+  width: 112px;
+  height: 112px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.cuenta-avatar-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-2));
+  color: #fff;
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 700;
+  font-size: 34px;
+}
+
+.cuenta-avatar-edit {
+  position: absolute;
+  right: 0;
+  bottom: 2px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #fff;
+  border: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.cuenta-avatar-edit:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.cuenta-nombre {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 4px 0 0;
+}
+
+.cuenta-rol-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  padding: 5px 12px;
+  border-radius: 100px;
+  background: #e8f0fb;
+  color: var(--color-blue);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.cuenta-estacion-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.cuenta-photo-hint {
+  font-size: 11.5px;
+  color: var(--subtle);
+  margin: 0;
+}
+
+/* ---------- Formularios ---------- */
+.cuenta-card-sub {
+  color: var(--muted);
+  font-size: 12.5px;
+}
+
+.cuenta-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.cuenta-input {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 13.5px;
+  color: var(--ink);
+  background: #fff;
+  width: 100%;
+}
+
+input.cuenta-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(28, 120, 30, 0.12);
+  outline: none;
+}
+
+/* Campos de solo lectura (Rol y Estación asignada): mismo alto y
+   tipografía que un input, pero sin apariencia editable ni foco. */
+.cuenta-input-solo-lectura {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--fog);
+  color: var(--muted);
+  font-weight: 600;
+  cursor: not-allowed;
+  user-select: none;
+}
+
+.cuenta-input-solo-lectura i {
+  font-size: 12px;
+  color: var(--subtle);
+}
+
+/* ---------- Cambiar contraseña ---------- */
+.cuenta-btn-toggle-pass {
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: var(--shadow-xs);
+  white-space: nowrap;
+}
+
+.cuenta-pass-form {
+  border-top: 1px solid var(--line);
+  padding-top: 20px;
+}
+
+.cuenta-pass-error {
+  color: var(--color-danger);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+/* ---------- Aviso de confirmación (toast) ---------- */
+.cuenta-toast {
+  position: fixed;
+  right: 26px;
+  bottom: 26px;
+  display: none;
+  align-items: center;
+  gap: 10px;
+  background: var(--ink);
+  color: #fff;
+  padding: 13px 18px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: var(--shadow-md);
+  z-index: 999;
+}
+
+.cuenta-toast.mostrar {
+  display: flex;
+  animation: cuentaToastIn 0.2s ease;
+}
+
+.cuenta-toast i {
+  color: var(--color-green);
+  font-size: 16px;
+}
+
+@keyframes cuentaToastIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 991px) {
+  .cuenta-photo-card {
+    margin-bottom: 4px;
+  }
+}

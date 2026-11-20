@@ -1,0 +1,116 @@
+.section-title-dash {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 26px;
+  color: #182339;
+  margin-bottom: 4px;
+}
+
+.section-text-dash {
+  color: #6b7a90;
+  font-size: 14px;
+}
+
+.table-card-dash {
+  background-color: #ffffff;
+  border-radius: 14px;
+  padding: 18px 20px;
+  box-shadow: 0 2px 6px rgba(16, 30, 54, 0.06);
+}
+
+.tabs-dash {
+  flex-wrap: wrap;
+}
+
+.tab-dash {
+  border: none;
+  background-color: #eef1f8;
+  color: #6b7a90;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 8px 18px;
+  border-radius: 20px;
+}
+
+.tab-dash.active-dash {
+  background-color: var(--color-primary);
+  color: #ffffff;
+}
+
+.table-card-dash table th {
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #8a97ab;
+  font-weight: 600;
+  border-bottom: 1px solid #eef1f5;
+  padding: 12px 8px;
+}
+
+.table-card-dash table td {
+  padding: 14px 8px;
+  border-bottom: 1px solid #f2f4f8;
+  font-size: 14px;
+  color: #182339;
+}
+
+.badge-tipo-dash {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.tipo-semaforo-dash { background-color: #fdf3e0; color: #cf8a08; }
+.tipo-accidente-dash { background-color: #fdecec; color: #d9364a; }
+
+.btn-asignar-dash {
+  background-color: var(--color-primary);
+  color: #ffffff;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.btn-asignar-dash:hover {
+  background-color: var(--color-primary-2);
+}
+
+.panel-card-dash {
+  background-color: #ffffff;
+  border-radius: 14px;
+  padding: 22px 24px;
+  box-shadow: 0 2px 6px rgba(16, 30, 54, 0.06);
+}
+
+.panel-title-dash {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  color: #182339;
+  margin-bottom: 16px;
+}
+
+.config-field-label-dash {
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7a90;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.btn-secundario-dash {
+  background-color: #eef1f8;
+  color: var(--color-primary);
+  border: none;
+  border-radius: 20px;
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.btn-secundario-dash:hover {
+  background-color: #e2e7f3;
+}

@@ -1,0 +1,142 @@
+/* ============================================================
+   UNIDAD.CSS — estilos propios de "Mi Unidad" (sufijo -uni)
+   ============================================================ */
+
+.ficha-uni {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  background: linear-gradient(120deg, var(--color-primary) 0%, var(--color-primary-2) 100%);
+  border-radius: 20px;
+  padding: 22px 26px;
+  color: #fff;
+  box-shadow: var(--shadow-md);
+}
+
+.ficha-uni-izq {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.ficha-uni-icono {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.16);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.ficha-uni-nombre {
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 700;
+  font-size: 19px;
+  margin: 0;
+}
+
+.ficha-uni-sub {
+  font-size: 12.5px;
+  color: #c3cade;
+  margin: 4px 0 0;
+}
+
+.ficha-uni-der {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.ficha-uni-dato {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.ficha-uni-dato .num {
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 700;
+  font-size: 22px;
+  line-height: 1;
+}
+
+.ficha-uni-dato .lbl {
+  font-size: 11px;
+  color: #c3cade;
+  margin-top: 4px;
+  max-width: 150px;
+}
+
+/* ---------- lista de integrantes ---------- */
+.fila-integrante-uni {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 13px 4px;
+  border-bottom: 1px solid var(--line);
+}
+
+.fila-integrante-uni:last-child {
+  border-bottom: none;
+}
+
+.avatar-integrante-uni {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--fog);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.info-integrante-uni {
+  flex: 1;
+  min-width: 0;
+}
+
+.info-integrante-uni .nombre-uni {
+  font-size: 13.5px;
+  font-weight: 700;
+}
+
+.info-integrante-uni .rol-uni {
+  font-size: 11.5px;
+  color: var(--muted);
+}
+
+.estado-integrante-uni {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 100px;
+  white-space: nowrap;
+}
+
+.estado-integrante-uni .dot-uni {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.estado-disponible-uni { background: #e3f8ec; color: var(--color-green); }
+.estado-disponible-uni .dot-uni { background: var(--color-green); }
+
+.estado-atencion-uni { background: #fcf0da; color: var(--color-amber); }
+.estado-atencion-uni .dot-uni { background: var(--color-amber); }
+
+.estado-camino-uni { background: #fce8e9; color: var(--color-danger); }
+.estado-camino-uni .dot-uni { background: var(--color-danger); }
