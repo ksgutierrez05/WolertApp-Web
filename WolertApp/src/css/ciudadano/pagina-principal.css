@@ -318,8 +318,8 @@
 .sos-btn-usu {
   position: relative;
   flex-shrink: 0;
-  width: 64px;
-  height: 64px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   border: none;
   background: linear-gradient(160deg, white, #e5dada);
@@ -363,7 +363,7 @@
 }
 
 .sos-contenido-usu i {
-  font-size: 20px;
+  font-size: 28px;
   line-height: 1;
 }
 
@@ -429,8 +429,8 @@
   }
 
   .sos-btn-usu {
-    width: 56px;
-    height: 56px;
+    width: 96px;
+    height: 96px;
     margin: 0 auto;
   }
 

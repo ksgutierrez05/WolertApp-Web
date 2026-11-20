@@ -268,9 +268,6 @@ export default function ReportarEmergencia({ onClose }) {
       <div className="re-modal-contenedor" onClick={(e) => e.stopPropagation()}>
         <div className="re-modal-cabecera">
           <h2 id="re-titulo-modal">Reportar emergencia</h2>
-          <button type="button" className="re-modal-cerrar" onClick={onClose} aria-label="Cerrar">
-            <i className="bi bi-x-lg" />
-          </button>
           <button type="button" className="re-modal-volver" onClick={volverAMenuPrincipal}>
             Volver al menú principal
           </button>

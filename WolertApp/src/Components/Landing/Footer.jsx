@@ -6,12 +6,15 @@ function Footer() {
       <div className="footer-top">
         <div className="footer-marca">
           <div className="footer-logo">
-            <img src="/img/logo.png" alt="WolertApp" className="footer-logo-img" />
+            <img src="/img/logo.png" alt="" className="footer-logo-img" />
             <span className="footer-logo-texto">WolertApp</span>
           </div>
           <p>
-            Alertas comunitarias para mantener a tu ciudad conectada y segura.
+            Alarmas comunitarias para mantener a tu ciudad conectada y segura.
           </p>
+          <span className="footer-estado">
+            <span className="punto-activo"></span> Activo en Valledupar
+          </span>
         </div>
 
         <div className="footer-col">
@@ -43,6 +46,8 @@ function Footer() {
           <a href="#">Términos de uso</a>
         </div>
       </div>
+
+      <div className="footer-wordmark" aria-hidden="true">WolertApp</div>
     </footer>
   )
 }
