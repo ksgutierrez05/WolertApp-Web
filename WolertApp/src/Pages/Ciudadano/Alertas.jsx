@@ -3,7 +3,7 @@ import '../../css/global.css';
 import '../../css/temas.css';
 import '../../css/admin/usuarios.css';
 import '../../css/admin/alertas.css';
-import { listarAlertas } from '../../Service/AlertasAPI.js';
+import { listarAlertas } from '../../Services/AlertasAPI.js';
 
 const PRIORIDADES = [
   { valor: 'alta', etiqueta: 'Alta' },

@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, LayersControl, Marker, useMapEvents, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -8,7 +9,6 @@ import '../../css/ciudadano/reportar-emergencia.css';
 import { crearAlerta } from '../../Services/AlertasAPI.js';
 import { listarTiposAlerta } from '../../Services/TipoAlertasAPI.js';
 
-const API = 'http://localhost:5039';
 const CENTRO_INICIAL = [10.4731, -73.2446]; // Valledupar
 
 // Token público de Mapbox (empieza con pk.). Va en el archivo .env: VITE_MAPBOX_TOKEN=pk.xxxxx
@@ -106,12 +106,6 @@ const iconoPin = L.divIcon({
   iconAnchor: [17, 43],
 });
 
-async function listarBarrios() {
-  const r = await fetch(`${API}/api/barrios`);
-  if (!r.ok) throw new Error('No se pudieron cargar los barrios');
-  return r.json();
-}
-
 function ClickMapa({ onPick }) {
   useMapEvents({ click: (e) => onPick(e.latlng) });
   return null;
@@ -146,14 +140,16 @@ const normalizar = (texto) =>
     .toLowerCase();
 
 export default function ReportarEmergencia({ onClose }) {
+  const navigate = useNavigate();
+  const volverAMenuPrincipal = () => navigate('/ciudadano');
+
   const [tipo, setTipo] = useState(null);
   const [subtipo, setSubtipo] = useState('');
   const [extra, setExtra] = useState(false);
   const [descripcion, setDescripcion] = useState('');
-  const [barrios, setBarrios] = useState([]);
-  const [barrioId, setBarrioId] = useState('');
   const [pos, setPos] = useState(null);       // { lat, lng }
   const [volarA, setVolarA] = useState(null); // solo cuando se usa el GPS
+  const [mostrarMapa, setMostrarMapa] = useState(false);
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState('');
   const [enviada, setEnviada] = useState(false);
@@ -162,10 +158,6 @@ export default function ReportarEmergencia({ onClose }) {
   );
   const [cargandoTipos, setCargandoTipos] = useState(true);
   const [errorTipos, setErrorTipos] = useState('');
-
-  useEffect(() => {
-    listarBarrios().then(setBarrios).catch(() => setBarrios([]));
-  }, []);
 
   async function cargarTipos() {
     try {
@@ -201,16 +193,14 @@ export default function ReportarEmergencia({ onClose }) {
     cargarTipos();
   }, []);
 
-  const barrioNombre = useMemo(
-    () => barrios.find((b) => String(b.idBarrio) === String(barrioId))?.nombre || '',
-    [barrios, barrioId],
-  );
-
   const elegirTipo = (t) => {
     setTipo(t);
     setSubtipo('');
     setExtra(false);
     setError('');
+    setMostrarMapa(false);
+    // La ubicación del usuario se toma nada más elegir el tipo
+    usarMiUbicacion();
   };
 
   const usarMiUbicacion = async () => {
@@ -224,13 +214,17 @@ export default function ReportarEmergencia({ onClose }) {
     }
   };
 
+  // Obtener la ubicación automáticamente al abrir el reporte
+  useEffect(() => {
+    usarMiUbicacion();
+  }, []);
+
   const reiniciar = () => {
     setEnviada(false);
     setTipo(null);
     setSubtipo('');
     setExtra(false);
     setDescripcion('');
-    setBarrioId('');
     setPos(null);
     setError('');
   };
@@ -247,7 +241,6 @@ export default function ReportarEmergencia({ onClose }) {
     const partes = [tipo.nombre];
     if (subtipo) partes.push(subtipo);
     if (extra && tipo.pregunta) partes.push(tipo.pregunta);
-    if (barrioNombre) partes.push(`Barrio indicado: ${barrioNombre}`);
     if (descripcion.trim()) partes.push(descripcion.trim());
 
     try {
@@ -278,7 +271,7 @@ export default function ReportarEmergencia({ onClose }) {
           <button type="button" className="re-modal-cerrar" onClick={onClose} aria-label="Cerrar">
             <i className="bi bi-x-lg" />
           </button>
-          <button type="button" className="re-modal-volver" onClick={onClose}>
+          <button type="button" className="re-modal-volver" onClick={volverAMenuPrincipal}>
             Volver al menú principal
           </button>
         </div>
@@ -316,7 +309,8 @@ export default function ReportarEmergencia({ onClose }) {
               </div>
             </div>
           ) : (
-            <div className="re-contenido-tipo-mapa">
+            <div className={`re-contenido-tipo-mapa ${mostrarMapa ? '' : 're-sin-mapa'}`}>
+              {mostrarMapa && (
               <div className="re-mapa">
                 <MapContainer center={CENTRO_INICIAL} zoom={13} style={{ height: '100%', width: '100%' }}>
                   <LayersControl position="topright">
@@ -358,6 +352,7 @@ export default function ReportarEmergencia({ onClose }) {
                   <i className="bi bi-crosshair" /> Usar mi ubicación
                 </button>
               </div>
+              )}
 
               <aside className="re-panel">
                 <div className="re-tipo-actual">
@@ -404,16 +399,6 @@ export default function ReportarEmergencia({ onClose }) {
                   />
                 </label>
 
-                <label className="re-campo">
-                  <span>Barrio del incidente</span>
-                  <select value={barrioId} onChange={(e) => setBarrioId(e.target.value)}>
-                    <option value="">Seleccionar barrio</option>
-                    {barrios.map((b) => (
-                      <option key={b.idBarrio} value={b.idBarrio}>{b.nombre}</option>
-                    ))}
-                  </select>
-                </label>
-
                 <div className="re-coords-caja">
                   <i className="bi bi-pin-map-fill" />
                   <div>
@@ -424,10 +409,32 @@ export default function ReportarEmergencia({ onClose }) {
 
                 {error && <div className="re-error" role="alert">{error}</div>}
 
-                <button type="button" className="re-panico" onClick={enviar} disabled={enviando}>
-                  <i className="bi bi-shield-fill-exclamation" />
-                  {enviando ? 'Enviando alerta...' : 'Enviar alerta'}
-                </button>
+                <div className="re-acciones">
+                  {mostrarMapa ? (
+                    <>
+                      <button type="button" className="re-btn-manual" onClick={() => setMostrarMapa(false)}>
+                        <i className="bi bi-arrow-left" /> Volver a la alerta directa
+                      </button>
+                      <button type="button" className="re-panico" onClick={enviar} disabled={enviando}>
+                        <i className="bi bi-shield-fill-exclamation" />
+                        {enviando ? 'Enviando alerta...' : 'Enviar alerta'}
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button type="button" className="re-btn-manual" onClick={() => setMostrarMapa(true)}>
+                        <i className="bi bi-map" /> Seleccionar ubicación en el mapa
+                      </button>
+                      <button type="button" className="re-btn-ubicacion" onClick={usarMiUbicacion} disabled={enviando}>
+                        <i className="bi bi-crosshair" /> Usar mi ubicación
+                      </button>
+                      <button type="button" className="re-panico" onClick={enviar} disabled={enviando}>
+                        <i className="bi bi-shield-fill-exclamation" />
+                        {enviando ? 'Enviando alerta...' : 'Enviar alerta'}
+                      </button>
+                    </>
+                  )}
+                </div>
               </aside>
             </div>
           )}
