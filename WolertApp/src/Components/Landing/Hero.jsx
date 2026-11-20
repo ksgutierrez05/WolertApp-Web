@@ -94,7 +94,7 @@ function Hero() {
           </div>
 
           <ul className="hero-confianza entrada" style={{ '--d': 5 }}>
-            <li><i className="bi bi-incognito"></i> Reportes anónimos</li>
+            <li><i className="bi bi-incognito"></i> Privacidad de datos</li>
             <li><i className="bi bi-broadcast"></i> Tiempo real</li>
             <li><i className="bi bi-person-badge"></i> Acceso por rol</li>
           </ul>

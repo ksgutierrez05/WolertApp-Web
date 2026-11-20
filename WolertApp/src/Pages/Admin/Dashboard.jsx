@@ -98,7 +98,7 @@ export default function Dashboard() {
         <p className="hero-text-dash">Panel de control y monitoreo del sistema</p>
         <i className="bi bi-shield-check hero-icon-dash" style={{ fontSize: '90px' }} />
       </div>
-
+      
       <div className="row g-3 mb-3">
         {kpis.map((k) => (
           <div key={k.label} className="col-md-3">

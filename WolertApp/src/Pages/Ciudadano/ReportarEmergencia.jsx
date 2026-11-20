@@ -227,6 +227,7 @@ export default function ReportarEmergencia({ onClose }) {
     setDescripcion('');
     setPos(null);
     setError('');
+    setMostrarMapa(false);
   };
 
   const enviar = async () => {
@@ -251,7 +252,8 @@ export default function ReportarEmergencia({ onClose }) {
         latitud: Number(pos.lat.toFixed(6)),
         longitud: Number(pos.lng.toFixed(6)),
       });
-      setEnviada(true);
+        setEnviada(true);
+      setMostrarMapa(false);
     } catch (err) {
       setError(err.message || 'No se pudo enviar la alerta.');
     } finally {

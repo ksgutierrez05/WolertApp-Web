@@ -45,9 +45,9 @@ function Producto() {
         {/* 2 · Reportes anónimos */}
         <li className="feature-card fc-estrecha reveal" style={{ '--i': 1 }} onMouseMove={spotlight}>
           <div className="feature-icon"><i className="bi bi-incognito"></i></div>
-          <h3>Seguridad de datos</h3>
+          <h3>Privacidad de datos</h3>
           <p>
-            Tus datos están protegidos y no se compartirán con terceros o usuarios en la plataforma.
+            Tus datos están protegidos y no se compartirán con terceros externos a la plataforma.
           </p>
 
           <div className="mini-anon" aria-hidden="true">
@@ -69,7 +69,7 @@ function Producto() {
           <div className="mini-roles" aria-hidden="true">
             <span>Ciudadano</span>
             <span>Administrador</span>
-            <span>Cargo asignado</span>
+            <span>Policiaco</span>
           </div>
         </li>
 
