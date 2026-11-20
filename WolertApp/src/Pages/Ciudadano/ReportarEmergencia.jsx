@@ -199,7 +199,6 @@ export default function ReportarEmergencia({ onClose }) {
     setExtra(false);
     setError('');
     setMostrarMapa(false);
-    // La ubicación del usuario se toma nada más elegir el tipo
     usarMiUbicacion();
   };
 
@@ -252,7 +251,7 @@ export default function ReportarEmergencia({ onClose }) {
         latitud: Number(pos.lat.toFixed(6)),
         longitud: Number(pos.lng.toFixed(6)),
       });
-        setEnviada(true);
+      setEnviada(true);
       setMostrarMapa(false);
     } catch (err) {
       setError(err.message || 'No se pudo enviar la alerta.');
