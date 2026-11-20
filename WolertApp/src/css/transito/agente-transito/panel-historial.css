@@ -1,3 +1,4 @@
+@scope (.ag) {
 .section-title-dash {
   font-family: 'Inter', sans-serif;
   font-weight: 700;
@@ -93,4 +94,5 @@
   background-color: var(--color-primary);
   color: #ffffff;
   border-color: var(--color-primary);
+}
 }

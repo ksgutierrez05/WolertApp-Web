@@ -1,3 +1,4 @@
+@scope (.ct) {
 .sec-head-pd {
   display: flex;
   align-items: center;
@@ -29,7 +30,7 @@
   margin-bottom: 4px;
 }
 
-.titulos {
+.titulos-ct {
   font-family: 'Inter', sans-serif;
   font-weight: 700;
   font-size: 19px;
@@ -447,3 +448,4 @@
 .agente-nombre-pd { font-size: 13px; font-weight: 700; }
 .agente-zona-pd { font-size: 11.5px; color: var(--muted); }
  
+}

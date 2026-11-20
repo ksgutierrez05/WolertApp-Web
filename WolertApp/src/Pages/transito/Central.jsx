@@ -1,4 +1,10 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
+import '../../css/transito/central-transito/panel-principal.css';
+import '../../css/transito/central-transito/panel-casos.css';
+import '../../css/transito/central-transito/panel-agentes.css';
+import '../../css/transito/central-transito/panel-historial.css';
+import '../../css/transito/central-transito/panel-reportes.css';
+import '../../css/transito/central-transito/panel-configuracion.css';
 import Panel from './central/PanelPrincipal';
 import Casos from './central/Casos';
 import Agentes from './central/Agentes';
