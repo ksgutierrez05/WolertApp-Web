@@ -59,12 +59,13 @@ export default function Configuracion() {
     if (!form.primerNombre.trim() || !form.primerApellido.trim() || !form.correo.trim()) {
       setError("Completa tu nombre, apellido y correo para guardar los cambios."); return;
     }
-    if (usuario.barrioId === undefined) { setError("No se puede guardar porque el servidor no devolvió el barrio asociado a tu cuenta."); return; }
+    const barrioId = usuario.barrioId ?? usuario.idBarrio;
+    if (barrioId === undefined || barrioId === null) { setError("No se puede guardar porque el servidor no devolvió el barrio asociado a tu cuenta."); return; }
     const textoONulo = (value) => value.trim() || null;
     try {
       setGuardando(true);
       await editarUsuario(idUsuario, {
-        cedula: usuario.cedula, barrioId: usuario.barrioId,
+        cedula: usuario.cedula, barrioId,
         primerNombre: form.primerNombre.trim(), segundoNombre: textoONulo(form.segundoNombre),
         primerApellido: form.primerApellido.trim(), segundoApellido: textoONulo(form.segundoApellido),
         correo: form.correo.trim(), telefono: textoONulo(form.telefono), username: usuario.username,

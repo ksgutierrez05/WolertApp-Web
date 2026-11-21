@@ -18,27 +18,31 @@ export function listarNotificaciones(signal) {
   return consultarNotificaciones("/api/Notificaciones", signal);
 }
 
-export function listarMisNotificaciones(signal) {
-  return consultarNotificaciones("/api/Notificaciones/mias", signal);
-}
+export async function listarMisNotificaciones(signal) {
+  const tokenSesion = localStorage.getItem("token");
+  const usuarioSesion = Number(localStorage.getItem("idUsuario"));
+  const lista = await consultarNotificaciones("/api/Notificaciones/mias", signal);
 
-function claveLecturas() {
-  return `wolert:notificaciones:leidas:${localStorage.getItem("idUsuario") || "sin-usuario"}`;
-}
-
-export function obtenerNotificacionesLeidas() {
-  try {
-    const ids = JSON.parse(localStorage.getItem(claveLecturas()) || "[]");
-    return Array.isArray(ids) ? ids.map(Number) : [];
-  } catch {
+  // Descarta respuestas tardías si la sesión cambió mientras la API respondía.
+  if (
+    signal?.aborted ||
+    !tokenSesion ||
+    !Number.isInteger(usuarioSesion) ||
+    usuarioSesion <= 0 ||
+    tokenSesion !== localStorage.getItem("token") ||
+    usuarioSesion !== Number(localStorage.getItem("idUsuario"))
+  ) {
     return [];
   }
-}
 
-export function guardarNotificacionesLeidas(ids) {
-  const leidas = [...new Set(ids.map(Number))];
-  localStorage.setItem(claveLecturas(), JSON.stringify(leidas));
-  window.dispatchEvent(new CustomEvent("wolert:notificaciones-leidas", { detail: leidas }));
+  if (!Array.isArray(lista)) {
+    throw new Error("La API no devolvió una lista válida de notificaciones.");
+  }
+
+  // La bandeja personal solo acepta registros asociados al usuario de esta sesión.
+  return lista.filter((notificacion) =>
+    Number(notificacion.idUsuario ?? notificacion.IdUsuario) === usuarioSesion
+  );
 }
 
 const DESTINOS = [

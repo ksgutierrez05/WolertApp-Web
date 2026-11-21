@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../../css/admin/dashboard-admin.css';
 import { obtenerUsuarioPorId } from '../../Services/UsuariosAPI.js';
-import { destinoNotificacion, guardarNotificacionesLeidas, listarNotificaciones, obtenerNotificacionesLeidas } from '../../Services/NotificacionesAPI';
+import { destinoNotificacion, listarNotificaciones } from '../../Services/NotificacionesAPI';
 import { obtenerPreferenciasAdmin } from '../../Services/PreferenciasAdmin';
 
 export default function TopBarAdmin({ onToggleSidebar }) {
@@ -12,7 +12,6 @@ export default function TopBarAdmin({ onToggleSidebar }) {
   const [showUser, setShowUser] = useState(false);
   const [perfil, setPerfil] = useState({ nombre: '', correo: '' });
   const [notificaciones, setNotificaciones] = useState([]);
-  const [leidas, setLeidas] = useState(() => obtenerNotificacionesLeidas());
   const [preferencias, setPreferencias] = useState(() => obtenerPreferenciasAdmin());
 
   const username = localStorage.getItem('username') || 'Usuario';
@@ -34,21 +33,16 @@ export default function TopBarAdmin({ onToggleSidebar }) {
     listarNotificaciones().then((lista) => {
       if (activo && Array.isArray(lista)) setNotificaciones(lista);
     }).catch(() => {});
-    const actualizarLecturas = (evento) => setLeidas(evento.detail || obtenerNotificacionesLeidas());
     const actualizarPreferencias = (evento) => setPreferencias(evento.detail || obtenerPreferenciasAdmin());
-    window.addEventListener('wolert:notificaciones-leidas', actualizarLecturas);
     window.addEventListener('wolert:preferencias-admin', actualizarPreferencias);
     return () => {
       activo = false;
-      window.removeEventListener('wolert:notificaciones-leidas', actualizarLecturas);
       window.removeEventListener('wolert:preferencias-admin', actualizarPreferencias);
     };
   }, []);
 
-  const sinLeer = preferencias.mostrarCampana ? notificaciones.filter((n) => !leidas.includes(Number(n.idNotificacion))) : [];
+  const totalAvisos = preferencias.mostrarCampana ? notificaciones.length : 0;
   const abrirNotificacion = (notificacion) => {
-    guardarNotificacionesLeidas([...leidas, Number(notificacion.idNotificacion)]);
-    setLeidas((anteriores) => [...new Set([...anteriores, Number(notificacion.idNotificacion)])]);
     setShowNotif(false);
     navigate(destinoNotificacion(notificacion).ruta);
   };
@@ -78,9 +72,9 @@ export default function TopBarAdmin({ onToggleSidebar }) {
           <div style={{ position: 'relative' }}>
             <button type="button" className="position-relative d-flex align-items-center justify-content-center rounded-circle bg-white"
               style={{ cursor: 'pointer', width: '40px', height: '40px', padding: 0, borderRadius: '9999px', border: '1px solid #e2e8f0' }}
-              onClick={() => setShowNotif((s) => !s)} aria-label={`Notificaciones: ${sinLeer.length} sin leer`} aria-expanded={showNotif}>
+              onClick={() => setShowNotif((s) => !s)} aria-label={`Notificaciones: ${totalAvisos}`} aria-expanded={showNotif}>
               <i className="bi bi-bell" style={{ fontSize: '18px' }} />
-              {sinLeer.length > 0 && <span className="badge-red-dash position-absolute" style={{ top: '-4px', right: '-4px' }}>{sinLeer.length > 9 ? '9+' : sinLeer.length}</span>}
+              {totalAvisos > 0 && <span className="badge-red-dash position-absolute" style={{ top: '-4px', right: '-4px' }}>{totalAvisos > 9 ? '9+' : totalAvisos}</span>}
             </button>
             {showNotif && (
               <div className="top-bar__dropdown" style={{ right: 0, top: 'calc(100% + 8px)', width: '320px' }}>
@@ -89,15 +83,14 @@ export default function TopBarAdmin({ onToggleSidebar }) {
                 </div>
                 <div className="top-bar__dropdown-list">
                   {preferencias.mostrarCampana && notificaciones.slice(0, 5).map((n) => {
-                    const noLeida = !leidas.includes(Number(n.idNotificacion));
                     const destino = destinoNotificacion(n);
-                    return <button type="button" key={n.idNotificacion} className={`top-bar__notif-item ${noLeida ? 'unread' : ''}`} onClick={() => abrirNotificacion(n)}>
+                    return <button type="button" key={n.idNotificacion} className="top-bar__notif-item" onClick={() => abrirNotificacion(n)}>
                       <div className="top-bar__notif-item-icon bg-blue"><i className={`bi ${n.idAlerta != null ? 'bi-exclamation-triangle' : 'bi-bell'}`} /></div>
                       <div className="top-bar__notif-item-content"><div className="top-bar__notif-item-title">{n.mensaje || 'Notificación del sistema'}</div><div className="top-bar__notif-item-sub">Ver en {destino.menu}</div><div className="top-bar__notif-item-time">{n.fecha ? new Date(n.fecha).toLocaleString('es-CO', { dateStyle: 'short', timeStyle: 'short' }) : ''}</div></div>
                     </button>;
                   })}
                   {!preferencias.mostrarCampana && <div className="top-bar__notif-item"><div className="top-bar__notif-item-content"><div className="top-bar__notif-item-title">La vista previa está desactivada</div><div className="top-bar__notif-item-sub">Puedes activarla en Configuración.</div></div></div>}
-                  {preferencias.mostrarCampana && notificaciones.length === 0 && <div className="top-bar__notif-item"><div className="top-bar__notif-item-content"><div className="top-bar__notif-item-title">No hay notificaciones nuevas</div></div></div>}
+                  {preferencias.mostrarCampana && notificaciones.length === 0 && <div className="top-bar__notif-item"><div className="top-bar__notif-item-content"><div className="top-bar__notif-item-title">No hay notificaciones</div></div></div>}
                   <button type="button" className="top-bar__dropdown-link" onClick={() => { setShowNotif(false); navigate('/admin/notificaciones'); }}>Ver todas las notificaciones</button>
                 </div>
               </div>

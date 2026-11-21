@@ -146,3 +146,6 @@
 @keyframes cn-spin { to { transform:rotate(360deg); } }
 @media(max-width:700px) { .ciudadano-notifications__hero { align-items:flex-start; flex-direction:column; padding:20px; }.ciudadano-notifications__summary { flex-wrap:wrap; }.ciudadano-notifications__summary>button { flex-basis:100%; justify-content:center; margin:0; }.ciudadano-notifications__toolbar { align-items:stretch; flex-direction:column; }.ciudadano-notifications__search { width:100%; }.ciudadano-notifications__filters { align-self:flex-start; }.ciudadano-notifications__item { flex-wrap:wrap; }.ciudadano-notifications__state { margin-left:47px; }.ciudadano-notifications__footer { flex-direction:column; } }
 @media(prefers-reduced-motion:reduce) { .ciudadano-notifications * { animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; } }
+.ciudadano-notifications__summary p { margin:0 0 0 auto; color:#78869a; font-size:10px; }
+.ciudadano-notifications__item { background:#fff; border-color:#e6ebf1; }
+.ciudadano-notifications__sort { color:#8996a8; font-size:10px; white-space:nowrap; }
