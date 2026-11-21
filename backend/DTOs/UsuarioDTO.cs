@@ -33,5 +33,6 @@ namespace backend.DTOs
         public string? Estado { get; set; }
         public string? RolNombre { get; set; }
         public string? BarrioNombre { get; set; }
-    }
+		public int? BarrioId { get; set; }
+	}
 }
