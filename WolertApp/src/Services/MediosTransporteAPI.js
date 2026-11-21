@@ -5,7 +5,10 @@ export function ObtenerToken() {
 }
 
 export async function ListarMediosTransporte() {
-  const respuesta = await fetch(`${API}/api/MediosTransporte`);
+  const obtenerToken = ObtenerToken();
+  const respuesta = await fetch(`${API}/api/MediosTransporte`, {
+    headers: { 'Authorization': `Bearer ${obtenerToken}` }
+  });
   if (!respuesta.ok) throw new Error('Error al listar los medios de transporte');
   return await respuesta.json();
 }
