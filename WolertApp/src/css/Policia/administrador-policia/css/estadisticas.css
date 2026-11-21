@@ -1,129 +1,524 @@
 
-/* ===== ESTADISTICAS DINAMICAS ===== */
+/* ================================================
+   WOLERTAPP - ESTADÍSTICAS ADMIN POLICÍA
+   ================================================ */
 
-.estadistica-barras {
-  display: grid;
-  gap: 14px;
-}
-
-.estadistica-barra-fila {
-  display: grid;
-  grid-template-columns: minmax(90px, 140px) minmax(60px, 1fr) 35px 40px;
-  align-items: center;
-  gap: 10px;
-}
-
-.estadistica-barra-etiqueta {
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: capitalize;
-}
-
-.estadistica-barra-track {
-  height: 12px;
-  overflow: hidden;
-  border-radius: 20px;
-  background: var(--fog);
-}
-
-.estadistica-barra-fill {
-  height: 100%;
+.estadisticas-page {
+  width: 100%;
   min-width: 0;
-  border-radius: inherit;
-  background: linear-gradient(90deg, #08765a, #25ad84);
-  transition: width .5s ease;
 }
 
-.estadistica-barra-fila strong {
-  text-align: right;
-  color: var(--ink);
+.estadisticas-page .estadisticas-contenido {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+
+  width: 100%;
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 20px 24px 35px;
+}
+
+/* ENCABEZADO */
+
+.estadisticas-page .estadisticas-encabezado {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.estadisticas-page .estadisticas-encabezado h1 {
+  margin: 0 0 5px;
+  color: var(--ink, #203c30);
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.estadisticas-page .estadisticas-encabezado p {
+  margin: 0;
+  color: var(--muted, #64748b);
   font-size: 13px;
 }
 
-.estadistica-barra-fila small {
-  color: var(--muted);
+/* BOTÓN INSTITUCIONAL */
+
+.estadisticas-page .btn-cv-verde {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  padding: 11px 20px;
+  border: none;
+  border-radius: 100px;
+
+  background: linear-gradient(
+    135deg,
+    var(--color-primary, #087b58),
+    var(--color-primary-2, #12966d)
+  );
+
+  color: #fff;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+
+  box-shadow: var(
+    --shadow-sm,
+    0 4px 12px rgba(8, 123, 88, 0.15)
+  );
+
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.estadisticas-page .btn-cv-verde:hover:not(:disabled) {
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: var(
+    --shadow-md,
+    0 7px 18px rgba(8, 123, 88, 0.22)
+  );
+}
+
+.estadisticas-page .btn-cv-verde:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* TARJETAS KPI */
+
+.estadisticas-page .estadisticas-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.estadisticas-page .kpi-card-policial {
+  --kpi-color: #08765a;
+  --kpi-fondo: #e1f4ec;
+
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  width: 100%;
+  min-width: 0;
+  min-height: 108px;
+  padding: 18px 16px;
+
+  background: #fff;
+  border: 1px solid #e5eaf0;
+  border-left: 4px solid var(--kpi-color);
+  border-radius: 15px;
+
+  box-shadow: 0 3px 10px rgba(24, 44, 64, 0.055);
+}
+
+.estadisticas-page .kpi-card-icono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+
+  background: var(--kpi-fondo);
+  color: var(--kpi-color);
+}
+
+.estadisticas-page .kpi-card-icono i {
+  font-size: 22px;
+}
+
+.estadisticas-page .kpi-card-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 7px;
+  min-width: 0;
+}
+
+.estadisticas-page .kpi-card-titulo {
+  color: #53647b;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.estadisticas-page .kpi-card-valor {
+  color: #263d58;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 29px;
+  font-weight: 750;
+  line-height: 1;
+}
+
+.estadisticas-page .tono-verde {
+  --kpi-color: #07835b;
+  --kpi-fondo: #dff5e9;
+}
+
+.estadisticas-page .tono-azul {
+  --kpi-color: #2475d5;
+  --kpi-fondo: #e2edff;
+}
+
+.estadisticas-page .tono-ambar {
+  --kpi-color: #e68a00;
+  --kpi-fondo: #fff0d8;
+}
+
+/* GRÁFICAS */
+
+.estadisticas-page .estadisticas-graficas {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 22px;
+}
+
+.estadisticas-page .estadistica-panel {
+  min-width: 0;
+  width: 100%;
+  padding: 20px;
+  margin-bottom: 22px;
+
+  background: #fff;
+  border: 1px solid #e1e8ef;
+  border-radius: 16px;
+  box-shadow: 0 3px 12px rgba(24, 44, 64, 0.05);
+}
+
+.estadisticas-page .estadisticas-graficas .estadistica-panel {
+  margin-bottom: 0;
+}
+
+.estadisticas-page .estadistica-panel-encabezado {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.estadisticas-page .estadistica-panel-icono {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+
+  width: 34px;
+  height: 34px;
+
+  border-radius: 10px;
+  background: #e2f3ed;
+  color: #08765a;
+  font-size: 16px;
+}
+
+.estadisticas-page .estadistica-panel-encabezado h2 {
+  margin: 0;
+  color: #203c30;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+/* BARRAS */
+
+.estadisticas-page .estadistica-barras {
+  display: grid;
+  gap: 15px;
+}
+
+.estadisticas-page .estadistica-barra-fila {
+  display: grid;
+  grid-template-columns:
+    minmax(95px, 145px)
+    minmax(0, 1fr)
+    35px
+    38px;
+
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.estadisticas-page .estadistica-barra-etiqueta {
+  color: #53647b;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+  overflow-wrap: anywhere;
+}
+
+.estadisticas-page .estadistica-barra-track {
+  width: 100%;
+  height: 11px;
+  overflow: hidden;
+
+  border-radius: 100px;
+  background: #edf2f5;
+}
+
+.estadisticas-page .estadistica-barra-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #08765a, #25ad84);
+  transition: width 0.4s ease;
+}
+
+.estadisticas-page .estadistica-barra-fila strong {
+  color: #263d58;
+  font-size: 13px;
+  text-align: right;
+}
+
+.estadisticas-page .estadistica-barra-fila small {
+  color: #64748b;
   font-size: 11px;
+  text-align: right;
 }
 
-.estadistica-vacio {
-  padding: 22px 10px;
-  text-align: center;
-  color: var(--muted);
+/* ESTADO DE ALARMAS Y UNIDADES */
+
+.estadisticas-page .estadistica-estados-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
 }
 
-.estadistica-subtitulo {
-  margin-bottom: 12px;
-  color: var(--ink);
+.estadisticas-page .estadistica-estados-columna {
+  min-width: 0;
+  padding: 15px;
+
+  border: 1px solid #e7edf0;
+  border-radius: 12px;
+  background: #fbfcfd;
+}
+
+.estadisticas-page .estadistica-estados-columna h3 {
+  margin: 0 0 14px;
+  color: #263d58;
   font-size: 14px;
   font-weight: 700;
 }
 
-.estadistica-resumen {
+.estadisticas-page .estadistica-estados-columna h3 span {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.estadisticas-page .estadistica-estados-lista {
+  display: grid;
+  gap: 9px;
+}
+
+.estadisticas-page .estadistica-estado-fila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+
+  min-height: 42px;
+  padding: 10px 13px;
+
+  border: 1px solid #e5ece9;
+  border-radius: 9px;
+  background: #fff;
+}
+
+.estadisticas-page .estadistica-estado-nombre {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+
+  color: #53647b;
+  font-size: 12px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.estadisticas-page .estadistica-estado-punto {
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+
+  border-radius: 50%;
+  background: #08765a;
+}
+
+.estadisticas-page .estadistica-estado-cantidad {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  min-width: 31px;
+  height: 27px;
+  padding: 0 7px;
+
+  border-radius: 7px;
+  background: #e1f4ec;
+  color: #08765a;
+
+  font-size: 13px;
+  font-weight: 750;
+}
+
+/* ACTIVIDAD DE HOY */
+
+.estadisticas-page .estadistica-resumen {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 15px;
 }
 
-.estadistica-resumen > div {
+.estadisticas-page .estadistica-resumen > div {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  justify-content: center;
+  gap: 10px;
+
+  min-width: 0;
+  min-height: 100px;
   padding: 18px;
-  border: 1px solid var(--line);
+
+  border: 1px solid #e1e8ef;
   border-radius: 12px;
-  background: var(--fog);
+  background: #f5f7fa;
 }
 
-.estadistica-resumen strong {
-  color: var(--ink);
+.estadisticas-page .estadistica-resumen strong {
+  color: #172f4b;
   font-size: 27px;
   font-weight: 800;
+  line-height: 1;
 }
 
-.estadistica-resumen span {
-  color: var(--muted);
+.estadisticas-page .estadistica-resumen span {
+  color: #53647b;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+/* MENSAJES */
+
+.estadisticas-page .estadistica-vacio {
+  margin: 0;
+  padding: 20px 10px;
+  text-align: center;
+  color: #64748b;
   font-size: 12px;
 }
 
-.estadistica-actualizacion {
-  margin: 15px 0;
-  text-align: right;
-  color: var(--muted);
-  font-size: 11px;
-}
-
-.estadistica-alerta-error {
+.estadisticas-page .estadistica-alerta-error {
   display: flex;
   gap: 12px;
-  padding: 15px;
   margin-bottom: 18px;
+  padding: 15px;
+
   border: 1px solid #f0d5a7;
   border-radius: 10px;
   background: #fff8e9;
   color: #795313;
 }
 
-.estadistica-alerta-error > i {
-  font-size: 20px;
-}
-
-.estadistica-alerta-error p {
+.estadisticas-page .estadistica-alerta-error p {
   margin: 5px 0;
   font-size: 12px;
 }
 
-@media(max-width: 650px) {
-  .estadistica-resumen {
+.estadisticas-page .estadistica-actualizacion {
+  margin: 0 0 15px;
+  color: #64748b;
+  font-size: 11px;
+  text-align: right;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 1100px) {
+  .estadisticas-page .estadisticas-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 850px) {
+  .estadisticas-page .estadisticas-graficas,
+  .estadisticas-page .estadistica-estados-grid {
     grid-template-columns: 1fr;
   }
+}
 
-  .estadistica-barra-fila {
-    grid-template-columns: 90px minmax(40px, 1fr) 25px;
-    gap: 6px;
+@media (max-width: 650px) {
+  .estadisticas-page .estadisticas-contenido {
+    padding: 16px 12px 28px;
   }
 
-  .estadistica-barra-fila small {
+  .estadisticas-page .estadisticas-encabezado h1 {
+    font-size: 21px;
+  }
+
+  .estadisticas-page .estadisticas-kpis {
+    gap: 10px;
+  }
+
+  .estadisticas-page .kpi-card-policial {
+    padding: 12px 10px;
+    gap: 9px;
+    min-height: 95px;
+  }
+
+  .estadisticas-page .kpi-card-icono {
+    width: 38px;
+    height: 38px;
+  }
+
+  .estadisticas-page .kpi-card-icono i {
+    font-size: 17px;
+  }
+
+  .estadisticas-page .kpi-card-titulo {
+    font-size: 11px;
+  }
+
+  .estadisticas-page .kpi-card-valor {
+    font-size: 23px;
+  }
+
+  .estadisticas-page .estadistica-panel {
+    padding: 14px;
+  }
+
+  .estadisticas-page .estadistica-resumen {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .estadisticas-page .estadistica-barra-fila {
+    grid-template-columns:
+      90px
+      minmax(0, 1fr)
+      30px;
+    gap: 7px;
+  }
+
+  .estadisticas-page .estadistica-barra-fila small {
     display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .estadisticas-page .btn-cv-verde,
+  .estadisticas-page .estadistica-barra-fill {
+    transition: none;
   }
 }

@@ -258,5 +258,30 @@ notificaciones: {
   ],
 },
 
+policias: {
+  columnas: "col-12 col-sm-6 col-xl-4",
+  claseFila: "row g-3 mb-4",
+  items: [
+    {
+      clave: "total",
+      etiqueta: "Total de policías",
+      icono: "bi-people-fill",
+      tono: "azul",
+    },
+    {
+      clave: "activos",
+      etiqueta: "Policías activos",
+      icono: "bi-person-check-fill",
+      tono: "verde",
+    },
+    {
+      clave: "unidades",
+      etiqueta: "Unidades con policías",
+      icono: "bi-shield-check",
+      tono: "ambar",
+    },
+  ],
+},
+
 
 };

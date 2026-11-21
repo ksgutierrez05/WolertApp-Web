@@ -1,446 +1,579 @@
-/* Piezas de Tipo de Alertas que no existen en global.css: encabezado
-   con acción, KPIs, filtros, tabla de datos y modales de crear/editar. */
 
-.header-vista-dash {
+/* =====================================================
+   WOLERTAPP
+   ADMINISTRADOR DE POLICÍA
+   TIPOS DE ALERTAS - SOLO CONSULTA
+   ===================================================== */
+
+.tipos-alertas-page {
+  width: 100%;
+  min-width: 0;
+}
+
+/* =====================================================
+   ENCABEZADO
+   ===================================================== */
+
+.tipos-alertas-page .header-vista-dash {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 14px;
+  gap: 16px;
 }
 
-.header-vista-dash h1 {
+.tipos-alertas-page .header-vista-dash h1 {
+  margin: 0 0 5px;
+  color: var(--ink, #203c30);
+
   font-family: "Space Grotesk", sans-serif;
-  font-weight: 700;
   font-size: 24px;
-  margin: 0 0 4px;
-  color: var(--ink);
-}
-
-.header-vista-dash p {
-  margin: 0;
-  color: var(--muted);
-  font-size: 13.5px;
-}
-
-.btn-cv-verde {
-  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-2));
-  border: none;
-  color: #fff;
   font-weight: 700;
-  font-size: 13.5px;
-  padding: 11px 20px;
-  border-radius: 100px;
-  box-shadow: var(--shadow-sm);
+  letter-spacing: -0.03em;
+}
+
+.tipos-alertas-page .header-vista-dash p {
+  margin: 0;
+  color: var(--muted, #718177);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* =====================================================
+   BOTÓN ACTUALIZAR
+   ===================================================== */
+
+.tipos-alertas-page .btn-actualizar-tipos {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
-  transition: box-shadow 0.15s ease, transform 0.15s ease;
-}
 
-.btn-cv-verde:hover {
-  color: #fff;
-  box-shadow: var(--shadow-md);
-  transform: translateY(-1px);
-}
+  min-height: 40px;
+  padding: 9px 17px;
 
-/* ---------- KPIs verdes (tipo de alerta) ---------- */
-.kpi-tipo-dash {
-  position: relative;
-  overflow: hidden;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-2));
-  border-radius: 16px;
-  padding: 16px 18px;
-  color: #fff;
-  min-height: 0;
-  box-shadow: var(--shadow-sm);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
+  background: #fff;
+  color: var(--color-primary, #087b58);
 
-.kpi-tipo-dash:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-}
-
-/* Se quita el blob decorativo (::after) que generaba la "sombra blanca" */
-
-.kpi-icon-circle-dash {
-  width: 32px;
-  height: 32px;
+  border: 1px solid var(--color-primary, #087b58);
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.16);
+
+  font-size: 13px;
+  font-weight: 650;
+  cursor: pointer;
+
+  transition:
+    background 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.tipos-alertas-page .btn-actualizar-tipos:hover:not(:disabled) {
+  background: #edf8f2;
+  box-shadow: 0 3px 10px rgba(8, 123, 88, 0.09);
+}
+
+.tipos-alertas-page .btn-actualizar-tipos:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@keyframes tipos-girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.tipos-alertas-page .icono-recargando {
+  animation: tipos-girar 1s linear infinite;
+}
+
+/* =====================================================
+   TARJETAS KPI
+   ===================================================== */
+
+.tipos-alertas-page .kpi-card-policial {
+  --kpi-color: #08765a;
+  --kpi-fondo: #e1f4ec;
+
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  width: 100%;
+  min-width: 0;
+  min-height: 105px;
+  height: 100%;
+
+  padding: 18px 16px;
+
+  background: #fff;
+
+  border: 1px solid #e5eaf0;
+  border-left: 4px solid var(--kpi-color);
+  border-radius: 15px;
+
+  box-shadow: 0 3px 10px rgba(24, 44, 64, 0.055);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.tipos-alertas-page .kpi-card-policial:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(24, 44, 64, 0.1);
+}
+
+.tipos-alertas-page .kpi-card-icono {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
-  color: #fff;
+  flex-shrink: 0;
+
+  width: 50px;
+  height: 50px;
+
+  background: var(--kpi-fondo);
+  color: var(--kpi-color);
+
+  border-radius: 50%;
 }
 
-.kpi-num-tipo-dash {
-  font-family: "Space Grotesk", sans-serif;
-  font-size: 24px;
-  font-weight: 800;
+.tipos-alertas-page .kpi-card-icono i {
+  font-size: 1.4rem;
   line-height: 1;
-  margin: 0;
 }
 
-.kpi-label-tipo-dash {
+.tipos-alertas-page .kpi-card-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 7px;
+  min-width: 0;
+}
+
+.tipos-alertas-page .kpi-card-titulo {
+  color: #53647b;
   font-size: 12px;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.85);
-  margin: 0;
+  line-height: 1.4;
 }
 
-/* ---------- Barra de filtros ---------- */
-.filtros-toolbar-dash {
+.tipos-alertas-page .kpi-card-valor {
+  color: #263d58;
+
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 29px;
+  font-weight: 750;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* COLORES KPI */
+
+.tipos-alertas-page .tono-azul {
+  --kpi-color: #2475d5;
+  --kpi-fondo: #e2edff;
+}
+
+.tipos-alertas-page .tono-rojo {
+  --kpi-color: #dc3545;
+  --kpi-fondo: #fde7eb;
+}
+
+.tipos-alertas-page .tono-ambar {
+  --kpi-color: #e68a00;
+  --kpi-fondo: #fff0d8;
+}
+
+.tipos-alertas-page .tono-verde {
+  --kpi-color: #07835b;
+  --kpi-fondo: #dff5e9;
+}
+
+/* =====================================================
+   FILTROS EN UNA SOLA FILA
+   ===================================================== */
+
+.tipos-alertas-page .filtros-toolbar-dash {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(210px, 260px);
+
+  align-items: center;
+  gap: 14px;
+
+  padding: 15px 17px;
+
+  background: #fff;
+
+  border: 1px solid #e2e9e5;
+  border-radius: 15px;
+
+  box-shadow: 0 3px 12px rgba(24, 44, 64, 0.045);
+}
+
+.tipos-alertas-page .tipos-buscador,
+.tipos-alertas-page .tipos-filtro-prioridad {
   display: flex;
   align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  padding: 12px 16px;
-  box-shadow: var(--shadow-sm);
-}
+  gap: 10px;
 
-.filtros-toolbar-dash .search-dash {
-  flex: 1 1 260px;
-}
-
-.filtros-toolbar-dash select.form-select {
-  border-radius: 10px;
-  border-color: var(--line);
-  background-color: var(--fog);
-  font-size: 13px;
-  min-width: 170px;
-  padding: 10px 14px;
-}
-
-.filtros-toolbar-dash select.form-select:focus {
-  box-shadow: 0 0 0 3px rgba(28, 120, 30, 0.15);
-  border-color: var(--color-primary);
-}
-
-/* ---------- Chips de prioridad (accesos rápidos) ---------- */
-.chips-prioridad-dash {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.chip-prioridad-dash {
-  border: 1px solid var(--line);
-  background: #fff;
-  color: var(--muted);
-  border-radius: 100px;
-  padding: 7px 16px;
-  font-size: 12.5px;
-  font-weight: 600;
-  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
-}
-
-.chip-prioridad-dash:hover {
-  background: var(--fog);
-}
-
-.chip-prioridad-dash.activo {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
-  color: #fff;
-}
-
-/* ---------- Tabla ---------- */
-.tabla-header-dash {
-  display: flex;
-  align-items: center;
-  padding: 14px 20px;
-  border-bottom: 1px solid var(--line);
-  gap: 12px;
-}
-
-.tabla-header-dash span {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-  color: var(--subtle);
-}
-
-.tabla-dash {
   width: 100%;
-  border-collapse: collapse;
-  font-size: 13.5px;
+  min-width: 0;
+  height: 44px;
+
+  padding: 0 13px;
+
+  background: #fbfdfb;
+
+  border: 1px solid #dce7df;
+  border-radius: 11px;
+
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
 }
 
-.tabla-dash tbody tr {
-  border-bottom: 1px solid var(--line);
-  transition: background 0.12s ease;
+.tipos-alertas-page .tipos-buscador:focus-within,
+.tipos-alertas-page .tipos-filtro-prioridad:focus-within {
+  border-color: #087b58;
+  box-shadow: 0 0 0 3px rgba(8, 123, 88, 0.12);
 }
 
-.tabla-dash tbody tr:last-child {
-  border-bottom: none;
-}
-
-.tabla-dash tbody tr:hover {
-  background: var(--fog);
-}
-
-.tabla-dash td {
-  padding: 13px 20px 13px 0;
-  vertical-align: middle;
-  color: var(--ink);
-}
-
-.tabla-dash td:first-child {
-  padding-left: 20px;
-}
-
-.celda-persona-dash {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.avatar-sm-dash {
-  width: 38px;
-  height: 38px;
-  min-width: 38px;
-  border-radius: 12px;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.tipos-alertas-page .tipos-buscador > i,
+.tipos-alertas-page .tipos-filtro-prioridad > i {
+  color: #8495a3;
   font-size: 15px;
-}
-
-.celda-titulo-dash {
-  font-weight: 700;
-  font-size: 13.5px;
-  color: var(--ink);
-  line-height: 1.25;
-}
-
-.celda-sub-dash {
-  font-size: 11.5px;
-  color: var(--muted);
-}
-
-.prioridad-barra-dash {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.prioridad-punto-dash {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
   flex-shrink: 0;
 }
 
-.categoria-chip-dash {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 12px 5px 8px;
-  border-radius: 100px;
-  font-size: 11px;
-  font-weight: 700;
+.tipos-alertas-page .tipos-buscador input,
+.tipos-alertas-page .tipos-filtro-prioridad select {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+
+  padding: 0;
+  margin: 0;
+
+  border: 0;
+  outline: 0;
+  box-shadow: none;
+
+  background: transparent;
+  color: #263d58;
+
+  font-family: inherit;
+  font-size: 13px;
+}
+
+.tipos-alertas-page .tipos-buscador input::placeholder {
+  color: #98a5b6;
+}
+
+.tipos-alertas-page .tipos-filtro-prioridad select {
+  cursor: pointer;
+}
+
+/* =====================================================
+   PANEL DE TABLA
+   ===================================================== */
+
+.tipos-alertas-page .tipos-tabla-panel {
+  overflow: hidden;
+
+  background: #fff;
+
+  border: 1px solid #e3eaf0;
+  border-radius: 15px;
+
+  box-shadow: 0 3px 12px rgba(24, 44, 64, 0.04);
+}
+
+.tipos-alertas-page .tipos-tabla-panel .table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+/* =====================================================
+   TABLA PERFECTAMENTE ALINEADA
+   ===================================================== */
+
+.tipos-alertas-page .tabla-tipos-alertas {
+  width: 100%;
+  min-width: 650px;
+
+  table-layout: fixed;
+  border-collapse: collapse;
+
+  font-size: 13px;
+}
+
+.tipos-alertas-page .tabla-tipos-alertas thead {
+  background: #f8faf9;
+}
+
+.tipos-alertas-page .tabla-tipos-alertas th,
+.tipos-alertas-page .tabla-tipos-alertas td {
+  box-sizing: border-box;
+
+  padding: 14px 18px;
+
+  text-align: left;
+  vertical-align: middle;
+
+  border-bottom: 1px solid #e6ecf1;
+}
+
+.tipos-alertas-page .tabla-tipos-alertas th {
+  color: #8494ad;
+
+  font-size: 10.5px;
+  font-weight: 750;
+
+  text-transform: uppercase;
+  letter-spacing: 0.045em;
+
   white-space: nowrap;
 }
 
-.categoria-chip-dash i {
+.tipos-alertas-page .tabla-tipos-alertas td {
+  color: #263d58;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.tipos-alertas-page .tabla-tipos-alertas tbody tr {
+  transition: background 0.15s ease;
+}
+
+.tipos-alertas-page .tabla-tipos-alertas tbody tr:hover {
+  background: #f7fbf8;
+}
+
+.tipos-alertas-page .tabla-tipos-alertas tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* =====================================================
+   NOMBRE Y CÓDIGO
+   ===================================================== */
+
+.tipos-alertas-page .tipo-alerta-nombre {
+  color: #203c30;
+
+  font-size: 13px;
+  font-weight: 750;
+  line-height: 1.35;
+
+  overflow-wrap: anywhere;
+}
+
+.tipos-alertas-page .tipo-alerta-codigo {
+  margin-top: 3px;
+
+  color: #8494ad;
+  font-size: 11px;
+}
+
+.tipos-alertas-page .tipo-alerta-central {
+  color: #263d58;
+
   font-size: 12px;
+  font-weight: 650;
 }
 
-.tabla-acciones-dash {
-  display: flex;
-  gap: 6px;
-}
+/* =====================================================
+   ETIQUETAS DE PRIORIDAD
+   ===================================================== */
 
-.btn-icono-dash {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  border: none;
-  background: var(--fog);
-  color: var(--muted);
+.tipos-alertas-page .categoria-chip-dash {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
-  transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+
+  min-width: 65px;
+  padding: 5px 11px;
+
+  border-radius: 100px;
+
+  font-size: 10.5px;
+  font-weight: 750;
+
+  line-height: 1.2;
+  white-space: nowrap;
 }
 
-.btn-icono-dash:hover {
-  color: var(--ink);
+.tipos-alertas-page .prioridad-alta {
+  background: #fde7eb;
+  color: #cf3044;
+}
+
+.tipos-alertas-page .prioridad-media {
+  background: #fff0d8;
+  color: #a96a00;
+}
+
+.tipos-alertas-page .prioridad-baja {
+  background: #dff5e9;
+  color: #07835b;
+}
+
+.tipos-alertas-page .prioridad-desconocida {
+  background: #edf0f4;
+  color: #687789;
+}
+
+/* =====================================================
+   ESTADO VACÍO Y CONTADOR
+   ===================================================== */
+
+.tipos-alertas-page .tabla-vacio-dash {
+  padding: 45px 20px;
+
+  color: #8494ad;
+  font-size: 13px;
+  text-align: center;
+}
+
+.tipos-alertas-page .tipos-contador {
+  margin: -5px 0 20px;
+
+  color: #8494ad;
+  font-size: 12px;
+  text-align: right;
+}
+
+/* =====================================================
+   TABLET
+   ===================================================== */
+
+@media (max-width: 991px) {
+  .tipos-alertas-page .filtros-toolbar-dash {
+    grid-template-columns: minmax(0, 1fr) 210px;
+  }
+
+  .tipos-alertas-page .kpi-card-policial {
+    padding: 15px 12px;
+  }
+
+  .tipos-alertas-page .kpi-card-icono {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+/* =====================================================
+   MÓVIL
+   ===================================================== */
+
+@media (max-width: 640px) {
+  .tipos-alertas-page .header-vista-dash {
+    align-items: flex-start;
+  }
+
+  .tipos-alertas-page .header-vista-dash h1 {
+    font-size: 21px;
+  }
+
+  .tipos-alertas-page .filtros-toolbar-dash {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .tipos-alertas-page .kpi-card-policial {
+    gap: 9px;
+    min-height: 96px;
+    padding: 12px 10px;
+  }
+
+  .tipos-alertas-page .kpi-card-icono {
+    width: 38px;
+    height: 38px;
+  }
+
+  .tipos-alertas-page .kpi-card-icono i {
+    font-size: 17px;
+  }
+
+  .tipos-alertas-page .kpi-card-titulo {
+    font-size: 11px;
+  }
+
+  .tipos-alertas-page .kpi-card-valor {
+    font-size: 24px;
+  }
+
+  .tipos-alertas-page .tabla-tipos-alertas th,
+  .tipos-alertas-page .tabla-tipos-alertas td {
+    padding: 12px 14px;
+  }
+}
+
+/* =====================================================
+   ACCESIBILIDAD
+   ===================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .tipos-alertas-page .kpi-card-policial,
+  .tipos-alertas-page .btn-actualizar-tipos,
+  .tipos-alertas-page .tabla-tipos-alertas tbody tr {
+    transition: none;
+  }
+
+  .tipos-alertas-page .kpi-card-policial:hover {
+    transform: none;
+  }
+
+  .tipos-alertas-page .icono-recargando {
+    animation: none;
+  }
+}
+
+/* Botón Actualizar: mismo diseño de Nuevo policía */
+
+.tipos-alertas-page .btn-cv-verde {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  padding: 11px 20px;
+
+  background: linear-gradient(
+    135deg,
+    var(--color-primary, #087b58),
+    var(--color-primary-2, #12966d)
+  );
+
+  color: #fff;
+  border: none;
+  border-radius: 100px;
+
+  font-size: 13.5px;
+  font-weight: 700;
+
+  box-shadow: var(--shadow-sm, 0 4px 12px rgba(8, 123, 88, 0.15));
+
+  transition:
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
+}
+
+.tipos-alertas-page .btn-cv-verde:hover:not(:disabled) {
+  color: #fff;
+  box-shadow: var(--shadow-md, 0 7px 18px rgba(8, 123, 88, 0.22));
   transform: translateY(-1px);
 }
 
-.btn-icono-dash.editar-dash:hover {
-  background: #fcf0da;
-  color: var(--color-amber);
-}
-
-.btn-icono-dash.borrar-dash:hover {
-  background: #fce8e9;
-  color: var(--color-danger);
-}
-
-.tabla-vacio-dash {
-  text-align: center;
-  padding: 48px 20px;
-  color: var(--muted);
-  font-size: 13.5px;
-}
-
-/* ---------- Modal crear/editar ---------- */
-.modal-content {
-  border: none;
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: var(--shadow-md);
-}
-
-.modal-header-dash {
-  background: linear-gradient(120deg, var(--color-primary) 0%, var(--color-primary-2) 100%);
-  color: #fff;
-  padding: 22px 26px;
-  border: none;
-}
-
-.modal-header-dash .modal-title {
-  font-family: "Space Grotesk", sans-serif;
-  font-weight: 700;
-  font-size: 18px;
-}
-
-.modal-header-dash .modal-subtitle {
-  font-size: 12.5px;
-  color: #d7ddec;
-  margin-top: 2px;
-}
-
-.modal-header-dash .btn-close {
-  filter: invert(1) brightness(2);
-}
-
-.modal-body-dash {
-  padding: 24px 26px;
-  background: #fff;
-}
-
-.form-field-dash label {
-  font-size: 11.5px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  color: var(--muted);
-  margin-bottom: 6px;
-  display: block;
-}
-
-.form-field-dash .form-control,
-.form-field-dash .form-select {
-  border-radius: 10px;
-  border-color: var(--line);
-  font-size: 13.5px;
-  padding: 10px 12px;
-}
-
-.form-field-dash .form-control:focus,
-.form-field-dash .form-select:focus {
-  box-shadow: 0 0 0 3px rgba(28, 120, 30, 0.15);
-  border-color: var(--color-primary);
-}
-
-/* ---------- Selector visual de prioridad dentro del modal ---------- */
-.prioridad-picker-dash {
-  display: flex;
-  gap: 10px;
-}
-
-.prioridad-opcion-dash {
-  flex: 1;
-  border: 1.5px solid var(--line);
-  border-radius: 12px;
-  padding: 12px 10px;
-  text-align: center;
-  cursor: pointer;
-  transition: border-color 0.12s ease, background 0.12s ease;
-}
-
-.prioridad-opcion-dash input {
-  display: none;
-}
-
-.prioridad-opcion-dash .dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  margin: 0 auto 6px;
-}
-
-.prioridad-opcion-dash span.txt {
-  font-size: 12.5px;
-  font-weight: 700;
-  color: var(--muted);
-}
-
-.prioridad-opcion-dash.alta.seleccionada {
-  border-color: var(--color-danger);
-  background: #fce8e9;
-}
-
-.prioridad-opcion-dash.alta.seleccionada span.txt { color: var(--color-danger); }
-
-.prioridad-opcion-dash.media.seleccionada {
-  border-color: var(--color-amber);
-  background: #fcf0da;
-}
-
-.prioridad-opcion-dash.media.seleccionada span.txt { color: var(--color-amber); }
-
-.prioridad-opcion-dash.baja.seleccionada {
-  border-color: var(--color-green);
-  background: #e3f8ec;
-}
-
-.prioridad-opcion-dash.baja.seleccionada span.txt { color: var(--color-green); }
-
-.modal-footer-dash {
-  padding: 16px 26px 24px;
-  border: none;
-  background: #fff;
-  gap: 10px;
-}
-
-.btn-secundario-dash {
-  background: var(--fog);
-  border: 1px solid var(--line);
-  color: var(--ink);
-  font-weight: 600;
-  font-size: 13.5px;
-  border-radius: 100px;
-  padding: 10px 20px;
-}
-
-.btn-secundario-dash:hover {
-  background: var(--line);
-  color: var(--ink);
-}
-
-@media (max-width: 640px) {
-  .filtros-toolbar-dash select.form-select {
-    min-width: 0;
-    flex: 1 1 auto;
-  }
-
-  .kpi-num-tipo-dash {
-    margin-top: 14px;
-  }
+.tipos-alertas-page .btn-cv-verde:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
 }
