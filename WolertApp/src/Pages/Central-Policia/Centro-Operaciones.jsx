@@ -16,19 +16,20 @@ import {
   ubicacionAlerta,
   estadoAlerta,
   campo,
-  texto,
+  esUnidadOcupada,
 } from "../../Services/OperacionesCentralService.js";
 
 import "../../css/Policia/central-policia/css/centro-operaciones.css";
 
-function CentroOperaciones() {
-  const [datos, setDatos] = useState({
-    alertas: [],
-    asignaciones: [],
-    atenciones: [],
-    unidades: [],
-  });
+const datosVacios = () => ({
+  alertas: [],
+  asignaciones: [],
+  atenciones: [],
+  unidades: [],
+});
 
+function CentroOperaciones() {
+  const [datos, setDatos] = useState(datosVacios);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
   const [avisos, setAvisos] = useState([]);
@@ -39,15 +40,20 @@ function CentroOperaciones() {
 
     cargarOperaciones(controller.signal)
       .then(({ datos: resultado, errores }) => {
-        if (!controller.signal.aborted) {
-          setDatos(resultado);
-          setAvisos(errores);
-        }
+        if (controller.signal.aborted) return;
+
+        setDatos(resultado);
+        setAvisos(errores);
+        setError("");
       })
       .catch((err) => {
-        if (!controller.signal.aborted) {
-          setError(err.message);
-        }
+        if (controller.signal.aborted) return;
+
+        setDatos(datosVacios());
+        setAvisos([]);
+        setError(
+          err.message || "No se pudieron consultar los datos."
+        );
       })
       .finally(() => {
         if (!controller.signal.aborted) {
@@ -75,30 +81,29 @@ function CentroOperaciones() {
     [datos.alertas]
   );
 
-  const atencionesActivas = datos.atenciones.filter(
-    (a) =>
-      ![
-        "FINALIZADA",
-        "FINALIZADO",
-        "CERRADA",
-        "CERRADO",
-      ].includes(texto(campo(a, "estado", "Estado")))
-  );
+  const atencionesActivas = useMemo(() => {
+    return datos.atenciones.filter((atencion) => {
+      const alertaRelacionada = datos.alertas.find(
+        (alerta) =>
+          String(idAlerta(alerta)) ===
+          String(campo(atencion, "idAlerta", "IdAlerta"))
+      );
 
-  const ocupadas = datos.unidades.filter(
-    (u) =>
-      [
-        "OCUPADA",
-        "OCUPADO",
-        "EN SERVICIO",
-        "EN ATENCION",
-        "EN ATENCIÓN",
-      ].includes(texto(campo(u, "estado", "Estado")))
-  ).length;
+      if (!alertaRelacionada) return false;
+
+      return estadoAlerta(alertaRelacionada) === "EN_ATENCION";
+    });
+  }, [datos.atenciones, datos.alertas]);
+
+  const ocupadas = useMemo(
+    () => datos.unidades.filter(esUnidadOcupada).length,
+    [datos.unidades]
+  );
 
   function actualizar() {
     setCargando(true);
     setError("");
+    setAvisos([]);
     setRecarga((n) => n + 1);
   }
 
@@ -133,9 +138,7 @@ function CentroOperaciones() {
             <span className="hero-cta-icon-dash">
               <i className="bi bi-exclamation-lg" />
             </span>
-
             Ver alertas
-
             <i className="bi bi-arrow-right hero-cta-arrow-dash" />
           </Link>
         </div>
@@ -143,37 +146,47 @@ function CentroOperaciones() {
 
       <div className="d-flex justify-content-end mb-3">
         <button
+          type="button"
           className="btn btn-outline-success btn-sm"
           onClick={actualizar}
           disabled={cargando}
         >
           <i className="bi bi-arrow-clockwise me-1" />
-          Actualizar
+          {cargando ? "Actualizando..." : "Actualizar"}
         </button>
       </div>
 
       {error && (
         <div className="alert alert-danger" role="alert">
+          <strong>Error al consultar la central: </strong>
           {error}
         </div>
       )}
 
       {avisos.length > 0 && (
         <div className="alert alert-warning" role="alert">
-          Algunas consultas fallaron: {avisos.join(" | ")}
+          <strong>Información parcial.</strong>
+          <p className="mb-1">
+            Algunos indicadores podrían estar incompletos:
+          </p>
+          <ul className="mb-0">
+            {avisos.map((aviso, i) => (
+              <li key={i}>{aviso}</li>
+            ))}
+          </ul>
         </div>
       )}
 
       <Kpis
         grupo="centro-principal"
-        valores={cargando ? {} : resumen.centro}
+        valores={cargando || error ? {} : resumen.centro}
       />
 
       <section className="card-panel-dash p-4 mb-4">
         <div className="encabezado-panel-dash">
           <h2 className="section-title-dash">
-            <i className="bi bi-exclamation-triangle" />
-            {" "}Alertas recientes
+            <i className="bi bi-exclamation-triangle me-2" />
+            Alertas recientes
           </h2>
 
           <Link
@@ -200,28 +213,31 @@ function CentroOperaciones() {
             </thead>
 
             <tbody>
-              {cargando ? (
+              {cargando || error ? (
                 <tr>
-                  <td colSpan="7" className="estado-vacio-dash">
-                    Cargando alertas...
+                  <td colSpan={7} className="estado-vacio-dash">
+                    {cargando
+                      ? "Cargando alertas..."
+                      : "No fue posible cargar las alertas."}
                   </td>
                 </tr>
               ) : recientes.length === 0 ? (
                 <tr>
-                  <td colSpan="7" className="estado-vacio-dash">
+                  <td colSpan={7} className="estado-vacio-dash">
                     No hay alertas para mostrar.
                   </td>
                 </tr>
               ) : (
-                recientes.map((a) => (
-                  <tr key={idAlerta(a)}>
+                recientes.map((a, i) => (
+                  <tr key={idAlerta(a) ?? i}>
                     <td>#{idAlerta(a)}</td>
                     <td>{tipoAlerta(a)}</td>
                     <td>{prioridadAlerta(a) || "—"}</td>
                     <td>{ubicacionAlerta(a)}</td>
                     <td>{fechaLegible(fechaAlerta(a))}</td>
-                    <td>{estadoAlerta(a) || "—"}</td>
-
+                    <td>
+                      {estadoAlerta(a).replaceAll("_", " ") || "—"}
+                    </td>
                     <td>
                       <Link
                         to="/Central-Policia/Alertas"
@@ -243,13 +259,17 @@ function CentroOperaciones() {
           <section className="card-panel-dash p-4 h-100">
             <div className="encabezado-panel-dash">
               <h2 className="section-title-dash">
-                <i className="bi bi-broadcast" />
-                {" "}Atenciones activas
+                <i className="bi bi-broadcast me-2" />
+                Atenciones activas
               </h2>
             </div>
 
             {cargando ? (
               <p>Cargando...</p>
+            ) : error ? (
+              <p className="text-danger">
+                No fue posible cargar las atenciones.
+              </p>
             ) : atencionesActivas.length ? (
               <div className="table-responsive">
                 <table className="table tabla-dash">
@@ -260,47 +280,20 @@ function CentroOperaciones() {
                       <th>Estado</th>
                     </tr>
                   </thead>
-
                   <tbody>
-                    {atencionesActivas
-                      .slice(0, 5)
-                      .map((a, i) => (
-                        <tr
-                          key={
-                            campo(
-                              a,
-                              "idAtencion",
-                              "IdAtencion"
-                            ) ?? i
-                          }
-                        >
-                          <td>
-                            #
-                            {campo(
-                              a,
-                              "idAtencion",
-                              "IdAtencion"
-                            ) ?? "—"}
-                          </td>
-
-                          <td>
-                            #
-                            {campo(
-                              a,
-                              "idAlerta",
-                              "IdAlerta"
-                            ) ?? "—"}
-                          </td>
-
-                          <td>
-                            {campo(
-                              a,
-                              "estado",
-                              "Estado"
-                            ) || "Sin estado"}
-                          </td>
-                        </tr>
-                      ))}
+                    {atencionesActivas.slice(0, 5).map((a, i) => (
+                      <tr
+                        key={campo(a, "idAtencion", "IdAtencion") ?? i}
+                      >
+                        <td>
+                          #{campo(a, "idAtencion", "IdAtencion") ?? "—"}
+                        </td>
+                        <td>
+                          #{campo(a, "idAlerta", "IdAlerta") ?? "—"}
+                        </td>
+                        <td>EN ATENCIÓN</td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
@@ -316,17 +309,16 @@ function CentroOperaciones() {
           <section className="card-panel-dash p-4 h-100">
             <div className="encabezado-panel-dash">
               <h2 className="section-title-dash">
-                <i className="bi bi-car-front" />
-                {" "}Estado de unidades
+                <i className="bi bi-car-front me-2" />
+                Estado de unidades
               </h2>
             </div>
 
             <div className="mapa-fila-dash">
               <span className="dot dot-disponible-dash" />
               <span className="lbl-dash">Disponibles</span>
-
               <span className="num-dash">
-                {cargando
+                {cargando || error
                   ? "—"
                   : resumen.centro.unidadesDisponibles}
               </span>
@@ -337,9 +329,8 @@ function CentroOperaciones() {
               <span className="lbl-dash">
                 Ocupadas / en servicio
               </span>
-
               <span className="num-dash">
-                {cargando ? "—" : ocupadas}
+                {cargando || error ? "—" : ocupadas}
               </span>
             </div>
 
@@ -347,11 +338,8 @@ function CentroOperaciones() {
               <span className="lbl-dash">
                 Total registradas
               </span>
-
               <span className="num-dash">
-                {cargando
-                  ? "—"
-                  : datos.unidades.length}
+                {cargando || error ? "—" : datos.unidades.length}
               </span>
             </div>
 

@@ -6,17 +6,41 @@ import {
   coincideFecha,
 } from "./historialCentralService";
 
-export { construirCasos, fechaLegible, coincideFecha };
+// Mantener las exportaciones utilizadas
+// por Reportes.jsx.
+
+export {
+  construirCasos,
+  fechaLegible,
+  coincideFecha,
+};
+
+// ==================================================
+// CONSULTAR INFORMACIÓN
+// ==================================================
 
 export async function cargarCasosCentral(signal) {
   return consultarCasos(signal);
 }
 
-export function kpisReportes(casos) {
+// ==================================================
+// ESTADÍSTICAS DE REPORTES
+// ==================================================
+
+export function kpisReportes(casos = []) {
   return {
     total: casos.length,
-    resueltos: casos.filter((caso) => caso.resuelta).length,
-    pendientes: casos.filter((caso) => !caso.resuelta).length,
-    conInforme: casos.filter((caso) => caso.conInforme).length,
+
+    resueltos: casos.filter(
+      (caso) => caso.resuelta
+    ).length,
+
+    pendientes: casos.filter(
+      (caso) => caso.estado === "PENDIENTE"
+    ).length,
+
+    conInforme: casos.filter(
+      (caso) => caso.conInforme
+    ).length,
   };
 }

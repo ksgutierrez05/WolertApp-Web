@@ -7,14 +7,11 @@ import Kpis from "../../Components/Central-policia/Kpicard";
 import {
   cargarAtencionesCentral,
   obtenerCampo,
-  normalizar,
   formatearFecha,
   idDeAlerta,
-  idDeUnidad,
   idDeAtencion,
   estadoDe,
   estadoFinalizado,
-  nombreUnidad,
   tipoDeAlerta,
   ubicacionDeAlerta,
   resumenAtenciones,
@@ -22,14 +19,22 @@ import {
 
 import "../../css/Policia/central-policia/css/atencion-alertas.css";
 
-function AtencionAlertas() {
-  const [datos, setDatos] = useState({
-    atenciones: [],
-    alertas: [],
-    asignaciones: [],
-    unidades: [],
-  });
+const vacios = () => ({
+  atenciones: [],
+  alertas: [],
+  asignaciones: [],
+  unidades: [],
+  errores: [],
+});
 
+const mostrar = (valor) =>
+  valor == null || valor === "" ? "—" : String(valor);
+
+const etiqueta = (valor) =>
+  mostrar(valor).replaceAll("_", " ");
+
+function AtencionAlertas() {
+  const [datos, setDatos] = useState(vacios);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
   const [recarga, setRecarga] = useState(0);
@@ -42,15 +47,14 @@ function AtencionAlertas() {
 
     cargarAtencionesCentral(controller.signal)
       .then((resultado) => {
-        if (!controller.signal.aborted) {
-          setDatos(resultado);
-          setError("");
-        }
+        if (controller.signal.aborted) return;
+        setDatos(resultado);
+        setError("");
       })
       .catch((err) => {
-        if (!controller.signal.aborted) {
-          setError(err.message);
-        }
+        if (controller.signal.aborted) return;
+        setDatos(vacios());
+        setError(err.message || "Error al consultar atenciones.");
       })
       .finally(() => {
         if (!controller.signal.aborted) {
@@ -62,58 +66,20 @@ function AtencionAlertas() {
   }, [recarga]);
 
   const reportes = useMemo(() => {
+    const alertasPorId = new Map(
+      datos.alertas.map((a) => [String(idDeAlerta(a)), a])
+    );
+
     return datos.atenciones.map((atencion, indice) => {
-      const alerta = datos.alertas.find(
-        (a) =>
-          String(idDeAlerta(a)) ===
-          String(
-            obtenerCampo(
-              atencion,
-              "idAlerta",
-              "IdAlerta"
-            )
-          )
-      );
-
-      const asignacion = datos.asignaciones.find(
-        (a) =>
-          String(
-            obtenerCampo(
-              a,
-              "idAlerta",
-              "IdAlerta"
-            )
-          ) ===
-          String(
-            obtenerCampo(
-              atencion,
-              "idAlerta",
-              "IdAlerta"
-            )
-          )
-      );
-
-      const unidad = datos.unidades.find(
-        (u) =>
-          String(idDeUnidad(u)) ===
-          String(
-            obtenerCampo(
-              asignacion,
-              "idUnidad",
-              "IdUnidad"
-            )
-          )
-      );
+      const id = obtenerCampo(atencion, "idAlerta", "IdAlerta");
 
       return {
-        clave: `${idDeAtencion(atencion) ?? indice}`,
+        clave: String(idDeAtencion(atencion) ?? indice),
         atencion,
-        alerta,
-        asignacion,
-        unidad,
+        alerta: alertasPorId.get(String(id)) || null,
       };
     });
-  }, [datos]);
+  }, [datos.atenciones, datos.alertas]);
 
   const valores = useMemo(
     () => resumenAtenciones(datos.atenciones),
@@ -121,94 +87,77 @@ function AtencionAlertas() {
   );
 
   const filtrados = useMemo(() => {
-    return reportes.filter((reporte) => {
-      const estado = estadoDe(reporte.atencion);
+    const termino = busqueda.trim().toLowerCase();
 
-      const coincideFiltro =
+    return reportes.filter(({ atencion, alerta }) => {
+      const estado = estadoDe(atencion);
+
+      const coincide =
         filtro === "todas" ||
-        (filtro === "finalizadas" &&
-          estadoFinalizado(estado)) ||
-        (filtro === "porRevisar" &&
-          [
-            "PENDIENTE",
-            "POR REVISAR",
-            "REPORTADA",
-            "REPORTADO",
-          ].includes(estado)) ||
-        (filtro === "enRevision" &&
-          [
-            "EN REVISION",
-            "EN PROCESO",
-            "EN ATENCION",
-            "ACTIVA",
-            "ACTIVO",
-          ].includes(estado));
+        (filtro === "porRevisar" && !estado) ||
+        (filtro === "enRevision" && estado === "EN_PROCESO") ||
+        (filtro === "finalizadas" && estadoFinalizado(estado));
 
-      const textoBusqueda = [
-        idDeAtencion(reporte.atencion),
-        obtenerCampo(
-          reporte.atencion,
-          "idAlerta",
-          "IdAlerta"
-        ),
-        tipoDeAlerta(reporte.alerta),
-        ubicacionDeAlerta(reporte.alerta),
-        nombreUnidad(reporte.unidad),
+      const contenido = [
+        idDeAtencion(atencion),
+        obtenerCampo(atencion, "idAlerta", "IdAlerta"),
+        tipoDeAlerta(alerta),
+        ubicacionDeAlerta(alerta),
+        obtenerCampo(atencion, "unidadNombre", "UnidadNombre"),
         estado,
-      ]
-        .join(" ")
-        .toLowerCase();
+        obtenerCampo(atencion, "descripcion", "Descripcion"),
+      ].join(" ").toLowerCase();
 
-      return (
-        coincideFiltro &&
-        textoBusqueda.includes(busqueda.toLowerCase())
-      );
+      return coincide && contenido.includes(termino);
     });
   }, [reportes, filtro, busqueda]);
 
-  const seleccionado = reportes.find(
-    (r) => r.clave === seleccion
-  );
-
-  const fechaReporte = (a) =>
-    obtenerCampo(
-      a,
-      "fecha",
-      "Fecha",
-      "fechaAtencion",
-      "FechaAtencion",
-      "fechaCreacion",
-      "FechaCreacion"
-    );
+  const seleccionado =
+    reportes.find((r) => r.clave === seleccion) || null;
 
   function actualizar() {
     setCargando(true);
     setError("");
-    setRecarga((actual) => actual + 1);
+    setSeleccion(null);
+    setRecarga((n) => n + 1);
   }
+
+  const claseEstado = (estado) => {
+    if (estadoFinalizado(estado)) return "finalizada";
+    if (estado === "EN_PROCESO") return "en-revision";
+    return "por-revisar";
+  };
 
   return (
     <div className="atencion-page">
-      <Topbar placeholder="Buscar caso, unidad o zona..." />
+      <Topbar
+        placeholder="Buscar caso, unidad o zona..."
+        iniciales="CR"
+      />
 
       <main className="atencion-contenido">
         <header className="atencion-encabezado">
           <div>
+            <div className="atencion-eyebrow">
+              <i className="bi bi-shield-check" />
+              CENTRAL DE POLICÍA / OPERACIONES
+            </div>
+
             <h1>Atención de alertas</h1>
             <p>
-              Consulta los informes registrados por la Policía
-              y revisa el estado de cada atención.
+              Seguimiento de informes policiales y resultados
+              de las atenciones registradas.
             </p>
           </div>
 
           <button
             type="button"
             className="btn btn-outline-success btn-sm"
-            onClick={actualizar}
             disabled={cargando}
+            onClick={actualizar}
           >
             <i className="bi bi-arrow-clockwise me-2" />
-            Actualizar
+            {cargando ? "Actualizando..." : "Actualizar"}
           </button>
         </header>
 
@@ -219,71 +168,74 @@ function AtencionAlertas() {
           </div>
         )}
 
-        <Kpis
-          grupo="atencion-alertas"
-          valores={cargando || error ? {} : valores}
-        />
+        {datos.errores.length > 0 && !error && (
+          <div className="alert alert-warning" role="alert">
+            <strong>Información complementaria incompleta.</strong>
+            <ul className="mb-0 mt-2">
+              {datos.errores.map((mensaje, i) => (
+                <li key={i}>{mensaje}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        <div className="atencion-kpis">
+          <Kpis
+            grupo="atencion-alertas"
+            valores={cargando || error ? {} : valores}
+          />
+        </div>
 
         <section className="atencion-layout">
           <div className="atencion-panel atencion-listado">
             <div className="atencion-panel-header">
               <div>
                 <h2>Reportes policiales</h2>
-                <p>
-                  Selecciona un reporte para consultar
-                  su información.
-                </p>
+                <p>Selecciona un reporte para consultar sus detalles.</p>
               </div>
-
               <span className="atencion-total">
-                {cargando ? "..." : filtrados.length}
+                {cargando || error ? "—" : filtrados.length}
               </span>
             </div>
 
             <div className="atencion-filtros">
               <div className="atencion-tabs">
                 {[
-                  ["porRevisar", "Por revisar"],
-                  ["enRevision", "En revisión"],
-                  ["finalizadas", "Finalizadas"],
                   ["todas", "Todas"],
-                ].map(([valor, etiqueta]) => (
+                  ["enRevision", "En proceso"],
+                  ["finalizadas", "Finalizadas"],
+                  ["porRevisar", "Sin estado"],
+                ].map(([valor, nombre]) => (
                   <button
                     key={valor}
                     type="button"
-                    className={
-                      filtro === valor ? "activo" : ""
-                    }
+                    className={filtro === valor ? "activo" : ""}
+                    aria-pressed={filtro === valor}
                     onClick={() => setFiltro(valor)}
                   >
-                    {etiqueta}
+                    {nombre}
                   </button>
                 ))}
               </div>
 
               <div className="atencion-busqueda">
                 <i className="bi bi-search" />
-
                 <input
-                  type="text"
-                  placeholder="Buscar caso, unidad o zona..."
+                  type="search"
                   value={busqueda}
-                  onChange={(e) =>
-                    setBusqueda(e.target.value)
-                  }
-                  aria-label="Buscar reportes policiales"
+                  onChange={(e) => setBusqueda(e.target.value)}
+                  placeholder="Buscar caso, unidad o zona..."
+                  aria-label="Buscar atenciones"
                 />
               </div>
             </div>
 
             <div className="atencion-lista">
-              {cargando ? (
+              {cargando || error ? (
                 <div className="p-4 text-center text-muted">
-                  Cargando reportes...
-                </div>
-              ) : error ? (
-                <div className="p-4 text-center text-muted">
-                  No se pudo consultar la información.
+                  {cargando
+                    ? "Cargando reportes..."
+                    : "No fue posible consultar los reportes."}
                 </div>
               ) : filtrados.length === 0 ? (
                 <div className="p-4 text-center text-muted">
@@ -291,22 +243,18 @@ function AtencionAlertas() {
                   No hay reportes para mostrar.
                 </div>
               ) : (
-                filtrados.map((reporte) => {
-                  const estado = estadoDe(
-                    reporte.atencion
-                  );
+                filtrados.map(({ clave, atencion, alerta }) => {
+                  const estado = estadoDe(atencion);
 
                   return (
                     <button
-                      key={reporte.clave}
+                      key={clave}
                       type="button"
-                      className="atencion-item w-100 text-start"
-                      onClick={() =>
-                        setSeleccion(reporte.clave)
-                      }
-                      aria-pressed={
-                        seleccion === reporte.clave
-                      }
+                      className={`atencion-item w-100 text-start ${
+                        seleccion === clave ? "seleccionado" : ""
+                      }`}
+                      onClick={() => setSeleccion(clave)}
+                      aria-pressed={seleccion === clave}
                     >
                       <span className="atencion-item-icono">
                         <i className="bi bi-file-earmark-text" />
@@ -314,36 +262,37 @@ function AtencionAlertas() {
 
                       <span className="atencion-item-info">
                         <strong>
-                          #
-                          {obtenerCampo(
-                            reporte.atencion,
-                            "idAlerta",
-                            "IdAlerta"
-                          ) ?? "—"}
+                          Alerta #
+                          {mostrar(obtenerCampo(
+                            atencion, "idAlerta", "IdAlerta"
+                          ))}
                           {" · "}
-                          {tipoDeAlerta(reporte.alerta)}
+                          {tipoDeAlerta(alerta)}
                         </strong>
 
                         <small>
                           <i className="bi bi-geo-alt" />
-                          {" "}
-                          {ubicacionDeAlerta(
-                            reporte.alerta
-                          )}
+                          {ubicacionDeAlerta(alerta)}
                         </small>
 
                         <small>
                           <i className="bi bi-truck-front" />
-                          {" "}
-                          {reporte.unidad
-                            ? nombreUnidad(reporte.unidad)
-                            : "Unidad no disponible"}
+                          {mostrar(obtenerCampo(
+                            atencion, "unidadNombre", "UnidadNombre"
+                          ))}
+                        </small>
+
+                        <small>
+                          <i className="bi bi-calendar3" />
+                          {formatearFecha(obtenerCampo(
+                            atencion, "fechaAtencion", "FechaAtencion"
+                          ))}
                         </small>
                       </span>
 
                       <span className="atencion-item-derecha">
-                        <span className="atencion-estado">
-                          {estado || "Sin estado"}
+                        <span className={`atencion-estado ${claseEstado(estado)}`}>
+                          {etiqueta(estado || "SIN ESTADO")}
                         </span>
                         <i className="bi bi-chevron-right" />
                       </span>
@@ -356,14 +305,14 @@ function AtencionAlertas() {
 
           <div className="atencion-panel atencion-detalle">
             {!seleccionado ? (
-              <div className="text-center text-muted p-5">
-                <i className="bi bi-file-earmark-text fs-1 d-block mb-3" />
-                <h2 className="fs-5">
-                  Selecciona una atención
-                </h2>
+              <div className="atencion-vacio">
+                <div className="atencion-vacio-icono">
+                  <i className="bi bi-clipboard2-check" />
+                </div>
+                <h2>Selecciona una atención</h2>
                 <p>
-                  Aquí podrás consultar el informe policial
-                  y los datos del caso.
+                  Consulta el informe policial, la unidad
+                  responsable y el resultado registrado.
                 </p>
               </div>
             ) : (
@@ -372,159 +321,183 @@ function AtencionAlertas() {
                   <div>
                     <span className="atencion-detalle-etiqueta">
                       ALERTA #
-                      {obtenerCampo(
+                      {mostrar(obtenerCampo(
                         seleccionado.atencion,
                         "idAlerta",
                         "IdAlerta"
-                      ) ?? "—"}
+                      ))}
                     </span>
 
-                    <h2>
-                      {tipoDeAlerta(
-                        seleccionado.alerta
-                      )}
-                    </h2>
+                    <h2>{tipoDeAlerta(seleccionado.alerta)}</h2>
 
                     <p>
                       <i className="bi bi-geo-alt" />
-                      {" "}
-                      {ubicacionDeAlerta(
-                        seleccionado.alerta
-                      )}
+                      {ubicacionDeAlerta(seleccionado.alerta)}
                     </p>
                   </div>
 
-                  <span className="atencion-estado">
-                    {estadoDe(
-                      seleccionado.atencion
-                    ) || "Sin estado"}
+                  <span className={`atencion-estado ${claseEstado(
+                    estadoDe(seleccionado.atencion)
+                  )}`}>
+                    {etiqueta(
+                      estadoDe(seleccionado.atencion) || "SIN ESTADO"
+                    )}
                   </span>
                 </div>
 
                 <div className="atencion-unidad">
                   <div className="atencion-unidad-icono">
-                    <i className="bi bi-truck-front" />
+                    <i className="bi bi-shield-check" />
                   </div>
 
                   <div>
-                    <small>Unidad responsable</small>
+                    <small>Unidad policial</small>
                     <strong>
-                      {seleccionado.unidad
-                        ? nombreUnidad(
-                            seleccionado.unidad
-                          )
-                        : "No disponible"}
+                      {mostrar(obtenerCampo(
+                        seleccionado.atencion,
+                        "unidadNombre",
+                        "UnidadNombre"
+                      ))}
                     </strong>
                   </div>
 
                   <div className="atencion-unidad-hora">
-                    <small>Reporte registrado</small>
+                    <small>Fecha de atención</small>
                     <strong>
-                      {formatearFecha(
-                        fechaReporte(
-                          seleccionado.atencion
-                        )
-                      )}
+                      {formatearFecha(obtenerCampo(
+                        seleccionado.atencion,
+                        "fechaAtencion",
+                        "FechaAtencion"
+                      ))}
                     </strong>
                   </div>
                 </div>
 
                 <section className="atencion-seccion">
                   <h3>
-                    <i className="bi bi-file-earmark-text" />
-                    {" "}Información de la alerta
+                    <i className="bi bi-info-circle" />
+                    Información del caso
                   </h3>
 
-                  <p>
-                    {obtenerCampo(
-                      seleccionado.alerta,
-                      "descripcion",
-                      "Descripcion",
-                      "detalle",
-                      "Detalle"
-                    ) || "No hay descripción disponible."}
-                  </p>
+                  <div className="atencion-datos-grid">
+                    <div>
+                      <span>Atención</span>
+                      <strong>#{idDeAtencion(seleccionado.atencion)}</strong>
+                    </div>
+                    <div>
+                      <span>Asignación</span>
+                      <strong>
+                        {mostrar(obtenerCampo(
+                          seleccionado.atencion,
+                          "idAsignacion",
+                          "IdAsignacion"
+                        ))}
+                      </strong>
+                    </div>
+                    <div>
+                      <span>Estado de alerta</span>
+                      <strong>
+                        {etiqueta(obtenerCampo(
+                          seleccionado.alerta,
+                          "estado",
+                          "Estado"
+                        ))}
+                      </strong>
+                    </div>
+                    <div>
+                      <span>Estado de atención</span>
+                      <strong>
+                        {etiqueta(estadoDe(seleccionado.atencion))}
+                      </strong>
+                    </div>
+                  </div>
                 </section>
 
                 <section className="atencion-seccion">
                   <h3>
-                    <i className="bi bi-broadcast" />
-                    {" "}Informe enviado por la Policía
+                    <i className="bi bi-file-earmark-text" />
+                    Informe de atención
                   </h3>
 
                   <div className="atencion-reporte-campo">
-                    <span>Descripción del resultado</span>
+                    <span>Descripción</span>
                     <p>
-                      {obtenerCampo(
+                      {mostrar(obtenerCampo(
                         seleccionado.atencion,
                         "descripcion",
-                        "Descripcion",
-                        "descripcionResultado",
-                        "DescripcionResultado"
-                      ) || "No registrada"}
-                    </p>
-                  </div>
-
-                  <div className="atencion-reporte-campo">
-                    <span>Acciones realizadas</span>
-                    <p>
-                      {obtenerCampo(
-                        seleccionado.atencion,
-                        "accionesRealizadas",
-                        "AccionesRealizadas",
-                        "acciones",
-                        "Acciones"
-                      ) || "No registradas"}
-                    </p>
-                  </div>
-
-                  <div className="atencion-reporte-campo">
-                    <span>Resultado informado</span>
-                    <p>
-                      {obtenerCampo(
-                        seleccionado.atencion,
-                        "resultado",
-                        "Resultado"
-                      ) || "No registrado"}
+                        "Descripcion"
+                      ))}
                     </p>
                   </div>
 
                   <div className="atencion-reporte-campo">
                     <span>Observaciones</span>
                     <p>
-                      {obtenerCampo(
+                      {mostrar(obtenerCampo(
                         seleccionado.atencion,
-                        "observaciones",
-                        "Observaciones"
-                      ) || "Sin observaciones"}
+                        "observacion",
+                        "Observacion"
+                      ))}
+                    </p>
+                  </div>
+
+                  <div className="atencion-reporte-campo">
+                    <span>Tipo de arma</span>
+                    <p>
+                      {mostrar(obtenerCampo(
+                        seleccionado.atencion,
+                        "tipoArmaNombre",
+                        "TipoArmaNombre"
+                      ))}
+                    </p>
+                  </div>
+
+                  <div className="atencion-reporte-campo">
+                    <span>Medio de transporte</span>
+                    <p>
+                      {mostrar(obtenerCampo(
+                        seleccionado.atencion,
+                        "medioTransporteNombre",
+                        "MedioTransporteNombre"
+                      ))}
                     </p>
                   </div>
                 </section>
 
                 <section className="atencion-seccion atencion-seccion-central">
                   <h3>
-                    <i className="bi bi-info-circle" />
-                    {" "}Estado de revisión
+                    <i className="bi bi-person-badge" />
+                    Registro de la atención
                   </h3>
 
-                  <p className="mb-0">
-                    Estado registrado en el sistema:
-                    <strong>
-                      {" "}
-                      {normalizar(
-                        estadoDe(
-                          seleccionado.atencion
-                        )
-                      ) || "No disponible"}
-                    </strong>
-                  </p>
+                  <div className="atencion-datos-grid">
+                    <div>
+                      <span>Policía</span>
+                      <strong>
+                        {mostrar(obtenerCampo(
+                          seleccionado.atencion,
+                          "idPolicia",
+                          "IdPolicia"
+                        ))}
+                      </strong>
+                    </div>
+
+                    <div>
+                      <span>Usuario que registra</span>
+                      <strong>
+                        {mostrar(obtenerCampo(
+                          seleccionado.atencion,
+                          "usuarioRegistra",
+                          "UsuarioRegistra"
+                        ))}
+                      </strong>
+                    </div>
+                  </div>
 
                   <div className="atencion-ayuda">
                     <i className="bi bi-info-circle" />
-                    {" "}
-                    Las acciones de revisión y cierre se
-                    habilitarán cuando confirmemos sus
-                    endpoints y permisos en el backend.
+                    El estado de esta atención es independiente
+                    del cierre general de la alerta.
                   </div>
                 </section>
               </>

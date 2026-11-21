@@ -341,3 +341,267 @@
   font-size: 11.5px;
   color: var(--muted);
 }
+
+/* =====================================================
+   WOLERTAPP - CENTRAL DE POLICÍA
+   TABLAS MODERNAS Y COLORES INSTITUCIONALES
+   ===================================================== */
+
+body.rol-policia {
+  --central-verde: #004d40;
+  --central-verde-hover: #006453;
+  --central-verde-suave: #e8f3ef;
+  --central-borde: #e5eae9;
+  --central-texto: #243b36;
+  --central-secundario: #71817c;
+}
+
+/* CONTENEDORES */
+
+body.rol-policia .card-panel-dash {
+  background: #ffffff;
+  border: 1px solid var(--central-borde);
+  border-radius: 18px;
+  box-shadow: 0 4px 20px rgba(20, 55, 45, 0.035);
+}
+
+/* TABLAS */
+
+body.rol-policia .tabla-dash {
+  width: 100%;
+  table-layout: auto;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 0;
+}
+
+body.rol-policia .tabla-dash thead th {
+  background: #f3f7f5;
+  color: #62766f;
+  padding: 15px 14px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+  border-top: 1px solid var(--central-borde);
+  border-bottom: 1px solid var(--central-borde);
+  white-space: nowrap;
+}
+
+body.rol-policia .tabla-dash thead th:first-child {
+  border-top-left-radius: 12px;
+}
+
+body.rol-policia .tabla-dash thead th:last-child {
+  border-top-right-radius: 12px;
+}
+
+body.rol-policia .tabla-dash tbody td {
+  padding: 17px 14px;
+  background: #fff;
+  color: var(--central-texto);
+  font-size: 12.5px;
+  font-weight: 500;
+  line-height: 1.5;
+  border-bottom: 1px solid #edf0ef;
+  vertical-align: middle;
+  overflow: visible;
+}
+
+body.rol-policia .tabla-dash tbody tr:hover td {
+  background: #f5faf8;
+}
+
+body.rol-policia .tabla-dash tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+body.rol-policia .tabla-dash tbody td:first-child {
+  color: var(--central-verde);
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+/* FECHAS: SIN SALTOS DE LÍNEA */
+
+body.rol-policia .tabla-dash th:nth-child(5),
+body.rol-policia .tabla-dash td:nth-child(5) {
+  min-width: 155px;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  color: var(--central-secundario);
+}
+
+/* ESTADOS Y PRIORIDADES - TONOS SUAVES */
+
+body.rol-policia .tabla-dash .badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 11px;
+  border-radius: 7px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.025em;
+  white-space: nowrap;
+  box-shadow: none;
+}
+
+/* Prioridad alta */
+body.rol-policia .tabla-dash .badge.bg-danger {
+  background: #f8e9e8 !important;
+  color: #9c4844 !important;
+}
+
+/* Pendiente y prioridad media */
+body.rol-policia .tabla-dash .badge.bg-warning {
+  background: #faf1dc !important;
+  color: #8b6a2e !important;
+}
+
+/* Resuelta */
+body.rol-policia .tabla-dash .badge.bg-success {
+  background: #e3f1e9 !important;
+  color: #286b4d !important;
+}
+
+/* Asignada / en atención */
+body.rol-policia .tabla-dash .badge.bg-primary {
+  background: #e8eef2 !important;
+  color: #47687a !important;
+}
+
+/* Prioridad baja */
+body.rol-policia .tabla-dash .badge.bg-secondary {
+  background: #eef1f0 !important;
+  color: #687a74 !important;
+}
+
+/* BOTONES VER, DETALLES Y ACTUALIZAR */
+
+body.rol-policia .btn-outline-success {
+  background: #ffffff;
+  color: var(--central-verde);
+  border: 1px solid var(--central-verde);
+  border-radius: 9px;
+  padding: 9px 15px;
+  font-size: 12px;
+  font-weight: 650;
+  box-shadow: none;
+  transition: all 0.18s ease;
+}
+
+body.rol-policia .btn-outline-success:hover,
+body.rol-policia .btn-outline-success:focus-visible {
+  background: var(--central-verde);
+  color: #ffffff;
+  border-color: var(--central-verde);
+  box-shadow: 0 3px 9px rgba(0, 77, 64, 0.12);
+}
+
+body.rol-policia .btn-success {
+  background: var(--central-verde);
+  border-color: var(--central-verde);
+  color: #fff;
+  border-radius: 9px;
+  font-weight: 650;
+}
+
+body.rol-policia .btn-success:hover {
+  background: var(--central-verde-hover);
+  border-color: var(--central-verde-hover);
+}
+
+/* BOTONES DE FILTRO */
+
+body.rol-policia .btn-outline-secondary {
+  background: #ffffff;
+  color: var(--central-verde);
+  border: 1px solid #d4e3dd;
+  border-radius: 9px;
+  font-size: 12px;
+  font-weight: 650;
+  padding: 9px 16px;
+}
+
+body.rol-policia .btn-outline-secondary:hover {
+  background: var(--central-verde-suave);
+  border-color: var(--central-verde);
+  color: var(--central-verde);
+}
+
+/* FILTRO ACTIVO */
+
+body.rol-policia .btn-success {
+  box-shadow: none;
+}
+
+/* BUSCADOR */
+
+body.rol-policia .card-panel-dash .form-control {
+  min-height: 43px;
+  border: 1px solid #dce5e1;
+  border-radius: 10px;
+  background: #fbfcfc;
+  color: var(--central-texto);
+  font-size: 13px;
+}
+
+body.rol-policia .card-panel-dash .form-control:focus {
+  background: #fff;
+  border-color: var(--central-verde);
+  box-shadow: 0 0 0 3px rgba(0, 77, 64, 0.08);
+}
+
+/* ENCABEZADOS */
+
+body.rol-policia .section-title-dash {
+  color: #203d35;
+  font-size: 15px;
+  font-weight: 750;
+}
+
+body.rol-policia .section-title-dash > i {
+  color: var(--central-verde);
+  background: var(--central-verde-suave);
+}
+
+/* ENLACES */
+
+body.rol-policia .see-all-dash {
+  color: var(--central-verde);
+  font-weight: 700;
+}
+
+body.rol-policia .see-all-dash:hover {
+  color: var(--central-verde-hover);
+}
+
+/* MODAL DE DETALLES */
+
+body.rol-policia .modal-content {
+  border-radius: 16px;
+  border: 1px solid var(--central-borde);
+}
+
+body.rol-policia .modal-header,
+body.rol-policia .modal-footer {
+  border-color: var(--central-borde);
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 991px) {
+  body.rol-policia .table-responsive {
+    overflow-x: auto;
+  }
+
+  body.rol-policia .tabla-dash {
+    min-width: 850px;
+  }
+
+  body.rol-policia .tabla-dash thead th,
+  body.rol-policia .tabla-dash tbody td {
+    padding: 13px 11px;
+  }
+}

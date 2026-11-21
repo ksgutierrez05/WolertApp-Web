@@ -1,134 +1,99 @@
 
-const CLAVES_USUARIO = [
-  "usuario",
-  "user",
-  "usuarioActual",
-  "currentUser",
-];
+import { consultarCentral } from "./centralPoliciaApi";
 
 const VACIO = "No disponible";
 
-function obtenerCampo(objeto, ...nombres) {
-  for (const nombre of nombres) {
-    const valor = objeto?.[nombre];
+const valor = (dato) =>
+  dato == null || String(dato).trim() === ""
+    ? VACIO
+    : String(dato).trim();
 
-    if (
-      valor !== undefined &&
-      valor !== null &&
-      String(valor).trim() !== ""
-    ) {
-      return valor;
-    }
-  }
-
-  return VACIO;
-}
-
-function leerUsuario(almacenamiento) {
-  for (const clave of CLAVES_USUARIO) {
-    const contenido = almacenamiento.getItem(clave);
-
-    if (!contenido) continue;
-
-    try {
-      const datos = JSON.parse(contenido);
-
-      if (datos && typeof datos === "object") {
-        return datos.usuario && typeof datos.usuario === "object"
-          ? datos.usuario
-          : datos;
+function usuarioSesion() {
+  for (const storage of [sessionStorage, localStorage]) {
+    for (const clave of [
+      "usuario",
+      "user",
+      "usuarioActual",
+      "currentUser",
+    ]) {
+      try {
+        const dato = JSON.parse(storage.getItem(clave));
+        if (dato && typeof dato === "object") {
+          return dato.usuario || dato;
+        }
+      } catch {
+        // Ignorar claves que no contienen JSON.
       }
-    } catch {
-      // Continúa buscando en las demás claves.
     }
   }
-
-  return null;
+  return {};
 }
 
-export function obtenerPerfilCentral() {
-  const datos =
-    leerUsuario(sessionStorage) ||
-    leerUsuario(localStorage);
+function idDesdeToken() {
+  const token = localStorage.getItem("token");
+  if (!token) return null;
+
+  try {
+    const payload = token.split(".")[1];
+    const base64 = payload.replace(/-/g, "+").replace(/_/g, "/");
+    const datos = JSON.parse(
+      atob(base64.padEnd(Math.ceil(base64.length / 4) * 4, "="))
+    );
+
+    return (
+      datos.nameid ||
+      datos[
+        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+      ] ||
+      datos.sub ||
+      null
+    );
+  } catch {
+    return null;
+  }
+}
+
+export async function obtenerPerfilCentral(signal) {
+  const sesion = usuarioSesion();
+
+  const id =
+    sesion.idUsuario ??
+    sesion.IdUsuario ??
+    sesion.id ??
+    idDesdeToken();
+
+  if (!id || !/^\d+$/.test(String(id))) {
+    throw new Error(
+      "No se encontró el identificador del usuario autenticado."
+    );
+  }
+
+  const usuario = await consultarCentral(
+    `/api/Usuarios/${id}`,
+    { signal }
+  );
+
+  const nombres = [
+    usuario.primerNombre ?? usuario.PrimerNombre,
+    usuario.segundoNombre ?? usuario.SegundoNombre,
+  ].filter(Boolean).join(" ");
+
+  const apellidos = [
+    usuario.primerApellido ?? usuario.PrimerApellido,
+    usuario.segundoApellido ?? usuario.SegundoApellido,
+  ].filter(Boolean).join(" ");
 
   return {
-    disponible: Boolean(datos),
-
-    nombres: obtenerCampo(
-      datos,
-      "nombres",
-      "Nombres",
-      "nombre",
-      "Nombre",
-      "nombreCompleto",
-      "NombreCompleto",
-      "name"
-    ),
-
-    apellidos: obtenerCampo(
-      datos,
-      "apellidos",
-      "Apellidos",
-      "apellido",
-      "Apellido"
-    ),
-
-    identificacion: obtenerCampo(
-      datos,
-      "identificacion",
-      "Identificacion",
-      "cedula",
-      "Cedula",
-      "numeroDocumento",
-      "NumeroDocumento"
-    ),
-
-    correo: obtenerCampo(
-      datos,
-      "correo",
-      "Correo",
-      "email",
-      "Email"
-    ),
-
-    telefono: obtenerCampo(
-      datos,
-      "telefono",
-      "Telefono",
-      "celular",
-      "Celular"
-    ),
-
-    rango: obtenerCampo(
-      datos,
-      "rango",
-      "Rango",
-      "grado",
-      "Grado"
-    ),
-
-    dependencia: obtenerCampo(
-      datos,
-      "dependencia",
-      "Dependencia",
-      "estacion",
-      "Estacion"
-    ),
-
-    usuario: obtenerCampo(
-      datos,
-      "nombreUsuario",
-      "NombreUsuario",
-      "username",
-      "Username"
-    ),
-
-    rol: obtenerCampo(
-      datos,
-      "nombreRol",
-      "NombreRol",
-      "rol",
-      "Rol"
-    ),
+    disponible: true,
+    idUsuario: id,
+    nombres: valor(nombres),
+    apellidos: valor(apellidos),
+    identificacion: valor(usuario.cedula ?? usuario.Cedula),
+    correo: valor(usuario.correo ?? usuario.Correo),
+    telefono: valor(usuario.telefono ?? usuario.Telefono),
+    usuario: valor(usuario.username ?? usuario.Username),
+    rol: valor(usuario.rolNombre ?? usuario.RolNombre),
+    estado: valor(usuario.estado ?? usuario.Estado),
+    barrio: valor(usuario.barrioNombre ?? usuario.BarrioNombre),
   };
 }

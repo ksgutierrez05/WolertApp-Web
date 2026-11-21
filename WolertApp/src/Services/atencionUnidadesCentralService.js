@@ -2,23 +2,19 @@
 import { consultarCentral } from "./centralPoliciaApi";
 
 export const obtenerCampo = (obj, ...nombres) =>
-  nombres.reduce(
-    (valor, nombre) => valor ?? obj?.[nombre],
-    null
-  );
+  nombres.reduce((v, nombre) => v ?? obj?.[nombre], null);
 
 export const normalizar = (valor) =>
   String(valor ?? "")
     .trim()
     .toUpperCase()
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "");
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[\s-]+/g, "_");
 
 export const formatearFecha = (valor) => {
   if (!valor) return "—";
-
   const fecha = new Date(valor);
-
   return Number.isNaN(fecha.getTime())
     ? "—"
     : fecha.toLocaleString("es-CO");
@@ -26,48 +22,66 @@ export const formatearFecha = (valor) => {
 
 const consultarLista = async (ruta, signal) => {
   const resultado = await consultarCentral(ruta, { signal });
-
   if (!Array.isArray(resultado)) {
-    throw new Error(
-      `${ruta}: la API no devolvió una lista válida.`
-    );
+    throw new Error(`${ruta}: respuesta inválida.`);
   }
-
   return resultado;
 };
 
 export async function cargarAtencionesCentral(signal) {
-  const [atenciones, alertas, asignaciones, unidades] =
-    await Promise.all([
-      consultarLista("/api/AtencionesAlerta", signal),
-      consultarLista("/api/Alertas?alcance=todas", signal),
-      consultarLista("/api/Asignaciones", signal),
-      consultarLista("/api/Unidades", signal),
-    ]);
+  // Las atenciones son la consulta indispensable.
+  const atenciones = await consultarLista(
+    "/api/AtencionesAlerta",
+    signal
+  );
 
-  return {
-    atenciones,
-    alertas,
-    asignaciones,
-    unidades,
-  };
+  // El fallo de una consulta complementaria no oculta
+  // los informes policiales ya obtenidos.
+  const consultas = [
+    ["alertas", "/api/Alertas?alcance=todas"],
+    ["asignaciones", "/api/Asignaciones"],
+    ["unidades", "/api/Unidades"],
+  ];
+
+  const resultados = await Promise.allSettled(
+    consultas.map(([, ruta]) => consultarLista(ruta, signal))
+  );
+
+  if (signal?.aborted) {
+    throw new DOMException("Consulta cancelada", "AbortError");
+  }
+
+  const datos = { atenciones, alertas: [], asignaciones: [], unidades: [] };
+  const errores = [];
+
+  resultados.forEach((resultado, i) => {
+    const [nombre, ruta] = consultas[i];
+    if (resultado.status === "fulfilled") {
+      datos[nombre] = resultado.value;
+    } else {
+      errores.push(
+        `${ruta}: ${resultado.reason?.message || "Error de consulta"}`
+      );
+    }
+  });
+
+  return { ...datos, errores };
 }
 
 export async function cargarUnidadesCentral(signal) {
-  const [unidades, policias, asignaciones, alertas] =
-    await Promise.all([
-      consultarLista("/api/Unidades", signal),
-      consultarLista("/api/Policias", signal),
-      consultarLista("/api/Asignaciones", signal),
-      consultarLista("/api/Alertas?alcance=todas", signal),
-    ]);
+  const rutas = [
+    "/api/Unidades",
+    "/api/Policias",
+    "/api/Asignaciones",
+    "/api/Alertas?alcance=todas",
+  ];
 
-  return {
-    unidades,
-    policias,
-    asignaciones,
-    alertas,
-  };
+  const [unidades, policias, asignaciones, alertas] =
+    await Promise.all(
+      rutas.map((ruta) => consultarLista(ruta, signal))
+    );
+
+  return { unidades, policias, asignaciones, alertas };
 }
 
 export const idDeAlerta = (a) =>
@@ -77,43 +91,43 @@ export const idDeUnidad = (u) =>
   obtenerCampo(u, "idUnidad", "IdUnidad");
 
 export const idDeAtencion = (a) =>
-  obtenerCampo(
-    a,
-    "idAtencion",
-    "IdAtencion",
-    "idAtencionAlerta",
-    "IdAtencionAlerta"
-  );
+  obtenerCampo(a, "idAtencion", "IdAtencion");
 
 export const idDeAsignacion = (a) =>
   obtenerCampo(a, "idAsignacion", "IdAsignacion");
 
 export const estadoDe = (obj) =>
-  normalizar(obtenerCampo(obj, "estado", "Estado"));
+  normalizar(
+    obtenerCampo(
+      obj,
+      "estadoFinal",
+      "EstadoFinal",
+      "estadoAsignacion",
+      "EstadoAsignacion",
+      "estado",
+      "Estado"
+    )
+  );
 
 export const estadoFinalizado = (estado) =>
   [
     "FINALIZADA",
     "FINALIZADO",
-    "CERRADA",
-    "CERRADO",
-    "COMPLETADA",
-    "COMPLETADO",
     "RESUELTA",
-    "RESUELTO",
+    "CANCELADA",
+    "CERRADA",
+    "COMPLETADA",
   ].includes(normalizar(estado));
 
 export const nombreUnidad = (u) =>
   obtenerCampo(
     u,
+    "unidadNombre",
+    "UnidadNombre",
     "nombreUnidad",
     "NombreUnidad",
     "nombre",
-    "Nombre",
-    "codigoUnidad",
-    "CodigoUnidad",
-    "placa",
-    "Placa"
+    "Nombre"
   ) || `Unidad #${idDeUnidad(u) ?? "—"}`;
 
 export const nombrePolicia = (p) => {
@@ -124,21 +138,11 @@ export const nombrePolicia = (p) => {
     obtenerCampo(p, "segundoNombre", "SegundoNombre"),
     obtenerCampo(p, "primerApellido", "PrimerApellido"),
     obtenerCampo(p, "segundoApellido", "SegundoApellido"),
-  ]
-    .filter(Boolean)
-    .join(" ");
+  ].filter(Boolean).join(" ");
 
-  return (
-    nombre ||
-    obtenerCampo(
-      p,
-      "nombreCompleto",
-      "NombreCompleto",
-      "nombre",
-      "Nombre"
-    ) ||
-    "No disponible"
-  );
+  return nombre ||
+    obtenerCampo(p, "nombreCompleto", "NombreCompleto", "nombre", "Nombre") ||
+    "No disponible";
 };
 
 export const tipoDeAlerta = (a) =>
@@ -165,60 +169,36 @@ export const ubicacionDeAlerta = (a) =>
     "Ubicacion"
   ) || "No disponible";
 
-export function resumenAtenciones(atenciones) {
-  const porRevisar = [
-    "PENDIENTE",
-    "POR REVISAR",
-    "REPORTADA",
-    "REPORTADO",
-  ];
-
-  const enRevision = [
-    "EN REVISION",
-    "EN PROCESO",
-    "EN ATENCION",
-    "ACTIVA",
-    "ACTIVO",
-  ];
-
+export function resumenAtenciones(atenciones = []) {
   return {
-    porRevisar: atenciones.filter((a) =>
-      porRevisar.includes(estadoDe(a))
+    porRevisar: atenciones.filter(
+      (a) => !estadoDe(a)
     ).length,
 
-    enRevision: atenciones.filter((a) =>
-      enRevision.includes(estadoDe(a))
+    enRevision: atenciones.filter(
+      (a) => estadoDe(a) === "EN_PROCESO"
     ).length,
 
-    finalizadas: atenciones.filter((a) =>
-      estadoFinalizado(estadoDe(a))
+    finalizadas: atenciones.filter(
+      (a) => estadoFinalizado(estadoDe(a))
     ).length,
   };
 }
 
-export function resumenUnidades(unidades) {
+export function resumenUnidades(unidades = []) {
   return {
     total: unidades.length,
-
-    disponibles: unidades.filter((u) =>
-      ["DISPONIBLE", "LIBRE"].includes(estadoDe(u))
+    disponibles: unidades.filter(
+      (u) =>
+        ["OPERATIVA", "DISPONIBLE", "LIBRE"].includes(estadoDe(u))
     ).length,
-
-    enServicio: unidades.filter((u) =>
-      [
-        "EN SERVICIO",
-        "EN CAMINO",
-        "EN SITIO",
-        "EN EL SITIO",
-      ].includes(estadoDe(u))
+    enServicio: unidades.filter(
+      (u) =>
+        ["ACTIVA", "EN_SERVICIO", "EN_CAMINO"].includes(estadoDe(u))
     ).length,
-
-    ocupadas: unidades.filter((u) =>
-      [
-        "OCUPADA",
-        "OCUPADO",
-        "EN ATENCION",
-      ].includes(estadoDe(u))
+    ocupadas: unidades.filter(
+      (u) =>
+        ["ACTIVA", "OCUPADA", "EN_ATENCION"].includes(estadoDe(u))
     ).length,
   };
 }

@@ -33,16 +33,25 @@ function Reportes() {
   useEffect(() => {
     const controller = new AbortController();
 
+    setCargando(true);
+    setError("");
+
     cargarCasosCentral(controller.signal)
       .then((respuesta) => {
         if (controller.signal.aborted) return;
+
         setDatos(respuesta);
         setError("");
       })
       .catch((err) => {
-        if (!controller.signal.aborted) {
-          setError(err.message);
-        }
+        if (controller.signal.aborted) return;
+
+        setDatos(null);
+        setSeleccion(null);
+        setError(
+          err?.message ||
+          "No se pudieron consultar los reportes."
+        );
       })
       .finally(() => {
         if (!controller.signal.aborted) {
@@ -58,27 +67,45 @@ function Reportes() {
     [datos]
   );
 
-  const opciones = (campo) =>
-    [...new Set(casos.map((c) => c[campo]).filter(Boolean))]
-      .sort();
+  const opciones = (nombreCampo) =>
+    [
+      ...new Set(
+        casos
+          .map((caso) => caso[nombreCampo])
+          .filter(Boolean)
+      ),
+    ].sort();
 
   const filtrados = useMemo(() => {
-    return casos.filter((caso) =>
-      (tipo === "todos" || caso.tipo === tipo) &&
-      (prioridad === "todas" || caso.prioridad === prioridad) &&
-      (estado === "todos" || caso.estado === estado) &&
-      (resultado === "todos" || caso.resultado === resultado) &&
-      (unidad === "todas" || caso.unidadNombre === unidad) &&
-      (zona === "todas" || caso.zona === zona) &&
-      coincideFecha(caso.fecha, desde, hasta)
+    return casos.filter(
+      (caso) =>
+        (tipo === "todos" || caso.tipo === tipo) &&
+        (prioridad === "todas" ||
+          caso.prioridad === prioridad) &&
+        (estado === "todos" || caso.estado === estado) &&
+        (resultado === "todos" ||
+          caso.resultado === resultado) &&
+        (unidad === "todas" ||
+          caso.unidadNombre === unidad) &&
+        (zona === "todas" || caso.zona === zona) &&
+        coincideFecha(caso.fecha, desde, hasta)
     );
   }, [
-    casos, tipo, prioridad, estado, resultado,
-    unidad, zona, desde, hasta,
+    casos,
+    tipo,
+    prioridad,
+    estado,
+    resultado,
+    unidad,
+    zona,
+    desde,
+    hasta,
   ]);
 
-  const seleccionado = casos.find(
-    (caso) => caso.clave === seleccion
+  const seleccionado = useMemo(
+    () =>
+      casos.find((caso) => caso.clave === seleccion) || null,
+    [casos, seleccion]
   );
 
   function limpiar() {
@@ -95,15 +122,25 @@ function Reportes() {
   function actualizar() {
     setCargando(true);
     setError("");
+    setSeleccion(null);
     setRecarga((n) => n + 1);
   }
 
   function exportarCSV() {
-    if (filtrados.length === 0) return;
+    if (filtrados.length === 0 || cargando || error) {
+      return;
+    }
 
     const encabezados = [
-      "Caso", "Fecha", "Tipo", "Prioridad", "Zona",
-      "Unidad", "Estado", "Resultado", "Descripción",
+      "Caso",
+      "Fecha",
+      "Tipo",
+      "Prioridad",
+      "Zona",
+      "Unidad",
+      "Estado",
+      "Resultado",
+      "Descripción",
       "Observaciones",
     ];
 
@@ -120,21 +157,24 @@ function Reportes() {
       caso.observaciones,
     ]);
 
-    const escaparCSV = (valor) => {
+    function escaparCSV(valor) {
       let texto = String(valor ?? "");
 
-      // Evita que Excel interprete texto como fórmulas.
-      if (/^[\s]*[=+\-@\t\r]/.test(texto)) {
+      // Evita que Excel interprete valores
+      // procedentes de la API como fórmulas.
+      if (/^\s*[=+\-@\t\r]/.test(texto)) {
         texto = `'${texto}`;
       }
 
       return `"${texto.replace(/"/g, '""')}"`;
-    };
+    }
 
     const contenido = [
       encabezados,
       ...filas,
-    ].map((fila) => fila.map(escaparCSV).join(";")).join("\r\n");
+    ]
+      .map((fila) => fila.map(escaparCSV).join(";"))
+      .join("\r\n");
 
     const archivo = new Blob(
       ["\uFEFF", contenido],
@@ -146,11 +186,12 @@ function Reportes() {
 
     enlace.href = url;
     enlace.download = "informes-central-policia.csv";
+
     document.body.appendChild(enlace);
     enlace.click();
     enlace.remove();
 
-    URL.revokeObjectURL(url);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 
   const filtros = [
@@ -191,7 +232,7 @@ function Reportes() {
       opciones: opciones("resultado"),
     },
     {
-      id: "filtroPatrullero",
+      id: "filtroUnidad",
       label: "Unidad",
       value: unidad,
       setter: setUnidad,
@@ -210,18 +251,26 @@ function Reportes() {
     },
   ];
 
+  const puedeImprimir =
+    Boolean(seleccionado) && !cargando && !error;
+
   return (
     <>
-      <Topbar placeholder="Buscar caso, patrullero o zona..." />
+      <Topbar placeholder="Buscar caso, unidad o zona..." />
 
       <main className="main-dash reportes-page">
         <div className="container-fluid">
           <header className="reportes-header">
-            <h1 className="reportes-titulo">Reportes</h1>
-            <p>
-              Consulta, analiza y genera informes de los casos
-              gestionados por Central.
-            </p>
+            <div>
+              <h1 className="reportes-titulo">
+                Reportes
+              </h1>
+
+              <p>
+                Consulta, analiza y genera informes
+                de los casos gestionados por Central Policía.
+              </p>
+            </div>
 
             <button
               type="button"
@@ -229,27 +278,34 @@ function Reportes() {
               onClick={actualizar}
               disabled={cargando}
             >
-              <i className="bi bi-arrow-clockwise me-1" />
-              Actualizar
+              <i className="bi bi-arrow-clockwise me-2" />
+              {cargando ? "Actualizando..." : "Actualizar"}
             </button>
           </header>
 
           {error && (
-            <div className="alert alert-danger">
+            <div className="alert alert-danger" role="alert">
+              <i className="bi bi-exclamation-triangle me-2" />
               No se pudieron cargar los reportes: {error}
             </div>
           )}
 
           {datos?.errores?.length > 0 && (
-            <div className="alert alert-warning">
-              Información complementaria incompleta:
-              {" "}{datos.errores.join(" | ")}
+            <div className="alert alert-warning" role="alert">
+              <strong>
+                Información complementaria incompleta:
+              </strong>{" "}
+              {datos.errores.join(" | ")}
             </div>
           )}
 
           <Kpis
             grupo="reportes"
-            valores={error ? {} : kpisReportes(casos)}
+            valores={
+              cargando || error
+                ? {}
+                : kpisReportes(casos)
+            }
           />
 
           <section className="card-panel-dash reportes-filtros">
@@ -257,7 +313,11 @@ function Reportes() {
               <div>
                 <i className="bi bi-funnel me-2" />
                 Filtros de búsqueda
-                <p>Selecciona los criterios para consultar los casos.</p>
+
+                <p>
+                  Selecciona los criterios para consultar
+                  los casos registrados.
+                </p>
               </div>
 
               <button
@@ -273,13 +333,17 @@ function Reportes() {
             <div className="reportes-filtros-grid">
               {filtros.map((filtro) => (
                 <div key={filtro.id}>
-                  <label htmlFor={filtro.id}>{filtro.label}</label>
+                  <label htmlFor={filtro.id}>
+                    {filtro.label}
+                  </label>
 
                   <select
                     id={filtro.id}
                     className="form-select"
                     value={filtro.value}
-                    onChange={(e) => filtro.setter(e.target.value)}
+                    onChange={(e) =>
+                      filtro.setter(e.target.value)
+                    }
                   >
                     <option value={filtro.defaultValue}>
                       {filtro.defaultLabel}
@@ -287,7 +351,7 @@ function Reportes() {
 
                     {filtro.opciones.map((opcion) => (
                       <option key={opcion} value={opcion}>
-                        {opcion}
+                        {String(opcion).replaceAll("_", " ")}
                       </option>
                     ))}
                   </select>
@@ -295,24 +359,36 @@ function Reportes() {
               ))}
 
               <div>
-                <label htmlFor="filtroDesde">Desde</label>
+                <label htmlFor="filtroDesde">
+                  Desde
+                </label>
+
                 <input
                   id="filtroDesde"
                   type="date"
                   className="form-control"
                   value={desde}
-                  onChange={(e) => setDesde(e.target.value)}
+                  max={hasta || undefined}
+                  onChange={(e) =>
+                    setDesde(e.target.value)
+                  }
                 />
               </div>
 
               <div>
-                <label htmlFor="filtroHasta">Hasta</label>
+                <label htmlFor="filtroHasta">
+                  Hasta
+                </label>
+
                 <input
                   id="filtroHasta"
                   type="date"
                   className="form-control"
                   value={hasta}
-                  onChange={(e) => setHasta(e.target.value)}
+                  min={desde || undefined}
+                  onChange={(e) =>
+                    setHasta(e.target.value)
+                  }
                 />
               </div>
             </div>
@@ -323,8 +399,11 @@ function Reportes() {
               <div className="reportes-tabla-header">
                 <div>
                   <h2>Casos gestionados</h2>
+
                   <span>
-                    {filtrados.length} casos encontrados
+                    {cargando
+                      ? "Consultando casos..."
+                      : `${filtrados.length} casos encontrados`}
                   </span>
                 </div>
 
@@ -332,7 +411,11 @@ function Reportes() {
                   type="button"
                   className="btn reportes-btn-principal"
                   onClick={exportarCSV}
-                  disabled={cargando || !!error || filtrados.length === 0}
+                  disabled={
+                    cargando ||
+                    Boolean(error) ||
+                    filtrados.length === 0
+                  }
                 >
                   <i className="bi bi-file-earmark-spreadsheet me-2" />
                   Exportar CSV
@@ -350,50 +433,79 @@ function Reportes() {
                       <th>Unidad</th>
                       <th>Resultado</th>
                       <th>Estado</th>
-                      <th className="text-end">Acciones</th>
+                      <th className="text-end">
+                        Acciones
+                      </th>
                     </tr>
                   </thead>
 
                   <tbody>
-                    {!cargando && !error && filtrados.map((caso) => (
-                      <tr key={caso.clave}>
-                        <td>#{caso.id ?? "—"}</td>
-                        <td>{caso.tipo}</td>
-                        <td>{caso.prioridad || "—"}</td>
-                        <td>{caso.zona}</td>
-                        <td>{caso.unidadNombre}</td>
-                        <td>{caso.resultado}</td>
-                        <td>{caso.estado || "—"}</td>
-                        <td className="text-end">
-                          <button
-                            type="button"
-                            className="btn btn-sm btn-outline-secondary"
-                            onClick={() => setSeleccion(caso.clave)}
-                          >
-                            <i className="bi bi-eye me-1" />
-                            Ver
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
+                    {!cargando &&
+                      !error &&
+                      filtrados.map((caso) => (
+                        <tr key={caso.clave}>
+                          <td>
+                            <strong>
+                              #{caso.id ?? "—"}
+                            </strong>
+                          </td>
+
+                          <td>{caso.tipo}</td>
+
+                          <td>
+                            {caso.prioridad || "—"}
+                          </td>
+
+                          <td>{caso.zona}</td>
+
+                          <td>{caso.unidadNombre}</td>
+
+                          <td>{caso.resultado}</td>
+
+                          <td>
+                            {caso.estado
+                              ? caso.estado.replaceAll("_", " ")
+                              : "—"}
+                          </td>
+
+                          <td className="text-end">
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-outline-secondary"
+                              onClick={() =>
+                                setSeleccion(caso.clave)
+                              }
+                            >
+                              <i className="bi bi-eye me-1" />
+                              Ver
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
                   </tbody>
                 </table>
               </div>
 
-              {(cargando || error || filtrados.length === 0) && (
+              {(cargando ||
+                error ||
+                filtrados.length === 0) && (
                 <div className="reportes-vacio">
                   <i className="bi bi-file-earmark-x" />
+
                   <strong>
                     {cargando
                       ? "Cargando casos..."
                       : error
-                      ? "Error al consultar los casos"
-                      : "No hay reportes para mostrar"}
+                        ? "Error al consultar los casos"
+                        : "No hay reportes para mostrar"}
                   </strong>
+
                   <span>
-                    {error
-                      ? "Comprueba la conexión con la API."
-                      : "Aquí aparecerán los casos que coincidan con los filtros."}
+                    {cargando
+                      ? "Consultando información de la API."
+                      : error
+                        ? "Comprueba la conexión con el backend."
+                        : "No hay casos que coincidan con los filtros."}
                   </span>
                 </div>
               )}
@@ -403,14 +515,16 @@ function Reportes() {
               <div className="reportes-tabla-header">
                 <div>
                   <h2>Vista previa del informe</h2>
-                  <span>Detalle del caso seleccionado</span>
+                  <span>
+                    Detalle del caso seleccionado
+                  </span>
                 </div>
 
                 <button
                   type="button"
                   className="btn reportes-btn-limpiar"
                   onClick={() => window.print()}
-                  disabled={!seleccionado}
+                  disabled={!puedeImprimir}
                 >
                   <i className="bi bi-printer me-1" />
                   Imprimir
@@ -418,10 +532,14 @@ function Reportes() {
               </div>
 
               <div className="reportes-informe-body">
-                {!seleccionado ? (
+                {!seleccionado || cargando || error ? (
                   <div className="reportes-vacio">
                     <i className="bi bi-file-earmark-text" />
-                    <strong>Selecciona un caso</strong>
+
+                    <strong>
+                      Selecciona un caso
+                    </strong>
+
                     <span>
                       Su información aparecerá aquí.
                     </span>
@@ -435,19 +553,57 @@ function Reportes() {
 
                       <div className="informe-grid">
                         {[
-                          ["Número de caso", `#${seleccionado.id ?? "—"}`],
-                          ["Fecha y hora", fechaLegible(seleccionado.fecha)],
-                          ["Tipo de alerta", seleccionado.tipo],
-                          ["Prioridad", seleccionado.prioridad || "—"],
-                          ["Zona", seleccionado.zona],
-                          ["Unidad", seleccionado.unidadNombre],
-                          ["Estado", seleccionado.estado || "—"],
-                          ["Resultado", seleccionado.resultado],
+                          [
+                            "Número de caso",
+                            `#${seleccionado.id ?? "—"}`,
+                          ],
+                          [
+                            "Fecha y hora",
+                            fechaLegible(seleccionado.fecha),
+                          ],
+                          [
+                            "Tipo de alerta",
+                            seleccionado.tipo,
+                          ],
+                          [
+                            "Prioridad",
+                            seleccionado.prioridad || "—",
+                          ],
+                          [
+                            "Zona",
+                            seleccionado.zona,
+                          ],
+                          [
+                            "Unidad",
+                            seleccionado.unidadNombre,
+                          ],
+                          [
+                            "Estado de alerta",
+                            seleccionado.estado?.replaceAll(
+                              "_",
+                              " "
+                            ) || "—",
+                          ],
+                          [
+                            "Estado de asignación",
+                            seleccionado.estadoAsignacion?.replaceAll(
+                              "_",
+                              " "
+                            ) || "—",
+                          ],
+                          [
+                            "Resultado",
+                            seleccionado.resultado,
+                          ],
                         ].map(([etiqueta, valor]) => (
-                          <div className="informe-dato" key={etiqueta}>
+                          <div
+                            className="informe-dato"
+                            key={etiqueta}
+                          >
                             <span className="informe-dato-label">
                               {etiqueta}
                             </span>
+
                             <strong className="informe-dato-valor">
                               {valor}
                             </strong>
@@ -460,6 +616,7 @@ function Reportes() {
                       <h3 className="informe-titulo">
                         Descripción del caso
                       </h3>
+
                       <div className="informe-texto">
                         {seleccionado.descripcion}
                       </div>
@@ -467,8 +624,9 @@ function Reportes() {
 
                     <section className="informe-seccion">
                       <h3 className="informe-titulo">
-                        Observaciones de Central
+                        Observaciones de atención
                       </h3>
+
                       <div className="informe-texto informe-central">
                         {seleccionado.observaciones}
                       </div>
@@ -478,10 +636,43 @@ function Reportes() {
                       <h3 className="informe-titulo">
                         Información de atención
                       </h3>
-                      <div className="informe-texto">
-                        {seleccionado.conInforme
-                          ? "Existe una atención registrada para este caso."
-                          : "No se encontró una atención relacionada."}
+
+                      <div className="informe-grid">
+                        {[
+                          [
+                            "Atenciones registradas",
+                            seleccionado.totalAtenciones,
+                          ],
+                          [
+                            "Asignaciones registradas",
+                            seleccionado.totalAsignaciones,
+                          ],
+                          [
+                            "Última atención",
+                            fechaLegible(
+                              seleccionado.fechaAtencion
+                            ),
+                          ],
+                          [
+                            "Informe registrado",
+                            seleccionado.conInforme
+                              ? "Sí"
+                              : "No",
+                          ],
+                        ].map(([etiqueta, valor]) => (
+                          <div
+                            className="informe-dato"
+                            key={etiqueta}
+                          >
+                            <span className="informe-dato-label">
+                              {etiqueta}
+                            </span>
+
+                            <strong className="informe-dato-valor">
+                              {valor}
+                            </strong>
+                          </div>
+                        ))}
                       </div>
                     </section>
                   </>
