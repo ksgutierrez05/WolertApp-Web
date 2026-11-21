@@ -41,6 +41,8 @@ namespace WolertApp.Helpers
             }
         }
 
+
+
         // "ORA-20103: La alerta ya esta cerrada.\nORA-06512: ..." -> "La alerta ya esta cerrada."
         private static string LimpiarMensaje(string mensaje)
         {
@@ -59,4 +61,5 @@ namespace WolertApp.Helpers
         public static int? IdUsuario(this ClaimsPrincipal user)
             => int.TryParse(user.FindFirstValue(ClaimTypes.NameIdentifier), out var id) ? id : null;
     }
+    
 }

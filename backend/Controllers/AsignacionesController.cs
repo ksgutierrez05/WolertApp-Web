@@ -1,4 +1,5 @@
 ﻿using backend.Data;
+using backend.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -58,6 +59,74 @@ namespace WolertApp.Controllers
             return dto == null ? NotFound() : Ok(dto);
         }
 
+        [HttpPost("manual")]
+        [Authorize(Roles = "ADMIN_TRANSITO,CENTRAL_TRANSITO,ADMIN_POLICIA,CENTRAL_POLICIA")]
+        public async Task<ActionResult<AsignacionUnidadDto>> AsignarManual(
+            [FromBody] AsignacionManualDTO dto)
+        {
+            if (dto == null || dto.IdAlerta <= 0 ||
+                string.IsNullOrWhiteSpace(dto.NombreUnidad))
+            {
+                return BadRequest(
+                    "Debes indicar la alerta y la unidad."
+                );
+            }
+
+            if (dto.Observacion?.Length > 180)
+            {
+                return BadRequest(
+                    "La observación no puede superar 180 caracteres."
+                );
+            }
+
+            var error = await OracleProcedimientos.EjecutarAsync(
+                _context,
+                "PKG_ALERTAS.PR_INSERTAR_ASIGNACION",
+                p =>
+                {
+                    p.Agregar(
+                        "p_id_alerta",
+                        OracleDbType.Int32,
+                        dto.IdAlerta
+                    );
+
+                    p.Agregar(
+                        "p_nombre_unidad",
+                        OracleDbType.Varchar2,
+                        dto.NombreUnidad.Trim()
+                    );
+
+                    p.Agregar(
+                        "p_observacion",
+                        OracleDbType.Varchar2,
+                        dto.Observacion
+                    );
+
+                    p.Agregar(
+                        "p_fecha",
+                        OracleDbType.TimeStamp,
+                        DateTime.Now
+                    );
+                }
+            );
+
+            if (error != null)
+                return BadRequest(error);
+
+            var asignacion = await Proyectar(
+                _context.Asignaciones
+                    .AsNoTracking()
+                    .Where(a => a.IdAlerta == dto.IdAlerta)
+                    .OrderByDescending(a => a.IdAsignacion)
+            ).FirstOrDefaultAsync();
+
+            return asignacion == null
+                ? StatusCode(500,
+                    "La operación terminó, pero no se encontró la asignación.")
+                : Ok(asignacion);
+        }
+
+
         // La unidad llegó al lugar (ASIGNADA -> EN_ATENCION). pr_registrar_llegada NO hace COMMIT: lo hace el helper.
         [HttpPost("{id:int}/llegada")]
         [Authorize(Roles = RolesCampo)]
@@ -87,4 +156,6 @@ namespace WolertApp.Controllers
             return Ok(dto);
         }
     }
+
+
 }
