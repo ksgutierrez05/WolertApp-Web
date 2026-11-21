@@ -75,7 +75,7 @@ namespace backend.Controllers
 				.AsNoTracking()
 				.Where(u => u.BarrioId == barrioId
 					&& u.IdUsuario != idUsuario
-					&& u.Rol.Nombre == "Ciudadano"
+					&& u.Rol.Nombre == "CIUDADANO"
 					&& u.Estado.ToLower() == "activo")
 				.OrderBy(u => u.PrimerNombre)
 				.Select(u => new
@@ -113,8 +113,10 @@ namespace backend.Controllers
                     Casa = u.Casa,
                     Estado = u.Estado,
                     RolNombre = u.Rol != null ? u.Rol.Nombre : null,
-                    BarrioNombre = u.Barrio != null ? u.Barrio.Nombre : null
-                })
+                    BarrioNombre = u.Barrio != null ? u.Barrio.Nombre : null,                    
+                    BarrioId = u.BarrioId != null ? u.BarrioId : null
+
+				})
                 .FirstOrDefaultAsync();
 
             if (usuario == null) return NotFound();
@@ -300,5 +302,5 @@ namespace backend.Controllers
             await _context.SaveChangesAsync();
             return Ok($"{todos.Count} usuarios actualizados");
         }
-    }
+	}
 }
