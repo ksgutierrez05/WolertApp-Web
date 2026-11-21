@@ -1,3 +1,4 @@
+@scope (.dt) {
 .sec-head-pd {
   display: flex;
   align-items: center;
@@ -29,7 +30,7 @@
   margin-bottom: 4px;
 }
 
-.titulos {
+.titulos-dir {
   font-family: 'Inter', sans-serif;
   font-weight: 700;
   font-size: 19px;
@@ -340,7 +341,7 @@
       color-mix(in srgb, var(--color-primary) 15%, transparent) 80%,
       transparent 92%
     ),
-    url('../../../../public/img/Maria Mulata.jpg');
+    url("/img/Maria Mulata.jpg");
     
   background-position: center, right 12%;
   background-size: cover, cover;
@@ -380,4 +381,5 @@
 @media (max-width: 768px) {
   .hero-dash.hero-img-dash { padding: 26px 22px; min-height: 230px; }
   .hero-img-dash .hero-title-dash { font-size: 28px; }
+}
 }

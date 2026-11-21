@@ -1,180 +1,376 @@
+
+import { useEffect, useMemo, useState } from "react";
 import Layout from "../../Components/transito/Layout";
 import KpiCard from "../../Components/transito/KpiCard";
+import {
+  listarAgentesDirector,
+  listarAtencionesDirector,
+  listarAlertasDirector,
+  listarUnidadesDirector,
+  fechaCaso,
+  fechaTransito,
+  fechaEsHoy,
+  estadoFinalizado,
+  estadoActivoAgente,
+  estadoCaso,
+  tipoCaso,
+  badgeEstadoCaso,
+  normalizar,
+  esAccidente,
+  idAlerta,
+} from "../../Services/directorTransitoService";
 
 export default function PanelPrincipal() {
+  const [agentes, setAgentes] = useState([]);
+  const [atenciones, setAtenciones] = useState([]);
+  const [alertas, setAlertas] = useState([]);
+  const [, setUnidades] = useState([]);
+  const [alertasDisponibles, setAlertasDisponibles] =
+    useState(false);
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState("");
+  const [tab, setTab] = useState("TODAS");
+  const [detalle, setDetalle] = useState(null);
+
+  useEffect(() => {
+    let activo = true;
+
+    async function cargar() {
+      const [rAgentes, rAtenciones, rAlertas, rUnidades] =
+        await Promise.allSettled([
+          listarAgentesDirector(),
+          listarAtencionesDirector(),
+          listarAlertasDirector(),
+          listarUnidadesDirector(),
+        ]);
+
+      if (!activo) return;
+
+      const errores = [];
+
+      if (rAgentes.status === "fulfilled") {
+        setAgentes(rAgentes.value);
+      } else {
+        errores.push("No se pudieron cargar los agentes.");
+      }
+
+      if (rAtenciones.status === "fulfilled") {
+        setAtenciones(rAtenciones.value);
+      } else {
+        errores.push("No se pudieron cargar las atenciones.");
+      }
+
+      if (rAlertas.status === "fulfilled") {
+        setAlertas(rAlertas.value);
+        setAlertasDisponibles(true);
+      } else {
+        errores.push(
+          "No se pudieron cargar las alertas. Verifica su endpoint."
+        );
+      }
+
+      if (rUnidades.status === "fulfilled") {
+        setUnidades(rUnidades.value);
+      }
+
+      setError(errores.join(" "));
+      setCargando(false);
+    }
+
+    cargar();
+
+    return () => {
+      activo = false;
+    };
+  }, []);
+
+  const disponibles = agentes.filter(
+    (agente) =>
+      estadoActivoAgente(
+        agente.estadoAgente ?? agente.estado
+      )
+  ).length;
+
+  const activos = atenciones.filter(
+    (a) => !estadoFinalizado(a.estadoFinal)
+  ).length;
+
+  const cerradosHoy = atenciones.filter(
+    (a) =>
+      estadoFinalizado(a.estadoFinal) &&
+      fechaEsHoy(a.fechaAtencion)
+  ).length;
+
+  const ultimos = useMemo(() => {
+    const origen = alertasDisponibles ? alertas : atenciones;
+
+    return [...origen].sort(
+      (a, b) =>
+        new Date(fechaCaso(b) || 0) -
+        new Date(fechaCaso(a) || 0)
+    );
+  }, [alertas, atenciones, alertasDisponibles]);
+
+  const sinAsignar = useMemo(() => {
+    if (!alertasDisponibles) return [];
+
+    const idsAsignados = new Set(
+      atenciones
+        .map((a) => a.idAlerta)
+        .filter((id) => id != null)
+        .map(String)
+    );
+
+    return alertas.filter(
+      (alerta) =>
+        !idsAsignados.has(String(idAlerta(alerta))) &&
+        !estadoFinalizado(estadoCaso(alerta))
+    );
+  }, [alertas, atenciones, alertasDisponibles]);
+
+  const tipos = useMemo(() => {
+    return [...new Set(
+      ultimos.map((caso) => normalizar(tipoCaso(caso)))
+    )].filter((tipo) => tipo && tipo !== "SIN TIPO");
+  }, [ultimos]);
+
+  const ultimosFiltrados =
+    tab === "TODAS"
+      ? ultimos
+      : ultimos.filter(
+          (caso) => normalizar(tipoCaso(caso)) === tab
+        );
+
+
+
+ 
+const accidentesPorComuna = useMemo(() => {
+  const hace30Dias = new Date();
+  hace30Dias.setDate(hace30Dias.getDate() - 30);
+
+  const agrupados = new Map();
+
+  for (const alerta of alertas) {
+    const fecha = new Date(fechaCaso(alerta) || 0);
+
+    if (
+      !esAccidente(alerta) ||
+      fecha < hace30Dias
+    ) {
+      continue;
+    }
+
+    const comuna =
+      alerta.nombreComuna ||
+      alerta.comunaNombre ||
+      alerta.comuna?.nombre ||
+      "Sin comuna";
+
+    agrupados.set(
+      comuna,
+      (agrupados.get(comuna) || 0) + 1
+    );
+  }
+
+  return [...agrupados.entries()]
+    .map(([nombre, cantidad]) => ({
+      nombre,
+      cantidad,
+    }))
+    .sort((a, b) => b.cantidad - a.cantidad);
+}, [alertas]);
+
+
+  const maxAccidentes = Math.max(
+    1,
+    ...accidentesPorComuna.map((c) => c.cantidad)
+  );
+
+  const fechaHoy = new Date()
+    .toLocaleDateString("es-CO", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    })
+    .toUpperCase();
+
   return (
     <Layout
       titulo="Panel Director de Tránsito"
       activo="panel"
       claseTopbar="mb-4"
-      busqueda={{ placeholder: "Buscar por caso, barrio o agente..." }}
+      busqueda={{
+        placeholder: "Buscar por caso, barrio o agente...",
+      }}
     >
-      {/* hero */}
       <div className="hero-dash hero-img-dash mb-4">
         <div className="eyebrow-dash eyebrow-img-dash">
-          <i className="bi bi-shield-check"></i>
-          <span>
-            PANEL DE TRÁNSITO ·{" "}
-            {new Date()
-              .toLocaleDateString("es-CO", {
-                day: "numeric",
-                month: "long",
-                year: "numeric",
-              })
-              .toUpperCase()}
-          </span>
+          <i className="bi bi-shield-check me-2" />
+          PANEL DE TRÁNSITO · {fechaHoy}
         </div>
+
         <h1 className="hero-title-dash">
           ¡Bienvenido,
           <br />
           director de tránsito!
         </h1>
+
         <p className="hero-text-dash">
-          Hay 6 casos activos y 20 reportes en las últimas 24 horas. Sistema
-          operativo con monitoreo en tiempo real.
+          Supervisa los casos, las atenciones y el personal
+          de tránsito desde un solo lugar.
         </p>
+
         <a
-          href="#"
+          href="#casosSinAsignar"
           className="btn btn-light rounded-pill fw-bold mt-3 hero-cta-dash"
         >
-          <span className="dot-danger-dash"></span> Ver casos críticos
+          <span className="dot-danger-dash" />
+          {" "}Ver casos sin asignar
         </a>
       </div>
 
-      {/* KPI */}
+      {cargando && (
+        <div className="alert alert-info" role="status">
+          Cargando panel de tránsito...
+        </div>
+      )}
+
+      {error && (
+        <div className="alert alert-warning" role="alert">
+          {error}
+        </div>
+      )}
+
       <div className="row g-3 mb-4">
         <KpiCard
           variante="panel"
           color="red"
-          valor="6"
-          label="Casos activos"
+          valor={activos}
+          label="Atenciones activas"
           icono="bi-geo-alt-fill"
         />
         <KpiCard
           variante="panel"
           color="blue"
-          valor="2.1 min"
+          valor="—"
           label="Tiempo de respuesta"
           icono="bi-stopwatch"
         />
         <KpiCard
           variante="panel"
           color="green"
-          valor="27"
-          label="Casos cerrados hoy"
+          valor={cerradosHoy}
+          label="Atenciones cerradas hoy"
           icono="bi-check2-circle"
         />
         <KpiCard
           variante="panel"
           color="amber"
-          valor="11/15"
+          valor={`${disponibles}/${agentes.length}`}
           label="Agentes disponibles"
           icono="bi-shield-check"
         />
       </div>
 
-      {/* casos sin asignar */}
+      <section id="casosSinAsignar">
+        <div className="sec-head-pd">
+          <h2>Casos sin asignar</h2>
+          <span className="text-muted small">
+            {sinAsignar.length} pendientes
+          </span>
+        </div>
+
+        <div className="panel-pd mb-4">
+          <div className="table-responsive">
+            <table className="tabla-pd" id="tablaSinAsignar">
+              <thead>
+                <tr>
+                  <th>Tipo</th>
+                  <th>Ubicación / reportante</th>
+                  <th>Fecha de reporte</th>
+                  <th className="text-end">Acción</th>
+                </tr>
+              </thead>
+              <tbody>
+                {sinAsignar.map((caso, indice) => (
+                  <tr
+                    key={idAlerta(caso) ?? indice}
+                    className="unassigned-row-pd"
+                  >
+                    <td>
+                      <span className="badge-dash badge-amber-dash">
+                        {tipoCaso(caso)}
+                      </span>
+                    </td>
+                    <td>
+                      <div className="info-title-dash">
+                        {caso.nombreBarrio ||
+                          caso.barrioNombre ||
+                          caso.direccion ||
+                          "Ubicación no disponible"}
+                      </div>
+                      <div className="info-sub-dash">
+                        Reportado por{" "}
+                        {caso.nombreReportante ||
+                          caso.nombreUsuario ||
+                          "No registrado"}
+                      </div>
+                    </td>
+                    <td>
+                      <span className="wait-dash wait-warn-dash">
+                        {fechaTransito(fechaCaso(caso))}
+                      </span>
+                    </td>
+                    <td className="text-end">
+                      <button
+                        type="button"
+                        className="assign-btn-pd"
+                        title="Asignación pendiente de conexión con API"
+                        disabled
+                      >
+                        Asignar agente
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {sinAsignar.length === 0 && (
+            <p className="text-center text-muted py-4 mb-0">
+              {alertasDisponibles
+                ? "No hay casos sin asignar."
+                : "No se pudo consultar la asignación de alertas."}
+            </p>
+          )}
+        </div>
+      </section>
+
       <div className="sec-head-pd">
-        <h2 id="tituloSinAsignar">Casos sin asignar</h2>
-        <a className="see-all-dash" href="#">
-          Ver todos <i className="bi bi-chevron-right"></i>
-        </a>
-      </div>
-      <div className="panel-pd mb-4">
-        <table className="tabla-pd" id="tablaSinAsignar">
-          <thead>
-            <tr>
-              <th>Tipo</th>
-              <th>Ubicación / reportante</th>
-              <th>Espera</th>
-              <th className="text-end">&nbsp;</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr className="unassigned-row-pd">
-              <td>
-                <span className="badge-dash badge-amber-dash">
-                  SEMÁFORO DAÑADO
-                </span>
-              </td>
-              <td>
-                <div className="info-title-dash">Barrio La Nevada</div>
-                <div className="info-sub-dash">Reportado por Laura Peña</div>
-              </td>
-              <td>
-                <span className="wait-dash wait-urgent-dash">12 min</span>
-              </td>
-              <td className="text-end">
-                <button className="assign-btn-pd">Asignar agente</button>
-              </td>
-            </tr>
-            <tr className="unassigned-row-pd">
-              <td>
-                <span className="badge-dash badge-red-dash">ACCIDENTE</span>
-              </td>
-              <td>
-                <div className="info-title-dash">Casimiro Raúl Maestre</div>
-                <div className="info-sub-dash">
-                  Reportado por Katherine Gutiérrez
-                </div>
-              </td>
-              <td>
-                <span className="wait-dash wait-urgent-dash">8 min</span>
-              </td>
-              <td className="text-end">
-                <button className="assign-btn-pd">Asignar agente</button>
-              </td>
-            </tr>
-            <tr className="unassigned-row-pd">
-              <td>
-                <span className="badge-dash badge-blue-dash">CHOQUE</span>
-              </td>
-              <td>
-                <div className="info-title-dash">Los Fundadores</div>
-                <div className="info-sub-dash">Reportado por Diego Torres</div>
-              </td>
-              <td>
-                <span className="wait-dash wait-warn-dash">5 min</span>
-              </td>
-              <td className="text-end">
-                <button className="assign-btn-pd">Asignar agente</button>
-              </td>
-            </tr>
-            <tr className="unassigned-row-pd">
-              <td>
-                <span className="badge-dash badge-amber-dash">
-                  EMBOTELLAMIENTO
-                </span>
-              </td>
-              <td>
-                <div className="info-title-dash">El Centro</div>
-                <div className="info-sub-dash">Reportado por Ravi Kumar</div>
-              </td>
-              <td>
-                <span className="wait-dash wait-warn-dash">3 min</span>
-              </td>
-              <td className="text-end">
-                <button className="assign-btn-pd">Asignar agente</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <h2 className="titulos">
+          Mapa de tránsito
+        </h2>
       </div>
 
-      {/* mapa */}
-      <div className="sec-head-pd">
-        <h2 className="titulos">Mapa de tránsito en tiempo real</h2>
-      </div>
       <div className="panel-pd mb-4">
         <div className="mapa-canvas-pd">
           <svg
             className="base-pd"
             viewBox="0 0 600 320"
             preserveAspectRatio="none"
+            role="img"
+            aria-label="Mapa decorativo sin posiciones reales"
           >
             <rect width="600" height="320" fill="#eef2e6" />
-            <ellipse cx="470" cy="70" rx="110" ry="80" fill="#dcead2" />
-            <ellipse cx="90" cy="240" rx="100" ry="90" fill="#dcead2" />
+            <ellipse
+              cx="470" cy="70" rx="110" ry="80"
+              fill="#dcead2"
+            />
+            <ellipse
+              cx="90" cy="240" rx="100" ry="90"
+              fill="#dcead2"
+            />
             <path
               d="M560,0 C500,60 520,140 470,200 C430,250 460,300 420,320 L600,320 L600,0 Z"
               fill="#cfe6f0"
@@ -188,230 +384,233 @@ export default function PanelPrincipal() {
               <line x1="400" y1="0" x2="400" y2="320" />
             </g>
             <line
-              x1="0"
-              y1="130"
-              x2="600"
-              y2="200"
-              stroke="#e7c98a"
-              strokeWidth="9"
+              x1="0" y1="130" x2="600" y2="200"
+              stroke="#e7c98a" strokeWidth="9"
             />
           </svg>
-          <div className="map-pin-pd" style={{ left: "20%", top: "28%" }}>
-            <span className="dot-pd amber"></span>
-          </div>
-          <div className="map-pin-pd" style={{ left: "44%", top: "20%" }}>
-            <span className="dot-pd purple"></span>
-          </div>
-          <div className="map-pin-pd" style={{ left: "66%", top: "35%" }}>
-            <span className="dot-pd blue"></span>
-          </div>
-          <div className="map-pin-pd" style={{ left: "35%", top: "62%" }}>
-            <span className="dot-pd green"></span>
-          </div>
-          <div className="map-pin-pd" style={{ left: "76%", top: "70%" }}>
-            <span className="dot-pd amber"></span>
-          </div>
-          <div className="map-pin-pd" style={{ left: "15%", top: "85%" }}>
-            <span className="dot-pd gray"></span>
-          </div>
         </div>
+
         <div className="map-legend-pd">
-          <b>Estados del caso</b>
-          <ul>
-            <li>
-              <span
-                className="sw-pd"
-                style={{ backgroundColor: "var(--color-amber)" }}
-              ></span>
-              Pendiente
-            </li>
-            <li>
-              <span
-                className="sw-pd"
-                style={{ backgroundColor: "var(--color-blue)" }}
-              ></span>
-              Recibido
-            </li>
-            <li>
-              <span
-                className="sw-pd"
-                style={{ backgroundColor: "#7c4fc9" }}
-              ></span>
-              En atención
-            </li>
-            <li>
-              <span
-                className="sw-pd"
-                style={{ backgroundColor: "var(--color-green)" }}
-              ></span>
-              Resuelto
-            </li>
-            <li>
-              <span
-                className="sw-pd"
-                style={{ backgroundColor: "#8a94a6" }}
-              ></span>
-              Cancelado
-            </li>
-          </ul>
+          <b>Mapa ilustrativo</b>
+          <p className="text-muted small mb-0">
+            Las ubicaciones en tiempo real se mostrarán
+            cuando la API proporcione coordenadas.
+          </p>
         </div>
-        <a href="#" className="map-cta-pd">
-          <i className="bi bi-map"></i> Ver mapa completo
-        </a>
       </div>
 
-      {/* accidentes por comuna */}
       <div className="sec-head-pd">
-        <h2 className="titulos">Accidentes por comuna</h2>
-        <span className="text-muted small">Últimos 30 días</span>
+        <h2 className="titulos">
+          Accidentes por comuna
+        </h2>
+        <span className="text-muted small">
+          Últimos 30 días
+        </span>
       </div>
+
       <div className="comunas-pd mb-4">
-        <div className="comuna-row-pd">
-          <span className="nombre-pd">Comuna 1 — Centro</span>
-          <div className="pista-pd">
-            <span style={{ width: "82%" }}></span>
+        {accidentesPorComuna.map((comuna) => (
+          <div
+            key={comuna.nombre}
+            className="comuna-row-pd"
+          >
+            <span className="nombre-pd">
+              {comuna.nombre}
+            </span>
+            <div className="pista-pd">
+              <span
+                style={{
+                  width: `${
+                    (comuna.cantidad / maxAccidentes) * 100
+                  }%`,
+                }}
+              />
+            </div>
+            <span className="valor-pd">
+              {comuna.cantidad}
+            </span>
           </div>
-          <span className="valor-pd">18</span>
+        ))}
+
+        {accidentesPorComuna.length === 0 && (
+          <p className="text-muted small mb-0">
+            No hay datos de accidentes por comuna
+            disponibles para este periodo.
+          </p>
+        )}
+      </div>
+
+      <div className="sec-head-pd">
+        <h2 className="titulos">
+          Últimos casos de tránsito
+        </h2>
+        <span className="text-muted small">
+          {ultimos.length} registros
+        </span>
+      </div>
+
+      <div className="tabs-pd">
+        <button
+          type="button"
+          className={`tab-pd ${
+            tab === "TODAS" ? "active-pd" : ""
+          }`}
+          onClick={() => setTab("TODAS")}
+        >
+          Todas ({ultimos.length})
+        </button>
+
+        {tipos.map((tipo) => (
+          <button
+            key={tipo}
+            type="button"
+            className={`tab-pd ${
+              tab === tipo ? "active-pd" : ""
+            }`}
+            onClick={() => setTab(tipo)}
+          >
+            {tipo} (
+            {ultimos.filter(
+              (c) => normalizar(tipoCaso(c)) === tipo
+            ).length}
+            )
+          </button>
+        ))}
+      </div>
+
+      <div className="panel-pd">
+        <div className="table-responsive">
+          <table className="tabla-pd">
+            <thead>
+              <tr>
+                <th>Reportado por</th>
+                <th>Tipo</th>
+                <th>Barrio</th>
+                <th>Estado</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {ultimosFiltrados.slice(0, 5).map(
+                (caso, indice) => (
+                  <tr
+                    key={
+                      idAlerta(caso) ??
+                      caso.idAtencionTransito ??
+                      indice
+                    }
+                  >
+                    <td>
+                      <div className="info-title-dash">
+                        {caso.nombreReportante ||
+                          caso.nombreUsuario ||
+                          "No registrado"}
+                      </div>
+                      <div className="info-sub-dash">
+                        {fechaTransito(fechaCaso(caso))}
+                      </div>
+                    </td>
+                    <td>
+                      <span className="badge-dash badge-amber-dash">
+                        {tipoCaso(caso)}
+                      </span>
+                    </td>
+                    <td>
+                      {caso.nombreBarrio ||
+                        caso.barrioNombre ||
+                        "No disponible"}
+                    </td>
+                    <td>
+                      <span
+                        className={`badge-dash ${badgeEstadoCaso(
+                          estadoCaso(caso)
+                        )}`}
+                      >
+                        {estadoCaso(caso)}
+                      </span>
+                    </td>
+                    <td className="text-end">
+                      <button
+                        type="button"
+                        className="link-btn-dash border-0 bg-transparent"
+                        onClick={() => setDetalle(caso)}
+                      >
+                        Ver detalle
+                      </button>
+                    </td>
+                  </tr>
+                )
+              )}
+            </tbody>
+          </table>
         </div>
-        <div className="comuna-row-pd">
-          <span className="nombre-pd">Comuna 2 — Norte</span>
-          <div className="pista-pd">
-            <span style={{ width: "64%" }}></span>
-          </div>
-          <span className="valor-pd">14</span>
-        </div>
-        <div className="comuna-row-pd">
-          <span className="nombre-pd">Comuna 3 — Sur</span>
-          <div className="pista-pd">
-            <span style={{ width: "47%" }}></span>
-          </div>
-          <span className="valor-pd">10</span>
-        </div>
-        <div className="comuna-row-pd">
-          <span className="nombre-pd">Comuna 4 — Oriente</span>
-          <div className="pista-pd">
-            <span style={{ width: "36%" }}></span>
-          </div>
-          <span className="valor-pd">8</span>
+
+        {ultimosFiltrados.length === 0 && (
+          <p className="text-center text-muted py-4 mb-0">
+            No hay casos para mostrar.
+          </p>
+        )}
+
+        <div className="paginacion-pd">
+          <span>
+            Mostrando {Math.min(5, ultimosFiltrados.length)}
+            {" "}de {ultimosFiltrados.length} registros
+          </span>
         </div>
       </div>
 
-      {/* últimos casos */}
-      <div className="sec-head-pd">
-        <h2 className="titulos">Últimos casos de tránsito</h2>
-        <a className="see-all-dash" href="#">
-          Ver todos <i className="bi bi-chevron-right"></i>
-        </a>
-      </div>
-      <div className="tabs-pd">
-        <button className="tab-pd active-pd">Todas (20)</button>
-        <button className="tab-pd">Semáforo dañado (7)</button>
-        <button className="tab-pd">Accidente (5)</button>
-        <button className="tab-pd">Choque (4)</button>
-        <button className="tab-pd">Otras (4)</button>
-      </div>
-      <div className="panel-pd">
-        <table className="tabla-pd">
-          <thead>
-            <tr>
-              <th>Reportado por</th>
-              <th>Tipo</th>
-              <th>Barrio</th>
-              <th>Estado</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>
-                <div className="info-title-dash">Katherine Gutiérrez</div>
-                <div className="info-sub-dash">11/9/2026 · 08:12 a.m.</div>
-              </td>
-              <td>
-                <span className="badge-dash badge-amber-dash">
-                  SEMÁFORO DAÑADO
-                </span>
-              </td>
-              <td>Casimiro Raúl Maestre</td>
-              <td>
-                <span className="badge-dash badge-amber-dash">En atención</span>
-              </td>
-              <td className="text-end">
-                <a href="#" className="link-btn-dash">
-                  Ver detalle
-                </a>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <div className="info-title-dash">Katherine Gutiérrez</div>
-                <div className="info-sub-dash">11/9/2026 · 07:47 a.m.</div>
-              </td>
-              <td>
-                <span className="badge-dash badge-red-dash">ACCIDENTE</span>
-              </td>
-              <td>Casimiro Raúl Maestre</td>
-              <td>
-                <span className="badge-dash badge-red-dash">Crítica</span>
-              </td>
-              <td className="text-end">
-                <a href="#" className="link-btn-dash">
-                  Ver detalle
-                </a>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <div className="info-title-dash">Laura Peña</div>
-                <div className="info-sub-dash">10/9/2026 · 10:30 p.m.</div>
-              </td>
-              <td>
-                <span className="badge-dash badge-blue-dash">CHOQUE</span>
-              </td>
-              <td>Casimiro Raúl Maestre</td>
-              <td>
-                <span className="badge-dash badge-blue-dash">En camino</span>
-              </td>
-              <td className="text-end">
-                <a href="#" className="link-btn-dash">
-                  Ver detalle
-                </a>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <div className="info-title-dash">Diego Torres</div>
-                <div className="info-sub-dash">10/9/2026 · 07:05 p.m.</div>
-              </td>
-              <td>
-                <span className="badge-dash badge-amber-dash">
-                  EMBOTELLAMIENTO
-                </span>
-              </td>
-              <td>Los Fundadores</td>
-              <td>
-                <span className="badge-dash badge-green-dash">Resuelta</span>
-              </td>
-              <td className="text-end">
-                <a href="#" className="link-btn-dash">
-                  Ver detalle
-                </a>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <div className="paginacion-pd">
-          <span>Mostrando 1–4 de 20 reportes</span>
-          <div className="paginas-pd">
-            <button className="active-pd">1</button>
-            <button>2</button>
-            <button>3</button>
-            <button>
-              <i className="bi bi-chevron-right"></i>
-            </button>
+      {detalle && (
+        <div
+          className="modal fade show"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="tituloDetallePanel"
+          style={{
+            display: "block",
+            backgroundColor: "rgba(0,0,0,.5)",
+          }}
+        >
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content modal-dash">
+              <div className="modal-header">
+                <h5
+                  id="tituloDetallePanel"
+                  className="modal-title"
+                >
+                  Detalle del caso
+                </h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  aria-label="Cerrar"
+                  onClick={() => setDetalle(null)}
+                />
+              </div>
+              <div className="modal-body">
+                <p><b>Tipo:</b> {tipoCaso(detalle)}</p>
+                <p><b>Estado:</b> {estadoCaso(detalle)}</p>
+                <p>
+                  <b>Fecha:</b>{" "}
+                  {fechaTransito(fechaCaso(detalle))}
+                </p>
+                <p>
+                  <b>Descripción:</b>{" "}
+                  {detalle.descripcion ?? "No disponible"}
+                </p>
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-light"
+                  onClick={() => setDetalle(null)}
+                >
+                  Cerrar
+                </button>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </Layout>
   );
 }

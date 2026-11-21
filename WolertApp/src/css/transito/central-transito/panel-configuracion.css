@@ -1,3 +1,4 @@
+@scope (.ct) {
 .section-title-dash {
   font-family: 'Inter', sans-serif;
   font-weight: 700;
@@ -77,4 +78,5 @@
 
 .btn-secundario-dash:hover {
   background-color: #e2e7f3;
+}
 }

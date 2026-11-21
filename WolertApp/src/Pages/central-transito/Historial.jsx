@@ -1,130 +1,556 @@
-import { useRef, useState } from 'react';
-import Layout from '../../Components/transito/Layout';
 
-const CASOS = [
-  { tipo: 'semaforo', reporta: 'Camila Restrepo', barrio: 'El Poblado', agente: 'Andrea Cárdenas', fecha: '2026-09-14', cierre: '14/9/2026 · 09:20 a.m.', informe: 'Semáforo reparado por cuadrilla de mantenimiento, intersección operando con normalidad.' },
-  { tipo: 'accidente', reporta: 'Andrés Salazar', barrio: 'Calle 33 con Av. Regional', agente: 'Felipe Ossa', fecha: '2026-09-14', cierre: '14/9/2026 · 08:55 a.m.', informe: 'Choque leve entre dos vehículos, sin heridos, tránsito restablecido.' },
-  { tipo: 'accidente', reporta: 'Mariana Ríos', barrio: 'Belén', agente: 'Manuela Zapata', fecha: '2026-09-13', cierre: '13/9/2026 · 10:05 p.m.', informe: 'Atropello de ciclista, remitido a ambulancia. Se levantó croquis del siniestro.' },
-  { tipo: 'semaforo', reporta: 'Julián Herrera', barrio: 'Laureles', agente: 'Jorge Iván Ruiz', fecha: '2026-09-13', cierre: '13/9/2026 · 07:45 p.m.', informe: 'Semáforo sin luz verde por falla eléctrica. Se desvió el tráfico manualmente.' },
-  { tipo: 'accidente', reporta: 'Sofía Londoño', barrio: 'Manrique', agente: 'Andrea Cárdenas', fecha: '2026-09-13', cierre: '13/9/2026 · 04:30 p.m.', informe: 'Colisión múltiple sin lesionados, vehículos retirados de la vía.' },
-  { tipo: 'semaforo', reporta: 'Laura Peña', barrio: 'La Nevada', agente: 'Paula Andrea Gómez', fecha: '2026-09-12', cierre: '12/9/2026 · 06:15 p.m.', informe: 'Semáforo intermitente, se reportó a mantenimiento y se reguló el paso.' },
-];
+import { useEffect, useMemo, useRef, useState } from "react";
+import Layout from "../../Components/transito/Layout";
 
-const TIPO = {
-  semaforo: { txt: 'SEMÁFORO DAÑADO', clase: 'tipo-semaforo-dash' },
-  accidente: { txt: 'ACCIDENTE', clase: 'tipo-accidente-dash' },
-};
+import {
+  listarAtencionesCentral,
+  listarAgentesCentral,
+  listarAlertasCentral,
+  finalizadaCentral,
+  fechaCentral,
+  fechaRegistroCentral,
+  tipoCentral,
+  lugarCentral,
+  reportanteCentral,
+  normalizarCentral,
+  idAgenteCentral,
+  idAlertaCentral,
+  idAtencionCentral,
+  nombreAgenteCentral,
+} from "../../Services/centralTransitoService";
+
+function clasificarTipo(tipo) {
+  const valor = normalizarCentral(tipo);
+
+  if (valor.includes("SEMAFORO")) {
+    return "semaforo";
+  }
+
+  if (
+    valor.includes("ACCIDENTE") ||
+    valor.includes("CHOQUE")
+  ) {
+    return "accidente";
+  }
+
+  return "otro";
+}
+
+function claseTipo(tipo) {
+  const clasificacion = clasificarTipo(tipo);
+
+  if (clasificacion === "semaforo") {
+    return "tipo-semaforo-dash";
+  }
+
+  return "tipo-accidente-dash";
+}
+
+function fechaLocalISO(valor) {
+  if (!valor) return "";
+
+  const fecha = new Date(valor);
+
+  if (Number.isNaN(fecha.getTime())) return "";
+
+  const anio = fecha.getFullYear();
+  const mes = String(fecha.getMonth() + 1).padStart(2, "0");
+  const dia = String(fecha.getDate()).padStart(2, "0");
+
+  return `${anio}-${mes}-${dia}`;
+}
+
+function fechaCierreAtencion(atencion) {
+  return (
+    atencion.fechaFinalizacion ||
+    atencion.fechaCierre ||
+    atencion.fechaFin ||
+    atencion.fechaAtencion ||
+    fechaRegistroCentral(atencion)
+  );
+}
 
 export default function Historial() {
-  const [filtro, setFiltro] = useState('todos');
-  const [buscar, setBuscar] = useState('');
-  const [fecha, setFecha] = useState('');
-  const [sel, setSel] = useState(null);
+  const [atenciones, setAtenciones] = useState([]);
+  const [agentes, setAgentes] = useState([]);
+  const [alertas, setAlertas] = useState([]);
+  const [filtro, setFiltro] = useState("todos");
+  const [buscar, setBuscar] = useState("");
+  const [fecha, setFecha] = useState("");
+  const [seleccionado, setSeleccionado] = useState(null);
+  const [cargando, setCargando] = useState(true);
+  const [errores, setErrores] = useState([]);
+
   const fechaRef = useRef(null);
 
-  const abrirCalendario = () => {
-    const el = fechaRef.current;
-    if (el?.showPicker) el.showPicker();
-    else el?.focus();
-  };
-  const fechaTexto = fecha ? fecha.split('-').reverse().map(Number).join('/') : '';
+  useEffect(() => {
+    let activo = true;
 
-  const cuenta = (t) => CASOS.filter((c) => c.tipo === t).length;
-  const filas = CASOS.filter((c) =>
-    (filtro === 'todos' || c.tipo === filtro) &&
-    (!fecha || c.fecha === fecha) &&
-    `${c.barrio} ${c.agente} ${c.cierre}`.toLowerCase().includes(buscar.toLowerCase()));
+    async function cargar() {
+      const resultados = await Promise.allSettled([
+        listarAtencionesCentral(),
+        listarAgentesCentral(),
+        listarAlertasCentral(),
+      ]);
+
+      if (!activo) return;
+
+      const [rAtenciones, rAgentes, rAlertas] = resultados;
+      const mensajes = [];
+
+      if (rAtenciones.status === "fulfilled") {
+        setAtenciones(rAtenciones.value);
+      } else {
+        mensajes.push(
+          "No se pudo consultar el historial de atenciones."
+        );
+      }
+
+      if (rAgentes.status === "fulfilled") {
+        setAgentes(rAgentes.value);
+      } else {
+        mensajes.push(
+          "No se pudieron cargar los nombres de agentes."
+        );
+      }
+
+      if (rAlertas.status === "fulfilled") {
+        setAlertas(rAlertas.value);
+      } else {
+        mensajes.push(
+          "No se pudieron consultar los datos de las alertas."
+        );
+      }
+
+      setErrores(mensajes);
+      setCargando(false);
+    }
+
+    cargar();
+
+    return () => {
+      activo = false;
+    };
+  }, []);
+
+  const casos = useMemo(() => {
+    return atenciones
+      .filter(finalizadaCentral)
+      .map((atencion) => {
+        const idAgente =
+          atencion.idAgenteTransito ??
+          atencion.agenteTransitoId;
+
+        const agente = agentes.find(
+          (item) =>
+            idAgente != null &&
+            String(idAgenteCentral(item)) ===
+              String(idAgente)
+        );
+
+        const alerta = alertas.find(
+          (item) =>
+            atencion.idAlerta != null &&
+            String(idAlertaCentral(item)) ===
+              String(atencion.idAlerta)
+        );
+
+        const origen = alerta || atencion;
+        const tipo =
+          tipoCentral(origen) === "Sin tipo registrado"
+            ? tipoCentral(atencion)
+            : tipoCentral(origen);
+
+        const cierre = fechaCierreAtencion(atencion);
+
+        return {
+          id: idAtencionCentral(atencion),
+          tipo,
+          clasificacion: clasificarTipo(tipo),
+          reporta: reportanteCentral(origen),
+          barrio: lugarCentral(origen),
+          agente:
+            agente
+              ? nombreAgenteCentral(agente)
+              : atencion.nombreAgente ||
+                "No identificado",
+          fecha: fechaLocalISO(cierre),
+          cierre: fechaCentral(cierre),
+          informe:
+            atencion.descripcion ||
+            atencion.informe ||
+            atencion.observaciones ||
+            atencion.descripcionFinal ||
+            "",
+          estado:
+            atencion.estadoFinal ||
+            atencion.estado ||
+            "Finalizada",
+        };
+      })
+      .sort((a, b) =>
+        (b.fecha || "").localeCompare(a.fecha || "")
+      );
+  }, [atenciones, agentes, alertas]);
+
+  const cuenta = (tipo) =>
+    casos.filter(
+      (caso) => caso.clasificacion === tipo
+    ).length;
+
+  const filas = casos.filter((caso) => {
+    const coincideTipo =
+      filtro === "todos" ||
+      caso.clasificacion === filtro;
+
+    const coincideFecha =
+      !fecha || caso.fecha === fecha;
+
+    const texto = normalizarCentral(
+      [
+        caso.reporta,
+        caso.tipo,
+        caso.barrio,
+        caso.agente,
+        caso.cierre,
+        caso.informe,
+      ].join(" ")
+    );
+
+    return (
+      coincideTipo &&
+      coincideFecha &&
+      texto.includes(normalizarCentral(buscar))
+    );
+  });
+
+  function abrirCalendario() {
+    const elemento = fechaRef.current;
+
+    if (!elemento) return;
+
+    if (typeof elemento.showPicker === "function") {
+      try {
+        elemento.showPicker();
+      } catch {
+        elemento.focus();
+      }
+    } else {
+      elemento.focus();
+    }
+  }
+
+  const fechaTexto = fecha
+    ? fecha.split("-").reverse().join("/")
+    : "";
 
   return (
-    <Layout rol="central" titulo="Historial de casos" activo="historial"
-      busqueda={{ placeholder: 'Buscar por caso, barrio o agente...' }}>
-
+    <Layout
+      rol="central"
+      titulo="Historial de casos"
+      activo="historial"
+      busqueda={{
+        placeholder: "Buscar por caso, barrio o agente...",
+      }}
+    >
       <div className="mb-4">
-        <h1 className="section-title-dash">Historial de casos</h1>
-        <p className="section-text-dash mb-0">Consulta los casos de tránsito ya despachados y cerrados.</p>
+        <h1 className="section-title-dash">
+          Historial de casos
+        </h1>
+        <p className="section-text-dash mb-0">
+          Consulta los casos de tránsito despachados
+          y cerrados.
+        </p>
       </div>
+
+      {cargando && (
+        <div className="alert alert-info">
+          Cargando historial...
+        </div>
+      )}
+
+      {errores.length > 0 && (
+        <div className="alert alert-warning">
+          {errores.join(" ")}
+        </div>
+      )}
 
       <div className="table-card-dash">
         <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-          <div className="d-flex gap-2 tabs-dash">
-            <button className={`tab-dash ${filtro === 'todos' ? 'active-dash' : ''}`} onClick={() => setFiltro('todos')}>Todos ({CASOS.length})</button>
-            <button className={`tab-dash ${filtro === 'accidente' ? 'active-dash' : ''}`} onClick={() => setFiltro('accidente')}>Accidente ({cuenta('accidente')})</button>
-            <button className={`tab-dash ${filtro === 'semaforo' ? 'active-dash' : ''}`} onClick={() => setFiltro('semaforo')}>Semáforo dañado ({cuenta('semaforo')})</button>
+          <div className="d-flex gap-2 tabs-dash flex-wrap">
+            <button
+              type="button"
+              className={`tab-dash ${
+                filtro === "todos" ? "active-dash" : ""
+              }`}
+              onClick={() => setFiltro("todos")}
+            >
+              Todos ({casos.length})
+            </button>
+
+            <button
+              type="button"
+              className={`tab-dash ${
+                filtro === "accidente"
+                  ? "active-dash"
+                  : ""
+              }`}
+              onClick={() => setFiltro("accidente")}
+            >
+              Accidente ({cuenta("accidente")})
+            </button>
+
+            <button
+              type="button"
+              className={`tab-dash ${
+                filtro === "semaforo"
+                  ? "active-dash"
+                  : ""
+              }`}
+              onClick={() => setFiltro("semaforo")}
+            >
+              Semáforo dañado ({cuenta("semaforo")})
+            </button>
+
+            {cuenta("otro") > 0 && (
+              <button
+                type="button"
+                className={`tab-dash ${
+                  filtro === "otro" ? "active-dash" : ""
+                }`}
+                onClick={() => setFiltro("otro")}
+              >
+                Otros ({cuenta("otro")})
+              </button>
+            )}
           </div>
+
           <div className="d-flex align-items-center flex-wrap gap-2">
             <div className="input-group search-panel-dash">
-              <span className="input-group-text bg-white border-0"><i className="bi bi-search"></i></span>
-              <input type="text" className="form-control border-0" placeholder="Barrio, agente o fecha (13/9/2026)..."
-                value={buscar} onChange={(e) => setBuscar(e.target.value)} />
+              <span className="input-group-text bg-white border-0">
+                <i className="bi bi-search" />
+              </span>
+
+              <input
+                type="search"
+                className="form-control border-0"
+                placeholder="Barrio, agente o fecha..."
+                value={buscar}
+                onChange={(e) =>
+                  setBuscar(e.target.value)
+                }
+              />
             </div>
+
             <div className="fecha-wrap-dash">
-              <button type="button" className={`btn-fecha-dash ${fecha ? 'activo-dash' : ''}`}
-                onClick={abrirCalendario} title="Filtrar por fecha" aria-label="Filtrar por fecha">
-                <i className="bi bi-calendar3"></i>
+              <button
+                type="button"
+                className={`btn-fecha-dash ${
+                  fecha ? "activo-dash" : ""
+                }`}
+                onClick={abrirCalendario}
+                title="Filtrar por fecha"
+                aria-label="Filtrar por fecha"
+              >
+                <i className="bi bi-calendar3" />
               </button>
-              <input ref={fechaRef} type="date" className="fecha-oculta-dash" value={fecha}
-                onChange={(e) => setFecha(e.target.value)} tabIndex={-1} aria-hidden="true" />
+
+              <input
+                ref={fechaRef}
+                type="date"
+                className="fecha-oculta-dash"
+                value={fecha}
+                onChange={(e) =>
+                  setFecha(e.target.value)
+                }
+                tabIndex={-1}
+                aria-label="Fecha del historial"
+              />
             </div>
+
             {fecha && (
               <span className="chip-fecha-dash">
                 {fechaTexto}
-                <button type="button" onClick={() => setFecha('')} aria-label="Quitar fecha"><i className="bi bi-x"></i></button>
+                <button
+                  type="button"
+                  onClick={() => setFecha("")}
+                  aria-label="Quitar fecha"
+                >
+                  <i className="bi bi-x" />
+                </button>
               </span>
             )}
           </div>
         </div>
 
-        <table className="table align-middle mb-0">
-          <thead>
-            <tr><th>Reportado por</th><th>Tipo</th><th>Barrio</th><th>Agente asignado</th><th>Cierre</th><th className="text-end">&nbsp;</th></tr>
-          </thead>
-          <tbody>
-            {filas.map((c) => (
-              <tr key={c.cierre + c.reporta}>
-                <td>{c.reporta}</td>
-                <td><span className={`badge-tipo-dash ${TIPO[c.tipo].clase}`}>{TIPO[c.tipo].txt}</span></td>
-                <td>{c.barrio}</td>
-                <td>{c.agente}</td>
-                <td>{c.cierre}</td>
-                <td className="text-end">
-                  <a href="#" className="link-detalle-dash" data-bs-toggle="modal" data-bs-target="#modalDetalle"
-                    onClick={(e) => { e.preventDefault(); setSel(c); }}>Ver detalle</a>
-                </td>
+        <div className="table-responsive">
+          <table className="table align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Reportado por</th>
+                <th>Tipo</th>
+                <th>Barrio</th>
+                <th>Agente asignado</th>
+                <th>Cierre</th>
+                <th className="text-end"></th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+
+            <tbody>
+              {filas.map((caso, indice) => (
+                <tr key={caso.id ?? indice}>
+                  <td>{caso.reporta}</td>
+
+                  <td>
+                    <span
+                      className={`badge-tipo-dash ${claseTipo(
+                        caso.tipo
+                      )}`}
+                    >
+                      {normalizarCentral(caso.tipo)}
+                    </span>
+                  </td>
+
+                  <td>{caso.barrio}</td>
+                  <td>{caso.agente}</td>
+                  <td>{caso.cierre}</td>
+
+                  <td className="text-end">
+                    <button
+                      type="button"
+                      className="link-detalle-dash border-0 bg-transparent"
+                      onClick={() =>
+                        setSeleccionado(caso)
+                      }
+                    >
+                      Ver detalle
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {filas.length === 0 && (
+          <p className="text-center text-muted py-4 mb-0">
+            No hay casos cerrados que coincidan
+            con los filtros.
+          </p>
+        )}
 
         <div className="d-flex justify-content-between align-items-center pt-3 paginacion-dash">
-          <span className="text-muted small">Mostrando {filas.length} casos cerrados</span>
+          <span className="text-muted small">
+            Mostrando {filas.length} de {casos.length} casos
+            cerrados
+          </span>
+
           <div className="d-flex gap-1">
-            <button className="page-btn-dash active-dash">1</button>
+            <button
+              type="button"
+              className="page-btn-dash active-dash"
+            >
+              1
+            </button>
           </div>
         </div>
       </div>
 
-      {/* MODAL: DETALLE DEL CASO (SOLO LECTURA) */}
-      <div className="modal fade" id="modalDetalle" tabIndex="-1" aria-hidden="true">
-        <div className="modal-dialog">
-          <div className="modal-content modal-dash">
-            <div className="modal-header border-0 pb-0">
-              <h5 className="panel-title-dash mb-0">Detalle del caso</h5>
-              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-            </div>
-            <div className="modal-body">
-              <span className={`badge-tipo-dash mb-2 d-inline-block ${sel ? TIPO[sel.tipo].clase : ''}`}>{sel ? TIPO[sel.tipo].txt : '—'}</span>
-              <div className="perfil-datos-dash">
-                <div className="perfil-fila-dash"><span className="perfil-label-dash">Barrio</span><span className="perfil-valor-dash">{sel?.barrio ?? '—'}</span></div>
-                <div className="perfil-fila-dash"><span className="perfil-label-dash">Reportado por</span><span className="perfil-valor-dash">{sel?.reporta ?? '—'}</span></div>
-                <div className="perfil-fila-dash"><span className="perfil-label-dash">Agente asignado</span><span className="perfil-valor-dash">{sel?.agente ?? '—'}</span></div>
-                <div className="perfil-fila-dash"><span className="perfil-label-dash">Cierre</span><span className="perfil-valor-dash">{sel?.cierre ?? '—'}</span></div>
+      {seleccionado && (
+        <div
+          className="modal fade show"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="tituloDetalleHistorial"
+          style={{
+            display: "block",
+            backgroundColor: "rgba(0,0,0,.5)",
+          }}
+        >
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content modal-dash">
+              <div className="modal-header border-0 pb-0">
+                <h5
+                  id="tituloDetalleHistorial"
+                  className="panel-title-dash mb-0"
+                >
+                  Detalle del caso
+                </h5>
+
+                <button
+                  type="button"
+                  className="btn-close"
+                  aria-label="Cerrar"
+                  onClick={() =>
+                    setSeleccionado(null)
+                  }
+                />
               </div>
-              <p className="config-field-label-dash mt-3 mb-1">Informe</p>
-              <p className="detalle-descripcion-dash">{sel?.informe ?? '—'}</p>
+
+              <div className="modal-body">
+                <span
+                  className={`badge-tipo-dash mb-2 d-inline-block ${claseTipo(
+                    seleccionado.tipo
+                  )}`}
+                >
+                  {normalizarCentral(
+                    seleccionado.tipo
+                  )}
+                </span>
+
+                <div className="perfil-datos-dash">
+                  {[
+                    ["Barrio", seleccionado.barrio],
+                    [
+                      "Reportado por",
+                      seleccionado.reporta,
+                    ],
+                    [
+                      "Agente asignado",
+                      seleccionado.agente,
+                    ],
+                    ["Cierre", seleccionado.cierre],
+                    ["Estado", seleccionado.estado],
+                  ].map(([etiqueta, valor]) => (
+                    <div
+                      key={etiqueta}
+                      className="perfil-fila-dash"
+                    >
+                      <span className="perfil-label-dash">
+                        {etiqueta}
+                      </span>
+                      <span className="perfil-valor-dash">
+                        {valor}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                <p className="config-field-label-dash mt-3 mb-1">
+                  Informe
+                </p>
+
+                <p className="detalle-descripcion-dash">
+                  {seleccionado.informe ||
+                    "No hay informe registrado."}
+                </p>
+              </div>
+
+              <div className="modal-footer border-0">
+                <button
+                  type="button"
+                  className="btn btn-light"
+                  onClick={() =>
+                    setSeleccionado(null)
+                  }
+                >
+                  Cerrar
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </Layout>
   );
 }

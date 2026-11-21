@@ -1,3 +1,4 @@
+@scope (.dt) {
 .section-title-dash {
   font-family: 'Inter', sans-serif;
   font-weight: 700;
@@ -152,3 +153,4 @@
 .badge-critico-dash  { background-color: #fdecec; color: #dc2626; }
 .badge-proceso-dash  { background-color: #fef6e7; color: #d97706; }
 .badge-resuelto-dash { background-color: #eafaf1; color: #16a34a; }
+}

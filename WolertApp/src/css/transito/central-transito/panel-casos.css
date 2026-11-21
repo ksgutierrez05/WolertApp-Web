@@ -1,3 +1,4 @@
+@scope (.ct) {
 .section-title-dash {
   font-family: 'Inter', sans-serif;
   font-weight: 700;
@@ -283,4 +284,5 @@
 .btn-asignar-fila-dash:disabled {
   background-color: #eef1f5;
   color: #b6bfcc;
+}
 }

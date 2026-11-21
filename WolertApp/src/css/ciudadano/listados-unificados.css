@@ -1,0 +1,109 @@
+
+/* Estilos de los listados Ciudadano, siguiendo la composición de Semáforos.
+   Aislados para no modificar Tránsito, Policía ni las otras páginas. */
+.ciudadano-shell .ciudadano-listado {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 20px 4px 35px;
+}
+.ciudadano-shell .ciudadano-page-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin: 0 0 26px;
+}
+.ciudadano-shell .ciudadano-page-heading h1 {
+  margin: 0 0 7px;
+  color: #102c4b;
+  font-size: clamp(25px, 2.3vw, 32px);
+  font-weight: 800;
+  letter-spacing: -.035em;
+}
+.ciudadano-shell .ciudadano-page-heading p {
+  margin: 0;
+  color: #657994;
+  font-size: 14px;
+}
+.ciudadano-shell .ciudadano-page-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #184a8c;
+  color: #fff;
+  padding: 10px 21px;
+  border-radius: 30px;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 700;
+}
+.ciudadano-shell .ciudadano-page-action:hover {
+  background: #0e2f57;
+  color: #fff;
+}
+.ciudadano-shell .ciudadano-listado .kpi-dash {
+  min-height: 124px;
+  padding: 20px;
+  border-radius: 17px;
+  border-top: 1px solid #e8edf5;
+  border-right: 1px solid #e8edf5;
+  border-bottom: 1px solid #e8edf5;
+}
+.ciudadano-shell .ciudadano-listado .kpi-num-dash {
+  font-size: 29px;
+  margin-bottom: 5px;
+}
+.ciudadano-shell .ciudadano-listado .kpi-label-dash {
+  font-size: 12.5px;
+  margin: 2px 0;
+}
+.ciudadano-shell .ciudadano-listado .ciudadano-kpi-sub {
+  font-weight: 400;
+  color: #70829b;
+}
+.ciudadano-shell .ciudadano-listado .ciudadano-table-panel {
+  border-radius: 19px;
+  overflow: hidden;
+  border: 1px solid #e8edf4;
+  background: white;
+  box-shadow: 0 3px 12px rgba(14,47,87,.035);
+}
+.ciudadano-shell .ciudadano-mis-alertas .misalertas-toolbar-dash {
+  padding: 20px 22px;
+}
+.ciudadano-shell .ciudadano-mis-alertas .misalertas-tabs-dash {
+  background: #edf1f8;
+}
+.ciudadano-shell .ciudadano-mis-alertas .misalertas-tab-dash {
+  padding: 10px 20px;
+  font-size: 13px;
+}
+.ciudadano-shell .ciudadano-mis-alertas .misalertas-tab-dash.active {
+  background: #184a8c;
+  color: #fff;
+}
+.ciudadano-shell .ciudadano-mis-alertas #listaMisAlertas > .card-panel-dash {
+  border: 1px solid #e8edf5;
+  border-radius: 15px;
+  box-shadow: none;
+  transition: background .15s ease;
+}
+.ciudadano-shell .ciudadano-mis-alertas #listaMisAlertas > .card-panel-dash:hover {
+  background: #f8faff;
+}
+.ciudadano-shell .ciudadano-vecinos .vecino-row-usu {
+  min-height: 78px;
+  padding: 19px 24px !important;
+}
+.ciudadano-shell .ciudadano-vecinos .vecino-row-usu:hover {
+  background: #f7faff;
+}
+.ciudadano-shell .ciudadano-vecinos .nombre-usu {
+  font-weight: 700;
+  color: #183657;
+}
+@media (max-width: 700px) {
+  .ciudadano-shell .ciudadano-listado { padding: 12px 0 25px; }
+  .ciudadano-shell .ciudadano-page-heading { align-items: flex-start; }
+}

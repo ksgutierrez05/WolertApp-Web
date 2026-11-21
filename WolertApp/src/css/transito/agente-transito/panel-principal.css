@@ -1,3 +1,4 @@
+@scope (.ag) {
 .sec-head-ag {
   display: flex;
   align-items: center;
@@ -377,3 +378,17 @@
     gap: 10px;
   }
 }
+}
+
+/* Restauración visual exclusiva del panel Agente de Tránsito. */
+.ag .hero-dash.hero-img-dash {
+  position: relative; overflow: hidden; isolation: isolate;
+  background-image: linear-gradient(90deg, rgba(12,40,75,.93) 0%, rgba(18,55,92,.82) 48%, rgba(18,55,92,.22) 100%), url("/img/Maria Mulata.jpg");
+  background-position: center, center 48%; background-size: cover; background-repeat: no-repeat;
+  color: #fff; min-height: 245px; padding: 30px 36px; border-radius: 20px;
+}
+.ag .hero-img-dash .hero-title-dash { color: #fff; font-size: clamp(29px, 3.2vw, 40px); line-height: 1.12; max-width: 650px; }
+.ag .hero-img-dash .hero-text-dash { color: #e3ebf7; max-width: 540px; }
+.ag .hero-img-dash .eyebrow-img-dash { color: #e6effb; }
+.ag .hero-img-dash .hero-cta-dash { color: #173c65; }
+@media(max-width: 700px) { .ag .hero-dash.hero-img-dash { padding: 25px 22px; min-height: 225px; } }

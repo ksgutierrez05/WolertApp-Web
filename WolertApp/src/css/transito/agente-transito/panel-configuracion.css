@@ -1,3 +1,4 @@
+@scope (.ag) {
 .section-title-dash {
   font-family: 'Inter', sans-serif;
   font-weight: 700;
@@ -214,3 +215,4 @@
 }
 
 .btn-primary-dash:hover { opacity: 0.92; color: #ffffff; }
+}

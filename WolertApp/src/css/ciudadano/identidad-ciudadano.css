@@ -1,0 +1,230 @@
+
+/* CIUDADANO: identidad visual propia y aislada.
+   Mismo lenguaje de Hero, KPI y rail de Tránsito;
+   conserva la paleta azul original de Álvaro (#0e2f57, #184a8c).
+   Ninguna regla afecta Tránsito, Policía ni Administrador. */
+.ciudadano-shell {
+  --color-primary: #0e2f57;
+  --color-primary-2: #184a8c;
+  --cit-primary: #184a8c;
+  --cit-soft: #eaf1fb;
+  background: #f6f7fa;
+  min-height: 100vh;
+}
+.ciudadano-shell .admin-layout__main {
+  background: #f6f7fa;
+  padding: 24px clamp(16px, 2.2vw, 36px);
+}
+.ciudadano-shell .admin-layout__sidebar-slot,
+.ciudadano-shell .admin-layout__sidebar-slot.collapsed {
+  width: 86px;
+}
+.ciudadano-shell .admin-layout__sidebar-slot.peek {
+  width: 250px;
+}
+.ciudadano-shell .admin-layout__sidebar {
+  width: 250px;
+  background: #fff;
+  border-right: 1px solid #e3e8f1;
+  box-shadow: none;
+  transition: width .24s ease, box-shadow .24s ease;
+}
+.ciudadano-shell .admin-layout__sidebar.collapsed {
+  width: 86px;
+}
+.ciudadano-shell .admin-layout__sidebar.collapsed.peek {
+  width: 250px;
+  box-shadow: 12px 0 28px -18px rgba(23,43,65,.3);
+}
+.ciudadano-shell .sidebar {
+  padding: 22px 0 18px;
+  gap: 3px;
+}
+.ciudadano-shell .sidebar__brand {
+  border-bottom: 0;
+  padding: 8px 18px 25px;
+  min-height: 90px;
+}
+.ciudadano-shell .sidebar__brand-mark {
+  width: 54px;
+  height: 54px;
+  padding: 9px;
+  border-radius: 16px;
+  background: linear-gradient(145deg, var(--color-primary-2), var(--color-primary));
+  box-shadow: 0 5px 14px rgba(14,47,87,.15);
+}
+.ciudadano-shell .sidebar__brand-mark img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain;
+}
+.ciudadano-shell .sidebar__brand-text {
+  color: #173557;
+  font-size: 16px;
+  font-weight: 800;
+}
+.ciudadano-shell .sidebar__group-label {
+  padding: 14px 21px 6px;
+  color: #8d9ab1;
+  font-size: 10px;
+  letter-spacing: .11em;
+}
+.ciudadano-shell .sidebar__link {
+  border-radius: 14px;
+  margin: 4px 14px;
+  width: calc(100% - 28px);
+  padding: 11px 14px;
+  color: #71819d;
+  font-size: 13px;
+  background: transparent;
+}
+.ciudadano-shell .sidebar__link i {
+  font-size: 19px;
+  width: 24px;
+}
+.ciudadano-shell .sidebar__link:hover {
+  background: var(--cit-soft);
+  color: var(--cit-primary);
+}
+.ciudadano-shell .sidebar__link.active {
+  color: #fff;
+  background: linear-gradient(135deg, var(--color-primary-2), var(--color-primary));
+  box-shadow: 0 6px 14px rgba(24,74,140,.18);
+}
+.ciudadano-shell .admin-layout__sidebar.collapsed:not(.peek) .sidebar__brand {
+  padding: 8px 0 25px;
+}
+.ciudadano-shell .admin-layout__sidebar.collapsed:not(.peek) .sidebar__link {
+  width: 54px;
+  height: 54px;
+  padding: 0;
+  margin: 4px auto;
+  border-radius: 15px;
+  justify-content: center;
+}
+.ciudadano-shell .admin-layout__sidebar.collapsed:not(.peek) .sidebar__link i {
+  width: auto;
+  font-size: 21px;
+}
+.ciudadano-shell .sidebar__footer {
+  border-top: 0;
+  padding: 14px 12px 0;
+}
+.ciudadano-shell .sidebar__logout {
+  color: #c83d52;
+  border-radius: 14px;
+}
+.ciudadano-shell .sidebar__logout:hover {
+  color: #b91c37;
+  background: #fff1f3;
+}
+.ciudadano-shell .admin-layout__sidebar.collapsed:not(.peek) .sidebar__logout {
+  width: 54px;
+  height: 50px;
+  margin: 0 auto;
+  padding: 0;
+}
+.ciudadano-shell .hero-dash.hero-ciudadano-usu {
+  min-height: 310px;
+  height: auto;
+  border-radius: 22px;
+  padding: 38px clamp(25px, 3vw, 50px);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  isolation: isolate;
+  background: var(--color-primary-2) var(--hero-img) right center / cover no-repeat;
+  box-shadow: 0 8px 24px rgba(14,47,87,.08);
+}
+.ciudadano-shell .hero-dash.hero-ciudadano-usu::before {
+  z-index: -1;
+  background: linear-gradient(90deg,
+    rgba(14,47,87,.97) 0%,
+    rgba(24,74,140,.93) 38%,
+    rgba(24,74,140,.50) 69%,
+    rgba(24,74,140,.08) 100%);
+}
+.ciudadano-shell .hero-ciudadano-usu .eyebrow-dash {
+  color: #bfe9ff;
+  font-size: 12px;
+  letter-spacing: .09em;
+  font-weight: 700;
+  margin-bottom: 14px;
+}
+.ciudadano-shell .hero-ciudadano-usu .hero-title-dash {
+  font-size: clamp(28px, 3.2vw, 44px);
+  line-height: 1.12;
+  max-width: 660px;
+  font-weight: 800;
+  margin: 0;
+}
+.ciudadano-shell .hero-ciudadano-usu .hero-text-dash {
+  font-size: 14px;
+  line-height: 1.65;
+  max-width: 540px;
+  margin: 12px 0 0;
+  color: #eef5ff;
+}
+.ciudadano-shell .hero-ciudadano-usu .hero-cta-dash {
+  background: #fff;
+  border: 0;
+  color: var(--color-primary);
+  font-weight: 700;
+  padding: 12px 22px;
+  margin-top: 20px !important;
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(0,0,0,.08);
+}
+.ciudadano-shell .hero-ciudadano-usu .hero-cta-dash:hover {
+  background: #eaf1fb;
+  color: var(--color-primary);
+}
+.ciudadano-shell .kpi-dash {
+  display: block;
+  position: relative;
+  min-height: 120px;
+  padding: 18px 20px 16px;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(16,38,65,.05);
+  overflow: hidden;
+}
+.ciudadano-shell .kpi-dash .kpi-num-dash {
+  display: block;
+  position: relative;
+  z-index: 1;
+  font-size: clamp(23px, 2vw, 30px);
+  line-height: 1.2;
+  font-weight: 800;
+  margin-bottom: 7px;
+}
+.ciudadano-shell .kpi-dash .kpi-label-dash {
+  display: block;
+  position: relative;
+  z-index: 1;
+  font-size: 12px;
+  line-height: 1.4;
+  font-weight: 600;
+  color: #536684;
+}
+.ciudadano-shell .kpi-dash .kpi-icon-dash {
+  display: block;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 78px;
+  opacity: .12;
+}
+@media (max-width: 768px) {
+  .ciudadano-shell .admin-layout__main { padding: 16px 8px; }
+  .ciudadano-shell .hero-dash.hero-ciudadano-usu {
+    min-height: 280px;
+    padding: 28px 24px;
+  }
+  .ciudadano-shell .hero-dash.hero-ciudadano-usu::before {
+    background: linear-gradient(90deg, rgba(14,47,87,.95), rgba(24,74,140,.65));
+  }
+  .ciudadano-shell .hero-ciudadano-usu .hero-title-dash { font-size: 30px; }
+}

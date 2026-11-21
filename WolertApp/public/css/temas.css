@@ -1,0 +1,21 @@
+/* TEMAS.CSS función de cambiar el color de la plantilla global */
+
+.rol-transito {
+  --color-primary: #517aac;
+  --color-primary-2: #2d609c;
+}
+
+.rol-policia {
+  --color-primary: #1a6b3d;
+  --color-primary-2: #2f8f57;
+}
+
+.rol-administrador {
+ --color-primary: #0e2f57;
+  --color-primary-2: #184a8c;
+}
+
+.rol-ciudadano {
+ --color-primary: #0e2f57;
+  --color-primary-2: #184a8c;
+}

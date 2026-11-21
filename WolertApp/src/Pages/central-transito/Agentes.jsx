@@ -1,115 +1,399 @@
-import { useState } from 'react';
-import Layout from '../../Components/transito/Layout';
-import KpiCard from '../../Components/transito/KpiCard';
 
-const AGENTES = [
-  { ini: 'AC', nombre: 'Andrea Cárdenas', cedula: 'CC 1.085.221.404', zona: 'Zona Norte', grupo: 'Grupo Alfa · Moto 14', estado: 'disponible', caso: '—', canal: 'Canal 2' },
-  { ini: 'FO', nombre: 'Felipe Ossa', cedula: 'CC 1.085.330.118', zona: 'Zona Centro', grupo: 'Grupo Bravo · Moto 07', estado: 'atencion', caso: 'Accidente · Calle 33', canal: 'Canal 1' },
-  { ini: 'MZ', nombre: 'Manuela Zapata', cedula: 'CC 1.085.447.592', zona: 'Zona Sur', grupo: 'Grupo Delta · Moto 22', estado: 'atencion', caso: 'Semáforo dañado · El Poblado', canal: 'Canal 3' },
-  { ini: 'JR', nombre: 'Jorge Iván Ruiz', cedula: 'CC 1.085.502.761', zona: 'Zona Oriente', grupo: 'Grupo Eco · Moto 11', estado: 'disponible', caso: '—', canal: 'Canal 2' },
-  { ini: 'PG', nombre: 'Paula Andrea Gómez', cedula: 'CC 1.085.618.025', zona: 'Zona Norte', grupo: 'Grupo Charlie · Moto 03', estado: 'no-disponible', caso: '—', canal: 'Canal 4' },
-];
+import { useEffect, useMemo, useState } from "react";
+import Layout from "../../Components/transito/Layout";
+import KpiCard from "../../Components/transito/KpiCard";
 
-const ESTADO = {
-  'disponible': { txt: 'Disponible', badge: 'green', avatar: 'green' },
-  'atencion': { txt: 'En atención', badge: 'amber', avatar: 'amber' },
-  'no-disponible': { txt: 'No disponible', badge: 'red', avatar: 'blue' },
+import {
+  listarAgentesCentral,
+  listarUnidadesCentral,
+  listarAtencionesCentral,
+  prepararAgentesCentral,
+  normalizarCentral,
+} from "../../Services/centralTransitoService";
+
+const ESTADOS = {
+  disponible: {
+    texto: "Disponible",
+    color: "green",
+    avatar: "green",
+  },
+  atencion: {
+    texto: "En atención",
+    color: "amber",
+    avatar: "amber",
+  },
+  "no-disponible": {
+    texto: "No disponible",
+    color: "red",
+    avatar: "blue",
+  },
+  desconocido: {
+    texto: "No informado",
+    color: "blue",
+    avatar: "blue",
+  },
 };
 
 export default function Agentes() {
-  const [filtro, setFiltro] = useState('todos');
-  const [buscar, setBuscar] = useState('');
-  const [sel, setSel] = useState(null);
+  const [agentes, setAgentes] = useState([]);
+  const [unidades, setUnidades] = useState([]);
+  const [atenciones, setAtenciones] = useState([]);
+  const [filtro, setFiltro] = useState("todos");
+  const [buscar, setBuscar] = useState("");
+  const [seleccionado, setSeleccionado] = useState(null);
+  const [cargando, setCargando] = useState(true);
+  const [errores, setErrores] = useState([]);
 
-  const cuenta = (e) => AGENTES.filter((a) => a.estado === e).length;
-  const filas = AGENTES.filter((a) =>
-    (filtro === 'todos' || a.estado === filtro) &&
-    `${a.nombre} ${a.zona}`.toLowerCase().includes(buscar.toLowerCase()));
+  useEffect(() => {
+    let activo = true;
+
+    async function cargar() {
+      const resultados = await Promise.allSettled([
+        listarAgentesCentral(),
+        listarUnidadesCentral(),
+        listarAtencionesCentral(),
+      ]);
+
+      if (!activo) return;
+
+      const [a, u, t] = resultados;
+      const mensajes = [];
+
+      if (a.status === "fulfilled") {
+        setAgentes(a.value);
+      } else {
+        mensajes.push("No se pudieron cargar los agentes.");
+      }
+
+      if (u.status === "fulfilled") {
+        setUnidades(u.value);
+      } else {
+        mensajes.push("No se pudieron cargar las unidades.");
+      }
+
+      if (t.status === "fulfilled") {
+        setAtenciones(t.value);
+      } else {
+        mensajes.push("No se pudieron cargar las atenciones.");
+      }
+
+      setErrores(mensajes);
+      setCargando(false);
+    }
+
+    cargar();
+
+    return () => {
+      activo = false;
+    };
+  }, []);
+
+  const datos = useMemo(
+    () =>
+      prepararAgentesCentral(
+        agentes,
+        unidades,
+        atenciones
+      ),
+    [agentes, unidades, atenciones]
+  );
+
+  const contar = (estado) =>
+    datos.filter((agente) => agente.estado === estado)
+      .length;
+
+  const filtrados = datos.filter((agente) => {
+    if (
+      filtro !== "todos" &&
+      agente.estado !== filtro
+    ) {
+      return false;
+    }
+
+    const texto = normalizarCentral(
+      [
+        agente.nombre,
+        agente.cedula,
+        agente.zona,
+        agente.grupo,
+        agente.casoActual,
+      ].join(" ")
+    );
+
+    return texto.includes(normalizarCentral(buscar));
+  });
 
   return (
-    <Layout rol="central" titulo="Agentes" activo="agentes"
-      busqueda={{ placeholder: 'Buscar por caso, barrio o agente...' }}>
-
+    <Layout
+      rol="central"
+      titulo="Agentes"
+      activo="agentes"
+      busqueda={{
+        placeholder: "Buscar por agente o barrio...",
+      }}
+    >
       <div className="mb-4">
         <h1 className="section-title-dash">Agentes</h1>
-        <p className="section-text-dash mb-0">Consulta el estado y la disponibilidad de los agentes de tránsito para asignar casos.</p>
+        <p className="section-text-dash mb-0">
+          Consulta el estado y la disponibilidad
+          de los agentes de tránsito.
+        </p>
       </div>
 
+      {cargando && (
+        <div className="alert alert-info">
+          Cargando agentes...
+        </div>
+      )}
+
+      {errores.length > 0 && (
+        <div className="alert alert-warning">
+          {errores.join(" ")}
+        </div>
+      )}
+
       <div className="row g-3 mb-5">
-        <KpiCard color="blue" valor={AGENTES.length} label="Agentes totales" icono="bi-people" />
-        <KpiCard color="green" valor={cuenta('disponible')} label="Disponibles ahora" icono="bi-person-check" />
-        <KpiCard color="amber" valor={cuenta('atencion')} label="En atención" icono="bi-cone-striped" />
-        <KpiCard color="red" valor={cuenta('no-disponible')} label="No disponibles" icono="bi-person-dash" />
+        <KpiCard
+          color="blue"
+          valor={datos.length}
+          label="Agentes totales"
+          icono="bi-people"
+        />
+        <KpiCard
+          color="green"
+          valor={contar("disponible")}
+          label="Disponibles ahora"
+          icono="bi-person-check"
+        />
+        <KpiCard
+          color="amber"
+          valor={contar("atencion")}
+          label="En atención"
+          icono="bi-cone-striped"
+        />
+        <KpiCard
+          color="red"
+          valor={contar("no-disponible")}
+          label="No disponibles"
+          icono="bi-person-dash"
+        />
       </div>
 
       <div className="table-card-dash">
         <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-          <div className="d-flex gap-2 tabs-dash">
-            <button className={`tab-dash ${filtro === 'todos' ? 'active-dash' : ''}`} onClick={() => setFiltro('todos')}>Todos ({AGENTES.length})</button>
-            <button className={`tab-dash ${filtro === 'disponible' ? 'active-dash' : ''}`} onClick={() => setFiltro('disponible')}>Disponibles ({cuenta('disponible')})</button>
-            <button className={`tab-dash ${filtro === 'atencion' ? 'active-dash' : ''}`} onClick={() => setFiltro('atencion')}>En atención ({cuenta('atencion')})</button>
-          </div>
-          <div className="input-group search-panel-dash">
-            <span className="input-group-text bg-white border-0"><i className="bi bi-search"></i></span>
-            <input type="text" className="form-control border-0" placeholder="Buscar agente o zona..."
-              value={buscar} onChange={(e) => setBuscar(e.target.value)} />
-          </div>
-        </div>
-
-        <table className="table align-middle mb-0">
-          <thead>
-            <tr><th>Agente</th><th>Zona</th><th>Estado</th><th>Caso actual</th><th className="text-end">&nbsp;</th></tr>
-          </thead>
-          <tbody>
-            {filas.map((a) => (
-              <tr key={a.ini}>
-                <td>
-                  <div className="d-flex align-items-center gap-2">
-                    <span className={`avatar-icon-dash avatar-${ESTADO[a.estado].avatar}-dash`}>{a.ini}</span>
-                    <div className="info-title-dash">{a.nombre}</div>
-                  </div>
-                </td>
-                <td>{a.zona}</td>
-                <td><span className={`badge-dash badge-${ESTADO[a.estado].badge}-dash`}>{ESTADO[a.estado].txt}</span></td>
-                <td>{a.caso}</td>
-                <td className="text-end">
-                  <a href="#" className="link-detalle-dash" data-bs-toggle="modal" data-bs-target="#modalPerfil"
-                    onClick={(e) => { e.preventDefault(); setSel(a); }}>Ver perfil</a>
-                </td>
-              </tr>
+          <div className="d-flex gap-2 tabs-dash flex-wrap">
+            {[
+              ["todos", "Todos"],
+              ["disponible", "Disponibles"],
+              ["atencion", "En atención"],
+              ["no-disponible", "No disponibles"],
+              ["desconocido", "Sin estado"],
+            ].map(([id, texto]) => (
+              <button
+                key={id}
+                type="button"
+                className={`tab-dash ${
+                  filtro === id ? "active-dash" : ""
+                }`}
+                onClick={() => setFiltro(id)}
+              >
+                {texto} (
+                {id === "todos"
+                  ? datos.length
+                  : contar(id)}
+                )
+              </button>
             ))}
-          </tbody>
-        </table>
+          </div>
+
+          <div className="input-group search-panel-dash">
+            <span className="input-group-text bg-white border-0">
+              <i className="bi bi-search" />
+            </span>
+            <input
+              type="search"
+              className="form-control border-0"
+              placeholder="Buscar agente, cédula o zona..."
+              value={buscar}
+              onChange={(e) => setBuscar(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className="table-responsive">
+          <table className="table align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Agente</th>
+                <th>Zona</th>
+                <th>Estado</th>
+                <th>Caso actual</th>
+                <th className="text-end">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtrados.map((agente, indice) => {
+                const estado =
+                  ESTADOS[agente.estado] ||
+                  ESTADOS.desconocido;
+
+                return (
+                  <tr key={agente.id ?? indice}>
+                    <td>
+                      <div className="d-flex align-items-center gap-2">
+                        <span
+                          className={`avatar-icon-dash avatar-${estado.avatar}-dash`}
+                        >
+                          {agente.iniciales}
+                        </span>
+                        <div>
+                          <div className="info-title-dash">
+                            {agente.nombre}
+                          </div>
+                          <div className="info-sub-dash">
+                            {agente.cedula}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+
+                    <td>{agente.zona}</td>
+
+                    <td>
+                      <span
+                        className={`badge-dash badge-${estado.color}-dash`}
+                      >
+                        {estado.texto}
+                      </span>
+                    </td>
+
+                    <td>{agente.casoActual}</td>
+
+                    <td className="text-end">
+                      <button
+                        type="button"
+                        className="link-detalle-dash border-0 bg-transparent"
+                        onClick={() =>
+                          setSeleccionado(agente)
+                        }
+                      >
+                        Ver perfil
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+
+        {filtrados.length === 0 && (
+          <p className="text-center text-muted py-4 mb-0">
+            No se encontraron agentes.
+          </p>
+        )}
+
+        <div className="d-flex justify-content-between align-items-center pt-3 paginacion-dash">
+          <span className="text-muted small">
+            Mostrando {filtrados.length} de{" "}
+            {datos.length} agentes
+          </span>
+        </div>
       </div>
 
-      {/* MODAL: PERFIL DEL AGENTE (SOLO LECTURA) */}
-      <div className="modal fade" id="modalPerfil" tabIndex="-1" aria-hidden="true">
-        <div className="modal-dialog">
-          <div className="modal-content modal-dash">
-            <div className="modal-header border-0 pb-0">
-              <h5 className="panel-title-dash mb-0">Perfil del agente</h5>
-              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-            </div>
-            <div className="modal-body">
-              <div className="perfil-header-dash">
-                <span className="avatar-icon-dash avatar-blue-dash avatar-grande-dash">{sel?.ini ?? '--'}</span>
-                <div>
-                  <div className="perfil-nombre-dash">{sel?.nombre ?? '—'}</div>
-                  <div className="perfil-cedula-dash">{sel?.cedula ?? '—'}</div>
+      {seleccionado && (
+        <div
+          className="modal fade show"
+          id="modalPerfil"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="tituloPerfilCentral"
+          style={{
+            display: "block",
+            backgroundColor: "rgba(0,0,0,.5)",
+          }}
+        >
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content modal-dash">
+              <div className="modal-header border-0 pb-0">
+                <h5
+                  id="tituloPerfilCentral"
+                  className="panel-title-dash mb-0"
+                >
+                  Perfil del agente
+                </h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  aria-label="Cerrar"
+                  onClick={() => setSeleccionado(null)}
+                />
+              </div>
+
+              <div className="modal-body">
+                <div className="perfil-header-dash">
+                  <span className="avatar-icon-dash avatar-blue-dash avatar-grande-dash">
+                    {seleccionado.iniciales}
+                  </span>
+                  <div>
+                    <div className="perfil-nombre-dash">
+                      {seleccionado.nombre}
+                    </div>
+                    <div className="perfil-cedula-dash">
+                      {seleccionado.cedula}
+                    </div>
+                  </div>
                 </div>
+
+                <div className="perfil-datos-dash">
+                  {[
+                    ["Zona", seleccionado.zona],
+                    ["Grupo", seleccionado.grupo],
+                    [
+                      "Estado",
+                      ESTADOS[seleccionado.estado]?.texto ||
+                        "No informado",
+                    ],
+                    ["Caso actual", seleccionado.casoActual],
+                    [
+                      "Atenciones registradas",
+                      seleccionado.totalAtenciones,
+                    ],
+                    ["Canal de radio", seleccionado.canal],
+                  ].map(([etiqueta, valor]) => (
+                    <div
+                      key={etiqueta}
+                      className="perfil-fila-dash"
+                    >
+                      <span className="perfil-label-dash">
+                        {etiqueta}
+                      </span>
+                      <span className="perfil-valor-dash">
+                        {valor}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                <p className="perfil-nota-dash">
+                  La edición de los datos del agente
+                  corresponde al Director de Tránsito.
+                </p>
               </div>
-              <div className="perfil-datos-dash">
-                <div className="perfil-fila-dash"><span className="perfil-label-dash">Zona</span><span className="perfil-valor-dash">{sel?.zona ?? '—'}</span></div>
-                <div className="perfil-fila-dash"><span className="perfil-label-dash">Grupo</span><span className="perfil-valor-dash">{sel?.grupo ?? '—'}</span></div>
-                <div className="perfil-fila-dash"><span className="perfil-label-dash">Estado</span><span className="perfil-valor-dash">{sel ? ESTADO[sel.estado].txt : '—'}</span></div>
-                <div className="perfil-fila-dash"><span className="perfil-label-dash">Caso actual</span><span className="perfil-valor-dash">{sel?.caso ?? '—'}</span></div>
-                <div className="perfil-fila-dash"><span className="perfil-label-dash">Canal de radio</span><span className="perfil-valor-dash">{sel?.canal ?? '—'}</span></div>
+
+              <div className="modal-footer border-0">
+                <button
+                  type="button"
+                  className="btn btn-light"
+                  onClick={() => setSeleccionado(null)}
+                >
+                  Cerrar
+                </button>
               </div>
-              <p className="perfil-nota-dash">Solo el Director de Tránsito puede editar los datos del agente.</p>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </Layout>
   );
 }

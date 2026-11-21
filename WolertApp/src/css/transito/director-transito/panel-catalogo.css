@@ -1,3 +1,4 @@
+@scope (.dt) {
 .section-title-dash {
   font-family: 'Inter', sans-serif;
   font-weight: 700;
@@ -118,4 +119,5 @@
 #modalCatalogo .form-select:focus {
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(142, 61, 61, 0.12);
+}
 }

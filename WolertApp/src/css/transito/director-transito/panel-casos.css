@@ -1,3 +1,4 @@
+@scope (.dt) {
 .section-title-dash {
    font-family: 'Inter', sans-serif;
   font-weight: 700;
@@ -253,3 +254,4 @@
 .pill-camino-dash.pill-activa-dash   { background-color: #eaf1fe; color: #2f6fed; border-color: #2f6fed; }
 .pill-resuelta-dash.pill-activa-dash { background-color: #e9f8ee; color: #2fa84f; border-color: #2fa84f; }
  
+}
