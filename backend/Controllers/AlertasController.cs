@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Oracle.ManagedDataAccess.Client;
+using WolertApp.Helpers;
 
 namespace backend.Controllers
 {
@@ -242,5 +243,113 @@ namespace backend.Controllers
             var i = primera.IndexOf(": ", StringComparison.Ordinal);
             return i >= 0 ? primera[(i + 2)..].Trim() : primera.Trim();
         }
+
+        // POST: api/Alertas/122/cerrar
+        // Cierre de alertas por Central Policía o Central Tránsito
+
+        [HttpPost("{id:int}/cerrar")]
+        [Authorize(Roles = "CENTRAL_POLICIA,CENTRAL_TRANSITO")]
+        public async Task<IActionResult> CerrarAlerta(
+            int id,
+            [FromBody] CerrarAlertaRequest? solicitud)
+        {
+            var idTexto = User.FindFirstValue(
+                ClaimTypes.NameIdentifier);
+
+            if (!int.TryParse(idTexto, out var idUsuarioCentral))
+            {
+                return Unauthorized(
+                    "No se pudo identificar al usuario de la Central.");
+            }
+
+            if (solicitud == null ||
+                string.IsNullOrWhiteSpace(solicitud.EstadoFinal))
+            {
+                return BadRequest("Debes indicar el estado final.");
+            }
+
+            var estadoFinal = solicitud.EstadoFinal
+                .Trim()
+                .ToUpperInvariant();
+
+            if (estadoFinal != "RESUELTA" &&
+                estadoFinal != "CANCELADA")
+            {
+                return BadRequest(
+                    "El estado debe ser RESUELTA o CANCELADA.");
+            }
+
+            // Ejecutar el procedimiento existente en Oracle
+            var conexion = (OracleConnection)
+                _context.Database.GetDbConnection();
+
+            var abrir = conexion.State != ConnectionState.Open;
+
+            if (abrir)
+                await conexion.OpenAsync();
+
+            try
+            {
+                using var cmd = conexion.CreateCommand();
+
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = "PKG_ALERTAS.PR_CERRAR_ALERTA";
+                cmd.BindByName = true;
+
+                cmd.Parameters.Add(
+                    "p_id_alerta",
+                    OracleDbType.Int32).Value = id;
+
+                cmd.Parameters.Add(
+                    "p_id_usuario_central",
+                    OracleDbType.Int32).Value = idUsuarioCentral;
+
+                cmd.Parameters.Add(
+                    "p_estado_final",
+                    OracleDbType.Varchar2).Value = estadoFinal;
+
+                await cmd.ExecuteNonQueryAsync();
+
+                return Ok(new
+                {
+                    idAlerta = id,
+                    estado = estadoFinal,
+                    mensaje = "La alerta fue cerrada correctamente."
+                });
+            }
+            catch (OracleException ex)
+            {
+                return BadRequest(new
+                {
+                    mensaje = ex.Message.Split('\n')[0]
+                });
+            }
+            finally
+            {
+                if (abrir)
+                    await conexion.CloseAsync();
+            }
+        }
+
+        // DTO para recibir el estado final
+        public sealed class CerrarAlertaRequest
+        {
+            public string? EstadoFinal { get; set; }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
+
+
 }
