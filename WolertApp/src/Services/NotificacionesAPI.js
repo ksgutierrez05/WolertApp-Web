@@ -58,12 +58,40 @@ const DESTINOS = [
 
 export function destinoNotificacion(notificacion, audiencia = "admin") {
   const mensaje = String(notificacion?.mensaje || "").toLocaleLowerCase("es-CO");
+
   if (audiencia === "ciudadano") {
-    if (["vecino", "comunidad", "cerca", "cercana"].some((palabra) => mensaje.includes(palabra))) return { ruta: "/ciudadano/alertas", menu: "Alertas de la comunidad" };
-    if (["estado", "atención", "atencion", "asignad", "tu alerta", "alerta reportada"].some((palabra) => mensaje.includes(palabra)) || notificacion?.idAlerta != null) return { ruta: "/ciudadano/mis-alertas", menu: "Mis alertas" };
-    if (["vecino", "vecinos"].some((palabra) => mensaje.includes(palabra))) return { ruta: "/ciudadano/vecinos", menu: "Vecinos" };
+    const esAvisoComunidad = ["vecino", "comunidad", "cerca", "cercana"]
+      .some((palabra) => mensaje.includes(palabra));
+    if (esAvisoComunidad) {
+      return { ruta: "/ciudadano/alertas", menu: "Alertas de la comunidad" };
+    }
+
+    const palabrasDeSeguimiento = [
+      "estado",
+      "atención",
+      "atencion",
+      "asignad",
+      "tu alerta",
+      "alerta reportada",
+    ];
+    const esActualizacionDeAlerta = palabrasDeSeguimiento.some((palabra) =>
+      mensaje.includes(palabra),
+    );
+    if (esActualizacionDeAlerta || notificacion?.idAlerta != null) {
+      return { ruta: "/ciudadano/mis-alertas", menu: "Mis alertas" };
+    }
+
+    if (["vecino", "vecinos"].some((palabra) => mensaje.includes(palabra))) {
+      return { ruta: "/ciudadano/vecinos", menu: "Vecinos" };
+    }
     return { ruta: "/ciudadano/alertas", menu: "Alertas" };
   }
-  if (notificacion?.idAlerta != null) return { ruta: "/admin/alertas", menu: "Alertas" };
-  return DESTINOS.find((destino) => destino.palabras.some((palabra) => mensaje.includes(palabra))) || { ruta: "/admin/alertas", menu: "Alertas" };
+
+  if (notificacion?.idAlerta != null) {
+    return { ruta: "/admin/alertas", menu: "Alertas" };
+  }
+
+  return DESTINOS.find((destino) =>
+    destino.palabras.some((palabra) => mensaje.includes(palabra)),
+  ) || { ruta: "/admin/alertas", menu: "Alertas" };
 }

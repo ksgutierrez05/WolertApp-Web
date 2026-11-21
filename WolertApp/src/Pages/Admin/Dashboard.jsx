@@ -47,10 +47,34 @@ export default function Dashboard() {
   const unidadesDisponibles = datos?.unidades?.filter((u) => ['ACTIVO', 'DISPONIBLE'].includes((u.estado || '').toUpperCase())).length ?? 0;
 
   const kpis = [
-    { color: 'kpi-blue-dash', icon: 'bi-bell', num: cargando ? '...' : String(alertasTotal), label: 'Alertas recibidas', sub: 'Total en el sistema' },
-    { color: 'kpi-green-dash', icon: 'bi-headset', num: cargando ? '...' : String(atencionesTotal), label: 'Atenciones registradas', sub: 'Intervenciones realizadas' },
-    { color: 'kpi-amber-dash', icon: 'bi-shield-check', num: cargando ? '...' : String(personalDisponible), label: 'Personal disponible', sub: 'Policías activos o disponibles' },
-    { color: 'kpi-purple-dash', icon: 'bi-truck-front', num: cargando ? '...' : String(unidadesDisponibles), label: 'Unidades disponibles', sub: 'Activas o listas para operar' },
+    {
+      color: 'kpi-blue-dash',
+      icon: 'bi-bell',
+      num: cargando ? '...' : String(alertasTotal),
+      label: 'Alertas recibidas',
+      sub: 'Total en el sistema',
+    },
+    {
+      color: 'kpi-green-dash',
+      icon: 'bi-headset',
+      num: cargando ? '...' : String(atencionesTotal),
+      label: 'Atenciones registradas',
+      sub: 'Intervenciones realizadas',
+    },
+    {
+      color: 'kpi-amber-dash',
+      icon: 'bi-shield-check',
+      num: cargando ? '...' : String(personalDisponible),
+      label: 'Personal disponible',
+      sub: 'Policías activos o disponibles',
+    },
+    {
+      color: 'kpi-purple-dash',
+      icon: 'bi-truck-front',
+      num: cargando ? '...' : String(unidadesDisponibles),
+      label: 'Unidades disponibles',
+      sub: 'Activas o listas para operar',
+    },
   ];
   const alertasRecientes = (alertas || []).map((a) => {
     const est = estiloPrioridad[(a.prioridad || '').toLowerCase()] || estiloPrioridad.baja;
