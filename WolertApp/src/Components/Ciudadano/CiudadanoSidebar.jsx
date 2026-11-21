@@ -36,7 +36,7 @@ export default function CiudadanoSidebar() {
       ))}
 
       <div className="sidebar__footer">
-        <button type="button" className="sidebar__logout" onClick={() => { cerrarSesion(); window.location.href = '/login'; }}>
+        <button type="button" className="sidebar__logout" onClick={() => { document.body.classList.remove('modo-compacto'); cerrarSesion(); window.location.href = '/login'; }}>
           <i className="bi bi-box-arrow-right sidebar__icon" />
           <span className="sidebar__label">Cerrar sesión</span>
         </button>

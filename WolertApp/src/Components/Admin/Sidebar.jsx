@@ -6,7 +6,6 @@ const menuItems = [
   { label: 'Dashboard', href: '/admin', icon: 'bi-speedometer2', exact: true },
   { label: 'Usuarios', href: '/admin/usuarios', icon: 'bi-people' },
   { label: 'Alertas', href: '/admin/alertas', icon: 'bi-bell' },
-  { label: 'Alarmas', href: '/admin/alarmas', icon: 'bi-megaphone' },
   { group: 'Ubicaciones' },
   { label: 'Comunas', href: '/admin/comunas', icon: 'bi-geo-alt' },
   { label: 'Barrios', href: '/admin/barrios', icon: 'bi-house' },

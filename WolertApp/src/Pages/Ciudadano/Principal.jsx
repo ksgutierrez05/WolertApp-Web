@@ -1,10 +1,12 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import '../../css/global.css';
 import '../../css/temas.css';
 import '../../css/ciudadano/pagina-principal.css';
 import heroImg from '/img/Hero-ciudadano.jpg';
 import { Link, useNavigate } from 'react-router-dom';
 import { logOut, obtenerUsuarioPorId } from '../../Services/UsuariosAPI.js';
+import { destinoNotificacion, guardarNotificacionesLeidas, listarMisNotificaciones, obtenerNotificacionesLeidas } from '../../Services/NotificacionesAPI';
+import { notificacionPermitidaCiudadano, obtenerPreferenciasCiudadano } from '../../Services/PreferenciasCiudadano';
 
 export default function Principal() {
   const [tab, setTab] = useState('todas');
@@ -15,11 +17,14 @@ export default function Principal() {
   const [buscar, setBuscar] = useState('');
   const [usuario, setUsuario] = useState(null);
   const [errorUsuario, setErrorUsuario] = useState('');
+  const [notificaciones, setNotificaciones] = useState([]);
+  const [leidas, setLeidas] = useState(() => obtenerNotificacionesLeidas());
+  const [preferencias, setPreferencias] = useState(() => obtenerPreferenciasCiudadano());
 
   useEffect(() => {
     const id = localStorage.getItem('idUsuario');
     if (!id) {
-      setErrorUsuario('No hay una sesión iniciada.');
+      setErrorUsuario('No hay una sesiÃ³n iniciada.');
       return;
     }
     obtenerUsuarioPorId(id)
@@ -27,12 +32,48 @@ export default function Principal() {
       .catch(() => setErrorUsuario('No se pudieron cargar tus datos.'));
   }, []); 
 
+  useEffect(() => {
+    let activo = true;
+    const cargar = () => listarMisNotificaciones().then((datos) => {
+      if (activo && Array.isArray(datos)) setNotificaciones(datos);
+    }).catch(() => {});
+    const sincronizarLeidas = (evento) => setLeidas(evento.detail || obtenerNotificacionesLeidas());
+    const sincronizarPreferencias = (evento) => setPreferencias(evento.detail || obtenerPreferenciasCiudadano());
+    cargar();
+    const intervalo = window.setInterval(cargar, 60000);
+    window.addEventListener('focus', cargar);
+    window.addEventListener('wolert:notificaciones-leidas', sincronizarLeidas);
+    window.addEventListener('wolert:preferencias-ciudadano', sincronizarPreferencias);
+    return () => {
+      activo = false;
+      window.clearInterval(intervalo);
+      window.removeEventListener('focus', cargar);
+      window.removeEventListener('wolert:notificaciones-leidas', sincronizarLeidas);
+      window.removeEventListener('wolert:preferencias-ciudadano', sincronizarPreferencias);
+    };
+  }, []);
+
   const navigate = useNavigate();
 
   const cerrarSesion = () => {
     document.body.classList.remove('modo-compacto');
     logOut();
     navigate('/login', { replace: true });
+  };
+
+  const notificacionesVisibles = notificaciones.filter((n) => notificacionPermitidaCiudadano(n, preferencias));
+  const sinLeer = notificacionesVisibles.filter((n) => !leidas.includes(Number(n.idNotificacion)));
+  const marcarTodasLeidas = () => {
+    const ids = notificacionesVisibles.map((n) => Number(n.idNotificacion));
+    guardarNotificacionesLeidas([...leidas, ...ids]);
+    setLeidas((anteriores) => [...new Set([...anteriores, ...ids])]);
+  };
+  const abrirNotificacion = (notificacion) => {
+    const id = Number(notificacion.idNotificacion);
+    guardarNotificacionesLeidas([...leidas, id]);
+    setLeidas((anteriores) => [...new Set([...anteriores, id])]);
+    setShowNotif(false);
+    navigate(destinoNotificacion(notificacion, 'ciudadano').ruta);
   };
 
   useEffect(() => {
@@ -47,7 +88,7 @@ export default function Principal() {
   }, []);
 
   const h = new Date().getHours();
-  const saludo = h < 12 ? 'Buenos días' : h < 19 ? 'Buenas tardes' : 'Buenas noches';
+  const saludo = h < 12 ? 'Buenos dÃ­as' : h < 19 ? 'Buenas tardes' : 'Buenas noches';
 
   const nombreCorto = usuario
   ? [usuario.primerNombre, usuario.primerApellido].filter(Boolean).join(' ')
@@ -77,25 +118,26 @@ export default function Principal() {
         <div className="d-flex align-items-center gap-3">
           {/* CAMPANA */}
           <div className="col-auto" style={{ position: 'relative' }}>
-            <div className="position-relative d-flex align-items-center justify-content-center rounded-circle bg-white" style={{ cursor: 'pointer', width: '40px', height: '40px', padding: 0, borderRadius: '9999px', border: '1px solid #e2e8f0' }} onClick={() => setShowNotif((s) => !s)}>
+            <button type="button" className="position-relative d-flex align-items-center justify-content-center rounded-circle bg-white" style={{ cursor: 'pointer', width: '40px', height: '40px', padding: 0, borderRadius: '9999px', border: '1px solid #e2e8f0' }} onClick={() => setShowNotif((s) => !s)} aria-label={`Notificaciones: ${sinLeer.length} sin leer`} aria-expanded={showNotif}>
               <i className="bi bi-bell"></i>
-              <span className="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle">2</span>
-            </div>
+              {sinLeer.length > 0 && <span className="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle">{sinLeer.length > 9 ? '9+' : sinLeer.length}</span>}
+            </button>
             {showNotif && (
               <div className="top-bar__dropdown" style={{ right: 0, top: 'calc(100% + 8px)', width: '320px' }}>
                 <div className="top-bar__dropdown-header">
                   <span className="top-bar__dropdown-title">Notificaciones</span>
-                  <span className="top-bar__dropdown-mark-all" style={{ cursor: 'pointer' }}>Marcar todo como leído</span>
+                  <button type="button" className="top-bar__dropdown-mark-all" style={{ cursor: 'pointer', border: 0, background: 'transparent' }} onClick={marcarTodasLeidas} disabled={sinLeer.length === 0}>Marcar todo como leido</button>
                 </div>
                 <div className="top-bar__dropdown-list">
-                  <div className="top-bar__notif-item unread">
-                    <div className="top-bar__notif-item-icon bg-blue"><i className="bi bi-bell" /></div>
-                    <div className="top-bar__notif-item-content">
-                      <div className="top-bar__notif-item-title">Nueva alerta cerca</div>
-                      <div className="top-bar__notif-item-sub">Laura Peña reportó un accidente</div>
-                      <div className="top-bar__notif-item-time">hace 5 min</div>
-                    </div>
-                  </div>
+                  {notificacionesVisibles.slice(0, 5).map((n) => {
+                    const noLeida = !leidas.includes(Number(n.idNotificacion));
+                    const destino = destinoNotificacion(n, 'ciudadano');
+                    return <button type="button" key={n.idNotificacion} className={`top-bar__notif-item ${noLeida ? 'unread' : ''}`} onClick={() => abrirNotificacion(n)}>
+                      <div className={`top-bar__notif-item-icon ${noLeida ? 'bg-green' : 'bg-blue'}`}><i className={`bi ${n.idAlerta != null ? 'bi-exclamation-triangle' : 'bi-bell'}`} /></div>
+                      <div className="top-bar__notif-item-content"><div className="top-bar__notif-item-title">{n.mensaje || 'Notificación de Wolert'}</div><div className="top-bar__notif-item-sub">Ver en {destino.menu}</div><div className="top-bar__notif-item-time">{n.fecha ? new Date(n.fecha).toLocaleString('es-CO', { dateStyle: 'short', timeStyle: 'short' }) : ''}</div></div>
+                    </button>;
+                  })}
+                  {notificacionesVisibles.length === 0 && <div className="top-bar__notif-item"><div className="top-bar__notif-item-content"><div className="top-bar__notif-item-title">No hay notificaciones</div></div></div>}
                 </div>
                 <div className="top-bar__dropdown-footer">
                   <Link to="/ciudadano/notificaciones" className="top-bar__dropdown-link" onClick={() => setShowNotif(false)}>
@@ -129,11 +171,11 @@ export default function Principal() {
                 <div className="top-bar__dropdown-list">
                   <Link to="/ciudadano/configuracion" className="top-bar__dropdown-link" onClick={() => setShowUser(false)}>
                     <i className="bi bi-person-gear top-bar__dropdown-link-icon" />
-                    Configuración de perfil
+                    ConfiguraciÃ³n de perfil
                   </Link>
                   <button type="button" className="top-bar__dropdown-link top-bar__dropdown-link--danger" onClick={cerrarSesion}>
                     <i className="bi bi-box-arrow-right top-bar__dropdown-link-icon" />
-                    Cerrar sesión
+                    Cerrar sesiÃ³n
                   </button>
                 </div>
               </div>
@@ -148,7 +190,7 @@ export default function Principal() {
         style={{ '--hero-img': 'url("/img/Hero-ciudadano.jpg")' }}
       >
         <div className="eyebrow-dash">
-          <i className="bi bi-shield-check" /> Panel de ciudadano · {fecha}
+          <i className="bi bi-shield-check" /> Panel de ciudadano Â· {fecha}
         </div>
         <h1 className="hero-title-dash">{saludo}, {nombreCorto}</h1>
         <p className="hero-text-dash">Tienes 2 alertas activas y 6 vecinos conectados cerca de ti. Este es tu resumen de seguridad.</p>
@@ -195,8 +237,8 @@ export default function Principal() {
         <div className="sos-panel-texto-usu">
           <span className="sos-panel-badge-usu"><i className="bi bi-bell-fill"></i></span>
           <div>
-            <div className="sos-panel-titulo-usu">Botón de emergencia</div>
-            <div className="sos-panel-sub-usu">Envía tu ubicación en tiempo real a la policía y a tus vecinos conectados.</div>
+            <div className="sos-panel-titulo-usu">BotÃ³n de emergencia</div>
+            <div className="sos-panel-sub-usu">EnvÃ­a tu ubicaciÃ³n en tiempo real a la policÃ­a y a tus vecinos conectados.</div>
           </div>
         </div>
         <Link
@@ -221,15 +263,15 @@ export default function Principal() {
         <table className="tabla-usu" id="tablaMisAlertas">
           <thead>
             <tr>
-              <th>Tipo</th><th>Ubicación</th><th>Estado</th><th className="text-end">&nbsp;</th>
+              <th>Tipo</th><th>UbicaciÃ³n</th><th>Estado</th><th className="text-end">&nbsp;</th>
             </tr>
           </thead>
           <tbody>
             <tr className="alerta-row-usu" data-id="1" data-estado="pendiente">
-              <td><span className="badge-dash badge-amber-dash">SEMÁFORO DAÑADO</span></td>
+              <td><span className="badge-dash badge-amber-dash">SEMÃFORO DAÃ‘ADO</span></td>
               <td>
-                <div className="info-title-dash">Casimiro Raúl Maestre</div>
-                <div className="info-sub-dash">Reportada hoy · 08:12 a.m.</div>
+                <div className="info-title-dash">Casimiro RaÃºl Maestre</div>
+                <div className="info-sub-dash">Reportada hoy Â· 08:12 a.m.</div>
               </td>
               <td><span className="estado-badge-usu estado-pendiente-usu" data-estado-label>Pendiente</span></td>
               <td className="text-end"><button className="cancelar-btn-usu" data-id="1" data-accion>Cancelar</button></td>
@@ -237,11 +279,11 @@ export default function Principal() {
             <tr className="alerta-row-usu" data-id="2" data-estado="en_camino">
               <td><span className="badge-dash badge-red-dash">ACCIDENTE</span></td>
               <td>
-                <div className="info-title-dash">Casimiro Raúl Maestre</div>
-                <div className="info-sub-dash">Reportada hoy · 07:47 a.m.</div>
+                <div className="info-title-dash">Casimiro RaÃºl Maestre</div>
+                <div className="info-sub-dash">Reportada hoy Â· 07:47 a.m.</div>
               </td>
               <td><span className="estado-badge-usu estado-en_camino-usu" data-estado-label>En camino</span></td>
-              <td className="text-end"><button className="cancelar-btn-usu" data-id="2" data-accion disabled>En atención</button></td>
+              <td className="text-end"><button className="cancelar-btn-usu" data-id="2" data-accion disabled>En atenciÃ³n</button></td>
             </tr>
           </tbody>
         </table>
@@ -258,7 +300,7 @@ export default function Principal() {
       <div className="vecinos-usu mb-4">
         <div className="vecino-row-usu">
           <div className="vecino-info-usu">
-            <span className="nombre-usu">Laura Peña</span>
+            <span className="nombre-usu">Laura PeÃ±a</span>
             <span className="distancia-usu"><i className="bi bi-geo-alt"></i> 80 m</span>
           </div>
           <span className="estado-mini-usu estado-verde-usu">Conectada</span>
@@ -275,7 +317,7 @@ export default function Principal() {
             <span className="nombre-usu">Ravi Kumar</span>
             <span className="distancia-usu"><i className="bi bi-geo-alt"></i> 210 m</span>
           </div>
-          <span className="estado-mini-usu estado-gris-usu">Sin conexión</span>
+          <span className="estado-mini-usu estado-gris-usu">Sin conexiÃ³n</span>
         </div>
         <div className="vecino-row-usu">
           <div className="vecino-info-usu">
@@ -286,13 +328,13 @@ export default function Principal() {
         </div>
       </div>
 
-      {/* ÚLTIMAS ALERTAS */}
+      {/* ÃšLTIMAS ALERTAS */}
       <div className="sec-head-usu">
-        <h2 className="titulos-usu">Últimas alertas del barrio</h2>
+        <h2 className="titulos-usu">Ãšltimas alertas del barrio</h2>
         <a className="see-all-dash" href="#">Ver todas <i className="bi bi-chevron-right"></i></a>
       </div>
       <div className="tabs-usu" id="tabsUltimasAlertas">
-        {['Todas (12)','Semáforo dañado (4)','Accidente (3)','Choque (3)','Otras (2)'].map((t, i) => (
+        {['Todas (12)','SemÃ¡foro daÃ±ado (4)','Accidente (3)','Choque (3)','Otras (2)'].map((t, i) => (
           <button key={t} className={`tab-usu ${i === 0 ? 'active-usu' : ''}`} data-tipo={t}>{t}</button>
         ))}
       </div>
@@ -306,38 +348,38 @@ export default function Principal() {
           <tbody>
             <tr data-tipo="semaforo">
               <td>
-                <div className="info-title-dash">Katherine Gutiérrez</div>
-                <div className="info-sub-dash">11/9/2026 · 08:12 a.m.</div>
+                <div className="info-title-dash">Katherine GutiÃ©rrez</div>
+                <div className="info-sub-dash">11/9/2026 Â· 08:12 a.m.</div>
               </td>
-              <td><span className="badge-dash badge-amber-dash">SEMÁFORO DAÑADO</span></td>
-              <td>Casimiro Raúl Maestre</td>
+              <td><span className="badge-dash badge-amber-dash">SEMÃFORO DAÃ‘ADO</span></td>
+              <td>Casimiro RaÃºl Maestre</td>
               <td><span className="badge-dash badge-amber-dash">Pendiente</span></td>
               <td className="text-end"><a href="#" className="link-btn-dash">Ver detalle</a></td>
             </tr>
             <tr data-tipo="accidente">
               <td>
-                <div className="info-title-dash">Katherine Gutiérrez</div>
-                <div className="info-sub-dash">11/9/2026 · 07:47 a.m.</div>
+                <div className="info-title-dash">Katherine GutiÃ©rrez</div>
+                <div className="info-sub-dash">11/9/2026 Â· 07:47 a.m.</div>
               </td>
               <td><span className="badge-dash badge-red-dash">ACCIDENTE</span></td>
-              <td>Casimiro Raúl Maestre</td>
+              <td>Casimiro RaÃºl Maestre</td>
               <td><span className="badge-dash badge-blue-dash">En camino</span></td>
               <td className="text-end"><a href="#" className="link-btn-dash">Ver detalle</a></td>
             </tr>
             <tr data-tipo="choque">
               <td>
-                <div className="info-title-dash">Laura Peña</div>
-                <div className="info-sub-dash">10/9/2026 · 10:30 p.m.</div>
+                <div className="info-title-dash">Laura PeÃ±a</div>
+                <div className="info-sub-dash">10/9/2026 Â· 10:30 p.m.</div>
               </td>
               <td><span className="badge-dash badge-blue-dash">CHOQUE</span></td>
-              <td>Casimiro Raúl Maestre</td>
+              <td>Casimiro RaÃºl Maestre</td>
               <td><span className="badge-dash badge-green-dash">Resuelto</span></td>
               <td className="text-end"><a href="#" className="link-btn-dash">Ver detalle</a></td>
             </tr>
             <tr data-tipo="otras">
               <td>
                 <div className="info-title-dash">Diego Torres</div>
-                <div className="info-sub-dash">10/9/2026 · 07:05 p.m.</div>
+                <div className="info-sub-dash">10/9/2026 Â· 07:05 p.m.</div>
               </td>
               <td><span className="badge-dash badge-amber-dash">EMBOTELLAMIENTO</span></td>
               <td>Los Fundadores</td>
@@ -347,10 +389,10 @@ export default function Principal() {
           </tbody>
         </table>
         <p className="text-center text-muted small mb-0 d-none" id="mensajeUltimasAlertasVacio" style={{ padding: '20px' }}>
-          Ningún caso coincide con este filtro.
+          NingÃºn caso coincide con este filtro.
         </p>
         <div className="paginacion-usu">
-          <span>Mostrando 1–4 de 12 alertas</span>
+          <span>Mostrando 1â€“4 de 12 alertas</span>
           <div className="paginas-usu">
             <button className="active-usu">1</button>
             <button>2</button>

@@ -8,7 +8,6 @@ import Configuracion from './Configuracion';
 import Comunas from './Comunas';
 import Barrios from './Barrios';
 import Alertas from './Alertas';
-import Alarmas from './Alarmas';
 import Tipos from './Tipos';
 import Reportes from './Reportes';
 import Estadisticas from './Estadisticas';
@@ -22,7 +21,6 @@ export default function Admin() {
         <Route path="usuarios" element={<UsuariosList />} />
         <Route path="usuarios/nuevo" element={<UsuariosForm />} />
         <Route path="alertas" element={<Alertas />} />
-        <Route path="alarmas" element={<Alarmas />} />
         <Route path="tipos" element={<Tipos />} />
         <Route path="reportes" element={<Reportes />} />
         <Route path="estadisticas" element={<Estadisticas />} />

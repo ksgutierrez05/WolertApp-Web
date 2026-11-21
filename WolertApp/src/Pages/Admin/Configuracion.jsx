@@ -9,6 +9,7 @@ import {
   editarUsuario,
   cambiarPassword,
 } from '../../Services/UsuariosAPI.js';
+import { guardarPreferenciasAdmin, obtenerPreferenciasAdmin } from '../../Services/PreferenciasAdmin';
 
 const nombreRol = {
   ADMIN: 'Administrador',
@@ -52,12 +53,9 @@ const aForm = (u = {}) => ({
   casa: u.casa || '',
 });
 
-const PREFS_POR_DEFECTO = { notificaciones: true, sonido: true, compacto: false };
-
 export default function Configuracion() {
   const navigate = useNavigate();
   const idActual = localStorage.getItem('idUsuario');
-  const CLAVE_PREFS = `wolertapp_prefs_${idActual}`;
 
   // Perfil
   const [detalle, setDetalle] = useState(null); // datos completos que vienen de la API
@@ -69,13 +67,7 @@ export default function Configuracion() {
   const [mensaje, setMensaje] = useState('');
 
   // Preferencias (se guardan por usuario en este navegador)
-  const [prefs, setPrefs] = useState(() => {
-    try {
-      return { ...PREFS_POR_DEFECTO, ...JSON.parse(localStorage.getItem(CLAVE_PREFS)) };
-    } catch {
-      return PREFS_POR_DEFECTO;
-    }
-  });
+  const [prefs, setPrefs] = useState(() => obtenerPreferenciasAdmin());
 
   // Seguridad
   const [seguridadAbierta, setSeguridadAbierta] = useState(false);
@@ -102,13 +94,17 @@ export default function Configuracion() {
       .finally(() => setCargando(false));
   }, [idActual]);
 
-  // Guardar preferencias y aplicar modo compacto
+  // Aplicar el modo compacto; las preferencias se guardan al cambiar cada opción.
   useEffect(() => {
-    try {
-      localStorage.setItem(CLAVE_PREFS, JSON.stringify(prefs));
-    } catch { /* si el navegador bloquea el almacenamiento, se ignora */ }
     document.body.classList.toggle('modo-compacto', prefs.compacto);
-  }, [prefs, CLAVE_PREFS]);
+  }, [prefs.compacto]);
+
+  const cambiarPreferencia = (clave, valor) => {
+    const actualizadas = guardarPreferenciasAdmin({ ...prefs, [clave]: valor });
+    setPrefs(actualizadas);
+    setMensaje('Preferencia guardada en este navegador.');
+    setError('');
+  };
 
   const handleChange = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
 
@@ -232,7 +228,11 @@ export default function Configuracion() {
     [detalle.primerNombre, detalle.primerApellido].filter(Boolean).join(' ') || detalle.username || '';
 
   return (
-    <div className="container-fluid">
+    <div className="container-fluid admin-config-page">
+      <header className="admin-config-hero">
+        <div><span><i className="bi bi-sliders" /> CUENTA Y PREFERENCIAS</span><h1>Configuración</h1><p>Actualiza tu perfil, personaliza el dashboard y protege el acceso a tu cuenta.</p></div>
+        <div className="admin-config-hero__badge"><i className="bi bi-shield-check" /> Ajustes de tu cuenta</div>
+      </header>
       <div className="config-banner-dash mb-4">
         <div className="d-flex align-items-center gap-3">
           <div className="config-avatar-grande-dash"><i className="bi bi-person-fill" /></div>
@@ -321,58 +321,21 @@ export default function Configuracion() {
         </div>
 
         <div className="col-lg-5">
-          <div className="card-panel-dash mb-3">
+          <section className="card-panel-dash admin-config-preferences">
             <div className="info-card-header-dash">
-              <h3 className="section-title-dash">Configuración</h3>
+              <div><h3 className="section-title-dash">Preferencias del dashboard</h3><p className="admin-config-help">Elige qué avisos aparecen en la campana y cuánto espacio ocupan los paneles.</p></div>
             </div>
             <div className="toggle-fila-dash">
-              <div>
-                <div className="toggle-titulo-dash">Notificaciones</div>
-                <div className="toggle-sub-dash">Recibir avisos de alertas del sistema</div>
-              </div>
-              <label className="switch-dash">
-                <input
-                  type="checkbox"
-                  id="pref-notificaciones"
-                  checked={prefs.notificaciones}
-                  onChange={(e) => setPrefs({ ...prefs, notificaciones: e.target.checked })}
-                />
-                <span className="switch-slider-dash" />
-              </label>
-            </div>
-            <div className="toggle-fila-dash">
-              <div>
-                <div className="toggle-titulo-dash">Sonido</div>
-                <div className="toggle-sub-dash">Reproducir sonido al recibir una alerta</div>
-              </div>
-              <label className="switch-dash">
-                <input
-                  type="checkbox"
-                  id="pref-sonido"
-                  checked={prefs.sonido}
-                  onChange={(e) => setPrefs({ ...prefs, sonido: e.target.checked })}
-                />
-                <span className="switch-slider-dash" />
-              </label>
+              <div><div className="toggle-titulo-dash">Avisos en la campana</div><div className="toggle-sub-dash">Muestra el contador y la vista previa de las notificaciones recibidas.</div></div>
+              <label className="switch-dash" aria-label="Mostrar notificaciones en la campana"><input type="checkbox" id="pref-notificaciones" checked={prefs.mostrarCampana} onChange={(e) => cambiarPreferencia('mostrarCampana', e.target.checked)} /><span className="switch-slider-dash" /></label>
             </div>
             <div className="toggle-fila-dash" style={{ borderBottom: 'none' }}>
-              <div>
-                <div className="toggle-titulo-dash">Modo compacto</div>
-                <div className="toggle-sub-dash">Reduce el espaciado de las tablas</div>
-              </div>
-              <label className="switch-dash">
-                <input
-                  type="checkbox"
-                  id="pref-compacto"
-                  checked={prefs.compacto}
-                  onChange={(e) => setPrefs({ ...prefs, compacto: e.target.checked })}
-                />
-                <span className="switch-slider-dash" />
-              </label>
+              <div><div className="toggle-titulo-dash">Modo compacto</div><div className="toggle-sub-dash">Reduce el espacio entre paneles para mostrar más información en pantalla.</div></div>
+              <label className="switch-dash" aria-label="Activar modo compacto"><input type="checkbox" id="pref-compacto" checked={prefs.compacto} onChange={(e) => cambiarPreferencia('compacto', e.target.checked)} /><span className="switch-slider-dash" /></label>
             </div>
-          </div>
-
-          <div className="card-panel-dash">
+            <p className="admin-config-pref-note"><i className="bi bi-info-circle" /> Las preferencias se guardan en este navegador para tu cuenta.</p>
+          </section>
+          <div className="card-panel-dash admin-config-account">
             <div className="info-card-header-dash">
               <h3 className="section-title-dash">Cuenta</h3>
             </div>
