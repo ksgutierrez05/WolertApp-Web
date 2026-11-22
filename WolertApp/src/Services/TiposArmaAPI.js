@@ -4,10 +4,11 @@ export function ObtenerToken() {
   return localStorage.getItem('token');
 }
 
-export async function ListarTiposArma() {
+export async function ListarTiposArma(signal) {
   const obtenerToken = ObtenerToken();
   const respuesta = await fetch(`${API}/api/TiposArma`, {
-    headers: { 'Authorization': `Bearer ${obtenerToken}` }
+    headers: { 'Authorization': `Bearer ${obtenerToken}` },
+    signal,
   });
   if (!respuesta.ok) throw new Error('Error al listar los tipos de arma');
   return await respuesta.json();

@@ -275,3 +275,69 @@
 .admin-config-page .card-panel-dash .text-danger,.admin-config-page .card-panel-dash .text-success { padding:9px 14px; border-radius:8px; font-size:10px; }.admin-config-page .config-label-dash { font-size:10px; font-weight:700; }.admin-config-page #panel-seguridad .p-3 { padding:16px!important; }
 body.modo-compacto .admin-layout__main { padding-top:10px; }body.modo-compacto .admin-layout__main .row { --bs-gutter-y:.55rem; }body.modo-compacto .admin-layout__main .card-panel-dash { margin-bottom:10px!important; }body.modo-compacto .admin-layout__main .table td,body.modo-compacto .admin-layout__main .table th { padding-top:.45rem; padding-bottom:.45rem; }.admin-layout__main .admin-config-page .info-fila-dash { padding-top:8px; padding-bottom:8px; }.admin-layout__main .admin-config-page .toggle-fila-dash { padding-top:9px; padding-bottom:9px; }
 @media(max-width:700px) { .admin-config-hero { align-items:flex-start; flex-direction:column; padding:20px; }.admin-config-hero__badge { align-self:flex-start; }.admin-config-page .info-fila-dash { align-items:flex-start; flex-direction:column; gap:5px; }.admin-config-page .input-edicion-dash { max-width:none; width:100%; text-align:left; } }
+
+/* Ajustes de legibilidad para perfil, preferencias y seguridad */
+.admin-config-page { width:100%; max-width:1320px; margin-inline:auto; padding:6px 16px 28px; }
+.admin-config-hero { align-items:center; margin-bottom:18px; padding:24px 28px; }
+.admin-config-hero h1 { font-size:clamp(28px,3vw,36px); }
+.admin-config-hero p { max-width:620px; font-size:13px; line-height:1.55; }
+.admin-config-page .config-banner-dash { padding:22px 26px; }
+.admin-config-page .config-avatar-grande-dash { width:58px; height:58px; font-size:24px; }
+.admin-config-page .config-banner-nombre-dash { font-size:18px; }
+.admin-config-page .config-banner-estado-dash { font-size:12px; line-height:1.45; }
+.admin-config-page .row { --bs-gutter-x:18px; --bs-gutter-y:18px; }
+.admin-config-page .card-panel-dash { border-color:#e4eaf1; border-radius:14px; box-shadow:0 5px 20px rgba(23,40,63,.045); }
+.admin-config-page .info-card-header-dash { padding:18px 21px; }
+.admin-config-page .section-title-dash { font-size:15px; }
+.admin-config-page .btn-editar-info-dash { min-height:36px; padding:7px 13px; border-radius:9px; color:#2d5e9c; font-size:12px; cursor:pointer; }
+.admin-config-page #form-configuracion { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 12px; padding:14px 18px 4px; }
+.admin-config-page #form-configuracion .info-fila-dash { display:flex; min-width:0; flex-direction:column; align-items:stretch; justify-content:center; gap:7px; min-height:73px; margin-bottom:9px; padding:11px 12px!important; border:1px solid #e9eef4; border-radius:10px; background:#fbfcfe; }
+.admin-config-page #form-configuracion .info-fila-label-dash { color:#75849a; font-size:10px; font-weight:750; line-height:1.3; }
+.admin-config-page #form-configuracion .info-fila-valor-dash { overflow-wrap:anywhere; color:#293d57; font-size:12px; font-weight:650; }
+.admin-config-page #form-configuracion .input-edicion-dash { display:none; width:100%; max-width:none; min-height:38px; padding:8px 10px; text-align:left; font-size:12px; }
+.admin-config-page #form-configuracion.editando .input-edicion-dash { display:block; }
+.admin-config-page #form-configuracion.editando .info-fila-valor-dash { display:none; }
+.admin-config-page #form-configuracion>div.text-danger,.admin-config-page #form-configuracion>div.text-success,.admin-config-page #acciones-edicion-dash { grid-column:1 / -1; }
+.admin-config-page #form-configuracion .text-danger,.admin-config-page #form-configuracion .text-success { margin:0 0 8px; padding:10px 12px!important; font-size:12px; }
+.admin-config-page .config-footer-dash { padding:10px 0 14px; }
+.admin-config-page .config-footer-dash .btn { min-height:40px; padding-inline:16px; font-size:12px; }
+.admin-config-page .admin-config-preferences .info-card-header-dash,.admin-config-page .admin-config-account .info-card-header-dash { padding:17px 19px; }
+.admin-config-page .admin-config-help { max-width:390px; font-size:11px; line-height:1.5; }
+.admin-config-page .toggle-fila-dash { padding:17px 19px; }
+.admin-config-page .toggle-titulo-dash { font-size:13px; }
+.admin-config-page .toggle-sub-dash { max-width:360px; font-size:11px; line-height:1.5; }
+.admin-config-page .admin-config-pref-note { margin:12px 18px 16px; padding:10px 12px; font-size:10px; }
+.admin-config-page .cuenta-fila-dash { width:100%; min-height:62px; border:0; border-bottom:1px solid #edf1f5; background:transparent; color:inherit; font:inherit; text-align:left; }
+.admin-config-page .cuenta-fila-dash:focus-visible { outline:2px solid #8eadd6; outline-offset:-3px; }
+.admin-config-page .cuenta-fila-dash:hover { background:#f7f9fc; }
+.admin-config-page .cuenta-fila-danger-dash:hover { background:#fff5f4; }
+.admin-config-page #panel-seguridad .p-3 { padding:18px!important; }
+.admin-config-page .config-label-dash { margin-bottom:6px; color:#52647c; font-size:11px; font-weight:750; }
+.admin-config-page #panel-seguridad .input-dash { min-height:40px; margin-bottom:14px!important; background:#fff; font-size:12px; }
+.admin-config-page #btn-cambiar-pass { min-height:42px; font-size:12px; }
+@media(max-width:700px) {
+  .admin-config-page { padding-inline:10px; }
+  .admin-config-hero { padding:20px; }
+  .admin-config-page #form-configuracion { grid-template-columns:1fr; padding:12px; }
+  .admin-config-page #form-configuracion .info-fila-dash { min-height:68px; }
+  .admin-config-page .config-banner-dash { padding:18px; }
+  .admin-config-page .config-banner-icono-dash { right:12px; font-size:46px; }
+}
+@media(prefers-reduced-motion:reduce) { .admin-config-page *, .admin-config-page *::before, .admin-config-page *::after { transition-duration:.01ms!important; animation-duration:.01ms!important; } }
+.admin-config-preferences .admin-config-pref-note { margin-bottom:12px; }
+.admin-config-account-inline { margin-top:4px; border-top:1px solid #edf1f5; }
+.admin-config-inline-heading { display:flex; align-items:baseline; justify-content:space-between; gap:10px; padding:15px 19px 5px; }
+.admin-config-inline-heading h3 { margin:0; color:#34465d; font-size:13px; font-weight:800; }
+.admin-config-inline-heading>span { color:#929eae; font-size:10px; }
+.admin-config-account-inline .cuenta-fila-dash { min-height:52px; padding:9px 19px; }
+.admin-config-security-inline { display:grid; gap:5px; margin:4px 16px 12px; padding:14px; border:1px solid #e6ebf2; border-radius:11px; background:#f8fafc; }
+.admin-config-security-inline[hidden] { display:none; }
+.admin-config-security-title { display:flex; align-items:flex-start; gap:9px; margin-bottom:4px; color:#355b8a; font-size:12px; font-weight:800; }
+.admin-config-security-title>i { display:grid; width:29px; height:29px; flex:none; place-items:center; border-radius:8px; background:#eaf1fa; }
+.admin-config-security-title>span { display:grid; gap:3px; }
+.admin-config-security-title small { color:#8794a6; font-size:10px; font-weight:450; }
+.admin-config-security-inline .config-label-dash { margin:5px 0 0; }
+.admin-config-security-inline .input-dash { min-height:38px; margin:0!important; background:#fff; font-size:11px; }
+.admin-config-security-inline .text-danger,.admin-config-security-inline .text-success { margin:4px 0 0; font-size:11px; }
+.admin-config-security-inline #btn-cambiar-pass { min-height:39px; margin-top:5px; border-radius:9px; font-size:11px; font-weight:750; }
+@media(max-width:700px) { .admin-config-inline-heading { padding-inline:14px; }.admin-config-account-inline .cuenta-fila-dash { padding-inline:14px; }.admin-config-security-inline { margin-inline:10px; } }

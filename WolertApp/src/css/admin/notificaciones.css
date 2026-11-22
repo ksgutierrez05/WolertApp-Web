@@ -201,3 +201,10 @@
 .admin-notifications__summary p { margin:0 0 0 auto; color:#78869a; font-size:10px; }
 .admin-notifications__item { background:#fff; border-color:#e6ebf1; }
 .admin-notifications__sort { color:#8996a8; font-size:10px; white-space:nowrap; }
+.admin-notifications__summary-icon--action { background:#eaf2ff; color:#315f9f; }
+.admin-notifications__data-note { display:flex; align-items:flex-start; gap:8px; padding:10px 14px; border-bottom:1px solid #e8edf3; background:#f5f8fd; color:#61738d; font-size:10px; line-height:1.5; }
+.admin-notifications__data-note i { flex:0 0 auto; color:#4775b5; }
+.admin-notifications__item.is-operational { border-color:#d8e5f8; background:linear-gradient(110deg,#f7faff,#fff 48%); }
+.admin-notifications__item.is-operational .admin-notifications__item-icon { background:#e7efff; color:#315f9f; }
+.admin-notifications__tag { flex:0 0 auto; padding:5px 8px; border-radius:99px; background:#eaf1fd; color:#446da8; font-size:8px; font-weight:800; letter-spacing:.06em; }
+@media(max-width:700px) { .admin-notifications__tag { margin-left:47px; } }

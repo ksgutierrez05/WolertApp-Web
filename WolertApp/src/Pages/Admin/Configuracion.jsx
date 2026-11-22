@@ -269,10 +269,17 @@ export default function Configuracion() {
             <form id="form-configuracion" className={editando ? 'editando' : ''} onSubmit={handleSubmit}>
               {CAMPOS.map((c) => (
                 <div className="info-fila-dash" key={c.name}>
-                  <span className="info-fila-label-dash">{c.label}</span>
+                  {editando ? (
+                    <label className="info-fila-label-dash" htmlFor={`config-${c.name}`}>
+                      {c.label}
+                    </label>
+                  ) : (
+                    <span className="info-fila-label-dash">{c.label}</span>
+                  )}
                   {editando ? (
                     <input
                       type={c.type}
+                      id={`config-${c.name}`}
                       name={c.name}
                       className="form-control input-dash input-edicion-dash"
                       value={form[c.name]}
@@ -324,7 +331,10 @@ export default function Configuracion() {
         <div className="col-lg-5">
           <section className="card-panel-dash admin-config-preferences">
             <div className="info-card-header-dash">
-              <div><h3 className="section-title-dash">Preferencias del dashboard</h3><p className="admin-config-help">Elige qué avisos aparecen en la campana y cuánto espacio ocupan los paneles.</p></div>
+              <div>
+                <h3 className="section-title-dash">Preferencias y cuenta</h3>
+                <p className="admin-config-help">Personaliza el panel y administra el acceso a tu cuenta.</p>
+              </div>
             </div>
             <div className="toggle-fila-dash">
               <div><div className="toggle-titulo-dash">Avisos en la campana</div><div className="toggle-sub-dash">Muestra el contador y la vista previa de las notificaciones recibidas.</div></div>
@@ -335,77 +345,87 @@ export default function Configuracion() {
               <label className="switch-dash" aria-label="Activar modo compacto"><input type="checkbox" id="pref-compacto" checked={prefs.compacto} onChange={(e) => cambiarPreferencia('compacto', e.target.checked)} /><span className="switch-slider-dash" /></label>
             </div>
             <p className="admin-config-pref-note"><i className="bi bi-info-circle" /> Las preferencias se guardan en este navegador para tu cuenta.</p>
-          </section>
-          <div className="card-panel-dash admin-config-account">
-            <div className="info-card-header-dash">
-              <h3 className="section-title-dash">Cuenta</h3>
-            </div>
-            <div className="cuenta-fila-dash" id="fila-seguridad" onClick={() => setSeguridadAbierta(!seguridadAbierta)}>
-              <div className="cuenta-fila-icono-dash cuenta-icono-azul-dash"><i className="bi bi-shield-lock-fill" /></div>
-              <div className="flex-grow-1"><div className="toggle-titulo-dash">Seguridad</div></div>
+
+            <div className="admin-config-account-inline">
+              <div className="admin-config-inline-heading">
+                <h3>Cuenta</h3>
+                <span>Seguridad y acceso</span>
+              </div>
+            <button
+              type="button"
+              className="cuenta-fila-dash"
+              id="fila-seguridad"
+              aria-expanded={seguridadAbierta}
+              aria-controls="panel-seguridad"
+              onClick={() => setSeguridadAbierta(!seguridadAbierta)}
+            >
+              <span className="cuenta-fila-icono-dash cuenta-icono-azul-dash"><i className="bi bi-shield-lock-fill" /></span>
+              <span className="flex-grow-1"><span className="toggle-titulo-dash">Seguridad</span></span>
               <i className={`bi ${seguridadAbierta ? 'bi-chevron-down' : 'bi-chevron-right'}`} />
-            </div>
-            <div
+            </button>
+              <div
+                className="admin-config-security-inline"
+                id="panel-seguridad"
+                hidden={!seguridadAbierta}
+              >
+                <div className="admin-config-security-title">
+                  <i className="bi bi-shield-lock" />
+                  <span>Cambiar contraseña<small>Usa una contraseña nueva de al menos 8 caracteres.</small></span>
+                </div>
+                <label className="config-label-dash" htmlFor="config-pass-actual">Contraseña actual</label>
+                <input
+                  type="password"
+                  id="config-pass-actual"
+                  className="form-control input-dash"
+                  placeholder="Contraseña actual"
+                  autoComplete="current-password"
+                  value={passActual}
+                  onChange={(e) => setPassActual(e.target.value)}
+                />
+                <label className="config-label-dash" htmlFor="config-pass-nueva">Nueva contraseña</label>
+                <input
+                  type="password"
+                  id="config-pass-nueva"
+                  className="form-control input-dash"
+                  placeholder="Mínimo 8 caracteres"
+                  autoComplete="new-password"
+                  value={passNueva}
+                  onChange={(e) => setPassNueva(e.target.value)}
+                />
+                <label className="config-label-dash" htmlFor="config-pass-confirmar">Confirmar nueva contraseña</label>
+                <input
+                  type="password"
+                  id="config-pass-confirmar"
+                  className="form-control input-dash"
+                  placeholder="Repite la nueva contraseña"
+                  autoComplete="new-password"
+                  value={passConfirmar}
+                  onChange={(e) => setPassConfirmar(e.target.value)}
+                />
+                {errorPass && <div className="text-danger small" role="alert">{errorPass}</div>}
+                {mensajePass && <div className="text-success small" role="status">{mensajePass}</div>}
+                <button
+                  type="button"
+                  className="btn btn-cv-azul w-100"
+                  id="btn-cambiar-pass"
+                  onClick={handleCambiarPassword}
+                  disabled={cambiandoPass}
+                >
+                  {cambiandoPass ? 'Actualizando...' : 'Actualizar contraseña'}
+                </button>
+              </div>
+            <button
+              type="button"
               className="cuenta-fila-dash cuenta-fila-danger-dash"
               id="fila-cerrar-sesion"
-              style={{ borderBottom: 'none', cursor: 'pointer' }}
               onClick={cerrarSesion}
             >
-              <div className="cuenta-fila-icono-dash cuenta-icono-rojo-dash"><i className="bi bi-box-arrow-right" /></div>
-              <div className="flex-grow-1"><div className="toggle-titulo-dash" style={{ color: 'var(--color-danger)' }}>Cerrar sesión</div></div>
+              <span className="cuenta-fila-icono-dash cuenta-icono-rojo-dash"><i className="bi bi-box-arrow-right" /></span>
+              <span className="flex-grow-1"><span className="toggle-titulo-dash" style={{ color: 'var(--color-danger)' }}>Cerrar sesión</span></span>
               <i className="bi bi-chevron-right" />
+            </button>
             </div>
-          </div>
-
-          <div className={`card-panel-dash mt-3 ${seguridadAbierta ? '' : 'd-none'}`} id="panel-seguridad">
-            <div className="info-card-header-dash">
-              <h3 className="section-title-dash">Cambiar contraseña</h3>
-            </div>
-            <div className="p-3">
-              <label className="config-label-dash">Contraseña actual</label>
-              <input
-                type="password"
-                id="config-pass-actual"
-                className="form-control input-dash mb-3"
-                placeholder="••••••••"
-                autoComplete="current-password"
-                value={passActual}
-                onChange={(e) => setPassActual(e.target.value)}
-              />
-              <label className="config-label-dash">Nueva contraseña</label>
-              <input
-                type="password"
-                id="config-pass-nueva"
-                className="form-control input-dash mb-3"
-                placeholder="Mínimo 8 caracteres"
-                autoComplete="new-password"
-                value={passNueva}
-                onChange={(e) => setPassNueva(e.target.value)}
-              />
-              <label className="config-label-dash">Confirmar nueva contraseña</label>
-              <input
-                type="password"
-                id="config-pass-confirmar"
-                className="form-control input-dash mb-3"
-                placeholder="••••••••"
-                autoComplete="new-password"
-                value={passConfirmar}
-                onChange={(e) => setPassConfirmar(e.target.value)}
-              />
-              {errorPass && <div className="text-danger small mb-2" role="alert">{errorPass}</div>}
-              {mensajePass && <div className="text-success small mb-2" role="status">{mensajePass}</div>}
-              <button
-                type="button"
-                className="btn btn-cv-azul w-100"
-                id="btn-cambiar-pass"
-                style={{ borderRadius: '12px', fontWeight: '700' }}
-                onClick={handleCambiarPassword}
-                disabled={cambiandoPass}
-              >
-                {cambiandoPass ? 'Actualizando...' : 'Actualizar contraseña'}
-              </button>
-            </div>
-          </div>
+          </section>
         </div>
       </div>
     </div>

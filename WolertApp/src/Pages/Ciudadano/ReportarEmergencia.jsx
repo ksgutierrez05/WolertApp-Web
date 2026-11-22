@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, LayersControl, Marker, useMapEvents, useMap } from 'react-leaflet';
 import L from 'leaflet';
@@ -17,84 +17,6 @@ const estiloMapbox = (id) =>
   `https://api.mapbox.com/styles/v1/mapbox/${id}/tiles/{z}/{x}/{y}?access_token=${MAPBOX_TOKEN}`;
 const ATRIB_MAPBOX =
   '&copy; <a href="https://www.mapbox.com/about/maps/">Mapbox</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
-
-// Los "nombreBD" deben coincidir con la columna NOMBRE de la tabla TiposAlerta
-// del backend (se comparan sin importar mayúsculas, tildes ni guiones bajos).
-// Si no coinciden, el tipo aparece deshabilitado.
-const TIPOS_CONFIG = [
-  {
-    clave: 'robo',
-    nombre: 'Robo / Asalto',
-    nombreBD: 'ROBO',
-    icono: 'bi-person-x-fill',
-    color: '#e5484d',
-    subtipos: [],
-    pregunta: null
-  },
-  {
-    clave: 'sospechoso',
-    nombre: 'Persona sospechosa',
-    nombreBD: 'PERSONA_SOSPECHOSA',
-    icono: 'bi-person-badge-fill',
-    color: '#1f9d5b',
-    subtipos: [],
-    pregunta: null
-  },
-  {
-    clave: 'ruido',
-    nombre: 'Ruido / Alteración',
-    nombreBD: 'RUIDO',
-    icono: 'bi-volume-up-fill',
-    color: '#e08a1e',
-    subtipos: [],
-    pregunta: null
-  },
-  {
-    clave: 'incendio',
-    nombre: 'Incendio',
-    nombreBD: 'INCENDIO',
-    icono: 'bi-fire',
-    color: '#e5484d',
-    tituloSubtipo: 'Tipo de incendio',
-    subtipos: [
-      { nombre: 'Vivienda', icono: 'bi-house-fill', color: '#e5484d' },
-      { nombre: 'Vehículo', icono: 'bi-car-front-fill', color: '#f08a24' },
-      { nombre: 'Zona verde', icono: 'bi-tree-fill', color: '#1f9d5b' },
-      { nombre: 'Local comercial', icono: 'bi-shop', color: '#d9772b' }
-    ],
-    pregunta: 'Hay personas atrapadas'
-  },
-  {
-    clave: 'medica',
-    nombre: 'Emergencia médica',
-    nombreBD: 'EMERGENCIA_MEDICA',
-    icono: 'bi-plus-lg',
-    color: '#1f9d5b',
-    tituloSubtipo: 'Tipo de emergencia',
-    subtipos: [
-      { nombre: 'Dolor en el pecho', icono: 'bi-heart-pulse-fill', color: '#e5484d' },
-      { nombre: 'Caída o golpe', icono: 'bi-bandaid-fill', color: '#f08a24' },
-      { nombre: 'Dificultad para respirar', icono: 'bi-lungs-fill', color: '#2563c9' },
-      { nombre: 'Otra', icono: 'bi-three-dots', color: '#6b7a90' }
-    ],
-    pregunta: 'La persona está inconsciente'
-  },
-  {
-    clave: 'accidente',
-    nombre: 'Accidente',
-    nombreBD: 'ACCIDENTE',
-    icono: 'bi-exclamation-triangle-fill',
-    color: '#2563c9',
-    tituloSubtipo: 'Tipo de accidente',
-    subtipos: [
-      { nombre: 'Choque', icono: 'bi-car-front-fill', color: '#f08a24' },
-      { nombre: 'Atropello', icono: 'bi-person-walking', color: '#e5484d' },
-      { nombre: 'Volcamiento', icono: 'bi-truck', color: '#2563c9' },
-      { nombre: 'Moto', icono: 'bi-bicycle', color: '#1f9d5b' }
-    ],
-    pregunta: 'Hay heridos'
-  }
-];
 
 // Pin dibujado con SVG: evita el problema de los iconos por defecto de Leaflet con Vite
 const iconoPin = L.divIcon({
@@ -139,94 +61,149 @@ const normalizar = (texto) =>
     .trim()
     .toLowerCase();
 
+const prioridadOrden = { ALTA: 0, MEDIA: 1, BAJA: 2 };
+const colorPrioridad = { ALTA: '#d92d20', MEDIA: '#c17b16', BAJA: '#168a4f' };
+
+const prioridadDe = (tipo) =>
+  String(tipo?.prioridad ?? tipo?.Prioridad ?? 'SIN PRIORIDAD').toUpperCase();
+const centralDe = (tipo) =>
+  String(tipo?.centralResponsable ?? tipo?.CentralResponsable ?? '').toUpperCase();
+const nombreDe = (tipo) =>
+  String(tipo?.nombre ?? tipo?.Nombre ?? 'Tipo de alerta')
+    .replaceAll('_', ' ')
+    .trim();
+
+function etiquetaCentral(tipo) {
+  const central = centralDe(tipo);
+  if (central === 'POLICIA') return 'Policía';
+  if (central === 'TRANSITO') return 'Tránsito';
+  return central || 'Central sin asignar';
+}
+
+function iconoDe(tipo) {
+  const nombre = normalizar(nombreDe(tipo));
+  if (/incendio|fuego/.test(nombre)) return 'bi-fire';
+  if (/medic|salud|herid|accidente/.test(nombre)) return 'bi-heart-pulse-fill';
+  if (/robo|hurto|asalto/.test(nombre)) return 'bi-person-fill-lock';
+  if (/transito|vehicul|movilidad/.test(nombre)) return 'bi-car-front-fill';
+  if (/ruido/.test(nombre)) return 'bi-volume-up-fill';
+  if (/arma|violencia|amenaza/.test(nombre)) return 'bi-shield-exclamation';
+  if (/sospech/.test(nombre)) return 'bi-person-badge-fill';
+  return 'bi-exclamation-diamond-fill';
+}
+
 export default function ReportarEmergencia({ onClose }) {
   const navigate = useNavigate();
   const volverAMenuPrincipal = () => navigate('/ciudadano');
 
   const [tipo, setTipo] = useState(null);
-  const [subtipo, setSubtipo] = useState('');
-  const [extra, setExtra] = useState(false);
   const [descripcion, setDescripcion] = useState('');
-  const [pos, setPos] = useState(null);       // { lat, lng }
-  const [volarA, setVolarA] = useState(null); // solo cuando se usa el GPS
+  const [pos, setPos] = useState(null);
+  const [volarA, setVolarA] = useState(null);
   const [mostrarMapa, setMostrarMapa] = useState(false);
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState('');
-  const [enviada, setEnviada] = useState(false);
-  const [tipos, setTipos] = useState(() =>
-    TIPOS_CONFIG.map((t) => ({ ...t, tipoAlertaId: null }))
-  );
+  const [resultado, setResultado] = useState(null);
+  const [referenciaAlerta, setReferenciaAlerta] = useState(null);
+  const [tipos, setTipos] = useState([]);
   const [cargandoTipos, setCargandoTipos] = useState(true);
   const [errorTipos, setErrorTipos] = useState('');
+  const [busquedaTipo, setBusquedaTipo] = useState('');
+  const [filtroPrioridad, setFiltroPrioridad] = useState('TODAS');
+  const [ubicacionCargando, setUbicacionCargando] = useState(true);
 
-  async function cargarTipos() {
+  async function cargarTipos(signal) {
     try {
       setCargandoTipos(true);
       setErrorTipos('');
 
-      const datos = await listarTiposAlerta();
+      const datos = await listarTiposAlerta(signal);
+      if (signal?.aborted) return;
 
-      const tiposRelacionados = TIPOS_CONFIG.map(tipo => {
-        const encontrado = datos.find(bd =>
-          normalizar(bd.nombre ?? bd.Nombre) === normalizar(tipo.nombreBD)
-        );
+      const tiposValidos = datos
+        .map((registro) => ({
+          ...registro,
+          nombre: nombreDe(registro),
+          tipoAlertaId: Number(
+            registro.idTipoAlerta ?? registro.IdTipoAlerta ?? registro.id
+          ),
+        }))
+        .filter((registro) =>
+          Number.isInteger(registro.tipoAlertaId) && registro.tipoAlertaId > 0
+        )
+        .sort((a, b) => {
+          const ordenA = prioridadOrden[prioridadDe(a)] ?? 3;
+          const ordenB = prioridadOrden[prioridadDe(b)] ?? 3;
+          return ordenA - ordenB || a.nombre.localeCompare(b.nombre, 'es-CO');
+        });
 
-        return {
-          ...tipo,
-          tipoAlertaId: encontrado
-            ? Number(encontrado.idTipoAlerta ?? encontrado.IdTipoAlerta)
-            : null
-        };
-      });
-
-      setTipos(tiposRelacionados);
-
-    } catch (error) {
-      console.error('Error cargando tipos de alerta:', error);
-      setErrorTipos('No se pudieron cargar los tipos de alerta. Verifica que el backend esté encendido y vuelve a intentarlo.');
+      setTipos(tiposValidos);
+    } catch (err) {
+      if (!signal?.aborted) {
+        console.error('Error cargando tipos de alerta:', err);
+        setErrorTipos('No se pudieron cargar los tipos de alerta. Verifica que el backend esté encendido y vuelve a intentarlo.');
+      }
     } finally {
-      setCargandoTipos(false);
+      if (!signal?.aborted) setCargandoTipos(false);
     }
   }
 
   useEffect(() => {
-    cargarTipos();
+    const controlador = new AbortController();
+    cargarTipos(controlador.signal);
+    return () => controlador.abort();
   }, []);
-
-  const elegirTipo = (t) => {
-    setTipo(t);
-    setSubtipo('');
-    setExtra(false);
-    setError('');
-    setMostrarMapa(false);
-    usarMiUbicacion();
-  };
 
   const usarMiUbicacion = async () => {
     try {
+      setUbicacionCargando(true);
       setError('');
-      const u = await obtenerUbicacion();
-      setPos(u);
-      setVolarA(u);
+      const ubicacion = await obtenerUbicacion();
+      setPos(ubicacion);
+      setVolarA(ubicacion);
     } catch (err) {
       setError(err.message);
+    } finally {
+      setUbicacionCargando(false);
     }
   };
 
-  // Obtener la ubicación automáticamente al abrir el reporte
   useEffect(() => {
     usarMiUbicacion();
   }, []);
 
+  const elegirTipo = (seleccionado) => {
+    setTipo(seleccionado);
+    setError('');
+    setMostrarMapa(false);
+  };
+
+  const tiposVisibles = useMemo(() => {
+    const consulta = normalizar(busquedaTipo);
+    return tipos.filter((registro) => {
+      const coincideConsulta = !consulta || normalizar([
+        nombreDe(registro),
+        centralDe(registro),
+        prioridadDe(registro),
+        registro.tipoAlertaId,
+      ].join(' ')).includes(consulta);
+      const coincidePrioridad = filtroPrioridad === 'TODAS'
+        || prioridadDe(registro) === filtroPrioridad;
+      return coincideConsulta && coincidePrioridad;
+    });
+  }, [tipos, busquedaTipo, filtroPrioridad]);
+
   const reiniciar = () => {
-    setEnviada(false);
+    setResultado(null);
+    setReferenciaAlerta(null);
     setTipo(null);
-    setSubtipo('');
-    setExtra(false);
     setDescripcion('');
     setPos(null);
     setError('');
     setMostrarMapa(false);
+    setBusquedaTipo('');
+    setFiltroPrioridad('TODAS');
+    usarMiUbicacion();
   };
 
   const enviar = async () => {
@@ -237,21 +214,30 @@ export default function ReportarEmergencia({ onClose }) {
       return;
     }
 
-    // El backend solo guarda una descripción de texto: aquí se arma con los detalles elegidos
-    const partes = [tipo.nombre];
-    if (subtipo) partes.push(subtipo);
-    if (extra && tipo.pregunta) partes.push(tipo.pregunta);
+    const partes = [nombreDe(tipo)];
     if (descripcion.trim()) partes.push(descripcion.trim());
 
     try {
       setEnviando(true);
-      await crearAlerta({
+      const respuesta = await crearAlerta({
         tipoAlertaId: tipo.tipoAlertaId,
         descripcion: partes.join('. ').slice(0, 500),
         latitud: Number(pos.lat.toFixed(6)),
         longitud: Number(pos.lng.toFixed(6)),
       });
-      setEnviada(true);
+      setResultado(respuesta);
+      setReferenciaAlerta(
+        (typeof respuesta === 'number' || typeof respuesta === 'string' ? respuesta : null) ??
+          respuesta?.idAlerta ??
+          respuesta?.IdAlerta ??
+          respuesta?.id ??
+          respuesta?.Id ??
+          respuesta?.alerta?.idAlerta ??
+          respuesta?.alerta?.IdAlerta ??
+          respuesta?.data?.idAlerta ??
+          respuesta?.data?.IdAlerta ??
+          null
+      );
       setMostrarMapa(false);
     } catch (err) {
       setError(err.message || 'No se pudo enviar la alerta.');
@@ -259,10 +245,6 @@ export default function ReportarEmergencia({ onClose }) {
       setEnviando(false);
     }
   };
-
-  const mensajeCabecera = pos
-    ? 'Ubicación marcada: completa el formulario y pulsa el botón de pánico'
-    : 'Marca el punto en el mapa o usa tu ubicación actual';
 
   return (
     <div className="re-modal-fondo" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="re-titulo-modal">
@@ -275,34 +257,105 @@ export default function ReportarEmergencia({ onClose }) {
         </div>
 
         <div className="re-modal-cuerpo">
-          {!tipo && !enviada ? (
+          {!tipo && !resultado ? (
             <div className="re-paso-tipo">
               <div className="re-seleccion-tipo">
-                <h2>¿Qué tipo de emergencia tienes?</h2>
+                <div className="re-catalogo-header">
+                  <span className="re-paso-etiqueta">PASO 1 · CLASIFICAR</span>
+                  <h2>¿Qué está ocurriendo?</h2>
+                  <p>Selecciona el tipo de alerta. Las opciones y su prioridad vienen del sistema.</p>
+                </div>
+                <div className="re-catalogo-toolbar">
+                  <label className="re-busqueda-tipos">
+                    <i className="bi bi-search" />
+                    <input
+                      type="search"
+                      value={busquedaTipo}
+                      onChange={(event) => setBusquedaTipo(event.target.value)}
+                      placeholder="Buscar alerta por nombre, central o código"
+                      aria-label="Buscar tipos de alerta"
+                    />
+                    {busquedaTipo && (
+                      <button type="button" onClick={() => setBusquedaTipo('')} aria-label="Limpiar búsqueda">
+                        <i className="bi bi-x-lg" />
+                      </button>
+                    )}
+                  </label>
+                  <select
+                    className="re-filtro-prioridad"
+                    value={filtroPrioridad}
+                    onChange={(event) => setFiltroPrioridad(event.target.value)}
+                    aria-label="Filtrar tipos por prioridad"
+                  >
+                    <option value="TODAS">Todas las prioridades</option>
+                    <option value="ALTA">Prioridad alta</option>
+                    <option value="MEDIA">Prioridad media</option>
+                    <option value="BAJA">Prioridad baja</option>
+                  </select>
+                </div>
                 {errorTipos && (
-                  <p className="re-error" role="alert">
-                    {errorTipos}{' '}
-                    <button type="button" className="re-btn-oscuro" onClick={cargarTipos}>
+                  <div className="re-error re-error-tipos" role="alert">
+                    <span>{errorTipos}</span>
+                    <button type="button" className="re-btn-oscuro" onClick={() => cargarTipos()}>
                       Reintentar
                     </button>
-                  </p>
+                  </div>
                 )}
-                <div className="re-grilla-tipos">
-                  {tipos.map((t) => (
-                    <button
-                      key={t.clave}
-                      type="button"
-                      className="re-tipo-card"
-                      onClick={() => elegirTipo(t)}
-                      disabled={t.tipoAlertaId == null || cargandoTipos}
-                    >
-                      <i
-                        className={`bi ${t.icono}`}
-                        style={{ color: t.color }}
-                      />
-                      {t.nombre}
-                    </button>
-                  ))}
+                {!cargandoTipos && !errorTipos && tipos.length > 0 && (
+                  <div className="re-resultados-resumen">
+                    <span>{tiposVisibles.length} de {tipos.length} tipos</span>
+                    <span>Prioridad alta primero</span>
+                  </div>
+                )}
+                <div className="re-resultados-tipos" aria-live="polite">
+                  {cargandoTipos ? (
+                    <div className="re-catalogo-estado">
+                      <span className="re-catalogo-spinner" />
+                      <strong>Cargando tipos disponibles…</strong>
+                    </div>
+                  ) : tiposVisibles.length > 0 ? (
+                    <div className="re-grilla-tipos">
+                      {tiposVisibles.map((t) => {
+                        const prioridad = prioridadDe(t);
+                        const central = centralDe(t);
+                        const color = colorPrioridad[prioridad] || '#53647b';
+
+                        return (
+                          <button
+                            key={t.tipoAlertaId}
+                            type="button"
+                            className="re-tipo-card"
+                            style={{ '--re-tipo-color': color }}
+                            onClick={() => elegirTipo(t)}
+                          >
+                            <span className="re-tipo-card-icono">
+                              <i className={`bi ${iconoDe(t)}`} />
+                            </span>
+                            <span className="re-tipo-card-contenido">
+                              <strong>{nombreDe(t)}</strong>
+                              <span className="re-tipo-card-detalles">
+                                <span className={`re-prioridad-pill re-prioridad-${normalizar(prioridad).replace(/\s+/g, '-')}`}>
+                                  {prioridad === 'SIN PRIORIDAD' ? 'Sin prioridad' : `Prioridad ${prioridad.toLowerCase()}`}
+                                </span>
+                                <span className="re-central-pill">
+                                  <i className={`bi ${central === 'TRANSITO' ? 'bi-cone-striped' : 'bi-shield-check'}`} />
+                                  {etiquetaCentral(t)}
+                                </span>
+                              </span>
+                            </span>
+                            <span className="re-tipo-card-codigo">#{t.tipoAlertaId}</span>
+                            <i className="bi bi-chevron-right re-tipo-card-flecha" />
+                          </button>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="re-catalogo-estado">
+                      <i className="bi bi-search" />
+                      <strong>{tipos.length ? 'No hay coincidencias' : 'No hay tipos de alerta disponibles'}</strong>
+                      <span>{tipos.length ? 'Prueba otra búsqueda o prioridad.' : 'El catálogo está vacío; contacta al administrador.'}</span>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -346,45 +399,35 @@ export default function ReportarEmergencia({ onClose }) {
                     <i className="bi bi-geo-alt-fill" /> {pos.lat.toFixed(5)}, {pos.lng.toFixed(5)}
                   </div>
                 )}
-                <button type="button" className="re-btn-gps" onClick={usarMiUbicacion}>
-                  <i className="bi bi-crosshair" /> Usar mi ubicación
+                <button type="button" className="re-btn-gps" onClick={usarMiUbicacion} disabled={ubicacionCargando}>
+                  <i className={`bi ${ubicacionCargando ? 'bi-arrow-repeat re-girando' : 'bi-crosshair'}`} />
+                  {ubicacionCargando ? 'Buscando ubicación…' : 'Usar mi ubicación'}
                 </button>
               </div>
               )}
 
               <aside className="re-panel">
                 <div className="re-tipo-actual">
-                  <span className="re-tipo-icono" style={{ background: tipo.color }}><i className={`bi ${tipo.icono}`} /></span>
-                  <strong>{tipo.nombre}</strong>
+                  <span className="re-tipo-icono" style={{ background: colorPrioridad[prioridadDe(tipo)] || '#53647b' }}><i className={`bi ${iconoDe(tipo)}`} /></span>
+                  <div className="re-tipo-actual-datos">
+                    <strong>{nombreDe(tipo)}</strong>
+                    <span>Referencia de tipo #{tipo.tipoAlertaId}</span>
+                  </div>
                   <button type="button" className="re-link" onClick={() => setTipo(null)}>Cambiar tipo</button>
                 </div>
 
-                {tipo.subtipos.length > 0 && (
-                  <section className="re-caja">
-                    <h2>{tipo.tituloSubtipo}</h2>
-                    <div className="re-subtipos">
-                      {tipo.subtipos.map((s) => (
-                        <button
-                          key={s.nombre}
-                          type="button"
-                          className={`re-subtipo ${subtipo === s.nombre ? 'activo' : ''}`}
-                          onClick={() => setSubtipo(s.nombre)}
-                          aria-pressed={subtipo === s.nombre}
-                        >
-                          <span className="re-subtipo-icono" style={{ background: s.color }}><i className={`bi ${s.icono}`} /></span>
-                          {s.nombre}
-                        </button>
-                      ))}
-                    </div>
-                    {tipo.pregunta && (
-                      <label className="re-switch">
-                        <input type="checkbox" checked={extra} onChange={(e) => setExtra(e.target.checked)} />
-                        <span className="re-switch-pista" />
-                        <span>{tipo.pregunta}</span>
-                      </label>
-                    )}
-                  </section>
-                )}
+                <div className="re-asignacion-tipo">
+                  <span className={`re-prioridad-pill re-prioridad-${normalizar(prioridadDe(tipo)).replace(/\s+/g, '-')}`}>
+                    <i className="bi bi-exclamation-triangle-fill" />
+                    {prioridadDe(tipo) === 'SIN PRIORIDAD'
+                      ? 'Prioridad sin asignar'
+                      : `Prioridad ${prioridadDe(tipo).toLowerCase()}`}
+                  </span>
+                  <span className="re-central-pill">
+                    <i className={`bi ${centralDe(tipo) === 'TRANSITO' ? 'bi-cone-striped' : 'bi-shield-check'}`} />
+                    {etiquetaCentral(tipo)}
+                  </span>
+                </div>
 
                 <label className="re-campo">
                   <span><i className="bi bi-pencil-fill" /> Descripción del incidente</span>
@@ -397,11 +440,16 @@ export default function ReportarEmergencia({ onClose }) {
                   />
                 </label>
 
-                <div className="re-coords-caja">
+                <div className={`re-coords-caja ${pos ? 'ok' : ''}`}>
                   <i className="bi bi-pin-map-fill" />
                   <div>
                     <strong>Coordenadas del incidente</strong>
-                    <span>{pos ? `${pos.lat.toFixed(5)}, ${pos.lng.toFixed(5)}` : 'Aún sin marcar'}</span>
+                    <span>
+                      {pos
+                        ? `${pos.lat.toFixed(5)}, ${pos.lng.toFixed(5)}`
+                        : ubicacionCargando
+                          ? 'Buscando tu ubicación…'
+                          : 'Aún sin marcar'}</span>
                   </div>
                 </div>
 
@@ -413,9 +461,9 @@ export default function ReportarEmergencia({ onClose }) {
                       <button type="button" className="re-btn-manual" onClick={() => setMostrarMapa(false)}>
                         <i className="bi bi-arrow-left" /> Volver a la alerta directa
                       </button>
-                      <button type="button" className="re-panico" onClick={enviar} disabled={enviando}>
+                      <button type="button" className="re-panico" onClick={enviar} disabled={enviando || !pos}>
                         <i className="bi bi-shield-fill-exclamation" />
-                        {enviando ? 'Enviando alerta...' : 'Enviar alerta'}
+                        {enviando ? 'Enviando alerta...' : !pos ? 'Esperando ubicación…' : 'Enviar alerta'}
                       </button>
                     </>
                   ) : (
@@ -426,9 +474,9 @@ export default function ReportarEmergencia({ onClose }) {
                       <button type="button" className="re-btn-ubicacion" onClick={usarMiUbicacion} disabled={enviando}>
                         <i className="bi bi-crosshair" /> Usar mi ubicación
                       </button>
-                      <button type="button" className="re-panico" onClick={enviar} disabled={enviando}>
+                      <button type="button" className="re-panico" onClick={enviar} disabled={enviando || !pos}>
                         <i className="bi bi-shield-fill-exclamation" />
-                        {enviando ? 'Enviando alerta...' : 'Enviar alerta'}
+                        {enviando ? 'Enviando alerta...' : !pos ? 'Esperando ubicación…' : 'Enviar alerta'}
                       </button>
                     </>
                   )}
@@ -439,11 +487,21 @@ export default function ReportarEmergencia({ onClose }) {
         </div>
 
         {/* Resultado */}
-        {enviada && (
+        {resultado && (
           <div className="re-modal-ok">
             <i className="bi bi-check-circle-fill re-ok-icono" />
             <h2 id="re-titulo-ok">Tu alerta fue registrada</h2>
-            <p>Mantente en un lugar seguro. Las autoridades pueden ver tu ubicación en el mapa.</p>
+            {referenciaAlerta != null && (
+              <div className="re-referencia-alerta">
+                <span>Referencia de tu alerta</span>
+                <strong>#{referenciaAlerta}</strong>
+              </div>
+            )}
+            <p>
+              {referenciaAlerta != null
+                ? 'Guarda esta referencia para identificar tu reporte. Mantente en un lugar seguro.'
+                : 'Tu reporte quedó registrado. Mantente en un lugar seguro; las autoridades ya pueden consultar la alerta y su ubicación.'}
+            </p>
             <button type="button" className="re-btn-oscuro" onClick={reiniciar}>Entendido</button>
           </div>
         )}

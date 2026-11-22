@@ -4,10 +4,11 @@ export function ObtenerToken() {
   return localStorage.getItem('token');
 }
 
-export async function ListarMediosTransporte() {
+export async function ListarMediosTransporte(signal) {
   const obtenerToken = ObtenerToken();
   const respuesta = await fetch(`${API}/api/MediosTransporte`, {
-    headers: { 'Authorization': `Bearer ${obtenerToken}` }
+    headers: { 'Authorization': `Bearer ${obtenerToken}` },
+    signal,
   });
   if (!respuesta.ok) throw new Error('Error al listar los medios de transporte');
   return await respuesta.json();

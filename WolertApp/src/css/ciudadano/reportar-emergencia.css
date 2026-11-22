@@ -245,7 +245,7 @@
 
 /* ===== Móvil ===== */
 @media (max-width: 900px) {
-  .re-modal-contenedor { height: 96vh; width: min(92vw, 350px); }
+  .re-modal-contenedor { height: 96vh; width: min(96vw, 760px); }
   .re-modal-cuerpo { overflow-y: auto; }
 
   /* botones arriba y título centrado en su propia línea */
@@ -263,3 +263,48 @@
 @media (max-width: 480px) {
   .re-grilla-tipos { grid-template-columns: 1fr; }
 }
+
+/* Catálogo dinámico de tipos, prioridades y responsables desde la BD */
+.re-paso-tipo { place-items:start center; padding:clamp(18px,4vh,38px) 24px; }
+.re-seleccion-tipo { width:min(880px,100%); text-align:left; }
+.re-catalogo-header { margin:0 0 18px; }
+.re-paso-etiqueta { color:#73839a; font-size:10px; font-weight:800; letter-spacing:.13em; }
+.re-catalogo-header h2 { margin:7px 0 5px; color:#172943; font-size:clamp(22px,3vw,29px); font-weight:800; letter-spacing:-.035em; }
+.re-catalogo-header p { margin:0; color:#75839a; font-size:13px; }
+.re-catalogo-toolbar { display:grid; grid-template-columns:minmax(0,1fr) 205px; gap:9px; margin-bottom:12px; }
+.re-busqueda-tipos { display:flex; align-items:center; gap:9px; min-width:0; height:43px; padding:0 12px; border:1px solid #dfe6ef; border-radius:11px; background:#fff; color:#8290a3; }
+.re-busqueda-tipos:focus-within { border-color:#8facdc; box-shadow:0 0 0 3px #eaf1fc; }
+.re-busqueda-tipos input { width:100%; min-width:0; border:0; outline:0; background:transparent; color:#34455d; font:inherit; font-size:12px; }
+.re-busqueda-tipos input::placeholder { color:#9aa6b5; }
+.re-busqueda-tipos button { display:grid; width:27px; height:27px; flex:none; place-items:center; border:0; border-radius:7px; background:#f1f4f8; color:#687991; cursor:pointer; }
+.re-filtro-prioridad { min-width:0; padding:0 11px; border:1px solid #dfe6ef; border-radius:11px; outline:0; background:#fff; color:#40516a; font:inherit; font-size:11px; }
+.re-filtro-prioridad:focus { border-color:#8facdc; box-shadow:0 0 0 3px #eaf1fc; }
+.re-resultados-resumen { display:flex; justify-content:space-between; gap:10px; padding:0 2px 7px; color:#8a97a8; font-size:9px; font-weight:700; }
+.re-resultados-tipos { max-height:min(52vh,470px); overflow:auto; padding:2px 3px 4px 1px; scrollbar-color:#cbd5e2 transparent; scrollbar-width:thin; }
+.re-grilla-tipos { grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; }
+.re-tipo-card { display:grid; grid-template-columns:38px minmax(0,1fr) auto 12px; align-items:center; gap:10px; min-width:0; min-height:76px; padding:11px 12px; border-color:#e3e9f1; border-radius:12px; box-shadow:0 2px 8px rgba(20,35,63,.025); transition:transform .16s,border-color .16s,box-shadow .16s,background .16s; }
+.re-tipo-card:hover { transform:translateY(-1px); border-color:color-mix(in srgb,var(--re-tipo-color) 42%,#dfe5ee); background:#fff; box-shadow:0 6px 16px rgba(20,35,63,.08); }
+.re-tipo-card:focus-visible { outline:3px solid color-mix(in srgb,var(--re-tipo-color) 32%,transparent); outline-offset:2px; }
+.re-tipo-card-icono { display:grid; width:38px; height:38px; place-items:center; border-radius:11px; background:color-mix(in srgb,var(--re-tipo-color) 10%,white); color:var(--re-tipo-color); font-size:17px; }
+.re-tipo-card-contenido { display:grid; min-width:0; gap:6px; }
+.re-tipo-card-contenido>strong { overflow:hidden; color:#263952; font-size:12px; font-weight:800; text-overflow:ellipsis; white-space:nowrap; }
+.re-tipo-card-detalles { display:flex; flex-wrap:wrap; align-items:center; gap:5px; }
+.re-prioridad-pill,.re-central-pill { display:inline-flex; align-items:center; gap:4px; max-width:100%; padding:4px 6px; border-radius:99px; font-size:8px; font-weight:800; line-height:1; text-transform:uppercase; letter-spacing:.035em; }
+.re-prioridad-alta { background:#fff0ee; color:#b6372e; }.re-prioridad-media { background:#fff6e4; color:#96620c; }.re-prioridad-baja { background:#eaf7ef; color:#287548; }.re-prioridad-sin-prioridad { background:#f0f3f7; color:#687991; }
+.re-central-pill { overflow:hidden; background:#eff4fb; color:#526a89; text-overflow:ellipsis; white-space:nowrap; }
+.re-tipo-card-codigo { align-self:start; padding:4px 6px; border:1px solid #e9edf3; border-radius:6px; background:#f8fafc; color:#728198; font-size:9px; font-weight:750; font-variant-numeric:tabular-nums; }
+.re-tipo-card-flecha { color:#a2adba; font-size:10px; }
+.re-catalogo-estado { display:grid; justify-items:center; gap:8px; min-height:170px; align-content:center; color:#8492a5; text-align:center; }
+.re-catalogo-estado>i { color:#91a0b3; font-size:22px; }.re-catalogo-estado strong { color:#475a73; font-size:13px; }.re-catalogo-estado span { font-size:11px; }
+.re-catalogo-spinner { width:22px; height:22px; border:2px solid #dce6f3; border-top-color:#3971c4; border-radius:50%; animation:re-giro .8s linear infinite; }
+.re-error-tipos { display:flex; align-items:center; justify-content:space-between; gap:12px; margin:0 0 10px; }
+.re-error-tipos .re-btn-oscuro { flex:none; padding:8px 14px; font-size:11px; }
+.re-tipo-actual-datos { display:grid; min-width:0; gap:3px; }.re-tipo-actual-datos strong { color:#243750; }.re-tipo-actual-datos>span { color:#8995a5; font-size:9px; }
+.re-asignacion-tipo { display:flex; flex-wrap:wrap; gap:7px; padding:10px 11px; border:1px solid #e8edf4; border-radius:10px; background:#fafbfd; }
+.re-asignacion-tipo .re-prioridad-pill,.re-asignacion-tipo .re-central-pill { padding:6px 8px; font-size:9px; }
+.re-referencia-alerta { display:grid; gap:4px; min-width:190px; margin:0 auto 13px; padding:12px 20px; border:1px solid #dbe9e2; border-radius:13px; background:#f3faf6; }
+.re-referencia-alerta span { color:#75877c; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; }
+.re-referencia-alerta strong { color:#216b40; font-size:23px; font-variant-numeric:tabular-nums; }
+.re-panico:disabled { opacity:.55; cursor:not-allowed; }
+@media (max-width:700px) { .re-paso-tipo { padding:20px 14px; }.re-catalogo-toolbar { grid-template-columns:1fr; }.re-filtro-prioridad { min-height:40px; }.re-resultados-tipos { max-height:none; overflow:visible; }.re-grilla-tipos { grid-template-columns:1fr; }.re-tipo-card { min-height:68px; }.re-modal-contenedor { height:96vh; } }
+@media (max-width:390px) { .re-tipo-card { grid-template-columns:34px minmax(0,1fr) 10px; }.re-tipo-card-icono { width:34px; height:34px; }.re-tipo-card-codigo { display:none; } }

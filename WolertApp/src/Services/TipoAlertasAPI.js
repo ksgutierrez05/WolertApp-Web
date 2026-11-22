@@ -4,10 +4,11 @@ export function ObtenerToken() {
   return localStorage.getItem('token');
 }
 
-export async function listarTiposAlerta() {
+export async function listarTiposAlerta(signal) {
   const obtenerToken = ObtenerToken();
   const respuesta = await fetch(`${API}/api/TiposAlerta`, {
-    headers: { 'Authorization': `Bearer ${obtenerToken}` }
+    headers: { 'Authorization': `Bearer ${obtenerToken}` },
+    signal,
   });
   if (!respuesta.ok) throw new Error(`Error al listar los tipos de alerta: ${await respuesta.text()}`);
   return await respuesta.json();
