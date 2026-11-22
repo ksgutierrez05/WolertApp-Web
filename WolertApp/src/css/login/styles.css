@@ -305,23 +305,101 @@ body.modo-registro .auth-container .btn-volver {
 /* ---------- Formulario de registro ---------- */
 .auth-container .form-registro {
     overflow-y: auto;
-    padding-top: 40px;
-    padding-bottom: 40px;
+    padding: 32px clamp(22px, 4vw, 54px);
     justify-content: flex-start;
+    scrollbar-color: #cbd5e1 transparent;
+    scrollbar-width: thin;
+}
+
+.auth-container .form-registro form {
+    width: min(100%, 500px);
+    margin: 0 auto;
 }
 
 .auth-container .form-registro h2 {
-    font-size: 32px;
-    margin: 0 auto 20px auto;
+    font-size: clamp(27px, 2.5vw, 34px);
+    font-weight: 750;
+    letter-spacing: -0.035em;
+    margin: 0 auto 8px;
     text-align: center;
     align-self: center;
+    color: #172554;
 }
 
 .auth-container .form-subtitle {
     color: #6b7280;
-    font-size: 13.5px;
-    margin-bottom: 18px;
-    align-self: flex-start;
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 0 0 24px;
+    text-align: center;
+}
+
+.auth-container .registro-label {
+    width: 100%;
+    margin: 0 0 6px;
+    color: var(--texto);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.auth-container .registro-label > span:first-child {
+    color: #b42318;
+}
+
+.auth-container .registro-label .campo-opcional {
+    color: #6b7280;
+    font-weight: 400;
+}
+
+.auth-container .btn-google-deshabilitado {
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    border: 1px solid #dadce0;
+    border-radius: 24px;
+    background: #fff;
+    color: #3c4043;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: not-allowed;
+    opacity: 0.68;
+}
+
+.auth-container .google-g-icon {
+    width: 18px;
+    height: 18px;
+    flex: 0 0 18px;
+}
+
+.auth-container .google-registro-ayuda {
+    width: 100%;
+    margin: 0 0 14px;
+    color: #6b7280;
+    font-size: 12px;
+    line-height: 1.55;
+    text-align: center;
+}
+
+.auth-container .form-registro .seccion-titulo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #3158a6;
+    font-size: 11px;
+    letter-spacing: 0.09em;
+    margin: 18px 0 12px;
+}
+
+.auth-container .form-registro .seccion-titulo::after {
+    content: '';
+    height: 1px;
+    flex: 1;
+    background: #e5eaf2;
 }
 
 .auth-container .form-divider {
@@ -351,13 +429,16 @@ body.modo-registro .auth-container .btn-volver {
 
 .auth-container .input-gris {
     width: 100%;
-    padding: 15px 16px;
-    border: none;
-    border-radius: 12px;
-    background-color: var(--gris-input);
+    min-height: 48px;
+    padding: 13px 15px;
+    border: 1px solid #e1e7f0;
+    border-radius: 10px;
+    background-color: #f8fafc;
     font-size: 14px;
     color: var(--texto);
-    margin-bottom: 14px;
+    margin-bottom: 12px;
+    transition: border-color 160ms ease, box-shadow 160ms ease,
+        background-color 160ms ease;
 }
 
 .auth-container .input-gris::placeholder {
@@ -366,11 +447,52 @@ body.modo-registro .auth-container .btn-volver {
 
 .auth-container .input-gris:focus {
     outline: none;
-    box-shadow: 0 0 0 2px var(--azul-oscuro);
+    border-color: #5277c4;
+    background-color: #fff;
+    box-shadow: 0 0 0 3px rgb(49 88 166 / 12%);
 }
 
 .auth-container .grid-2 .input-gris {
     margin-bottom: 0;
+}
+
+.auth-container .form-registro .btn-login {
+    min-height: 48px;
+    margin-top: 4px;
+    border-radius: 12px;
+    box-shadow: 0 7px 16px rgb(25 55 115 / 18%);
+    font-weight: 650;
+    letter-spacing: 0.01em;
+}
+
+.auth-container .form-registro .divisor {
+    margin: 20px 0 14px;
+}
+
+.auth-container .form-registro .google-wrapper {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.auth-container .form-registro .google-wrapper > div,
+.auth-container .form-registro .google-wrapper iframe {
+    max-width: 100%;
+}
+
+@media (max-width: 640px) {
+    .auth-container .form-registro {
+        padding: 28px 22px;
+    }
+
+    .auth-container .form-registro .grid-2 {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .auth-container .form-registro .grid-2 .input-gris {
+        margin-bottom: 12px;
+    }
 }
 
 .auth-container .form-registro .input-wrapper .input-gris {

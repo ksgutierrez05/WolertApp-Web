@@ -188,3 +188,28 @@ export async function loginGoogle(credential) {
     localStorage.setItem('username', datos.username);
     return datos;
 }
+
+// Registro ciudadano con Google. El backend valida la credencial y devuelve
+// la sesión lista, por lo que no se llama después al endpoint de login.
+export async function registrarConGoogle(registro) {
+    const respuesta = await fetch(`${API}/api/Auth/google/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(registro)
+    });
+
+    if (!respuesta.ok) {
+        const texto = await respuesta.text();
+        const mensaje = respuesta.status === 409
+            ? 'Ese correo ya tiene una cuenta. Inicia sesión con Google.'
+            : texto || 'No se pudo completar el registro con Google.';
+        throw new Error(mensaje);
+    }
+
+    const datos = await respuesta.json();
+    localStorage.setItem('token', datos.token);
+    localStorage.setItem('rol', datos.rol);
+    localStorage.setItem('idUsuario', datos.idUsuario);
+    localStorage.setItem('username', datos.username);
+    return datos;
+}
