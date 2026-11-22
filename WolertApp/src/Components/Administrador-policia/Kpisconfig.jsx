@@ -283,5 +283,36 @@ policias: {
   ],
 },
 
+unidades: {
+  columnas: "col-6 col-xl-3",
+  claseFila: "row g-3 mb-4",
+  items: [
+    {
+      clave: "total",
+      etiqueta: "Total de unidades",
+      icono: "bi-shield-fill-check",
+      tono: "azul",
+    },
+    {
+      clave: "operativas",
+      etiqueta: "Unidades operativas",
+      icono: "bi-check-circle-fill",
+      tono: "verde",
+    },
+    {
+      clave: "activas",
+      etiqueta: "Unidades activas",
+      icono: "bi-broadcast",
+      tono: "ambar",
+    },
+    {
+      clave: "policias",
+      etiqueta: "Policías asignados",
+      icono: "bi-people-fill",
+      tono: "rojo",
+    },
+  ],
+},
+
 
 };

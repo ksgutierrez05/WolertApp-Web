@@ -3,8 +3,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Topbar from "../../Components/Administrador-policia/Topbar";
 import {
   listarPolicias,
-  listarUsuariosDisponibles,
-  crearPolicia,
   actualizarPolicia,
   eliminarPolicia,
   registrarNuevoPolicia,
@@ -128,10 +126,8 @@ export default function Policias() {
   const [mensaje, setMensaje] = useState("");
 
   const [modal, setModal] = useState(null);
-  const [modoRegistro, setModoRegistro] = useState("nuevo");
 
   const [formulario, setFormulario] = useState({ ...vacio });
-  const [usuarios, setUsuarios] = useState([]);
   const [unidadesOpciones, setUnidadesOpciones] = useState([]);
 
   const [filasExcel, setFilasExcel] = useState([]);
@@ -187,32 +183,12 @@ export default function Policias() {
     setError("");
     setMensaje("");
     setFormulario({ ...vacio });
-    setModoRegistro("nuevo");
     setModal("crear");
 
     try {
       await cargarUnidades();
     } catch (e) {
       setError(e.message);
-    }
-  }
-
-  async function cambiarModo(modo) {
-    setModoRegistro(modo);
-    setError("");
-
-    setFormulario((actual) => ({
-      ...actual,
-      idUsuario: "",
-    }));
-
-    if (modo === "existente") {
-      try {
-        const disponibles = await listarUsuariosDisponibles();
-        setUsuarios(disponibles);
-      } catch (e) {
-        setError(e.message);
-      }
     }
   }
 
@@ -281,15 +257,10 @@ export default function Policias() {
           formulario.idUsuario,
           datos
         );
-      } else if (modoRegistro === "nuevo") {
+      } else {
         await registrarNuevoPolicia({
           ...formulario,
           ...datos,
-        });
-      } else {
-        await crearPolicia({
-          ...datos,
-          idUsuario: Number(formulario.idUsuario),
         });
       }
 
@@ -1106,89 +1077,21 @@ export default function Policias() {
                       </div>
                     )}
 
-                    {/* TIPO DE REGISTRO */}
-
                     {modal === "crear" && (
                       <div className="form-seccion-policias">
                         <div className="form-seccion-titulo">
-                          <i className="bi bi-person-check" />
-
+                          <i className="bi bi-person-plus" />
                           <div>
-                            <h3>Tipo de registro</h3>
-                            <p>
-                              Selecciona cómo registrar al policía
-                            </p>
+                            <h3>Crear cuenta policial</h3>
+                            <p>El usuario se creará automáticamente con el rol POLICIA.</p>
                           </div>
-                        </div>
-
-                        <div className="registro-opciones-policias">
-                          <label
-                            className={`registro-opcion-policias ${
-                              modoRegistro === "nuevo"
-                                ? "seleccionada"
-                                : ""
-                            }`}
-                          >
-                            <input
-                              type="radio"
-                              name="modo"
-                              checked={
-                                modoRegistro === "nuevo"
-                              }
-                              onChange={() =>
-                                cambiarModo("nuevo")
-                              }
-                            />
-
-                            <i className="bi bi-person-plus" />
-
-                            <span>
-                              <strong>
-                                Usuario nuevo
-                              </strong>
-                              <small>
-                                Crear cuenta
-                              </small>
-                            </span>
-                          </label>
-
-                          <label
-                            className={`registro-opcion-policias ${
-                              modoRegistro === "existente"
-                                ? "seleccionada"
-                                : ""
-                            }`}
-                          >
-                            <input
-                              type="radio"
-                              name="modo"
-                              checked={
-                                modoRegistro === "existente"
-                              }
-                              onChange={() =>
-                                cambiarModo("existente")
-                              }
-                            />
-
-                            <i className="bi bi-person-check" />
-
-                            <span>
-                              <strong>
-                                Usuario existente
-                              </strong>
-                              <small>
-                                Vincular cuenta
-                              </small>
-                            </span>
-                          </label>
                         </div>
                       </div>
                     )}
 
                     {/* DATOS DE ACCESO */}
 
-                    {modal === "crear" &&
-                      (modoRegistro === "nuevo" ? (
+                    {modal === "crear" && (
                         <div className="form-seccion-policias">
                           <div className="form-seccion-titulo">
                             <i className="bi bi-person-vcard" />
@@ -1274,59 +1177,7 @@ export default function Policias() {
                             )}
                           </div>
                         </div>
-                      ) : (
-                        <div className="form-seccion-policias">
-                          <div className="form-seccion-titulo">
-                            <i className="bi bi-person-check" />
-
-                            <div>
-                              <h3>Usuario disponible</h3>
-                            </div>
-                          </div>
-
-                          <div className="form-field-dash">
-                            <label htmlFor="pol-id">
-                              Usuario *
-                            </label>
-
-                            <select
-                              id="pol-id"
-                              className="form-select"
-                              required
-                              value={
-                                formulario.idUsuario
-                              }
-                              onChange={(e) =>
-                                cambiar(
-                                  "idUsuario",
-                                  e.target.value
-                                )
-                              }
-                            >
-                              <option value="">
-                                Selecciona un usuario
-                              </option>
-
-                              {usuarios.map(
-                                (usuario) => (
-                                  <option
-                                    key={
-                                      usuario.idUsuario
-                                    }
-                                    value={
-                                      usuario.idUsuario
-                                    }
-                                  >
-                                    {usuario.nombreCompleto ||
-                                      usuario.username ||
-                                      usuario.idUsuario}
-                                  </option>
-                                )
-                              )}
-                            </select>
-                          </div>
-                        </div>
-                      ))}
+                                             )}
 
                     {/* INFORMACIÓN POLICIAL */}
 

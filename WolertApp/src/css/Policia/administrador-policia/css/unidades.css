@@ -802,3 +802,549 @@
     min-width: 760px;
   }
 }
+
+/* Acciones compactas de unidades */
+.unidad-acciones {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.unidad-accion {
+  display: inline-grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid #e4ebe8;
+  border-radius: 8px;
+  background: #f8faf9;
+  color: #647b72;
+  cursor: pointer;
+  transition: background .2s, color .2s, border-color .2s;
+}
+
+.unidad-accion i {
+  font-size: 13px;
+  line-height: 1;
+}
+
+.unidad-accion.ver:hover {
+  color: #00765b;
+  background: #e6f5ee;
+  border-color: #b9dfcd;
+}
+
+.unidad-accion.editar:hover {
+  color: #2563eb;
+  background: #eaf1ff;
+  border-color: #c9d9ff;
+}
+
+.unidad-accion.eliminar:hover {
+  color: #dc3545;
+  background: #fff0f1;
+  border-color: #ffd0d5;
+}
+
+.unidad-accion:focus-visible {
+  outline: 2px solid #00765b;
+  outline-offset: 2px;
+}
+
+/* ===== TABLA DE UNIDADES ===== */
+
+.unidad-tabla-panel {
+  overflow: hidden;
+  border: 1px solid #e4ebe8;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.unidad-tabla-superior {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 22px;
+  border-bottom: 1px solid #edf1ef;
+}
+
+.unidad-tabla-superior h2 {
+  margin: 0 0 4px;
+  color: #173d32;
+  font-size: 15px;
+  font-weight: 750;
+}
+
+.unidad-tabla-superior p {
+  margin: 0;
+  color: #84958e;
+  font-size: 12px;
+}
+
+.unidad-resultados {
+  padding: 7px 11px;
+  border-radius: 20px;
+  background: #e8f4ee;
+  color: #00765b;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.unidad-tabla {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.unidad-tabla thead th {
+  padding: 15px 16px;
+  background: #f8faf9;
+  border-bottom: 1px solid #e8eeeb;
+  color: #81938b;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.unidad-tabla tbody td {
+  padding: 14px 16px;
+  border-bottom: 1px solid #edf1ef;
+  color: #395248;
+  font-size: 12px;
+  vertical-align: middle;
+}
+
+.unidad-tabla tbody tr {
+  transition: background .2s;
+}
+
+.unidad-tabla tbody tr:hover {
+  background: #f8fcfa;
+}
+
+.unidad-tabla tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.unidad-nombre-celda {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 160px;
+}
+
+.unidad-tabla-icono {
+  display: grid;
+  place-items: center;
+  flex: 0 0 35px;
+  height: 35px;
+  border-radius: 10px;
+  background: #e7f4ed;
+  color: #00765b;
+  font-size: 16px;
+}
+
+.unidad-nombre-celda > div {
+  display: grid;
+  gap: 4px;
+}
+
+.unidad-nombre-celda strong {
+  color: #174c3b;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.unidad-nombre-celda small {
+  color: #8b9d94;
+  font-size: 10px;
+}
+
+.unidad-estado {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 20px;
+  background: #f1f4f3;
+  color: #60756d;
+  font-size: 10px;
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+.unidad-estado i {
+  font-size: 6px;
+}
+
+.unidad-estado--operativa {
+  background: #e5f5eb;
+  color: #00845b;
+}
+
+.unidad-estado--activa {
+  background: #e6f0ff;
+  color: #2868c7;
+}
+
+.unidad-estado--inactiva {
+  background: #f3f3f3;
+  color: #858585;
+}
+
+.unidad-cantidad {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #456258;
+  font-weight: 650;
+}
+
+.unidad-cantidad i {
+  color: #008469;
+  font-size: 14px;
+}
+
+.unidad-coordenadas {
+  color: #80958a;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.unidad-th-acciones {
+  text-align: center;
+}
+
+/* ===== BOTONES COMPACTOS ===== */
+
+.unidad-acciones {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.unidad-accion {
+  display: inline-grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid #e4ebe8;
+  border-radius: 8px;
+  background: #f8faf9;
+  color: #647b72;
+  cursor: pointer;
+  transition: background .2s, color .2s, border-color .2s;
+}
+
+.unidad-accion i {
+  font-size: 13px;
+  line-height: 1;
+}
+
+.unidad-accion.ver:hover {
+  color: #00765b;
+  background: #e6f5ee;
+  border-color: #b9dfcd;
+}
+
+.unidad-accion.editar:hover {
+  color: #2563eb;
+  background: #eaf1ff;
+  border-color: #c9d9ff;
+}
+
+.unidad-accion.eliminar:hover {
+  color: #dc3545;
+  background: #fff0f1;
+  border-color: #ffd0d5;
+}
+
+.unidad-accion:focus-visible {
+  outline: 2px solid #00765b;
+  outline-offset: 2px;
+}
+
+/* ===== MODAL DE DETALLE ===== */
+
+.unidad-modal-encabezado {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 24px;
+  background: linear-gradient(125deg, #002d25, #075b49);
+  color: white;
+  text-align: center;
+}
+
+.unidad-modal-encabezado h2 {
+  margin: 0;
+  color: white;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.unidad-modal-icono {
+  display: grid;
+  place-items: center;
+  width: 55px;
+  height: 55px;
+  border: 1px solid #ffffff65;
+  border-radius: 50%;
+  background: #ffffff18;
+  font-size: 23px;
+}
+
+.unidad-modal-estado {
+  padding: 5px 12px;
+  border-radius: 20px;
+  background: #ffffff20;
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.unidad-modal-cerrar {
+  position: absolute;
+  top: 14px;
+  right: 15px;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #d4e8df;
+  cursor: pointer;
+}
+
+.unidad-modal-cerrar:hover {
+  background: #ffffff20;
+  color: white;
+}
+
+/* ===== POLICÍAS ASIGNADOS ===== */
+
+.unidad-policias-detalle {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e8eeeb;
+}
+
+.unidad-policias-titulo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  color: #254338;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.unidad-policias-titulo strong {
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: #e6f5ee;
+  color: #006b53;
+}
+
+.unidad-policias-lista {
+  display: grid;
+  gap: 8px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.unidad-policia-item {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 11px;
+  border: 1px solid #e7eeea;
+  border-radius: 10px;
+  background: #f9fbfa;
+}
+
+.unidad-policia-avatar {
+  display: grid;
+  place-items: center;
+  flex: 0 0 35px;
+  height: 35px;
+  border-radius: 9px;
+  background: #e3f2ea;
+  color: #00765b;
+  font-size: 17px;
+}
+
+.unidad-policia-item > div {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.unidad-policia-item strong {
+  color: #203b32;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.unidad-policia-item small,
+.unidad-policias-vacio {
+  color: #758b80;
+  font-size: 11px;
+}
+
+.unidad-policias-vacio {
+  margin: 0;
+  padding: 12px 0;
+}
+
+/* ===== RESPONSIVE ===== */
+
+@media (max-width: 768px) {
+  .unidad-tabla-superior {
+    padding: 16px;
+  }
+
+  .unidad-tabla-superior p {
+    display: none;
+  }
+
+  .unidad-tabla {
+    min-width: 780px;
+  }
+
+  .unidad-tabla thead th,
+  .unidad-tabla tbody td {
+    padding: 12px;
+  }
+}
+
+/* Buscador de barrios */
+.panel-filtros-unidades {
+  position: relative;
+  z-index: 10;
+  overflow: visible;
+}
+
+.panel-filtros-body,
+.filtros-unidades-selects,
+.filtro-barrio-card {
+  overflow: visible;
+}
+
+.filtro-barrio-card,
+.barrio-combobox {
+  position: relative;
+  min-width: 0;
+}
+
+.barrio-combobox-control {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid #d8e6de;
+  border-radius: 9px;
+  background: #f8fbf9;
+  color: #008064;
+}
+
+.barrio-combobox-control:focus-within {
+  border-color: #008064;
+  box-shadow: 0 0 0 3px #00806415;
+}
+
+.barrio-combobox-control input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #183e33;
+  font-size: 12px;
+}
+
+.barrio-combobox-control input::placeholder {
+  color: #91a29a;
+}
+
+.barrio-combobox-limpiar,
+.barrio-combobox-flecha {
+  display: grid;
+  place-items: center;
+  width: 25px;
+  height: 25px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #69877a;
+  cursor: pointer;
+}
+
+.barrio-combobox-lista {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 1055;
+  max-height: 220px;
+  overflow-y: auto;
+  padding: 5px;
+  border: 1px solid #dce9e2;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 12px 30px #003b2d20;
+}
+
+.barrio-combobox-opcion {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 10px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: #365b4e;
+  font-size: 12px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.barrio-combobox-opcion:hover,
+.barrio-combobox-opcion.seleccionado {
+  background: #e7f5ed;
+  color: #006b53;
+}
+
+.barrio-combobox-vacio {
+  padding: 15px;
+  color: #87998e;
+  font-size: 12px;
+  text-align: center;
+}
+
+/* El buscador del formulario debe verse sobre los demás campos */
+.modal-body-dash,
+.form-field-dash {
+  overflow: visible;
+}
+
+.form-field-dash:focus-within {
+  position: relative;
+  z-index: 20;
+}

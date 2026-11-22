@@ -36,7 +36,6 @@ function Historial() {
     cargarCasosCentral(controller.signal)
       .then((resultado) => {
         if (controller.signal.aborted) return;
-
         setDatos(resultado);
         setError("");
       })
@@ -46,8 +45,7 @@ function Historial() {
         setDatos(null);
         setSeleccion(null);
         setError(
-          err?.message ||
-          "No se pudo consultar el historial."
+          err?.message || "No se pudo consultar el historial."
         );
       })
       .finally(() => {
@@ -99,14 +97,7 @@ function Historial() {
         coincideFecha(caso.fecha, desde, hasta)
       );
     });
-  }, [
-    casos,
-    busqueda,
-    estado,
-    categoria,
-    desde,
-    hasta,
-  ]);
+  }, [casos, busqueda, estado, categoria, desde, hasta]);
 
   const seleccionado = useMemo(
     () =>
@@ -129,6 +120,10 @@ function Historial() {
     setHasta("");
   }
 
+  function cerrarDetalle() {
+    setSeleccion(null);
+  }
+
   function claseEstado(valor) {
     switch (valor) {
       case "RESUELTA":
@@ -148,6 +143,34 @@ function Historial() {
         return "historial-estado-neutral";
     }
   }
+
+  const detalles = seleccionado
+    ? [
+        ["Número de caso", `#${seleccionado.id ?? "—"}`],
+        ["Fecha / Hora", fechaLegible(seleccionado.fecha)],
+        ["Descripción", seleccionado.descripcion],
+        [
+          "Estado",
+          seleccionado.estado?.replaceAll("_", " ") || "—",
+        ],
+        ["Categoría", seleccionado.tipo],
+        ["Prioridad", seleccionado.prioridad || "—"],
+        ["Zona", seleccionado.zona],
+        ["Unidad asignada", seleccionado.unidadNombre],
+        [
+          "Estado de asignación",
+          seleccionado.estadoAsignacion?.replaceAll("_", " ") ||
+            "—",
+        ],
+        ["Resultado de atención", seleccionado.resultado],
+        ["Observaciones", seleccionado.observaciones],
+        ["Atenciones registradas", seleccionado.totalAtenciones],
+        [
+          "Asignaciones registradas",
+          seleccionado.totalAsignaciones,
+        ],
+      ]
+    : [];
 
   return (
     <>
@@ -192,7 +215,9 @@ function Historial() {
 
         {datos?.errores?.length > 0 && (
           <div className="alert alert-warning" role="alert">
-            <strong>Información complementaria incompleta.</strong>
+            <strong>
+              Información complementaria incompleta.
+            </strong>
             <div className="mt-1">
               {datos.errores.join(" | ")}
             </div>
@@ -202,12 +227,11 @@ function Historial() {
         <Kpis
           grupo="historial"
           valores={
-            cargando || error
-              ? {}
-              : kpisHistorial(casos)
+            cargando || error ? {} : kpisHistorial(casos)
           }
         />
 
+        {/* FILTROS */}
         <section className="historial-panel historial-filtros-panel">
           <div className="historial-filtros">
             <div className="historial-field historial-busqueda">
@@ -297,6 +321,7 @@ function Historial() {
           </div>
         </section>
 
+        {/* TABLA DE HISTORIAL */}
         <section className="historial-contenido">
           <div className="historial-table-panel">
             <div className="table-responsive">
@@ -327,8 +352,8 @@ function Historial() {
                           </strong>
                         </td>
 
-                        <td>
-                          {caso.descripcion}
+                        <td className="historial-descripcion">
+                          {caso.descripcion || "Sin descripción"}
                         </td>
 
                         <td>
@@ -343,9 +368,11 @@ function Historial() {
                           </span>
                         </td>
 
-                        <td>{caso.tipo}</td>
-
                         <td>
+                          {caso.tipo || "—"}
+                        </td>
+
+                        <td className="historial-acciones">
                           <button
                             type="button"
                             className="btn btn-sm btn-outline-secondary"
@@ -385,104 +412,79 @@ function Historial() {
               </div>
             )}
           </div>
-
-          <aside className="historial-detalle-panel">
-            <div className="historial-detalle-header">
-              <h2>Detalle del caso</h2>
-
-              <button
-                type="button"
-                className="historial-detalle-cerrar"
-                aria-label="Cerrar detalle"
-                onClick={() => setSeleccion(null)}
-                disabled={!seleccionado}
-              >
-                <i className="bi bi-x-lg" />
-              </button>
-            </div>
-
-            <div className="historial-detalle-body">
-              {!seleccionado || cargando || error ? (
-                <p className="text-muted">
-                  Selecciona un caso de la tabla para
-                  consultar su información.
-                </p>
-              ) : (
-                [
-                  [
-                    "Número de caso",
-                    `#${seleccionado.id ?? "—"}`,
-                  ],
-                  [
-                    "Fecha / Hora",
-                    fechaLegible(seleccionado.fecha),
-                  ],
-                  [
-                    "Descripción",
-                    seleccionado.descripcion,
-                  ],
-                  [
-                    "Estado",
-                    seleccionado.estado?.replaceAll("_", " ") || "—",
-                  ],
-                  ["Categoría", seleccionado.tipo],
-                  [
-                    "Prioridad",
-                    seleccionado.prioridad || "—",
-                  ],
-                  ["Zona", seleccionado.zona],
-                  [
-                    "Unidad asignada",
-                    seleccionado.unidadNombre,
-                  ],
-                  [
-                    "Estado de asignación",
-                    seleccionado.estadoAsignacion?.replaceAll(
-                      "_",
-                      " "
-                    ) || "—",
-                  ],
-                  [
-                    "Resultado de atención",
-                    seleccionado.resultado,
-                  ],
-                  [
-                    "Observaciones",
-                    seleccionado.observaciones,
-                  ],
-                  [
-                    "Atenciones registradas",
-                    seleccionado.totalAtenciones,
-                  ],
-                  [
-                    "Asignaciones registradas",
-                    seleccionado.totalAsignaciones,
-                  ],
-                ].map(([etiqueta, valor]) => (
-                  <div
-                    className="historial-detalle-item"
-                    key={etiqueta}
-                  >
-                    <span>{etiqueta}:</span>
-                    <strong>{valor}</strong>
-                  </div>
-                ))
-              )}
-            </div>
-
-            <div className="historial-detalle-footer">
-              <button
-                type="button"
-                className="btn historial-btn-cerrar"
-                onClick={() => setSeleccion(null)}
-                disabled={!seleccionado}
-              >
-                Cerrar
-              </button>
-            </div>
-          </aside>
         </section>
       </main>
+
+      {/* FONDO DEL PANEL LATERAL */}
+      {seleccionado && (
+        <button
+          type="button"
+          className="historial-detalle-overlay"
+          aria-label="Cerrar detalle del caso"
+          onClick={cerrarDetalle}
+        />
+      )}
+
+      {/* PANEL LATERAL DE DETALLES */}
+      <aside
+        className={`historial-detalle-panel ${
+          seleccionado ? "historial-detalle-abierto" : ""
+        }`}
+        aria-hidden={!seleccionado}
+        aria-label="Detalle del caso"
+      >
+        <div className="historial-detalle-header">
+          <div>
+            <span className="historial-detalle-subtitulo">
+              INFORMACIÓN DEL CASO
+            </span>
+            <h2>
+              Detalle del caso
+              {seleccionado?.id != null
+                ? ` #${seleccionado.id}`
+                : ""}
+            </h2>
+          </div>
+
+          <button
+            type="button"
+            className="historial-detalle-cerrar"
+            aria-label="Cerrar detalle"
+            onClick={cerrarDetalle}
+          >
+            <i className="bi bi-x-lg" />
+          </button>
+        </div>
+
+        <div className="historial-detalle-body">
+          {seleccionado &&
+            detalles.map(([etiqueta, valor]) => (
+              <div
+                className="historial-detalle-item"
+                key={etiqueta}
+              >
+                <span>{etiqueta}</span>
+                <strong>
+                  {valor === null ||
+                  valor === undefined ||
+                  valor === ""
+                    ? "—"
+                    : valor}
+                </strong>
+              </div>
+            ))}
+        </div>
+
+        <div className="historial-detalle-footer">
+          <button
+            type="button"
+            className="btn historial-btn-cerrar"
+            onClick={cerrarDetalle}
+          >
+            Cerrar
+          </button>
+        </div>
+      </aside>
     </>
   );
 }

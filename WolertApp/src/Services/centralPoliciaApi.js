@@ -1,6 +1,7 @@
 
 const API = (
-  import.meta.env.VITE_API_URL || "https://localhost:7138"
+  import.meta.env.VITE_API_URL ||
+  "https://localhost:7138"
 ).replace(/\/$/, "");
 
 export async function consultarCentral(
@@ -25,23 +26,50 @@ export async function consultarCentral(
     },
   });
 
-  if (!respuesta.ok) {
-    let detalle = "";
+  const contenido = await respuesta.text();
 
+  let datos = null;
+
+  if (contenido) {
     try {
-      detalle = await respuesta.text();
+      datos = JSON.parse(contenido);
     } catch {
-      // Respuesta sin cuerpo.
+      datos = contenido;
+    }
+  }
+
+  if (!respuesta.ok) {
+    let detalle =
+      typeof datos === "string"
+        ? datos
+        : datos?.message ||
+          datos?.mensaje ||
+          datos?.error ||
+          datos?.title ||
+          contenido;
+
+    if (typeof detalle !== "string") {
+      detalle = JSON.stringify(detalle);
+    }
+
+    if (respuesta.status === 401) {
+      throw new Error(
+        "Sesión expirada o token inválido. Inicia sesión nuevamente."
+      );
+    }
+
+    if (respuesta.status === 403) {
+      throw new Error(
+        "No tienes permisos para realizar esta operación."
+      );
     }
 
     throw new Error(
       `${ruta}: HTTP ${respuesta.status}${
-        detalle ? ` - ${detalle.slice(0, 180)}` : ""
+        detalle ? ` - ${detalle.slice(0, 500)}` : ""
       }`
     );
   }
 
-  return respuesta.status === 204
-    ? null
-    : respuesta.json();
+  return datos;
 }

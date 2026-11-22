@@ -17,8 +17,10 @@ import {
   fechaLegible,
   estadoAlerta,
   esPendiente,
-
+  esUnidadDisponible,
 } from "../../Services/OperacionesCentralService.js";
+
+import { consultarCentral } from "../../Services/centralPoliciaApi.js";
 
 import "../../css/Policia/central-policia/css/asignaciones.css";
 
@@ -60,9 +62,17 @@ function Asignaciones() {
   const [error, setError] = useState("");
   const [avisos, setAvisos] = useState([]);
   const [recarga, setRecarga] = useState(0);
+
   const [pestana, setPestana] = useState("pendientes");
   const [busqueda, setBusqueda] = useState("");
   const [seleccion, setSeleccion] = useState(null);
+
+  const [unidadElegida, setUnidadElegida] = useState("");
+  const [observacion, setObservacion] = useState("");
+  const [guardando, setGuardando] = useState(false);
+
+  const [mensaje, setMensaje] = useState("");
+  const [errorAsignacion, setErrorAsignacion] = useState("");
 
   useEffect(() => {
     const controller = new AbortController();
@@ -70,15 +80,19 @@ function Asignaciones() {
     cargarOperaciones(controller.signal)
       .then(({ datos: resultado, errores }) => {
         if (controller.signal.aborted) return;
+
         setDatos(resultado);
         setAvisos(errores);
         setError("");
       })
       .catch((err) => {
         if (controller.signal.aborted) return;
+
         setDatos(datosVacios());
         setAvisos([]);
-        setError(err.message || "Error al cargar asignaciones.");
+        setError(
+          err.message || "Error al cargar asignaciones."
+        );
       })
       .finally(() => {
         if (!controller.signal.aborted) {
@@ -98,7 +112,9 @@ function Asignaciones() {
   const asignacionesActivas = useMemo(
     () =>
       datos.asignaciones.filter(
-        (a) => !asignacionFinalizada(a)
+        (a) =>
+          !asignacionFinalizada(a) &&
+          idUnidadAsignacion(a) != null
       ),
     [datos.asignaciones]
   );
@@ -112,6 +128,22 @@ function Asignaciones() {
           .map(String)
       ),
     [asignacionesActivas]
+  );
+
+  const unidadesDisponibles = useMemo(
+    () =>
+      datos.unidades.filter(
+        (u) =>
+          esUnidadDisponible(u) &&
+          campo(
+            u,
+            "idUnidad",
+            "IdUnidad",
+            "ID_UNIDAD"
+          ) != null &&
+          campo(u, "nombre", "Nombre", "NOMBRE")
+      ),
+    [datos.unidades]
   );
 
   const pendientes = useMemo(
@@ -131,7 +163,10 @@ function Asignaciones() {
 
   const registros = useMemo(() => {
     const alertasPorId = new Map(
-      datos.alertas.map((a) => [String(idAlerta(a)), a])
+      datos.alertas.map((a) => [
+        String(idAlerta(a)),
+        a,
+      ])
     );
 
     const base =
@@ -161,7 +196,13 @@ function Asignaciones() {
         a ? ubicacionAlerta(a) : "",
         a ? prioridadAlerta(a) : "",
         asig ? idUnidadAsignacion(asig) : "",
-        asig ? campo(asig, "unidadNombre", "UnidadNombre") : "",
+        asig
+          ? campo(
+              asig,
+              "unidadNombre",
+              "UnidadNombre"
+            )
+          : "",
         asig ? estadoAsignacion(asig) : "",
       ]
         .join(" ")
@@ -177,7 +218,96 @@ function Asignaciones() {
   ]);
 
   const actual =
-    registros.find((r) => r.clave === seleccion) || null;
+    registros.find(
+      (r) => r.clave === seleccion
+    ) || null;
+
+  // ==========================================
+  // ASIGNACIÓN MANUAL - CENTRAL DE POLICÍA
+  // ==========================================
+
+  async function asignarManual(e) {
+    e.preventDefault();
+
+    if (
+      !actual?.alerta ||
+      actual.asignacion ||
+      guardando
+    ) {
+      return;
+    }
+
+    const unidad = unidadesDisponibles.find(
+      (u) =>
+        String(
+          campo(
+            u,
+            "idUnidad",
+            "IdUnidad",
+            "ID_UNIDAD"
+          )
+        ) === unidadElegida
+    );
+
+    const nombreUnidad = campo(
+      unidad,
+      "nombre",
+      "Nombre",
+      "NOMBRE"
+    );
+
+    if (!nombreUnidad) {
+      setErrorAsignacion(
+        "Selecciona una unidad policial operativa."
+      );
+      return;
+    }
+
+    setGuardando(true);
+    setErrorAsignacion("");
+    setMensaje("");
+
+    try {
+      // Ruta real del controlador ASP.NET Core
+      await consultarCentral(
+        "/api/Asignaciones/manual",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            idAlerta: Number(
+              idAlerta(actual.alerta)
+            ),
+            nombreUnidad: String(
+              nombreUnidad
+            ).trim(),
+            observacion:
+              observacion.trim() || null,
+          }),
+        }
+      );
+
+      setMensaje(
+        "Unidad policial asignada correctamente."
+      );
+
+      setUnidadElegida("");
+      setObservacion("");
+      setSeleccion(null);
+
+      // Recargar alertas, asignaciones y unidades
+      setRecarga((n) => n + 1);
+    } catch (err) {
+      setErrorAsignacion(
+        err.message ||
+          "No se pudo registrar la asignación."
+      );
+    } finally {
+      setGuardando(false);
+    }
+  }
 
   function actualizar() {
     setCargando(true);
@@ -187,9 +317,18 @@ function Asignaciones() {
     setRecarga((n) => n + 1);
   }
 
+  function elegirCaso(clave) {
+    setSeleccion(clave);
+    setUnidadElegida("");
+    setObservacion("");
+    setErrorAsignacion("");
+    setMensaje("");
+  }
+
   function cambiarPestana(nueva) {
     setPestana(nueva);
     setSeleccion(null);
+    setErrorAsignacion("");
   }
 
   const mostrarDatos =
@@ -214,8 +353,9 @@ function Asignaciones() {
             </h1>
 
             <p className="asig-description">
-              Consulta alertas pendientes y realiza seguimiento
-              a las unidades asignadas.
+              Asigna manualmente unidades policiales
+              operativas y realiza seguimiento a
+              los casos.
             </p>
           </div>
 
@@ -226,19 +366,37 @@ function Asignaciones() {
             disabled={cargando}
           >
             <i className="bi bi-arrow-clockwise" />
-            {cargando ? "Actualizando..." : "Actualizar"}
+            {cargando
+              ? "Actualizando..."
+              : "Actualizar"}
           </button>
         </header>
 
+        {mensaje && (
+          <div
+            className="alert alert-success"
+            role="status"
+          >
+            {mensaje}
+          </div>
+        )}
+
         {error && (
-          <div className="alert alert-danger" role="alert">
+          <div
+            className="alert alert-danger"
+            role="alert"
+          >
             {error}
           </div>
         )}
 
         {avisos.length > 0 && (
-          <div className="alert alert-warning" role="alert">
+          <div
+            className="alert alert-warning"
+            role="alert"
+          >
             <strong>Información parcial</strong>
+
             <ul className="mb-0 mt-2">
               {avisos.map((aviso, i) => (
                 <li key={i}>{aviso}</li>
@@ -249,44 +407,67 @@ function Asignaciones() {
 
         <Kpis
           grupo="asignaciones"
-          valores={mostrarDatos ? valores : {}}
+          valores={
+            mostrarDatos ? valores : {}
+          }
         />
 
         <div className="asig-layout">
+          {/* LISTADO DE CASOS */}
           <section className="asig-col-list card-panel-dash">
             <div className="asig-list-header">
               <h2>Casos operativos</h2>
+
               <span className="asig-list-subtitle">
                 Selecciona una alerta
               </span>
             </div>
 
-            <div className="asig-tabs" role="tablist">
+            <div
+              className="asig-tabs"
+              role="tablist"
+            >
               <button
                 type="button"
                 role="tab"
-                aria-selected={pestana === "pendientes"}
+                aria-selected={
+                  pestana === "pendientes"
+                }
                 className={`asig-tab ${
-                  pestana === "pendientes" ? "active" : ""
+                  pestana === "pendientes"
+                    ? "active"
+                    : ""
                 }`}
-                onClick={() => cambiarPestana("pendientes")}
+                onClick={() =>
+                  cambiarPestana("pendientes")
+                }
               >
                 Pendientes
+
                 <span className="asig-tab-count">
-                  {mostrarDatos ? pendientes.length : "—"}
+                  {mostrarDatos
+                    ? pendientes.length
+                    : "—"}
                 </span>
               </button>
 
               <button
                 type="button"
                 role="tab"
-                aria-selected={pestana === "seguimiento"}
+                aria-selected={
+                  pestana === "seguimiento"
+                }
                 className={`asig-tab ${
-                  pestana === "seguimiento" ? "active" : ""
+                  pestana === "seguimiento"
+                    ? "active"
+                    : ""
                 }`}
-                onClick={() => cambiarPestana("seguimiento")}
+                onClick={() =>
+                  cambiarPestana("seguimiento")
+                }
               >
                 Seguimiento
+
                 <span className="asig-tab-count">
                   {mostrarDatos
                     ? asignacionesActivas.length
@@ -297,10 +478,13 @@ function Asignaciones() {
 
             <div className="asig-search">
               <i className="bi bi-search" />
+
               <input
                 type="search"
                 value={busqueda}
-                onChange={(e) => setBusqueda(e.target.value)}
+                onChange={(e) =>
+                  setBusqueda(e.target.value)
+                }
                 placeholder="Buscar caso, tipo o unidad..."
                 aria-label="Filtrar asignaciones"
               />
@@ -310,6 +494,7 @@ function Asignaciones() {
               {!mostrarDatos ? (
                 <div className="asig-empty">
                   <i className="bi bi-arrow-repeat" />
+
                   {cargando
                     ? "Cargando registros..."
                     : "No se pueden mostrar los registros."}
@@ -322,10 +507,15 @@ function Asignaciones() {
               ) : (
                 registros.map((item) => {
                   const alerta = item.alerta;
-                  const asignacion = item.asignacion;
+                  const asignacion =
+                    item.asignacion;
+
                   const id = alerta
                     ? idAlerta(alerta)
-                    : idAlertaAsignacion(asignacion);
+                    : idAlertaAsignacion(
+                        asignacion
+                      );
+
                   const prioridad = alerta
                     ? prioridadAlerta(alerta)
                     : "";
@@ -339,9 +529,15 @@ function Asignaciones() {
                           ? "selected"
                           : ""
                       }`}
-                      data-prioridad={prioridad.toLowerCase()}
-                      onClick={() => setSeleccion(item.clave)}
-                      aria-pressed={seleccion === item.clave}
+                      data-prioridad={String(
+                        prioridad || ""
+                      ).toLowerCase()}
+                      onClick={() =>
+                        elegirCaso(item.clave)
+                      }
+                      aria-pressed={
+                        seleccion === item.clave
+                      }
                     >
                       <div className="asig-card-top">
                         <span className="asig-card-caso">
@@ -349,23 +545,33 @@ function Asignaciones() {
                         </span>
 
                         <span
-                          className={`asig-prioridad asig-prioridad-${prioridad.toLowerCase() || "normal"}`}
+                          className={`asig-prioridad asig-prioridad-${
+                            String(
+                              prioridad || "normal"
+                            ).toLowerCase()
+                          }`}
                         >
-                          {prioridad || "SIN PRIORIDAD"}
+                          {prioridad ||
+                            "SIN PRIORIDAD"}
                         </span>
                       </div>
 
                       <div className="asig-card-tipo">
                         {alerta
-                          ? etiqueta(tipoAlerta(alerta))
+                          ? etiqueta(
+                              tipoAlerta(alerta)
+                            )
                           : "Alerta no disponible"}
                       </div>
 
                       <div className="asig-card-meta">
                         <span>
                           <i className="bi bi-geo-alt" />
+
                           {alerta
-                            ? ubicacionAlerta(alerta)
+                            ? ubicacionAlerta(
+                                alerta
+                              )
                             : "Ubicación no disponible"}
                         </span>
                       </div>
@@ -373,7 +579,11 @@ function Asignaciones() {
                       <div className="asig-card-footer">
                         <span>
                           {asignacion
-                            ? etiqueta(estadoAsignacion(asignacion))
+                            ? etiqueta(
+                                estadoAsignacion(
+                                  asignacion
+                                )
+                              )
                             : "Pendiente de asignación"}
                         </span>
 
@@ -386,6 +596,7 @@ function Asignaciones() {
             </div>
           </section>
 
+          {/* DETALLE DE LA ALERTA */}
           <section
             className="asig-col-detalle card-panel-dash"
             aria-live="polite"
@@ -400,7 +611,8 @@ function Asignaciones() {
 
                 <p>
                   Consulta los datos de la alerta,
-                  su prioridad y el estado de la asignación.
+                  su prioridad y el estado de la
+                  asignación.
                 </p>
               </div>
             ) : (
@@ -414,20 +626,32 @@ function Asignaciones() {
                     <h2 className="asig-detalle-titulo">
                       Alerta #
                       {actual.alerta
-                        ? idAlerta(actual.alerta)
-                        : idAlertaAsignacion(actual.asignacion)}
+                        ? idAlerta(
+                            actual.alerta
+                          )
+                        : idAlertaAsignacion(
+                            actual.asignacion
+                          )}
                     </h2>
 
                     <p className="asig-description mb-0">
                       {actual.alerta
-                        ? etiqueta(tipoAlerta(actual.alerta))
+                        ? etiqueta(
+                            tipoAlerta(
+                              actual.alerta
+                            )
+                          )
                         : "Información del caso"}
                     </p>
                   </div>
 
                   <span className="asig-estado-pill">
                     {actual.asignacion
-                      ? etiqueta(estadoAsignacion(actual.asignacion))
+                      ? etiqueta(
+                          estadoAsignacion(
+                            actual.asignacion
+                          )
+                        )
                       : "PENDIENTE"}
                   </span>
                 </div>
@@ -435,50 +659,76 @@ function Asignaciones() {
                 <div className="asig-detalle-grid">
                   <div className="asig-dato">
                     <span>Tipo de alerta</span>
+
                     <strong>
                       {actual.alerta
-                        ? etiqueta(tipoAlerta(actual.alerta))
+                        ? etiqueta(
+                            tipoAlerta(
+                              actual.alerta
+                            )
+                          )
                         : "—"}
                     </strong>
                   </div>
 
                   <div className="asig-dato">
                     <span>Prioridad</span>
+
                     <strong>
                       {actual.alerta
-                        ? prioridadAlerta(actual.alerta) || "—"
+                        ? prioridadAlerta(
+                            actual.alerta
+                          ) || "—"
                         : "—"}
                     </strong>
                   </div>
 
                   <div className="asig-dato">
-                    <span>Estado de la alerta</span>
+                    <span>
+                      Estado de la alerta
+                    </span>
+
                     <strong>
                       {actual.alerta
-                        ? etiqueta(estadoAlerta(actual.alerta))
+                        ? etiqueta(
+                            estadoAlerta(
+                              actual.alerta
+                            )
+                          )
                         : "—"}
                     </strong>
                   </div>
 
                   <div className="asig-dato">
-                    <span>Fecha del reporte</span>
+                    <span>
+                      Fecha del reporte
+                    </span>
+
                     <strong>
                       {actual.alerta
-                        ? fechaLegible(fechaAlerta(actual.alerta))
+                        ? fechaLegible(
+                            fechaAlerta(
+                              actual.alerta
+                            )
+                          )
                         : "—"}
                     </strong>
                   </div>
 
                   <div className="asig-dato asig-dato-full">
                     <span>Ubicación</span>
+
                     <strong>
                       {actual.alerta
-                        ? ubicacionAlerta(actual.alerta)
+                        ? ubicacionAlerta(
+                            actual.alerta
+                          )
                         : "No disponible"}
                     </strong>
                   </div>
                 </div>
 
+                {/* ASIGNACIÓN EXISTENTE */}
                 {actual.asignacion ? (
                   <div className="asig-asignacion-info">
                     <h3>
@@ -488,26 +738,42 @@ function Asignaciones() {
 
                     <div className="asig-detalle-grid">
                       <div className="asig-dato">
-                        <span>Número de asignación</span>
+                        <span>
+                          Número de asignación
+                        </span>
+
                         <strong>
-                          #{idAsignacion(actual.asignacion)}
+                          #
+                          {idAsignacion(
+                            actual.asignacion
+                          )}
                         </strong>
                       </div>
 
                       <div className="asig-dato">
-                        <span>Unidad policial</span>
+                        <span>
+                          Unidad policial
+                        </span>
+
                         <strong>
                           {campo(
                             actual.asignacion,
                             "unidadNombre",
                             "UnidadNombre"
                           ) ||
-                            `#${idUnidadAsignacion(actual.asignacion) ?? "—"}`}
+                            `#${
+                              idUnidadAsignacion(
+                                actual.asignacion
+                              ) ?? "—"
+                            }`}
                         </strong>
                       </div>
 
                       <div className="asig-dato">
-                        <span>Participación</span>
+                        <span>
+                          Participación
+                        </span>
+
                         <strong>
                           {etiqueta(
                             campo(
@@ -520,10 +786,15 @@ function Asignaciones() {
                       </div>
 
                       <div className="asig-dato">
-                        <span>Estado de asignación</span>
+                        <span>
+                          Estado de asignación
+                        </span>
+
                         <strong>
                           {etiqueta(
-                            estadoAsignacion(actual.asignacion)
+                            estadoAsignacion(
+                              actual.asignacion
+                            )
                           )}
                         </strong>
                       </div>
@@ -535,7 +806,10 @@ function Asignaciones() {
                       "Observacion"
                     ) && (
                       <div className="asig-observacion">
-                        <span>Observaciones</span>
+                        <span>
+                          Observaciones
+                        </span>
+
                         <p>
                           {campo(
                             actual.asignacion,
@@ -547,18 +821,139 @@ function Asignaciones() {
                     )}
                   </div>
                 ) : (
-                  <div className="asig-aviso">
-                    <i className="bi bi-info-circle" />
-                    <div>
-                      <strong>Alerta pendiente</strong>
-                      <p>
-                        Esta alerta no tiene una asignación
-                        activa registrada. El despacho manual
-                        estará disponible cuando se conecte
-                        su endpoint autorizado.
+                  /* FORMULARIO MANUAL */
+                  <form
+                    className="asig-asignacion-info"
+                    onSubmit={asignarManual}
+                  >
+                    <h3>
+                      <i className="bi bi-shield-check" />
+                      Asignación manual
+                    </h3>
+
+                    <p>
+                      Selecciona una unidad policial
+                      en estado OPERATIVA.
+                    </p>
+
+                    <label
+                      htmlFor="asig-unidad"
+                      style={{
+                        display: "block",
+                        marginBottom: 6,
+                      }}
+                    >
+                      <strong>
+                        Unidad policial disponible
+                      </strong>
+                    </label>
+
+                    <select
+                      id="asig-unidad"
+                      className="form-select"
+                      value={unidadElegida}
+                      onChange={(e) =>
+                        setUnidadElegida(
+                          e.target.value
+                        )
+                      }
+                      required
+                      disabled={
+                        guardando ||
+                        unidadesDisponibles.length === 0
+                      }
+                    >
+                      <option value="">
+                        Selecciona una unidad
+                      </option>
+
+                      {unidadesDisponibles.map(
+                        (u) => {
+                          const id = campo(
+                            u,
+                            "idUnidad",
+                            "IdUnidad",
+                            "ID_UNIDAD"
+                          );
+
+                          const nombre = campo(
+                            u,
+                            "nombre",
+                            "Nombre",
+                            "NOMBRE"
+                          );
+
+                          return (
+                            <option
+                              key={id}
+                              value={String(id)}
+                            >
+                              {nombre} (#{id})
+                            </option>
+                          );
+                        }
+                      )}
+                    </select>
+
+                    {unidadesDisponibles.length ===
+                      0 && (
+                      <p className="text-warning mt-2">
+                        No hay unidades policiales
+                        OPERATIVA disponibles.
                       </p>
-                    </div>
-                  </div>
+                    )}
+
+                    <label
+                      htmlFor="asig-observacion"
+                      style={{
+                        display: "block",
+                        marginTop: 16,
+                        marginBottom: 6,
+                      }}
+                    >
+                      <strong>
+                        Observación (opcional)
+                      </strong>
+                    </label>
+
+                    <textarea
+                      id="asig-observacion"
+                      className="form-control"
+                      rows={3}
+                      maxLength={180}
+                      value={observacion}
+                      onChange={(e) =>
+                        setObservacion(
+                          e.target.value
+                        )
+                      }
+                      disabled={guardando}
+                      placeholder="Indicaciones para la unidad..."
+                    />
+
+                    {errorAsignacion && (
+                      <div
+                        className="alert alert-danger mt-3"
+                        role="alert"
+                      >
+                        {errorAsignacion}
+                      </div>
+                    )}
+
+                    <button
+                      className="asig-btn mt-3"
+                      type="submit"
+                      disabled={
+                        guardando ||
+                        !unidadElegida ||
+                        unidadesDisponibles.length === 0
+                      }
+                    >
+                      {guardando
+                        ? "Asignando..."
+                        : "Asignar unidad policial"}
+                    </button>
+                  </form>
                 )}
               </>
             )}

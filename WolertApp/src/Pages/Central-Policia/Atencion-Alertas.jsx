@@ -1,60 +1,95 @@
 
 import { useEffect, useMemo, useState } from "react";
-
 import Topbar from "../../Components/Central-policia/Topbar";
 import Kpis from "../../Components/Central-policia/Kpicard";
 
 import {
   cargarAtencionesCentral,
   obtenerCampo,
+  normalizar,
   formatearFecha,
   idDeAlerta,
+  idDeUnidad,
   idDeAtencion,
-  estadoDe,
-  estadoFinalizado,
+  idDeAsignacion,
+  nombreUnidad,
   tipoDeAlerta,
   ubicacionDeAlerta,
-  resumenAtenciones,
+  crearAtencionCentral,
+  actualizarAtencionCentral,
+  cerrarAlertaCentral,
 } from "../../Services/atencionUnidadesCentralService";
 
 import "../../css/Policia/central-policia/css/atencion-alertas.css";
 
-const vacios = () => ({
-  atenciones: [],
-  alertas: [],
-  asignaciones: [],
-  unidades: [],
-  errores: [],
+const campo = (obj, ...keys) => obtenerCampo(obj, ...keys);
+
+const estadoInforme = (a) =>
+  normalizar(
+    campo(a, "estadoFinal", "EstadoFinal", "estado", "Estado")
+  );
+
+const estadoAsignacion = (a) =>
+  normalizar(
+    campo(a, "estadoAsignacion", "EstadoAsignacion")
+  );
+
+const estadoAlerta = (a) =>
+  normalizar(campo(a, "estado", "Estado"));
+
+const idAlertaAtencion = (a) =>
+  campo(a, "idAlerta", "IdAlerta");
+
+const idAlertaAsignacion = (a) =>
+  campo(a, "idAlerta", "IdAlerta");
+
+const iguales = (a, b) =>
+  a != null && b != null && String(a) === String(b);
+
+const nuevaForma = () => ({
+  descripcion: "",
+  observacion: "",
+  idTipoArma: "",
+  idMedioTransporte: "",
 });
 
-const mostrar = (valor) =>
-  valor == null || valor === "" ? "—" : String(valor);
+const mensajeError = (error) =>
+  error?.message || "No fue posible completar la operación.";
 
-const etiqueta = (valor) =>
-  mostrar(valor).replaceAll("_", " ");
+export default function AtencionAlertas() {
+  const [datos, setDatos] = useState({
+    atenciones: [],
+    alertas: [],
+    asignaciones: [],
+    unidades: [],
+  });
 
-function AtencionAlertas() {
-  const [datos, setDatos] = useState(vacios);
   const [cargando, setCargando] = useState(true);
+  const [guardando, setGuardando] = useState(false);
   const [error, setError] = useState("");
+  const [exito, setExito] = useState("");
   const [recarga, setRecarga] = useState(0);
-  const [filtro, setFiltro] = useState("todas");
+  const [filtro, setFiltro] = useState("enRevision");
   const [busqueda, setBusqueda] = useState("");
   const [seleccion, setSeleccion] = useState(null);
+  const [formulario, setFormulario] = useState(nuevaForma);
 
   useEffect(() => {
     const controller = new AbortController();
 
+    setCargando(true);
+
     cargarAtencionesCentral(controller.signal)
       .then((resultado) => {
-        if (controller.signal.aborted) return;
-        setDatos(resultado);
-        setError("");
+        if (!controller.signal.aborted) {
+          setDatos(resultado);
+          setError("");
+        }
       })
       .catch((err) => {
-        if (controller.signal.aborted) return;
-        setDatos(vacios());
-        setError(err.message || "Error al consultar atenciones.");
+        if (!controller.signal.aborted) {
+          setError(mensajeError(err));
+        }
       })
       .finally(() => {
         if (!controller.signal.aborted) {
@@ -65,254 +100,546 @@ function AtencionAlertas() {
     return () => controller.abort();
   }, [recarga]);
 
-  const reportes = useMemo(() => {
+  // Unir alertas, asignaciones e informes
+  const casos = useMemo(() => {
+    const lista = [];
+    const claves = new Set();
+
     const alertasPorId = new Map(
-      datos.alertas.map((a) => [String(idDeAlerta(a)), a])
+      datos.alertas.map((a) => [
+        String(idDeAlerta(a)),
+        a,
+      ])
     );
 
-    return datos.atenciones.map((atencion, indice) => {
-      const id = obtenerCampo(atencion, "idAlerta", "IdAlerta");
+    const unidadesPorId = new Map(
+      datos.unidades.map((u) => [
+        String(idDeUnidad(u)),
+        u,
+      ])
+    );
 
-      return {
-        clave: String(idDeAtencion(atencion) ?? indice),
+    const asignacionesPorAlerta = new Map();
+
+    for (const a of datos.asignaciones) {
+      const id = String(idAlertaAsignacion(a));
+
+      if (!asignacionesPorAlerta.has(id)) {
+        asignacionesPorAlerta.set(id, []);
+      }
+
+      asignacionesPorAlerta.get(id).push(a);
+    }
+
+    const agregar = (id, asignacion) => {
+      const clave =
+        `${id}:${idDeAsignacion(asignacion) ?? "sin-asignacion"}`;
+
+      if (claves.has(clave)) return;
+
+      claves.add(clave);
+
+      const asignaciones =
+        asignacionesPorAlerta.get(String(id)) || [];
+
+      const atencion =
+        datos.atenciones.find((at) =>
+          iguales(idAlertaAtencion(at), id) &&
+          (
+            iguales(
+              campo(at, "idAsignacion", "IdAsignacion"),
+              idDeAsignacion(asignacion)
+            ) ||
+            (
+              campo(at, "idAsignacion", "IdAsignacion") == null &&
+              iguales(
+                campo(at, "idUnidad", "IdUnidad"),
+                campo(asignacion, "idUnidad", "IdUnidad")
+              )
+            )
+          )
+        ) ||
+        (
+          asignaciones.length === 1
+            ? datos.atenciones.find((at) =>
+                iguales(idAlertaAtencion(at), id)
+              )
+            : null
+        );
+
+      const unidad = unidadesPorId.get(
+        String(campo(asignacion, "idUnidad", "IdUnidad"))
+      );
+
+      lista.push({
+        clave,
+        idAlerta: id,
+        alerta: alertasPorId.get(String(id)),
+        asignacion,
+        asignaciones,
         atencion,
-        alerta: alertasPorId.get(String(id)) || null,
-      };
-    });
-  }, [datos.atenciones, datos.alertas]);
+        unidad,
+      });
+    };
 
-  const valores = useMemo(
-    () => resumenAtenciones(datos.atenciones),
-    [datos.atenciones]
-  );
+    for (const asignacion of datos.asignaciones) {
+      const id = idAlertaAsignacion(asignacion);
 
-  const filtrados = useMemo(() => {
-    const termino = busqueda.trim().toLowerCase();
+      if (id == null) continue;
 
-    return reportes.filter(({ atencion, alerta }) => {
-      const estado = estadoDe(atencion);
+      const alerta = alertasPorId.get(String(id));
 
-      const coincide =
-        filtro === "todas" ||
-        (filtro === "porRevisar" && !estado) ||
-        (filtro === "enRevision" && estado === "EN_PROCESO") ||
-        (filtro === "finalizadas" && estadoFinalizado(estado));
+      if (
+        ["EN_ATENCION", "FINALIZADA"].includes(
+          estadoAsignacion(asignacion)
+        ) ||
+        ["EN_ATENCION", "RESUELTA"].includes(
+          estadoAlerta(alerta)
+        ) ||
+        datos.atenciones.some((at) =>
+          iguales(idAlertaAtencion(at), id)
+        )
+      ) {
+        agregar(id, asignacion);
+      }
+    }
 
-      const contenido = [
-        idDeAtencion(atencion),
-        obtenerCampo(atencion, "idAlerta", "IdAlerta"),
-        tipoDeAlerta(alerta),
-        ubicacionDeAlerta(alerta),
-        obtenerCampo(atencion, "unidadNombre", "UnidadNombre"),
-        estado,
-        obtenerCampo(atencion, "descripcion", "Descripcion"),
-      ].join(" ").toLowerCase();
+    return lista.sort(
+      (a, b) => Number(b.idAlerta) - Number(a.idAlerta)
+    );
+  }, [datos]);
 
-      return coincide && contenido.includes(termino);
-    });
-  }, [reportes, filtro, busqueda]);
+  const seleccionActual =
+    casos.find((c) => c.clave === seleccion) || null;
 
-  const seleccionado =
-    reportes.find((r) => r.clave === seleccion) || null;
+  const atencionActual = seleccionActual?.atencion;
+  const idAtencionActual = idDeAtencion(atencionActual);
 
-  function actualizar() {
-    setCargando(true);
+  const informeFinalizado =
+    estadoInforme(atencionActual) === "FINALIZADA";
+
+  const asignacionesTerminadas =
+    !!seleccionActual?.asignaciones.length &&
+    seleccionActual.asignaciones.every((a) =>
+      ["FINALIZADA", "CANCELADA"].includes(
+        estadoAsignacion(a)
+      )
+    );
+
+  const alertaResuelta =
+    ["RESUELTA", "CANCELADA"].includes(
+      estadoAlerta(seleccionActual?.alerta)
+    );
+
+  const puedeCerrar =
+    !!seleccionActual &&
+    informeFinalizado &&
+    asignacionesTerminadas &&
+    !alertaResuelta;
+
+  const puedeRegistrar =
+    !!seleccionActual &&
+    !atencionActual &&
+    estadoAsignacion(seleccionActual.asignacion) ===
+      "EN_ATENCION";
+
+  const puedeEditar =
+    !!atencionActual &&
+    !informeFinalizado &&
+    !alertaResuelta;
+
+  // Filtros de alertas
+  const filtrados = casos.filter((c) => {
+    const estado = estadoAlerta(c.alerta);
+    const estInforme = estadoInforme(c.atencion);
+
+    const coincide =
+      filtro === "todas" ||
+      (
+        filtro === "finalizadas" &&
+        ["RESUELTA", "CANCELADA"].includes(estado)
+      ) ||
+      (
+        filtro === "porRevisar" &&
+        !c.atencion &&
+        !["RESUELTA", "CANCELADA"].includes(estado)
+      ) ||
+      (
+        filtro === "enRevision" &&
+        !["RESUELTA", "CANCELADA"].includes(estado) &&
+        (
+          estado === "EN_ATENCION" ||
+          estInforme === "EN_PROCESO" ||
+          estInforme === "FINALIZADA"
+        )
+      );
+
+    const texto = [
+      c.idAlerta,
+      idDeAsignacion(c.asignacion),
+      tipoDeAlerta(c.alerta),
+      ubicacionDeAlerta(c.alerta),
+      nombreUnidad(c.unidad),
+      estado,
+      estInforme,
+    ]
+      .join(" ")
+      .toLowerCase();
+
+    return (
+      coincide &&
+      texto.includes(busqueda.trim().toLowerCase())
+    );
+  });
+
+  const valores = {
+    porRevisar: casos.filter(
+      (c) =>
+        !c.atencion &&
+        !["RESUELTA", "CANCELADA"].includes(
+          estadoAlerta(c.alerta)
+        )
+    ).length,
+
+    enRevision: casos.filter(
+      (c) =>
+        !["RESUELTA", "CANCELADA"].includes(
+          estadoAlerta(c.alerta)
+        ) &&
+        !!c.atencion
+    ).length,
+
+    finalizadas: casos.filter((c) =>
+      ["RESUELTA", "CANCELADA"].includes(
+        estadoAlerta(c.alerta)
+      )
+    ).length,
+  };
+
+  function seleccionar(c) {
+    setSeleccion(c.clave);
     setError("");
-    setSeleccion(null);
-    setRecarga((n) => n + 1);
+    setExito("");
+
+    setFormulario({
+      descripcion:
+        campo(c.atencion, "descripcion", "Descripcion") || "",
+      observacion:
+        campo(c.atencion, "observacion", "Observacion") || "",
+      idTipoArma:
+        campo(c.atencion, "idTipoArma", "IdTipoArma") ?? "",
+      idMedioTransporte:
+        campo(
+          c.atencion,
+          "idMedioTransporte",
+          "IdMedioTransporte"
+        ) ?? "",
+    });
   }
 
-  const claseEstado = (estado) => {
-    if (estadoFinalizado(estado)) return "finalizada";
-    if (estado === "EN_PROCESO") return "en-revision";
-    return "por-revisar";
-  };
+  function refrescar() {
+    setRecarga((x) => x + 1);
+  }
+
+  function valorOpcional(v) {
+    return v === "" ? null : Number(v);
+  }
+
+  function cuerpoInforme(estadoFinal) {
+    return {
+      estadoFinal,
+      descripcion: formulario.descripcion.trim(),
+      observacion: formulario.observacion.trim(),
+      idTipoArma: valorOpcional(formulario.idTipoArma),
+      idMedioTransporte: valorOpcional(
+        formulario.idMedioTransporte
+      ),
+    };
+  }
+
+  async function ejecutar(accion, mensaje) {
+    setGuardando(true);
+    setError("");
+    setExito("");
+
+    try {
+      await accion();
+      setExito(mensaje);
+      refrescar();
+    } catch (err) {
+      setError(mensajeError(err));
+    } finally {
+      setGuardando(false);
+    }
+  }
+
+  // Registrar informe
+  function registrar(estadoFinal) {
+    if (
+      !seleccionActual ||
+      !formulario.descripcion.trim()
+    ) {
+      setError("Escribe la descripción del informe.");
+      return;
+    }
+
+    if (
+      !window.confirm(
+        `¿Registrar informe ${estadoFinal} para la alerta #${seleccionActual.idAlerta}?`
+      )
+    ) {
+      return;
+    }
+
+    ejecutar(
+      () =>
+        crearAtencionCentral({
+          idAlerta: Number(seleccionActual.idAlerta),
+          idUnidad: Number(
+            campo(
+              seleccionActual.asignacion,
+              "idUnidad",
+              "IdUnidad"
+            )
+          ),
+          ...cuerpoInforme(estadoFinal),
+          idPolicia: null,
+        }),
+      "Informe registrado correctamente."
+    );
+  }
+
+  // Finalizar informe existente
+  function finalizarInforme() {
+    if (
+      !idAtencionActual ||
+      !formulario.descripcion.trim()
+    ) {
+      setError("Escribe la descripción del informe.");
+      return;
+    }
+
+    if (
+      !window.confirm(
+        `¿Finalizar el informe #${idAtencionActual}?`
+      )
+    ) {
+      return;
+    }
+
+    ejecutar(
+      () =>
+        actualizarAtencionCentral(
+          idAtencionActual,
+          cuerpoInforme("FINALIZADA")
+        ),
+      "Informe finalizado correctamente."
+    );
+  }
+
+  // Guardar cambios sin finalizar
+  function guardarInforme() {
+    if (
+      !idAtencionActual ||
+      !formulario.descripcion.trim()
+    ) {
+      setError("Escribe la descripción del informe.");
+      return;
+    }
+
+    ejecutar(
+      () =>
+        actualizarAtencionCentral(
+          idAtencionActual,
+          cuerpoInforme("EN_PROCESO")
+        ),
+      "Informe actualizado correctamente."
+    );
+  }
+
+  // Cerrar alerta
+  function resolver() {
+    if (
+      !puedeCerrar ||
+      !window.confirm(
+        `¿Cerrar la alerta #${seleccionActual.idAlerta} como RESUELTA?`
+      )
+    ) {
+      return;
+    }
+
+    ejecutar(
+      () =>
+        cerrarAlertaCentral(seleccionActual.idAlerta),
+      "Alerta cerrada correctamente. Comprueba su estado actualizado."
+    );
+  }
 
   return (
     <div className="atencion-page">
-      <Topbar
-        placeholder="Buscar caso, unidad o zona..."
-        iniciales="CR"
-      />
+      <Topbar placeholder="Buscar caso, unidad o zona..." />
 
       <main className="atencion-contenido">
         <header className="atencion-encabezado">
           <div>
-            <div className="atencion-eyebrow">
-              <i className="bi bi-shield-check" />
-              CENTRAL DE POLICÍA / OPERACIONES
-            </div>
-
             <h1>Atención de alertas</h1>
             <p>
-              Seguimiento de informes policiales y resultados
-              de las atenciones registradas.
+              Registra informes y cierra alertas cuando
+              las unidades hayan finalizado su participación.
             </p>
           </div>
 
           <button
             type="button"
             className="btn btn-outline-success btn-sm"
-            disabled={cargando}
-            onClick={actualizar}
+            onClick={refrescar}
+            disabled={cargando || guardando}
           >
-            <i className="bi bi-arrow-clockwise me-2" />
-            {cargando ? "Actualizando..." : "Actualizar"}
+            Actualizar
           </button>
         </header>
 
         {error && (
           <div className="alert alert-danger" role="alert">
-            <strong>No se pudieron cargar las atenciones.</strong>
-            <p className="mb-0 mt-1">{error}</p>
+            {error}
           </div>
         )}
 
-        {datos.errores.length > 0 && !error && (
-          <div className="alert alert-warning" role="alert">
-            <strong>Información complementaria incompleta.</strong>
-            <ul className="mb-0 mt-2">
-              {datos.errores.map((mensaje, i) => (
-                <li key={i}>{mensaje}</li>
-              ))}
-            </ul>
+        {exito && (
+          <div className="alert alert-success" role="status">
+            {exito}
           </div>
         )}
 
-        <div className="atencion-kpis">
-          <Kpis
-            grupo="atencion-alertas"
-            valores={cargando || error ? {} : valores}
-          />
-        </div>
+        <Kpis
+          grupo="atencion-alertas"
+          valores={cargando ? {} : valores}
+        />
 
         <section className="atencion-layout">
+          {/* LISTADO DE ALERTAS */}
           <div className="atencion-panel atencion-listado">
             <div className="atencion-panel-header">
               <div>
-                <h2>Reportes policiales</h2>
-                <p>Selecciona un reporte para consultar sus detalles.</p>
+                <h2>Alertas policiales</h2>
+                <p>
+                  Incluye casos en atención sin informe.
+                </p>
               </div>
+
               <span className="atencion-total">
-                {cargando || error ? "—" : filtrados.length}
+                {filtrados.length}
               </span>
             </div>
 
             <div className="atencion-filtros">
               <div className="atencion-tabs">
                 {[
+                  ["porRevisar", "Sin informe"],
+                  ["enRevision", "En atención"],
+                  ["finalizadas", "Cerradas"],
                   ["todas", "Todas"],
-                  ["enRevision", "En proceso"],
-                  ["finalizadas", "Finalizadas"],
-                  ["porRevisar", "Sin estado"],
-                ].map(([valor, nombre]) => (
+                ].map(([valor, etiqueta]) => (
                   <button
                     key={valor}
                     type="button"
-                    className={filtro === valor ? "activo" : ""}
-                    aria-pressed={filtro === valor}
+                    className={
+                      filtro === valor ? "activo" : ""
+                    }
                     onClick={() => setFiltro(valor)}
                   >
-                    {nombre}
+                    {etiqueta}
                   </button>
                 ))}
               </div>
 
               <div className="atencion-busqueda">
                 <i className="bi bi-search" />
+
                 <input
-                  type="search"
                   value={busqueda}
-                  onChange={(e) => setBusqueda(e.target.value)}
-                  placeholder="Buscar caso, unidad o zona..."
-                  aria-label="Buscar atenciones"
+                  onChange={(e) =>
+                    setBusqueda(e.target.value)
+                  }
+                  placeholder="Buscar alerta, unidad o barrio"
+                  aria-label="Buscar alertas"
                 />
               </div>
             </div>
 
             <div className="atencion-lista">
-              {cargando || error ? (
-                <div className="p-4 text-center text-muted">
-                  {cargando
-                    ? "Cargando reportes..."
-                    : "No fue posible consultar los reportes."}
+              {cargando ? (
+                <div className="p-4 text-muted">
+                  Cargando alertas...
                 </div>
               ) : filtrados.length === 0 ? (
-                <div className="p-4 text-center text-muted">
-                  <i className="bi bi-inbox fs-3 d-block mb-2" />
-                  No hay reportes para mostrar.
+                <div className="p-4 text-muted">
+                  No hay casos para mostrar.
                 </div>
               ) : (
-                filtrados.map(({ clave, atencion, alerta }) => {
-                  const estado = estadoDe(atencion);
+                filtrados.map((c) => (
+                  <button
+                    key={c.clave}
+                    type="button"
+                    className="atencion-item w-100 text-start"
+                    onClick={() => seleccionar(c)}
+                    aria-pressed={
+                      seleccion === c.clave
+                    }
+                  >
+                    <span className="atencion-item-icono">
+                      <i className="bi bi-file-earmark-text" />
+                    </span>
 
-                  return (
-                    <button
-                      key={clave}
-                      type="button"
-                      className={`atencion-item w-100 text-start ${
-                        seleccion === clave ? "seleccionado" : ""
-                      }`}
-                      onClick={() => setSeleccion(clave)}
-                      aria-pressed={seleccion === clave}
-                    >
-                      <span className="atencion-item-icono">
-                        <i className="bi bi-file-earmark-text" />
+                    <span className="atencion-item-info">
+                      <strong>
+                        #{c.idAlerta} ·{" "}
+                        {tipoDeAlerta(c.alerta)}
+                      </strong>
+
+                      <small>
+                        <i className="bi bi-geo-alt" />{" "}
+                        {ubicacionDeAlerta(c.alerta)}
+                      </small>
+
+                      <small>
+                        <i className="bi bi-truck-front" />{" "}
+                        {c.unidad
+                          ? nombreUnidad(c.unidad)
+                          : campo(
+                              c.asignacion,
+                              "unidadNombre",
+                              "UnidadNombre"
+                            ) || "Unidad no disponible"}
+                      </small>
+                    </span>
+
+                    <span className="atencion-item-derecha">
+                      <span className="atencion-estado">
+                        {estadoInforme(c.atencion) ||
+                          "SIN INFORME"}
                       </span>
 
-                      <span className="atencion-item-info">
-                        <strong>
-                          Alerta #
-                          {mostrar(obtenerCampo(
-                            atencion, "idAlerta", "IdAlerta"
-                          ))}
-                          {" · "}
-                          {tipoDeAlerta(alerta)}
-                        </strong>
-
-                        <small>
-                          <i className="bi bi-geo-alt" />
-                          {ubicacionDeAlerta(alerta)}
-                        </small>
-
-                        <small>
-                          <i className="bi bi-truck-front" />
-                          {mostrar(obtenerCampo(
-                            atencion, "unidadNombre", "UnidadNombre"
-                          ))}
-                        </small>
-
-                        <small>
-                          <i className="bi bi-calendar3" />
-                          {formatearFecha(obtenerCampo(
-                            atencion, "fechaAtencion", "FechaAtencion"
-                          ))}
-                        </small>
-                      </span>
-
-                      <span className="atencion-item-derecha">
-                        <span className={`atencion-estado ${claseEstado(estado)}`}>
-                          {etiqueta(estado || "SIN ESTADO")}
-                        </span>
-                        <i className="bi bi-chevron-right" />
-                      </span>
-                    </button>
-                  );
-                })
+                      <i className="bi bi-chevron-right" />
+                    </span>
+                  </button>
+                ))
               )}
             </div>
           </div>
 
+          {/* DETALLE DE ALERTA */}
           <div className="atencion-panel atencion-detalle">
-            {!seleccionado ? (
-              <div className="atencion-vacio">
-                <div className="atencion-vacio-icono">
-                  <i className="bi bi-clipboard2-check" />
-                </div>
-                <h2>Selecciona una atención</h2>
+            {!seleccionActual ? (
+              <div className="text-center text-muted p-5">
+                <i className="bi bi-file-earmark-text fs-1 d-block mb-3" />
+
+                <h2 className="fs-5">
+                  Selecciona una alerta
+                </h2>
+
                 <p>
-                  Consulta el informe policial, la unidad
-                  responsable y el resultado registrado.
+                  Consulta el caso y registra el informe.
                 </p>
               </div>
             ) : (
@@ -320,185 +647,295 @@ function AtencionAlertas() {
                 <div className="atencion-detalle-header">
                   <div>
                     <span className="atencion-detalle-etiqueta">
-                      ALERTA #
-                      {mostrar(obtenerCampo(
-                        seleccionado.atencion,
-                        "idAlerta",
-                        "IdAlerta"
-                      ))}
+                      ALERTA #{seleccionActual.idAlerta}
                     </span>
 
-                    <h2>{tipoDeAlerta(seleccionado.alerta)}</h2>
+                    <h2>
+                      {tipoDeAlerta(seleccionActual.alerta)}
+                    </h2>
 
                     <p>
-                      <i className="bi bi-geo-alt" />
-                      {ubicacionDeAlerta(seleccionado.alerta)}
+                      {ubicacionDeAlerta(
+                        seleccionActual.alerta
+                      )}
                     </p>
                   </div>
 
-                  <span className={`atencion-estado ${claseEstado(
-                    estadoDe(seleccionado.atencion)
-                  )}`}>
-                    {etiqueta(
-                      estadoDe(seleccionado.atencion) || "SIN ESTADO"
-                    )}
+                  <span className="atencion-estado">
+                    {estadoAlerta(
+                      seleccionActual.alerta
+                    ) || "Sin estado"}
                   </span>
                 </div>
 
                 <div className="atencion-unidad">
                   <div className="atencion-unidad-icono">
-                    <i className="bi bi-shield-check" />
+                    <i className="bi bi-truck-front" />
                   </div>
 
                   <div>
-                    <small>Unidad policial</small>
+                    <small>Unidad responsable</small>
+
                     <strong>
-                      {mostrar(obtenerCampo(
-                        seleccionado.atencion,
-                        "unidadNombre",
-                        "UnidadNombre"
-                      ))}
+                      {seleccionActual.unidad
+                        ? nombreUnidad(
+                            seleccionActual.unidad
+                          )
+                        : campo(
+                            seleccionActual.asignacion,
+                            "unidadNombre",
+                            "UnidadNombre"
+                          ) || "No disponible"}
                     </strong>
                   </div>
 
                   <div className="atencion-unidad-hora">
-                    <small>Fecha de atención</small>
+                    <small>Asignación</small>
+
                     <strong>
-                      {formatearFecha(obtenerCampo(
-                        seleccionado.atencion,
-                        "fechaAtencion",
-                        "FechaAtencion"
-                      ))}
+                      #{idDeAsignacion(
+                        seleccionActual.asignacion
+                      )}
                     </strong>
                   </div>
                 </div>
 
                 <section className="atencion-seccion">
-                  <h3>
-                    <i className="bi bi-info-circle" />
-                    Información del caso
-                  </h3>
+                  <h3>Información de la alerta</h3>
 
-                  <div className="atencion-datos-grid">
-                    <div>
-                      <span>Atención</span>
-                      <strong>#{idDeAtencion(seleccionado.atencion)}</strong>
-                    </div>
-                    <div>
-                      <span>Asignación</span>
-                      <strong>
-                        {mostrar(obtenerCampo(
-                          seleccionado.atencion,
-                          "idAsignacion",
-                          "IdAsignacion"
-                        ))}
-                      </strong>
-                    </div>
-                    <div>
-                      <span>Estado de alerta</span>
-                      <strong>
-                        {etiqueta(obtenerCampo(
-                          seleccionado.alerta,
-                          "estado",
-                          "Estado"
-                        ))}
-                      </strong>
-                    </div>
-                    <div>
-                      <span>Estado de atención</span>
-                      <strong>
-                        {etiqueta(estadoDe(seleccionado.atencion))}
-                      </strong>
-                    </div>
-                  </div>
+                  <p>
+                    {campo(
+                      seleccionActual.alerta,
+                      "descripcion",
+                      "Descripcion"
+                    ) || "Sin descripción"}
+                  </p>
                 </section>
 
                 <section className="atencion-seccion">
-                  <h3>
-                    <i className="bi bi-file-earmark-text" />
-                    Informe de atención
-                  </h3>
+                  <h3>Estado de la participación</h3>
 
-                  <div className="atencion-reporte-campo">
-                    <span>Descripción</span>
-                    <p>
-                      {mostrar(obtenerCampo(
-                        seleccionado.atencion,
-                        "descripcion",
-                        "Descripcion"
-                      ))}
-                    </p>
-                  </div>
+                  <p>
+                    Asignación #
+                    {idDeAsignacion(
+                      seleccionActual.asignacion
+                    )}
+                    :{" "}
+                    <strong>
+                      {estadoAsignacion(
+                        seleccionActual.asignacion
+                      )}
+                    </strong>
+                  </p>
 
-                  <div className="atencion-reporte-campo">
-                    <span>Observaciones</span>
-                    <p>
-                      {mostrar(obtenerCampo(
-                        seleccionado.atencion,
-                        "observacion",
-                        "Observacion"
-                      ))}
-                    </p>
-                  </div>
+                  <p>
+                    Informe:{" "}
+                    <strong>
+                      {estadoInforme(atencionActual) ||
+                        "SIN REGISTRAR"}
+                    </strong>
 
-                  <div className="atencion-reporte-campo">
-                    <span>Tipo de arma</span>
-                    <p>
-                      {mostrar(obtenerCampo(
-                        seleccionado.atencion,
-                        "tipoArmaNombre",
-                        "TipoArmaNombre"
-                      ))}
-                    </p>
-                  </div>
+                    {idAtencionActual
+                      ? ` (#${idAtencionActual})`
+                      : ""}
+                  </p>
 
-                  <div className="atencion-reporte-campo">
-                    <span>Medio de transporte</span>
-                    <p>
-                      {mostrar(obtenerCampo(
-                        seleccionado.atencion,
-                        "medioTransporteNombre",
-                        "MedioTransporteNombre"
-                      ))}
-                    </p>
-                  </div>
+                  {seleccionActual.asignaciones.length >
+                    1 && (
+                    <div>
+                      <strong>
+                        Otras asignaciones de esta alerta:
+                      </strong>
+
+                      {seleccionActual.asignaciones.map(
+                        (a) => (
+                          <p key={idDeAsignacion(a)}>
+                            #{idDeAsignacion(a)}:{" "}
+                            {estadoAsignacion(a)}
+                          </p>
+                        )
+                      )}
+                    </div>
+                  )}
                 </section>
 
+                {/* FORMULARIO DEL INFORME */}
                 <section className="atencion-seccion atencion-seccion-central">
-                  <h3>
-                    <i className="bi bi-person-badge" />
-                    Registro de la atención
-                  </h3>
+                  <h3>Informe de atención policial</h3>
 
-                  <div className="atencion-datos-grid">
-                    <div>
-                      <span>Policía</span>
-                      <strong>
-                        {mostrar(obtenerCampo(
-                          seleccionado.atencion,
-                          "idPolicia",
-                          "IdPolicia"
-                        ))}
-                      </strong>
+                  {puedeRegistrar || puedeEditar ? (
+                    <div className="d-grid gap-3">
+                      <label>
+                        Descripción de la atención
+
+                        <textarea
+                          className="form-control"
+                          rows={4}
+                          value={formulario.descripcion}
+                          onChange={(e) =>
+                            setFormulario((f) => ({
+                              ...f,
+                              descripcion: e.target.value,
+                            }))
+                          }
+                          placeholder="Describe la atención realizada"
+                        />
+                      </label>
+
+                      <label>
+                        Observaciones
+
+                        <textarea
+                          className="form-control"
+                          rows={3}
+                          value={formulario.observacion}
+                          onChange={(e) =>
+                            setFormulario((f) => ({
+                              ...f,
+                              observacion: e.target.value,
+                            }))
+                          }
+                          placeholder="Observaciones del informe"
+                        />
+                      </label>
+
+                      <div className="d-flex flex-wrap gap-2">
+                        {puedeRegistrar && (
+                          <>
+                            <button
+                              className="btn btn-outline-primary"
+                              disabled={guardando}
+                              onClick={() =>
+                                registrar("EN_PROCESO")
+                              }
+                            >
+                              Registrar informe
+                            </button>
+
+                            <button
+                              className="btn btn-success"
+                              disabled={guardando}
+                              onClick={() =>
+                                registrar("FINALIZADA")
+                              }
+                            >
+                              Registrar y finalizar informe
+                            </button>
+                          </>
+                        )}
+
+                        {puedeEditar && (
+                          <>
+                            <button
+                              className="btn btn-outline-primary"
+                              disabled={guardando}
+                              onClick={guardarInforme}
+                            >
+                              Guardar cambios
+                            </button>
+
+                            <button
+                              className="btn btn-success"
+                              disabled={guardando}
+                              onClick={finalizarInforme}
+                            >
+                              Finalizar informe
+                            </button>
+                          </>
+                        )}
+                      </div>
                     </div>
-
+                  ) : (
                     <div>
-                      <span>Usuario que registra</span>
-                      <strong>
-                        {mostrar(obtenerCampo(
-                          seleccionado.atencion,
-                          "usuarioRegistra",
-                          "UsuarioRegistra"
-                        ))}
-                      </strong>
-                    </div>
-                  </div>
+                      <p>
+                        <strong>Descripción:</strong>{" "}
+                        {campo(
+                          atencionActual,
+                          "descripcion",
+                          "Descripcion"
+                        ) || "Sin informe registrado"}
+                      </p>
 
-                  <div className="atencion-ayuda">
-                    <i className="bi bi-info-circle" />
-                    El estado de esta atención es independiente
-                    del cierre general de la alerta.
-                  </div>
+                      <p>
+                        <strong>Observaciones:</strong>{" "}
+                        {campo(
+                          atencionActual,
+                          "observacion",
+                          "Observacion"
+                        ) || "Sin observaciones"}
+                      </p>
+
+                      {atencionActual && (
+                        <small>
+                          Registrado:{" "}
+                          {formatearFecha(
+                            campo(
+                              atencionActual,
+                              "fechaAtencion",
+                              "FechaAtencion"
+                            )
+                          )}
+                        </small>
+                      )}
+                    </div>
+                  )}
+
+                  {!atencionActual &&
+                    !puedeRegistrar && (
+                      <p className="text-muted">
+                        Para registrar el informe,
+                        la asignación debe estar
+                        EN_ATENCION.
+                      </p>
+                    )}
+                </section>
+
+                {/* CIERRE DE ALERTA */}
+                <section className="atencion-seccion atencion-seccion-central">
+                  <h3>Cierre de la alerta</h3>
+
+                  {!informeFinalizado && (
+                    <p className="text-muted">
+                      Primero debe finalizarse el informe.
+                    </p>
+                  )}
+
+                  {informeFinalizado &&
+                    !asignacionesTerminadas && (
+                      <div className="atencion-ayuda">
+                        El informe ya está finalizado.
+                        El policía autorizado debe
+                        finalizar su asignación desde
+                        su módulo. Luego pulsa Actualizar.
+                      </div>
+                    )}
+
+                  {asignacionesTerminadas &&
+                    !informeFinalizado && (
+                      <p className="text-muted">
+                        Las asignaciones terminaron,
+                        pero falta finalizar el informe.
+                      </p>
+                    )}
+
+                  {alertaResuelta ? (
+                    <p className="text-success">
+                      <strong>
+                        Esta alerta ya está cerrada.
+                      </strong>
+                    </p>
+                  ) : (
+                    <button
+                      type="button"
+                      className="btn btn-success"
+                      onClick={resolver}
+                      disabled={
+                        !puedeCerrar || guardando
+                      }
+                    >
+                      Resolver alerta
+                    </button>
+                  )}
                 </section>
               </>
             )}
@@ -508,5 +945,3 @@ function AtencionAlertas() {
     </div>
   );
 }
-
-export default AtencionAlertas;
