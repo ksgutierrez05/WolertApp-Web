@@ -138,9 +138,5 @@ namespace WolertApp.Controllers
         }
     }
 }
-namespace backend.Controllers
-{
-    public class AtencionesTransitoController
-    {
-    }
-}
+
+

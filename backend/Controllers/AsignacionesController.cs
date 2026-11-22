@@ -126,6 +126,45 @@ namespace WolertApp.Controllers
                 : Ok(asignacion);
         }
 
+        // GET: api/Asignaciones/mias
+        // Devuelve las asignaciones de la unidad del agente autenticado.
+        [HttpGet("mias")]
+        [Authorize(Roles = "AGENTE_TRANSITO")]
+        public async Task<ActionResult<IEnumerable<AsignacionUnidadDto>>> GetMias()
+        {
+            var idUsuario = User.IdUsuario();
+
+            if (idUsuario == null)
+                return Unauthorized("No se pudo identificar al agente.");
+
+            var agente = await _context.AgentesTransito
+                .AsNoTracking()
+                .Where(a => a.IdUsuario == idUsuario.Value)
+                .Select(a => new
+                {
+                    a.UnidadTransitoId,
+                    a.Estado
+                })
+                .FirstOrDefaultAsync();
+
+            if (agente == null)
+                return NotFound("No existe un agente de tránsito para este usuario.");
+
+            if (agente.UnidadTransitoId == null)
+                return Ok(new List<AsignacionUnidadDto>());
+
+            var idUnidad = agente.UnidadTransitoId.Value;
+
+            var asignaciones = await Proyectar(
+                _context.Asignaciones
+                    .AsNoTracking()
+                    .Where(a => a.IdUnidadTransito == idUnidad)
+                    .OrderByDescending(a => a.IdAsignacion)
+            ).ToListAsync();
+
+            return Ok(asignaciones);
+        }
+
 
         // La unidad llegó al lugar (ASIGNADA -> EN_ATENCION). pr_registrar_llegada NO hace COMMIT: lo hace el helper.
         [HttpPost("{id:int}/llegada")]
