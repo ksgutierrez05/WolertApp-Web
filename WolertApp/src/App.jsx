@@ -11,6 +11,7 @@ import Director from './Pages/transito/Director';
 import Central from './Pages/transito/Central';
 import Agente from './Pages/transito/Agente';
 
+
 // Patrullero
 import LayoutPatrullero from './Components/Patrullero/Layout';
 import CentroPatrullero from './Pages/Patrullero/Centro-Operaciones';

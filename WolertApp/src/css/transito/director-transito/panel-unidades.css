@@ -1,0 +1,711 @@
+.ut .ut-estado::before {
+content: "";
+display: block;
+width: 6px;
+height: 6px;
+flex-shrink: 0;
+border-radius: 50%;
+background: currentColor;
+}
+.ut .ut-operativa {
+background: rgba(46, 158, 91, 0.12);
+color: #2e9e5b;
+}
+.ut .ut-fuera_de_servicio {
+background: rgba(217, 155, 44, 0.12);
+color: #b9791f;
+}
+.ut .ut-inactiva {
+background: rgba(138, 148, 166, 0.14);
+color: #6b7383;
+}
+/* 3. ENLACES Y ACCIONES DE TABLA */
+.ut .ut-link {
+padding: 0;
+border: 0;
+background: transparent;
+color: var(--ut-primary);
+font-size: 12px;
+font-weight: 600;
+text-decoration: none;
+cursor: pointer;
+}
+.ut .ut-link:hover {
+color: var(--ut-primary-dark);
+text-decoration: underline;
+}
+.ut .ut-actions {
+display: flex;
+justify-content: flex-end;
+gap: 7px;
+}
+.ut .ut-actions button {
+display: grid;
+place-items: center;
+width: 34px;
+height: 34px;
+border: 1px solid var(--ut-border);
+border-radius: 9px;
+background: #fff;
+color: var(--ut-primary);
+transition: background 0.2s ease;
+}
+.ut .ut-actions button:hover:not(:disabled) {
+background: #edf3fb;
+}
+.ut .ut-actions button:last-child {
+color: #a16b70;
+}
+.ut .ut-actions button:disabled {
+opacity: 0.35;
+cursor: not-allowed;
+}
+/* 4. MODAL: MISMO ESTILO QUE CREAR AGENTE */
+.ut .ut-modal-backdrop {
+display: block;
+overflow-y: auto;
+background: rgba(0, 0, 0, 0.5);
+}
+.ut .ut-modal-backdrop .modal-dialog {
+margin-top: 1.75rem;
+margin-bottom: 1.75rem;
+}
+.ut .ut-modal-backdrop .modal-content {
+border-radius: 16px;
+}
+.ut .ut-modal-backdrop .config-field-label-dash {
+display: block;
+margin-bottom: 7px;
+}
+.ut .ut-modal-backdrop .form-control:focus,
+.ut .ut-modal-backdrop .form-select:focus {
+border-color: var(--ut-primary);
+box-shadow: 0 0 0 0.2rem rgba(81, 122, 172, 0.12);
+}
+/* ==========================================
+UNIDADES - ESTADOS
+========================================== */
+.pg-director-unidades .ut-estado-pill {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+gap: 6px;
+width: fit-content;
+min-height: 30px;
+padding: 6px 15px;
+border-radius: 100px;
+font-family: inherit;
+font-size: 11px;
+font-weight: 700;
+line-height: 1;
+text-transform: uppercase;
+white-space: nowrap;
+border: none;
+}
+/* Sin puntos: igual que las pills de Agentes */
+.pg-director-unidades .ut-estado-pill::before {
+display: none;
+}
+/* Operativa */
+.pg-director-unidades .ut-estado-pill.operativa {
+background: #e1f5e9;
+color: #009b54;
+}
+/* Fuera de servicio */
+.pg-director-unidades .ut-estado-pill.fuera-servicio {
+background: #fff1d8;
+color: #e18a00;
+}
+/* Inactiva */
+.pg-director-unidades .ut-estado-pill.inactiva {
+background: #f8e1e3;
+color: #c43e4a;
+}
+/* Desconocida */
+.pg-director-unidades .ut-estado-pill.desconocida {
+background: #edf0f5;
+color: #64748b;
+}
+/* ============================================
+TABLA DE UNIDADES - ESTILO CASOS
+============================================ */
+.pg-director-unidades .ut-tabla td {
+vertical-align: middle;
+padding-top: 18px;
+padding-bottom: 18px;
+}
+.pg-director-unidades .ut-tabla tbody tr {
+border-bottom: 1px solid #edf0f5;
+}
+.pg-director-unidades .ut-tabla tbody tr:hover {
+background: #fafcff;
+}
+/* ============================================
+PILLS GENERALES
+============================================ */
+.pg-director-unidades .ut-pill {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+gap: 7px;
+width: fit-content;
+min-height: 29px;
+padding: 6px 13px;
+border: 0;
+border-radius: 100px;
+font-family: inherit;
+font-size: 11px;
+font-weight: 700;
+line-height: 1.2;
+white-space: nowrap;
+text-decoration: none;
+cursor: default;
+transition: background 0.2s ease, transform 0.2s ease;
+}
+.pg-director-unidades .ut-pill i {
+font-size: 12px;
+}
+/* Integrantes - lila */
+.pg-director-unidades .ut-pill-integrantes {
+background: #e9edff;
+color: #5668b3;
+}
+/* Operativa - verde */
+.pg-director-unidades .ut-pill-operativa {
+background: #e1f5e9;
+color: #168650;
+}
+/* Fuera de servicio - amarillo */
+.pg-director-unidades .ut-pill-fuera {
+background: #fff2d9;
+color: #b77a14;
+}
+/* Inactiva - rojo suave */
+.pg-director-unidades .ut-pill-inactiva {
+background: #fce7e9;
+color: #bd4a57;
+}
+/* Estado desconocido - gris */
+.pg-director-unidades .ut-pill-desconocida {
+background: #edf0f5;
+color: #65758a;
+}
+/* Ver mapa - azul */
+.pg-director-unidades .ut-pill-mapa {
+background: #e7f1ff;
+color: #356eae;
+cursor: pointer;
+}
+.pg-director-unidades .ut-pill-mapa:hover {
+background: #d6e8ff;
+color: #285b96;
+transform: translateY(-1px);
+}
+/* ==========================================
+PILLS - COLORES VIVOS Y LETRA GRUESA
+========================================== */
+.pg-director-unidades .ut-pill {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+gap: 7px;
+width: fit-content;
+min-height: 30px;
+padding: 7px 13px;
+border: none;
+border-radius: 10px;
+font-family: inherit;
+font-size: 11px;
+font-weight: 800;
+line-height: 1.2;
+text-transform: uppercase;
+text-decoration: none;
+white-space: nowrap;
+vertical-align: middle;
+}
+.pg-director-unidades .ut-pill i {
+font-size: 13px;
+}
+/* Integrantes - violeta intenso */
+.pg-director-unidades .ut-pill-integrantes {
+background: #e3e8ff;
+color: #475dca;
+cursor: pointer;
+}
+/* Operativa - verde intenso */
+.pg-director-unidades .ut-pill-operativa {
+background: #ddf7e7;
+color: #008b43;
+}
+/* Fuera de servicio - naranja */
+.pg-director-unidades .ut-pill-fuera-servicio {
+background: #fff0c9;
+color: #db8500;
+}
+/* Inactiva - rojo intenso */
+.pg-director-unidades .ut-pill-inactiva {
+background: #ffe1e4;
+color: #d5263b;
+}
+/* Desconocida - gris */
+.pg-director-unidades .ut-pill-desconocida {
+background: #edf0f5;
+color: #65758a;
+}
+/* Ver mapa - azul intenso */
+.pg-director-unidades .ut-pill-mapa {
+background: #dfeeff;
+color: #0967c2;
+cursor: pointer;
+}
+.pg-director-unidades .ut-pill-mapa:hover {
+background: #c9e1ff;
+color: #07539d;
+}
+/* ==========================================
+04. PILLS - ESTILO ORIGINAL AGENTES
+========================================== */
+.pg-director-unidades .ut-pill {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+gap: 6px;
+width: fit-content;
+min-width: 0;
+height: auto;
+padding: 5px 12px;
+border: none;
+border-radius: 100px;
+font-family: 'Inter', sans-serif;
+font-size: 11px;
+font-weight: 700;
+line-height: normal;
+white-space: nowrap;
+text-decoration: none;
+text-transform: none;
+vertical-align: middle;
+}
+/* Puntico de color */
+.pg-director-unidades .ut-pill::before {
+content: "";
+display: block;
+width: 6px;
+height: 6px;
+border-radius: 50%;
+flex-shrink: 0;
+background-color: currentColor;
+}
+/* OPERATIVA - verde */
+.pg-director-unidades .ut-pill-operativa {
+background-color: rgba(46, 158, 91, 0.12);
+color: #2e9e5b;
+}
+/* FUERA DE SERVICIO - amarillo */
+.pg-director-unidades .ut-pill-fuera-servicio {
+background-color: rgba(217, 155, 44, 0.12);
+color: #b9791f;
+}
+.pg-director-unidades .ut-pill-fuera-servicio::before {
+background-color: #d99b2c;
+}
+/* INACTIVA - rojo */
+.pg-director-unidades .ut-pill-inactiva {
+background-color: rgba(195, 78, 89, 0.12);
+color: #c34e59;
+}
+/* INTEGRANTES - morado */
+.pg-director-unidades .ut-pill-integrantes {
+background-color: rgba(124, 79, 201, 0.12);
+color: #7c4fc9;
+cursor: pointer;
+}
+/* VER MAPA - azul */
+.pg-director-unidades .ut-pill-mapa {
+background-color: rgba(47, 111, 237, 0.12);
+color: #2f6fed;
+cursor: pointer;
+}
+/* DESCONOCIDA - gris */
+.pg-director-unidades .ut-pill-desconocida {
+background-color: rgba(138, 148, 166, 0.14);
+color: #6b7383;
+}
+/* Interacción */
+.pg-director-unidades button.ut-pill:hover,
+.pg-director-unidades a.ut-pill:hover {
+filter: brightness(0.96);
+text-decoration: none;
+}
+/* ==========================================
+05. ACCIONES - MISMA PALETA
+========================================== */
+.pg-director-unidades .ut-acciones {
+display: flex;
+align-items: center;
+justify-content: flex-end;
+gap: 8px;
+}
+.pg-director-unidades .ut-accion-btn {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+width: 34px;
+height: 34px;
+padding: 0;
+border: none;
+border-radius: 10px;
+font-family: 'Inter', sans-serif;
+font-size: 14px;
+cursor: pointer;
+transition: background-color 0.2s ease;
+}
+/* Modificar - amarillo */
+.pg-director-unidades .ut-accion-btn.editar {
+background-color: rgba(217, 155, 44, 0.12);
+color: #b9791f;
+}
+/* Desactivar - rojo */
+.pg-director-unidades .ut-accion-btn.eliminar {
+background-color: rgba(195, 78, 89, 0.12);
+color: #c34e59;
+}
+.pg-director-unidades .ut-accion-btn:hover {
+filter: brightness(0.94);
+}
+.pg-director-unidades .ut-accion-btn:disabled {
+opacity: 0.4;
+cursor: not-allowed;
+}
+/* ==========================================
+ACCIONES - COMPACTAS Y COLORES VIVOS
+========================================== */
+.ut .ut-acciones {
+display: flex;
+align-items: center;
+justify-content: flex-end;
+gap: 6px;
+}
+.ut .ut-accion-btn {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+width: 28px;
+height: 28px;
+min-width: 28px;
+padding: 0;
+border: none;
+border-radius: 7px;
+cursor: pointer;
+transition: background-color 0.2s ease;
+}
+/* Iconos pequeños, pero gruesos */
+.ut .ut-accion-btn i {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+font-size: 14px;
+line-height: 1;
+-webkit-text-stroke: 0.5px currentColor;
+}
+/* EDITAR - amarillo vivo */
+.ut .ut-accion-btn.editar {
+background-color: #fff4dc;
+color: #f59e0b;
+}
+.ut .ut-accion-btn.editar:hover {
+background-color: #ffe9b3;
+}
+/* DESACTIVAR - rojo vivo */
+.ut .ut-accion-btn.eliminar {
+background-color: #fdebec;
+color: #dc3545;
+}
+.ut .ut-accion-btn.eliminar:hover {
+background-color: #fbd5d9;
+}
+.ut .ut-accion-btn:disabled {
+opacity: 0.4;
+cursor: not-allowed;
+}
+/* ==========================================
+PERFIL DE UNIDAD - ESTILO CASOS
+========================================== */
+.ut .ut-unidad-perfil {
+display: flex;
+align-items: center;
+gap: 11px;
+min-width: 190px;
+}
+.ut .ut-unidad-avatar {
+display: flex;
+align-items: center;
+justify-content: center;
+width: 38px;
+height: 38px;
+min-width: 38px;
+border-radius: 50%;
+color: #ffffff;
+font-family: 'Inter', sans-serif;
+font-size: 11px;
+font-weight: 700;
+letter-spacing: 0.2px;
+}
+.ut .ut-unidad-datos {
+display: flex;
+flex-direction: column;
+gap: 4px;
+min-width: 0;
+}
+.ut .ut-unidad-nombre {
+color: #10213c;
+font-family: 'Inter', sans-serif;
+font-size: 12px;
+font-weight: 700;
+line-height: 1.3;
+}
+.ut .ut-unidad-id {
+color: #8190a8;
+font-family: 'Inter', sans-serif;
+font-size: 11px;
+font-weight: 400;
+line-height: 1.2;
+}
+/* BARRIO - NOMBRE EN NEGRILLA */
+.ut .ut-barrio-nombre {
+font-family: 'Inter', sans-serif;
+font-size: 12px;
+font-weight: 700;
+color: #10213c;
+line-height: 1.4;
+}
+/* 5. RESPONSIVE */
+@media (max-width: 768px) {
+.ut .table-responsive table {
+min-width: 750px;
+}
+.ut .ut-actions {
+gap: 4px;
+}
+}
+/* ==========================================================
+FORMULARIO DE UNIDADES — ESTILO REGISTRAR AGENTE
+SOLO MODAL. No altera .ut-pill, .ut-estado-pill,
+.ut-accion-btn, .ut-tabla ni los perfiles de unidades.
+Requiere clases ut-form-* en el JSX del formulario.
+========================================================== */
+.ut .ut-modal-backdrop:has(.ut-form-modal) {
+position: fixed;
+inset: 0;
+z-index: 1050;
+display: flex;
+align-items: center;
+justify-content: center;
+overflow-y: auto;
+padding: 20px;
+background: rgba(18, 34, 58, .48);
+backdrop-filter: blur(3px);
+}
+.ut .ut-form-modal {
+display: flex;
+flex-direction: column;
+width: 100%;
+max-width: 550px;
+max-height: min(88vh, 850px);
+margin: auto;
+overflow: hidden;
+border: 0;
+border-radius: 20px;
+background: #f7f9fc;
+box-shadow: 0 20px 60px rgba(16, 33, 60, .22);
+font-family: 'Inter', sans-serif;
+}
+.ut .ut-form-header {
+display: flex;
+align-items: center;
+gap: 14px;
+padding: 24px;
+color: #fff;
+background: linear-gradient(120deg, #517aac, #2d609c);
+}
+.ut .ut-form-header-icon {
+display: grid;
+place-items: center;
+flex: 0 0 46px;
+width: 46px;
+height: 46px;
+border: 1px solid rgba(255,255,255,.25);
+border-radius: 13px;
+background: rgba(255,255,255,.15);
+font-size: 21px;
+}
+.ut .ut-form-header-info { flex: 1; min-width: 0; }
+.ut .ut-form-eyebrow {
+margin-bottom: 5px;
+font-size: 10px;
+font-weight: 800;
+letter-spacing: 1.5px;
+}
+.ut .ut-form-title {
+margin: 0;
+color: #fff;
+font-size: 20px;
+font-weight: 700;
+line-height: 1.25;
+}
+.ut .ut-form-subtitle {
+margin: 5px 0 0;
+color: rgba(255,255,255,.85);
+font-size: 11px;
+}
+.ut .ut-form-close {
+align-self: flex-start;
+display: grid;
+place-items: center;
+width: 34px;
+height: 34px;
+padding: 0;
+border: 1px solid rgba(255,255,255,.2);
+border-radius: 10px;
+background: rgba(255,255,255,.15);
+color: #fff;
+font-size: 18px;
+cursor: pointer;
+}
+.ut .ut-form-body {
+flex: 1;
+min-height: 0;
+overflow-y: auto;
+padding: 20px;
+}
+.ut .ut-form-help {
+display: flex;
+align-items: center;
+justify-content: space-between;
+gap: 10px;
+margin-bottom: 17px;
+color: #71829a;
+font-size: 11px;
+}
+.ut .ut-form-required {
+flex-shrink: 0;
+padding: 7px 12px;
+border-radius: 100px;
+background: #e8eef8;
+color: #517aac;
+font-size: 10px;
+font-weight: 700;
+}
+.ut .ut-form-section {
+margin-bottom: 15px;
+padding: 18px;
+border: 1px solid #e9edf4;
+border-radius: 15px;
+background: #fff;
+}
+.ut .ut-form-section-header {
+display: flex;
+align-items: center;
+gap: 12px;
+margin-bottom: 20px;
+}
+.ut .ut-form-section-icon {
+display: grid;
+place-items: center;
+flex: 0 0 38px;
+width: 38px;
+height: 38px;
+border-radius: 11px;
+background: #eaf0f8;
+color: #517aac;
+font-size: 17px;
+}
+.ut .ut-form-section-info { flex: 1; min-width: 0; }
+.ut .ut-form-section-title {
+margin: 0;
+color: #10213c;
+font-size: 13px;
+font-weight: 700;
+}
+.ut .ut-form-section-subtitle {
+margin: 4px 0 0;
+color: #8997aa;
+font-size: 10px;
+}
+.ut .ut-form-section-number {
+color: #c3cfdf;
+font-size: 21px;
+font-weight: 800;
+}
+.ut .ut-form-grid {
+display: grid;
+grid-template-columns: repeat(2, minmax(0, 1fr));
+gap: 16px;
+}
+.ut .ut-form-field { display: flex; flex-direction: column; gap: 8px; }
+.ut .ut-form-field.full { grid-column: 1 / -1; }
+.ut .ut-form-field label {
+margin: 0;
+color: #566781;
+font-size: 11px;
+font-weight: 700;
+}
+.ut .ut-form-field label span { color: #e45b64; }
+.ut .ut-form-field input,
+.ut .ut-form-field select {
+width: 100%;
+height: 43px;
+padding: 0 13px;
+border: 1px solid #e2e8f0;
+border-radius: 10px;
+outline: none;
+background: #fafbfd;
+color: #26364b;
+font-family: 'Inter', sans-serif;
+font-size: 12px;
+transition: border-color .2s ease, box-shadow .2s ease;
+}
+.ut .ut-form-field input:focus,
+.ut .ut-form-field select:focus {
+border-color: #517aac;
+background: #fff;
+box-shadow: 0 0 0 3px rgba(81,122,172,.1);
+}
+.ut .ut-form-field small { color: #8997aa; font-size: 10px; }
+.ut .ut-form-footer {
+display: flex;
+align-items: center;
+justify-content: space-between;
+gap: 12px;
+padding: 15px 20px;
+border-top: 1px solid #e8edf4;
+background: #fff;
+}
+.ut .ut-form-footer-info { color: #8997aa; font-size: 10px; }
+.ut .ut-form-footer-actions { display: flex; gap: 10px; }
+.ut .ut-form-cancel,
+.ut .ut-form-submit {
+min-height: 39px;
+padding: 10px 16px;
+border: 0;
+border-radius: 10px;
+font-family: 'Inter', sans-serif;
+font-size: 11px;
+font-weight: 700;
+cursor: pointer;
+}
+.ut .ut-form-cancel { background: #edf1f7; color: #64748b; }
+.ut .ut-form-submit {
+background: linear-gradient(120deg, #517aac, #2d609c);
+color: #fff;
+box-shadow: 0 4px 12px rgba(45,96,156,.2);
+}
+.ut .ut-form-submit:hover { filter: brightness(1.07); }
+.ut .ut-form-submit:disabled { opacity: .6; cursor: not-allowed; }
+@media (max-width: 576px) {
+.ut .ut-form-modal { max-height: 94vh; }
+.ut .ut-form-grid { grid-template-columns: 1fr; }
+.ut .ut-form-header { padding: 20px; }
+.ut .ut-form-footer-info { display: none; }
+.ut .ut-form-footer-actions { width: 100%; }
+.ut .ut-form-footer-actions button { flex: 1; }
+}

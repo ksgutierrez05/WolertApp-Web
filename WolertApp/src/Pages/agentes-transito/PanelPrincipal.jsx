@@ -1,458 +1,123 @@
-
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Layout from "../../Components/transito/Layout";
 import KpiCard from "../../Components/transito/KpiCard";
+import "../../css/transito/agente-transito/panel-principal.css";
 import {
   obtenerResumenAgente,
   obtenerGrupoAgente,
+  obtenerPerfilAgente,
   fechaAtencion,
 } from "../../Services/agenteTransitoService";
+
+const normalizar = (valor) => String(valor ?? "").trim().toUpperCase();
+const esFinalizada = (a) => ["FINALIZADA", "FINALIZADO", "ATENDIDA", "CERRADA", "RESUELTA"].includes(normalizar(a.estadoFinal ?? a.estado));
+const esEnProceso = (a) => ["EN_PROCESO", "RECIBIDO", "EN_CAMINO", "EN_EL_SITIO"].includes(normalizar(a.estadoFinal ?? a.estado));
+const claseEstado = (a) => {
+  if (esFinalizada(a)) return "estado-resuelto-ag";
+  const e = normalizar(a.estadoEtapa ?? a.etapa ?? a.estadoFinal ?? a.estado);
+  if (e === "EN_CAMINO") return "estado-en_camino-ag";
+  if (["EN_EL_SITIO", "EN_SITIO"].includes(e)) return "estado-en_sitio-ag";
+  if (["RECIBIDO", "PENDIENTE", "EN_PROCESO"].includes(e)) return "estado-pendiente-ag";
+  return "estado-desconocido-ag";
+};
+const estadoTexto = (a) => {
+  const estado = normalizar(a.estadoEtapa ?? a.etapa ?? a.estadoFinal ?? a.estado);
+  if (esFinalizada(a)) return "Finalizada";
+  if (estado === "RECIBIDO") return "Recibido";
+  if (estado === "EN_CAMINO") return "En camino";
+  if (["EN_EL_SITIO", "EN_SITIO"].includes(estado)) return "En el sitio";
+  if (estado === "EN_PROCESO") return "En proceso";
+  return estado ? estado.replaceAll("_", " ") : "Sin estado";
+};
+const nombrePersona = (persona) => persona?.nombreUsuario || persona?.nombreCompleto || persona?.nombreAgente || persona?.nombre || persona?.username || "Agente de Tránsito";
 
 export default function PanelPrincipal() {
   const [resumen, setResumen] = useState(null);
   const [grupo, setGrupo] = useState(null);
+  const [perfil, setPerfil] = useState(null);
   const [cargando, setCargando] = useState(true);
-  const [error, setError] = useState("");
+  const [errores, setErrores] = useState([]);
   const [tab, setTab] = useState("todas");
+  const [busqueda, setBusqueda] = useState("");
 
   useEffect(() => {
-    let activo = true;
-
-    Promise.allSettled([
-      obtenerResumenAgente(),
-      obtenerGrupoAgente(),
-    ])
-      .then(([datos, equipo]) => {
-        if (!activo) return;
-
-        if (datos.status === "fulfilled") {
-          setResumen(datos.value);
-        }
-
-        if (equipo.status === "fulfilled") {
-          setGrupo(equipo.value);
-        }
-
-        const fallos = [datos, equipo].filter(
-          (resultado) => resultado.status === "rejected"
-        );
-
-        if (fallos.length) {
-          setError(
-            fallos
-              .map(
-                (resultado) =>
-                  resultado.reason?.message ||
-                  "Error al consultar la API"
-              )
-              .join(" | ")
-          );
-        }
+    let montado = true;
+    Promise.allSettled([obtenerResumenAgente(), obtenerGrupoAgente(), obtenerPerfilAgente()])
+      .then(([rResumen, rGrupo, rPerfil]) => {
+        if (!montado) return;
+        if (rResumen.status === "fulfilled") setResumen(rResumen.value);
+        if (rGrupo.status === "fulfilled") setGrupo(rGrupo.value);
+        if (rPerfil.status === "fulfilled") setPerfil(rPerfil.value);
+        setErrores([rResumen, rGrupo, rPerfil].filter((r) => r.status === "rejected").map((r) => r.reason?.message || "Error al consultar la API"));
       })
-      .finally(() => {
-        if (activo) setCargando(false);
-      });
-
-    return () => {
-      activo = false;
-    };
+      .finally(() => { if (montado) setCargando(false); });
+    return () => { montado = false; };
   }, []);
 
-  const atenciones = resumen?.atenciones ?? [];
-  const pendientes = resumen?.enProceso ?? [];
-  const terminadas = resumen?.finalizadas ?? [];
-  const integrantes = grupo?.integrantes ?? [];
-
-  const historial =
-    tab === "todas"
-      ? atenciones
-      : atenciones.filter(
-          (atencion) => atencion.estadoFinal === tab
-        );
-
-  const nombre =
-    resumen?.agente?.nombreUsuario ||
-    grupo?.agente?.nombreUsuario ||
-    "Agente de Tránsito";
-
-  const fecha = new Date()
-    .toLocaleDateString("es-CO", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    })
-    .toUpperCase();
+  const atenciones = useMemo(() => Array.isArray(resumen?.atenciones) ? resumen.atenciones : [], [resumen]);
+  const pendientes = useMemo(() => atenciones.filter(esEnProceso), [atenciones]);
+  const terminadas = useMemo(() => atenciones.filter(esFinalizada), [atenciones]);
+  const integrantes = Array.isArray(grupo?.integrantes) ? grupo.integrantes : [];
+  const nombre = nombrePersona(perfil ?? grupo?.agente ?? resumen?.agente);
+  const nombreGrupo = grupo?.unidad?.nombre || grupo?.unidad?.nombreUnidad || "Sin unidad asignada";
+  const estado = perfil?.estadoAgente || perfil?.estado || grupo?.agente?.estadoAgente || "Sin estado";
+  const fecha = new Date().toLocaleDateString("es-CO", { day: "numeric", month: "long", year: "numeric" }).toUpperCase();
+  const coincide = (a) => [a.idAtencionTransito, a.idAlerta, a.descripcion, estadoTexto(a)].some((v) => String(v ?? "").toLowerCase().includes(busqueda.toLowerCase().trim()));
+  const visibles = pendientes.filter(coincide);
+  const historial = atenciones.filter((a) => (tab === "todas" || (tab === "EN_PROCESO" ? esEnProceso(a) : esFinalizada(a))) && coincide(a));
 
   return (
-    <Layout
-      rol="agente"
-      titulo="Panel Agente de Tránsito"
-      activo="panel"
-      claseTopbar="mb-4"
-      avatar={nombre.charAt(0)}
-      busqueda={{ placeholder: "Buscar por atención..." }}
-    >
+    <Layout rol="agente" titulo="Panel Agente de Tránsito" activo="panel" claseTopbar="mb-4" avatar={nombre.charAt(0).toUpperCase()} busqueda={{ placeholder: "Buscar por caso, barrio o agente..." }}>
       <div className="hero-dash hero-img-dash mb-4">
-        <div className="eyebrow-dash eyebrow-img-dash">
-          <i className="bi bi-shield-check me-2" />
-          PANEL DEL AGENTE · {fecha}
-        </div>
-
-        <h1 className="hero-title-dash">
-          ¡Bienvenido,
-          <br />
-          {nombre}!
-        </h1>
-
-        <p className="hero-text-dash">
-          Tienes {pendientes.length} {pendientes.length === 1 ? "caso asignado" : "casos asignados"} en proceso. Este es el resumen de tu turno.
-        </p>
-
-        <a
-          href="#mis-atenciones"
-          className="btn btn-light rounded-pill fw-bold mt-3 hero-cta-dash"
-        >
-          <span className="dot-danger-dash" />
-          {" "}Ver mis casos
-        </a>
+        <div className="eyebrow-dash eyebrow-img-dash"><i className="bi bi-shield-check me-2" />PANEL DEL AGENTE · {fecha}</div>
+        <h1 className="hero-title-dash">¡Bienvenido,<br />{nombre}!</h1>
+        <p className="hero-text-dash">Tienes {pendientes.length} {pendientes.length === 1 ? "caso asignado" : "casos asignados"} en proceso. Este es el resumen de tu turno.</p>
+        <a href="#mis-atenciones" className="btn btn-light rounded-pill fw-bold mt-3 hero-cta-dash"><span className="dot-danger-dash" /> Ver mis casos</a>
       </div>
 
-      {cargando && (
-        <div className="alert alert-info" role="status">
-          Cargando información desde la API...
-        </div>
-      )}
-
-      {error && (
-        <div className="alert alert-danger" role="alert">
-          <i className="bi bi-exclamation-triangle me-2" />
-          {error}
-        </div>
-      )}
+      {cargando && <div className="alert alert-info" role="status">Cargando información desde la API...</div>}
+      {errores.length > 0 && <div className="alert alert-danger" role="alert"><i className="bi bi-exclamation-triangle me-2" />{errores.join(" | ")}</div>}
 
       <div className="row g-3 mb-4">
-        <KpiCard
-          variante="panel"
-          color="red"
-          valor={pendientes.length}
-          label="Casos asignados"
-          icono="bi-file-earmark-text"
-        />
-
-        <KpiCard
-          variante="panel"
-          color="blue"
-          valor={atenciones.length}
-          label="Total de casos"
-          icono="bi-clipboard-data"
-        />
-
-        <KpiCard
-          variante="panel"
-          color="green"
-          valor={terminadas.length}
-          label="Casos resueltos"
-          icono="bi-check2-circle"
-        />
-
-        <KpiCard
-          variante="panel"
-          color="amber"
-          valor={
-            resumen?.agente?.estadoAgente ||
-            "Sin estado"
-          }
-          label="Mi estado"
-          icono="bi-shield-check"
-        />
+        <KpiCard variante="panel" color="red" valor={pendientes.length} label="Casos asignados" icono="bi-file-earmark-text" />
+        <KpiCard variante="panel" color="blue" valor={atenciones.length} label="Total de casos" icono="bi-clipboard-data" />
+        <KpiCard variante="panel" color="green" valor={terminadas.length} label="Casos resueltos" icono="bi-check2-circle" />
+        <KpiCard variante="panel" color="amber" valor={estado} label="Mi estado" icono="bi-shield-check" />
       </div>
 
       <section id="mis-atenciones">
-        <div className="sec-head-ag">
-          <h2>Mis casos asignados</h2>
-          <a className="see-all-dash" href="/transito/agente/grupo">Ver todos <i className="bi bi-chevron-right" /></a>
-        </div>
-
+        <div className="sec-head-ag"><h2>Mis casos asignados</h2><a className="see-all-dash" href="/transito/agente/grupo">Ver todos <i className="bi bi-chevron-right" /></a></div>
         <div className="panel-ag mb-4">
-          <div className="table-responsive">
-            <table className="tabla-ag">
-              <thead>
-                <tr>
-                  <th>Atención</th>
-                  <th>Alerta</th>
-                  <th>Fecha</th>
-                  <th>Estado</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {pendientes.map((atencion, indice) => (
-                  <tr
-                    key={
-                      atencion.idAtencionTransito ?? indice
-                    }
-                    className="caso-row-ag"
-                  >
-                    <td>
-                      #{atencion.idAtencionTransito}
-                    </td>
-
-                    <td>
-                      #{atencion.idAlerta ?? "—"}
-                    </td>
-
-                    <td>
-                      {fechaAtencion(
-                        atencion.fechaAtencion
-                      )}
-                    </td>
-
-                    <td>
-                      <span className="badge-dash badge-amber-dash">
-                        En proceso
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {pendientes.length === 0 && (
-            <p className="text-center text-muted small p-3 mb-0">
-              {cargando
-                ? "Consultando atenciones..."
-                : "No hay atenciones en proceso para mostrar."}
-            </p>
-          )}
+          <div className="px-3 pt-3"><input className="form-control rounded-pill" aria-label="Filtrar casos" placeholder="Filtrar casos por número, alerta o estado..." value={busqueda} onChange={(e) => setBusqueda(e.target.value)} /></div>
+          <div className="table-responsive"><table className="tabla-ag"><thead><tr><th>Atención</th><th>Alerta</th><th>Fecha</th><th>Estado</th></tr></thead><tbody>
+            {visibles.map((a, i) => <tr key={a.idAtencionTransito ?? i} className="caso-row-ag"><td>#{a.idAtencionTransito ?? "—"}</td><td>#{a.idAlerta ?? "—"}</td><td>{fechaAtencion(a.fechaAtencion)}</td><td><span className={`estado-badge-ag ${claseEstado(a)}`}>{estadoTexto(a)}</span></td></tr>)}
+          </tbody></table></div>
+          {visibles.length === 0 && <p className="text-center text-muted small p-3 mb-0">{cargando ? "Consultando atenciones..." : "No hay casos asignados en proceso para mostrar."}</p>}
         </div>
       </section>
 
-      <div className="sec-head-ag">
-        <h2 className="titulos-ag">
-          Mapa en tiempo real
-        </h2>
-      </div>
-
+      <div className="sec-head-ag"><h2 className="titulos-ag">Mapa en tiempo real</h2></div>
       <div className="panel-ag mb-4">
-        <div className="mapa-canvas-ag">
-          <svg
-            className="base-ag"
-            viewBox="0 0 600 320"
-            preserveAspectRatio="none"
-            role="img"
-            aria-label="Mapa de referencia de la zona"
-          >
-            <rect
-              width="600"
-              height="320"
-              fill="#eef2e6"
-            />
-
-            <ellipse
-              cx="470"
-              cy="70"
-              rx="110"
-              ry="80"
-              fill="#dcead2"
-            />
-
-            <ellipse
-              cx="90"
-              cy="240"
-              rx="100"
-              ry="90"
-              fill="#dcead2"
-            />
-
-            <path
-              d="M560,0 C500,60 520,140 470,200 C430,250 460,300 420,320 L600,320 L600,0 Z"
-              fill="#cfe6f0"
-            />
-
-            <g stroke="#d7d2c2" strokeWidth="6">
-              <line x1="0" y1="80" x2="600" y2="80" />
-              <line x1="0" y1="170" x2="600" y2="170" />
-              <line x1="0" y1="250" x2="600" y2="250" />
-              <line x1="120" y1="0" x2="120" y2="320" />
-              <line x1="260" y1="0" x2="260" y2="320" />
-              <line x1="400" y1="0" x2="400" y2="320" />
-            </g>
-
-            <line
-              x1="0"
-              y1="130"
-              x2="600"
-              y2="200"
-              stroke="#e7c98a"
-              strokeWidth="9"
-            />
-          </svg>
-          <div className="map-pin-ag" style={{ left: "20%", top: "28%" }}><span className="dot-ag amber" /></div>
-          <div className="map-pin-ag" style={{ left: "44%", top: "20%" }}><span className="dot-ag blue" /></div>
-          <div className="map-pin-ag" style={{ left: "66%", top: "35%" }}><span className="dot-ag purple" /></div>
-          <div className="map-pin-ag" style={{ left: "35%", top: "62%" }}><span className="dot-ag green" /></div>
+        <div className="mapa-canvas-ag d-flex align-items-center justify-content-center text-center p-4" style={{ minHeight: 220, background: "#f3f7fc" }}>
+          <div><i className="bi bi-geo-alt text-primary fs-2" /><p className="mb-0 mt-2 text-muted">Las ubicaciones aparecerán cuando la API proporcione coordenadas de los casos.</p></div>
         </div>
-
-        <div className="map-legend-ag">
-          <b>Mis casos</b>
-
-          <p className="text-muted small mb-0">
-            Vista ilustrativa de las vías. Las ubicaciones de los casos dependen de la información disponible en la API.
-          </p>
-        </div>
+        <div className="map-legend-ag"><b>Mis casos</b><p className="text-muted small mb-0">No se muestran marcadores ficticios.</p></div>
       </div>
 
-      <div className="sec-head-ag">
-        <h2 className="titulos-ag">Mi grupo</h2>
-        <a className="see-all-dash" href="/transito/agente/grupo">Ver grupo <i className="bi bi-chevron-right" /></a>
-      </div>
-
+      <div className="sec-head-ag"><h2 className="titulos-ag">Mi grupo</h2><a className="see-all-dash" href="/transito/agente/grupo">Ver grupo <i className="bi bi-chevron-right" /></a></div>
       <div className="grupo-ag mb-4">
-        <div className="companero-row-ag">
-          <span className="nombre-ag fw-semibold">
-            {grupo?.unidad?.nombre ||
-              "Sin unidad asignada"}
-          </span>
-
-          <span className="estado-mini-ag estado-verde-ag">
-            {integrantes.length} integrantes
-          </span>
-        </div>
-
-        {integrantes.map((integrante, indice) => (
-          <div
-            key={integrante.idUsuario ?? indice}
-            className="companero-row-ag"
-          >
-            <span className="nombre-ag">
-              {integrante.nombreUsuario ||
-                integrante.username ||
-                `Agente #${integrante.idUsuario ?? "—"}`}
-            </span>
-
-            <span className="estado-mini-ag estado-verde-ag">
-              {integrante.estadoAgente ||
-                "Sin estado"}
-            </span>
-          </div>
-        ))}
-
-        {integrantes.length === 0 && (
-          <p className="text-muted small p-3 mb-0">
-            No hay integrantes disponibles.
-          </p>
-        )}
+        <div className="companero-row-ag"><span className="nombre-ag fw-semibold">{nombreGrupo}</span><span className="estado-mini-ag estado-verde-ag">{integrantes.length} integrantes</span></div>
+        {integrantes.map((p, i) => <div key={p.idUsuario ?? i} className="companero-row-ag"><span className="nombre-ag">{nombrePersona(p)}</span><span className={`estado-mini-ag ${["ACTIVO", "DISPONIBLE"].includes(normalizar(p.estadoAgente ?? p.estado)) ? "estado-verde-ag" : "estado-gris-ag"}`}>{p.estadoAgente || p.estado || "Sin estado"}</span></div>)}
+        {integrantes.length === 0 && <p className="text-muted small p-3 mb-0">{cargando ? "Consultando integrantes..." : "No hay integrantes disponibles para esta unidad."}</p>}
       </div>
 
-      <div className="sec-head-ag">
-        <h2 className="titulos-ag">
-          Historial de casos
-        </h2>
-        <a className="see-all-dash" href="/transito/agente/historial">Ver todos <i className="bi bi-chevron-right" /></a>
-      </div>
-
-      <div className="tabs-ag">
-        {[
-          ["todas", "Todas"],
-          ["EN_PROCESO", "En proceso"],
-          ["FINALIZADA", "Finalizadas"],
-        ].map(([id, texto]) => (
-          <button
-            key={id}
-            type="button"
-            className={`tab-ag ${
-              tab === id ? "active-ag" : ""
-            }`}
-            onClick={() => setTab(id)}
-          >
-            {texto} (
-            {id === "todas"
-              ? atenciones.length
-              : atenciones.filter(
-                  (a) => a.estadoFinal === id
-                ).length}
-            )
-          </button>
-        ))}
-      </div>
-
-      <div className="panel-ag">
-        <div className="table-responsive">
-          <table className="tabla-ag">
-            <thead>
-              <tr>
-                <th>Atención</th>
-                <th>Alerta</th>
-                <th>Fecha</th>
-                <th>Estado</th>
-                <th>Descripción</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {historial.map((atencion, indice) => (
-                <tr
-                  key={
-                    atencion.idAtencionTransito ?? indice
-                  }
-                >
-                  <td>
-                    #{atencion.idAtencionTransito}
-                  </td>
-
-                  <td>
-                    #{atencion.idAlerta ?? "—"}
-                  </td>
-
-                  <td>
-                    {fechaAtencion(
-                      atencion.fechaAtencion
-                    )}
-                  </td>
-
-                  <td>
-                    <span
-                      className={`badge-dash badge-${
-                        atencion.estadoFinal ===
-                        "FINALIZADA"
-                          ? "green"
-                          : "amber"
-                      }-dash`}
-                    >
-                      {atencion.estadoFinal ===
-                      "FINALIZADA"
-                        ? "Finalizada"
-                        : atencion.estadoFinal ===
-                          "EN_PROCESO"
-                        ? "En proceso"
-                        : atencion.estadoFinal ||
-                          "Sin estado"}
-                    </span>
-                  </td>
-
-                  <td>
-                    {atencion.descripcion ||
-                      "Sin descripción"}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {historial.length === 0 && (
-          <p className="text-center text-muted small p-3 mb-0">
-            No hay atenciones para este filtro.
-          </p>
-        )}
-
-        <div className="paginacion-ag">
-          <span>
-            Mostrando {historial.length} de{" "}
-            {atenciones.length} atenciones
-          </span>
-        </div>
+      <div className="sec-head-ag"><h2 className="titulos-ag">Historial de casos</h2><a className="see-all-dash" href="/transito/agente/historial">Ver todos <i className="bi bi-chevron-right" /></a></div>
+      <div className="tabs-ag">{[["todas", "Todas", atenciones.length], ["EN_PROCESO", "En proceso", pendientes.length], ["FINALIZADA", "Finalizadas", terminadas.length]].map(([id, texto, cantidad]) => <button key={id} type="button" className={`tab-ag ${tab === id ? "active-ag" : ""}`} onClick={() => setTab(id)}>{texto} ({cantidad})</button>)}</div>
+      <div className="panel-ag"><div className="table-responsive"><table className="tabla-ag"><thead><tr><th>Atención</th><th>Alerta</th><th>Fecha</th><th>Estado</th><th>Descripción</th></tr></thead><tbody>
+        {historial.map((a, i) => <tr key={a.idAtencionTransito ?? i}><td>#{a.idAtencionTransito ?? "—"}</td><td>#{a.idAlerta ?? "—"}</td><td>{fechaAtencion(a.fechaAtencion)}</td><td><span className={`estado-badge-ag ${claseEstado(a)}`}>{estadoTexto(a)}</span></td><td>{a.descripcion || "Sin descripción"}</td></tr>)}
+      </tbody></table></div>
+        {historial.length === 0 && <p className="text-center text-muted small p-3 mb-0">No hay atenciones para este filtro.</p>}
+        <div className="paginacion-ag"><span>Mostrando {historial.length} de {atenciones.length} atenciones</span></div>
       </div>
     </Layout>
   );

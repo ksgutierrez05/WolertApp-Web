@@ -641,3 +641,27 @@
 
 
 }
+
+
+/* ==========================================
+   HERO MI GRUPO - TIPOGRAFÍA DE PRINCIPAL
+========================================== */
+
+.ag .hero-page-img-dash .hero-page-title-dash {
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(32px, 3.4vw, 46px);
+  font-weight: 800;
+  line-height: 1.12;
+  letter-spacing: -0.035em;
+
+  color: #ffffff;
+  max-width: 680px;
+  margin: 18px 0 10px;
+}
+
+/* Adaptación para celulares */
+@media (max-width: 768px) {
+  .ag .hero-page-img-dash .hero-page-title-dash {
+    font-size: 32px;
+  }
+}

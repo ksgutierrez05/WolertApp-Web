@@ -9,6 +9,7 @@ import './css/transito/director-transito/panel-principal.css';
 import './css/transito/director-transito/panel-casos.css';
 import './css/transito/director-transito/panel-agentes.css';
 import './css/transito/director-transito/panel-semaforos.css';
+import './css/transito/director-transito/panel-unidades.css';
 import './css/transito/director-transito/panel-reportes.css';
 import './css/transito/director-transito/panel-catalogo.css';
 import './css/transito/director-transito/panel-configuracion.css';
@@ -22,6 +23,8 @@ import './css/transito/central-transito/panel-configuracion.css';
 import './css/transito/agente-transito/panel-principal.css';
 import './css/transito/agente-transito/panel-grupo.css';
 import './css/transito/agente-transito/panel-historial.css';
+import './css/transito/central-transito/panel-atencion-transito.css';
+
 
 import App from './App';
 

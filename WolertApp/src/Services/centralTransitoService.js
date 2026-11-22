@@ -1,15 +1,11 @@
-
 import { consultarTransito } from "../Services/transitoApi";
-
 const RUTAS = {
-
   agentes: "/api/AgentesTransitoes",
   unidades: "/api/UnidadTransitoes",
   atenciones: "/api/AtencionesTransito",
   alertas: "/api/Alertas",
-  tiposAlerta: "/api/TipoAlertas",
+  tiposAlerta: "/api/TiposAlerta",
 };
-
 function convertirLista(datos) {
   if (Array.isArray(datos)) return datos;
   if (Array.isArray(datos?.items)) return datos.items;
@@ -19,31 +15,26 @@ function convertirLista(datos) {
   if (datos == null) return [];
   throw new Error("La API no devolvió una lista válida.");
 }
-
 export async function listarAgentesCentral() {
   return convertirLista(
     await consultarTransito(RUTAS.agentes)
   );
 }
-
 export async function listarUnidadesCentral() {
   return convertirLista(
     await consultarTransito(RUTAS.unidades)
   );
 }
-
 export async function listarAtencionesCentral() {
   return convertirLista(
     await consultarTransito(RUTAS.atenciones)
   );
 }
-
 export async function listarAlertasCentral() {
   return convertirLista(
     await consultarTransito(RUTAS.alertas)
   );
 }
-
 export function normalizarCentral(valor) {
   return String(valor ?? "")
     .normalize("NFD")
@@ -51,7 +42,6 @@ export function normalizarCentral(valor) {
     .trim()
     .toUpperCase();
 }
-
 export function idAgenteCentral(agente) {
   return (
     agente?.idAgenteTransito ??
@@ -61,7 +51,6 @@ export function idAgenteCentral(agente) {
     null
   );
 }
-
 export function idUnidadCentral(unidad) {
   return (
     unidad?.idUnidadTransito ??
@@ -70,7 +59,6 @@ export function idUnidadCentral(unidad) {
     null
   );
 }
-
 export function idAlertaCentral(alerta) {
   return (
     alerta?.idAlerta ??
@@ -79,7 +67,6 @@ export function idAlertaCentral(alerta) {
     null
   );
 }
-
 export function idAtencionCentral(atencion) {
   return (
     atencion?.idAtencionTransito ??
@@ -88,7 +75,6 @@ export function idAtencionCentral(atencion) {
     null
   );
 }
-
 export function nombreAgenteCentral(agente) {
   return (
     agente?.nombreUsuario ||
@@ -99,7 +85,6 @@ export function nombreAgenteCentral(agente) {
     "Agente sin nombre"
   );
 }
-
 export function inicialesCentral(nombre) {
   return String(nombre || "A")
     .trim()
@@ -109,7 +94,6 @@ export function inicialesCentral(nombre) {
     .join("")
     .toUpperCase();
 }
-
 export function obtenerUnidadDeAgente(
   agente,
   unidades = []
@@ -117,14 +101,12 @@ export function obtenerUnidadDeAgente(
   const id =
     agente?.unidadTransitoId ??
     agente?.idUnidadTransito;
-
   return unidades.find(
     (unidad) =>
       id != null &&
       String(idUnidadCentral(unidad)) === String(id)
   ) || null;
 }
-
 export function nombreUnidadCentral(
   agente,
   unidades = []
@@ -133,7 +115,6 @@ export function nombreUnidadCentral(
     agente,
     unidades
   );
-
   return (
     unidad?.nombre ||
     unidad?.nombreUnidad ||
@@ -141,13 +122,11 @@ export function nombreUnidadCentral(
     "Sin grupo asignado"
   );
 }
-
 export function zonaCentral(agente, unidades = []) {
   const unidad = obtenerUnidadDeAgente(
     agente,
     unidades
   );
-
   return (
     unidad?.nombreBarrio ||
     unidad?.nombreComuna ||
@@ -157,12 +136,10 @@ export function zonaCentral(agente, unidades = []) {
     "Sin zona registrada"
   );
 }
-
 export function finalizadaCentral(atencion) {
   const estado = normalizarCentral(
     atencion?.estadoFinal ?? atencion?.estado
   );
-
   return [
     "FINALIZADA",
     "FINALIZADO",
@@ -173,18 +150,15 @@ export function finalizadaCentral(atencion) {
     "ATENDIDA",
   ].includes(estado);
 }
-
 export function atencionesDeAgenteCentral(
   agente,
   atenciones = []
 ) {
   const id = idAgenteCentral(agente);
-
   return atenciones.filter((atencion) => {
     const asignado =
       atencion?.idAgenteTransito ??
       atencion?.agenteTransitoId;
-
     return (
       id != null &&
       asignado != null &&
@@ -192,7 +166,6 @@ export function atencionesDeAgenteCentral(
     );
   });
 }
-
 export function estadoAgenteCentral(
   agente,
   atenciones = []
@@ -200,7 +173,6 @@ export function estadoAgenteCentral(
   const estado = normalizarCentral(
     agente?.estadoAgente ?? agente?.estado
   );
-
   if (
     [
       "INACTIVO",
@@ -212,14 +184,11 @@ export function estadoAgenteCentral(
   ) {
     return "no-disponible";
   }
-
   const ocupado = atencionesDeAgenteCentral(
     agente,
     atenciones
   ).some((atencion) => !finalizadaCentral(atencion));
-
   if (ocupado) return "atencion";
-
   if (
     ["ACTIVO", "DISPONIBLE", "EN_SERVICIO"].includes(
       estado
@@ -227,10 +196,8 @@ export function estadoAgenteCentral(
   ) {
     return "disponible";
   }
-
   return "desconocido";
 }
-
 export function fechaRegistroCentral(registro) {
   return (
     registro?.fechaReporte ||
@@ -242,16 +209,12 @@ export function fechaRegistroCentral(registro) {
     null
   );
 }
-
 export function fechaCentral(valor) {
   if (!valor) return "Sin fecha";
-
   const fecha = new Date(valor);
-
   if (Number.isNaN(fecha.getTime())) {
     return "Fecha no disponible";
   }
-
   return fecha.toLocaleString("es-CO", {
     day: "2-digit",
     month: "2-digit",
@@ -260,7 +223,6 @@ export function fechaCentral(valor) {
     minute: "2-digit",
   });
 }
-
 export function tipoCentral(registro) {
   return (
     registro?.nombreTipoAlerta ||
@@ -271,7 +233,6 @@ export function tipoCentral(registro) {
     "Sin tipo registrado"
   );
 }
-
 export function lugarCentral(registro) {
   return (
     registro?.direccion ||
@@ -282,7 +243,6 @@ export function lugarCentral(registro) {
     "Ubicación no registrada"
   );
 }
-
 export function reportanteCentral(registro) {
   return (
     registro?.nombreReportante ||
@@ -292,47 +252,36 @@ export function reportanteCentral(registro) {
     "No registrado"
   );
 }
-
 export function badgeTipoCentral(tipo) {
   const valor = normalizarCentral(tipo);
-
   if (
     valor.includes("ACCIDENTE") ||
     valor.includes("CHOQUE")
   ) {
     return "red";
   }
-
   if (valor.includes("SEMAFORO")) {
     return "amber";
   }
-
   return "blue";
 }
-
 export function tiempoEsperaCentral(valor) {
   if (!valor) return "Sin fecha";
-
   const fecha = new Date(valor);
-
   if (Number.isNaN(fecha.getTime())) {
     return "Sin fecha";
   }
-
   const minutos = Math.max(
     0,
     Math.floor(
       (Date.now() - fecha.getTime()) / 60000
     )
   );
-
   if (minutos < 60) return `${minutos} min`;
-
   return `${Math.floor(minutos / 60)} h ${
     minutos % 60
   } min`;
 }
-
 export function prepararColaCentral(
   alertas = [],
   atenciones = []
@@ -347,7 +296,6 @@ export function prepararColaCentral(
       .filter((id) => id != null)
       .map(String)
   );
-
   const cerrados = [
     "FINALIZADA",
     "FINALIZADO",
@@ -357,13 +305,11 @@ export function prepararColaCentral(
     "CERRADO",
     "ATENDIDA",
   ];
-
   return alertas.filter((alerta) => {
     const id = idAlertaCentral(alerta);
     const estado = normalizarCentral(
       alerta?.estadoAlerta ?? alerta?.estado
     );
-
     return (
       id != null &&
       !asignadas.has(String(id)) &&
@@ -371,7 +317,6 @@ export function prepararColaCentral(
     );
   });
 }
-
 export function prepararAgentesCentral(
   agentes = [],
   unidades = [],
@@ -386,7 +331,6 @@ export function prepararAgentesCentral(
     const actual = casos.find(
       (caso) => !finalizadaCentral(caso)
     );
-
     return {
       id: idAgenteCentral(agente),
       nombre,
@@ -413,7 +357,6 @@ export function prepararAgentesCentral(
     };
   });
 }
-
 export function prepararGruposCentral(
   unidades = [],
   agentes = [],
@@ -421,25 +364,21 @@ export function prepararGruposCentral(
 ) {
   return unidades.map((unidad) => {
     const id = idUnidadCentral(unidad);
-
     const integrantes = agentes.filter((agente) => {
       const idGrupo =
         agente?.unidadTransitoId ??
         agente?.idUnidadTransito;
-
       return (
         id != null &&
         idGrupo != null &&
         String(idGrupo) === String(id)
       );
     });
-
     const disponibles = integrantes.filter(
       (agente) =>
         estadoAgenteCentral(agente, atenciones) ===
         "disponible"
     ).length;
-
     return {
       id,
       nombre:
@@ -452,7 +391,46 @@ export function prepararGruposCentral(
         "Sin zona registrada",
       totalAgentes: integrantes.length,
       disponibles,
-      disponible: disponibles > 0,
+      estadoUnidad: estadoUnidadCentral(unidad),
+      disponible: estadoUnidadCentral(unidad) === "OPERATIVA",
     };
   });
+}
+export async function asignarGrupoCentral(
+  idAlerta,
+  nombreUnidad,
+  observacion = ""
+) {
+  return consultarTransito("/api/Asignaciones/manual", {
+    method: "POST",
+    body: JSON.stringify({
+      idAlerta,
+      nombreUnidad,
+      observacion,
+    }),
+  });
+}
+export async function listarTiposAlertaCentral() {
+  return convertirLista(await consultarTransito(RUTAS.tiposAlerta));
+}
+export function estadoAlertaCentral(alerta) {
+  return normalizarCentral(alerta?.estadoAlerta ?? alerta?.estado ?? "");
+}
+export function centralResponsableAlerta(alerta, tipos = []) {
+  const idTipo = alerta?.idTipoAlerta ?? alerta?.tipoAlertaId ?? alerta?.tipoAlerta?.idTipoAlerta;
+  const tipo = tipos.find(t => idTipo != null && String(t?.idTipoAlerta ?? t?.tipoAlertaId ?? t?.id) === String(idTipo));
+  return normalizarCentral(
+    alerta?.centralResponsable ?? alerta?.central_responsable ??
+    alerta?.tipoAlerta?.centralResponsable ?? tipo?.centralResponsable ?? tipo?.central_responsable
+  );
+}
+export function prepararCasosAsignablesCentral(alertas = [], tipos = []) {
+  return alertas.filter(alerta =>
+    idAlertaCentral(alerta) != null &&
+    estadoAlertaCentral(alerta) === "PENDIENTE" &&
+    centralResponsableAlerta(alerta, tipos) === "TRANSITO"
+  );
+}
+export function estadoUnidadCentral(unidad) {
+  return normalizarCentral(unidad?.estado ?? unidad?.estadoUnidad ?? unidad?.estadoUnidadTransito);
 }

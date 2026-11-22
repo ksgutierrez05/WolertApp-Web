@@ -1,48 +1,36 @@
-@scope (.dt) {
-/* ==========================================================================
-   WolertApp - Panel de Semáforos
-   Misma identidad visual que panel-casos.css (Director de Tránsito)
-   ========================================================================== */
-
-.section-title-dash {
-  font-family: 'Inter', sans-serif;
+/** Panel de semáforos - estilos originales y diseño de tabla tipo Unidades **/
+.sem-panel .section-title-dash {
+  font-family: "Inter", sans-serif;
   font-weight: 700;
   font-size: 26px;
   color: #182339;
   margin-bottom: 4px;
 }
-
-.section-text-dash {
+.sem-panel .section-text-dash {
   color: #6b7a90;
   font-size: 14px;
 }
-
-/* ------------------------------- Botón primario ------------------------------- */
-
-.btn-primario-dash {
-  background:#782b2b;;
+.sem-panel .btn-primario-dash {
+  background: #782b2b;
   border: none;
-  color: #ffffff;
+  color: #fff;
   font-weight: 600;
   font-size: 14px;
   padding: 6px 16px;
   border-radius: 20px;
-  transition: filter 0.15s ease, transform 0.1s ease;
+  transition:
+    filter 0.15s ease,
+    transform 0.1s ease;
 }
-
-.btn-primario-dash:hover {
+.sem-panel .btn-primario-dash:hover {
   filter: brightness(1.05);
-  color: #ffffff;
+  color: #fff;
   background: #974646;
 }
-
-.btn-primario-dash:active {
+.sem-panel .btn-primario-dash:active {
   transform: scale(0.98);
 }
-
-/* ---------------------------------- KPIs ---------------------------------- */
-
-.kpi-card-dash {
+.sem-panel .kpi-card-dash {
   position: relative;
   overflow: hidden;
   border-radius: 14px;
@@ -52,32 +40,31 @@
   justify-content: space-between;
   box-shadow: 0 2px 6px rgba(16, 30, 54, 0.06);
 }
-
-.border-blue-dash,
-.border-green-dash,
-.border-red-dash,
-.border-amber-dash {
-  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-2));
+.sem-panel .border-blue-dash,
+.sem-panel .border-green-dash,
+.sem-panel .border-red-dash,
+.sem-panel .border-amber-dash {
+  background: linear-gradient(
+    135deg,
+    var(--color-primary),
+    var(--color-primary-2)
+  );
 }
-
-.kpi-content-dash {
+.sem-panel .kpi-content-dash {
   position: relative;
   z-index: 2;
 }
-
-.kpi-value-dash {
+.sem-panel .kpi-value-dash {
   font-size: 26px;
   font-weight: 700;
-  color: #ffffff;
+  color: #fff;
 }
-
-.kpi-label-dash {
+.sem-panel .kpi-label-dash {
   font-size: 13px;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.456);
+  color: rgba(255, 255, 255, 0.65);
 }
-
-.kpi-icon-box-dash {
+.sem-panel .kpi-icon-box-dash {
   position: absolute;
   right: 20px;
   top: 50%;
@@ -87,23 +74,18 @@
   z-index: 1;
   color: rgba(255, 255, 255, 0.775);
 }
-
-/* ------------------------------- Tarjeta tabla ------------------------------- */
-
-.table-card-dash {
-  background-color: #ffffff;
+.sem-panel .table-card-dash {
+  background: #fff;
   border-radius: 14px;
   padding: 18px 20px;
   box-shadow: 0 2px 6px rgba(16, 30, 54, 0.06);
 }
-
-.tabs-dash {
+.sem-panel .tabs-dash {
   flex-wrap: wrap;
 }
-
-.tab-dash-sem {
+.sem-panel .tab-dash-sem {
   border: none;
-  background-color: #eef1f8;
+  background: #eef1f8;
   color: #6b7a90;
   font-weight: 600;
   font-size: 13px;
@@ -111,13 +93,11 @@
   border-radius: 20px;
   cursor: pointer;
 }
-
-.tab-dash-sem.active-dash {
-  background-color: var(--color-primary);
-  color: #ffffff;
+.sem-panel .tab-dash-sem.active-dash {
+  background: var(--color-primary);
+  color: #fff;
 }
-
-.table-card-dash table th {
+.sem-panel .table-card-dash table th {
   font-size: 12px;
   text-transform: uppercase;
   color: #8a97ab;
@@ -125,34 +105,37 @@
   border-bottom: 1px solid #eef1f5;
   padding: 12px 8px;
 }
-
-.table-card-dash table td {
+.sem-panel .table-card-dash table td {
   padding: 14px 8px;
   border-bottom: 1px solid #f2f4f8;
   font-size: 14px;
   color: #182339;
 }
-
-/* ------------------------------- Badges de estado ------------------------------- */
-
-.badge-estado-dash {
+.sem-panel .badge-estado-dash {
   padding: 4px 12px;
   border-radius: 20px;
   font-size: 12px;
   font-weight: 600;
 }
-
-.estado-atencion-dash  { background-color: #fdf3e0; color: #cf8a08; } /* mantenimiento */
-.estado-critica-dash   { background-color: #fdecec; color: #d9364a; } /* dañado */
-.estado-camino-dash    { background-color: #eaf1fe; color: #2f6fed; }
-.estado-resuelta-dash  { background-color: #e9f8ee; color: #2fa84f; } /* funcionando */
-
-
-/* ------------------------------- Íconos de acciones ------------------------------- */
-
-.btn-icono-dash {
+.sem-panel .estado-atencion-dash {
+  background: #fdf3e0;
+  color: #cf8a08;
+}
+.sem-panel .estado-critica-dash {
+  background: #fdecec;
+  color: #d9364a;
+}
+.sem-panel .estado-camino-dash {
+  background: #eaf1fe;
+  color: #2f6fed;
+}
+.sem-panel .estado-resuelta-dash {
+  background: #e9f8ee;
+  color: #2fa84f;
+}
+.sem-panel .btn-icono-dash {
   border: none;
-  background-color: transparent;
+  background: transparent;
   width: 30px;
   height: 30px;
   border-radius: 8px;
@@ -161,75 +144,62 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.15s ease, color 0.15s ease;
+  transition:
+    background 0.15s,
+    color 0.15s;
 }
-
-.btn-icono-dash:hover {
-  background-color: #eef1f8;
+.sem-panel .btn-icono-dash:hover {
+  background: #eef1f8;
 }
-
-.btn-icono-editar-dash:hover {
+.sem-panel .btn-icono-editar-dash:hover {
   color: #2f6fed;
 }
-
-.btn-icono-eliminar-dash:hover {
+.sem-panel .btn-icono-eliminar-dash:hover {
   color: #d9364a;
 }
-
-.btn-light.btn-sm {
+.sem-panel .btn-light.btn-sm {
   padding: 6px 12px;
   border-radius: 20px;
   font-size: 12px;
   font-weight: 600;
   color: #6b7a90;
 }
-
-.btn-light.btn-sm:hover {
-  background-color: var(--color-primary);
-  color: #fcfcfc;
+.sem-panel .btn-light.btn-sm:hover {
+  background: var(--color-primary);
+  color: #fff;
 }
-
-/* --------------------------------- Paginación --------------------------------- */
-
-.paginacion-dash {
+.sem-panel .paginacion-dash {
   border-top: 1px solid #eef1f5;
 }
-
-.page-btn-dash {
+.sem-panel .page-btn-dash {
   width: 32px;
   height: 32px;
   border: 1px solid #eef1f5;
-  background-color: #ffffff;
+  background: #fff;
   color: #6b7a90;
   border-radius: 8px;
   font-size: 13px;
 }
-
-.page-btn-dash.active-dash {
-  background-color: var(--color-primary);
-  color: #ffffff;
+.sem-panel .page-btn-dash.active-dash {
+  background: var(--color-primary);
+  color: #fff;
   border-color: var(--color-primary);
 }
-
-/* --------------------------------- Filtros --------------------------------- */
-
-.filtros-titulo-dash {
-  font-family: 'Inter', sans-serif;
+.sem-panel .filtros-titulo-dash {
+  font-family: "Inter", sans-serif;
   font-weight: 700;
   font-size: 16px;
   color: #182339;
   margin-bottom: 16px;
 }
-
-.filtros-subtitulo-dash {
+.sem-panel .filtros-subtitulo-dash {
   font-size: 12px;
   text-transform: uppercase;
   font-weight: 700;
   color: #8a97ab;
   margin-bottom: 8px;
 }
-
-.filtros-fila-dash {
+.sem-panel .filtros-fila-dash {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -237,95 +207,344 @@
   padding-bottom: 16px;
   border-bottom: 1px solid #eef1f5;
 }
-
-.filtros-busqueda-dash {
+.sem-panel .filtros-busqueda-dash {
   flex: 1 1 260px;
   max-width: 320px;
-  background-color: #f7f8fb;
+  background: #f7f8fb;
   border-radius: 10px;
 }
-
-/* Pills de filtro por estado (panel lateral / topbar de filtros) */
-.pill-filtro-dash {
+.sem-panel .pill-filtro-dash {
   border: 1px solid transparent;
   border-radius: 20px;
   padding: 6px 14px;
   font-size: 12px;
   font-weight: 600;
-  background-color: #eef1f8;
+  background: #eef1f8;
   color: #6b7a90;
   cursor: pointer;
-  transition: filter 0.15s ease, transform 0.1s ease;
+  transition:
+    filter 0.15s,
+    transform 0.1s;
 }
-
-.pill-filtro-dash:hover {
+.sem-panel .pill-filtro-dash:hover {
   filter: brightness(0.97);
 }
-
-.pill-filtro-dash:active {
+.sem-panel .pill-filtro-dash:active {
   transform: scale(0.97);
 }
-
-.pill-funcionando-dash.pill-activa-dash   { background-color: #e9f8ee; color: #2fa84f; border-color: #2fa84f; }
-.pill-danado-dash.pill-activa-dash        { background-color: #fdecec; color: #d9364a; border-color: #d9364a; }
-.pill-mantenimiento-dash.pill-activa-dash { background-color: #fdf3e0; color: #cf8a08; border-color: #cf8a08; }
-
-/* ==========================================================================
-   Modal: Crear / Editar semáforo
-   ========================================================================== */
-
-.modal-dash .modal-content {
+.sem-panel .pill-funcionando-dash.pill-activa-dash {
+  background: #e9f8ee;
+  color: #2fa84f;
+  border-color: #2fa84f;
+}
+.sem-panel .pill-danado-dash.pill-activa-dash {
+  background: #fdecec;
+  color: #d9364a;
+  border-color: #d9364a;
+}
+.sem-panel .pill-mantenimiento-dash.pill-activa-dash {
+  background: #fdf3e0;
+  color: #cf8a08;
+  border-color: #cf8a08;
+}
+.sem-panel .modal-dash .modal-content {
   border: none;
   border-radius: 16px;
   overflow: hidden;
 }
-
-.modal-dash .modal-header {
+.sem-panel .modal-dash .modal-header {
   border-bottom: 1px solid #eef1f5;
   padding: 20px 24px;
 }
-
-.modal-dash .modal-title {
-  font-family: 'Inter', sans-serif;
+.sem-panel .modal-dash .modal-title {
+  font-family: "Inter", sans-serif;
   font-weight: 700;
   font-size: 18px;
   color: #182339;
 }
-
-.modal-dash .modal-body {
+.sem-panel .modal-dash .modal-body {
   padding: 22px 24px 6px;
 }
-
-.modal-dash .modal-footer {
+.sem-panel .modal-dash .modal-footer {
   border-top: 1px solid #eef1f5;
   padding: 16px 24px;
 }
-
-.form-label-dash {
+.sem-panel .form-label-dash {
   font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
   color: #8a97ab;
   margin-bottom: 6px;
 }
-
-.form-control-dash {
+.sem-panel .form-control-dash {
   border: 1px solid #eef1f5;
-  background-color: #f7f8fb;
+  background: #f7f8fb;
   border-radius: 10px;
   padding: 10px 14px;
   font-size: 14px;
   color: #182339;
 }
-
-.form-control-dash:focus {
+.sem-panel .form-control-dash:focus {
   border-color: var(--color-primary);
-  background-color: #ffffff;
+  background: #fff;
   box-shadow: 0 0 0 3px rgba(47, 111, 237, 0.15);
 }
-
-.form-control-dash[readonly] {
+.sem-panel .form-control-dash[readonly] {
   color: #8a97ab;
   cursor: not-allowed;
 }
+/** Perfil con icono de semáforo **/
+.sem-panel .sem-tabla tbody tr:hover {
+  background: #fafcff;
+}
+.sem-panel .sem-tabla tbody td {
+  padding-top: 18px;
+  padding-bottom: 18px;
+  vertical-align: middle;
+}
+.sem-panel .sem-perfil {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 190px;
+}
+.sem-panel .sem-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  border-radius: 50%;
+  background: #e7f1ff;
+  color: #2f6fed;
+  font-size: 19px;
+}
+.sem-panel .sem-perfil-datos {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.sem-panel .sem-codigo {
+  font-family: "Inter", sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: #10213c;
+  white-space: nowrap;
+}
+.sem-panel .sem-id {
+  font-family: "Inter", sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  color: #8190a8;
+}
+.sem-panel .sem-barrio {
+  font-family: "Inter", sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: #10213c;
+}
+.sem-panel .sem-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  border-radius: 50%;
+  font-size: 19px;
+}
+/** Azul **/
+.sem-panel .sem-avatar-0 {
+  background: #e7f1ff;
+  color: #2f6fed;
+}
+/** Verde **/
+.sem-panel .sem-avatar-1 {
+  background: #e1f5e9;
+  color: #2e9e5b;
+}
+/** Amarillo **/
+.sem-panel .sem-avatar-3 {
+  background: #fff1d8;
+  color: #d99b2c;
+}
+/** Rojo **/
+.sem-panel .sem-avatar-4 {
+  background: #fdebec;
+  color: #c34e59;
+}
+/** Pills con puntico y colores pastel **/
+.sem-panel .sem-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: fit-content;
+  padding: 5px 12px;
+  border: none;
+  border-radius: 100px;
+  font-family: "Inter", sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: normal;
+  white-space: nowrap;
+}
+.sem-panel .sem-pill::before {
+  content: "";
+  display: block;
+  width: 6px;
+  height: 6px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: currentColor;
+}
+.sem-panel .sem-pill-funcionando {
+  background: rgba(46, 158, 91, 0.12);
+  color: #2e9e5b;
+}
+.sem-panel .sem-pill-danado {
+  background: rgba(195, 78, 89, 0.12);
+  color: #c34e59;
+}
+.sem-panel .sem-pill-mantenimiento {
+  background: rgba(217, 155, 44, 0.12);
+  color: #b9791f;
+}
+.sem-panel .sem-pill-tipo {
+  background: rgba(47, 111, 237, 0.12);
+  color: #2f6fed;
+}
+/** Acciones pequeñas, iconos gruesos **/
+.sem-panel .sem-acciones {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+}
+.sem-panel .sem-accion-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  padding: 0;
+  border: none;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.sem-panel .sem-accion-btn i {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  line-height: 1;
+  -webkit-text-stroke: 0.5px currentColor;
+}
+.sem-panel .sem-accion-btn.editar {
+  background: #fff4dc;
+  color: #f59e0b;
+}
+.sem-panel .sem-accion-btn.editar:hover {
+  background: #ffe9b3;
+}
+.sem-panel .sem-accion-btn.eliminar {
+  background: #fdebec;
+  color: #dc3545;
+}
+.sem-panel .sem-accion-btn.eliminar:hover {
+  background: #fbd5d9;
+}
+@media (max-width: 768px) {
+  .sem-panel .table-responsive table {
+    min-width: 950px;
+  }
+}
+/** PILLS DE SEMÁFOROS - ALTURA CORREGIDA **/
+.sem-panel .sem-tabla .sem-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: fit-content;
+  height: 34px;
+  min-height: 34px;
+  padding: 0 14px;
+  border: none;
+  border-radius: 100px;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  text-transform: none;
+  box-sizing: border-box;
+}
+.sem-panel .sem-tabla .sem-pill::before {
+  content: "";
+  display: block;
+  width: 6px;
+  height: 6px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background-color: currentColor;
+}
+
+/* Filtros de estado: tamaño y colores pastel como Casos */
+.sem-panel .filtros-fila-dash .pill-filtro-dash {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 34px;
+  padding: 0 16px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  text-transform: none;
+  white-space: nowrap;
+  transition: background-color .2s, border-color .2s, transform .2s;
+}
+.sem-panel .filtros-fila-dash .pill-filtro-dash:not(.pill-todas-dash)::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: currentColor;
+}
+.sem-panel .filtros-fila-dash .pill-todas-dash {
+  background: #eaf0f9;
+  color: #517aac;
+}
+.sem-panel .filtros-fila-dash .pill-funcionando-dash {
+  background: #e2f7eb;
+  color: #20844b;
+}
+.sem-panel .filtros-fila-dash .pill-danado-dash {
+  background: #ffe8e8;
+  color: #c34e59;
+}
+.sem-panel .filtros-fila-dash .pill-mantenimiento-dash {
+  background: #fff3dc;
+  color: #b9791f;
+}
+.sem-panel .filtros-fila-dash .pill-todas-dash.pill-activa-dash { background: #517aac; color: #fff; }
+.sem-panel .filtros-fila-dash .pill-funcionando-dash.pill-activa-dash { border-color: #20844b; }
+.sem-panel .filtros-fila-dash .pill-danado-dash.pill-activa-dash { border-color: #c34e59; }
+.sem-panel .filtros-fila-dash .pill-mantenimiento-dash.pill-activa-dash { border-color: #b9791f; }
+.sem-panel .filtros-fila-dash .pill-filtro-dash:hover { transform: translateY(-1px); }
+.sem-panel .filtros-fila-dash .btn-light.btn-sm {
+  min-height: 34px;
+  border-radius: 999px;
+  padding: 0 16px;
+  background: #eef1f8;
+  color: #517aac;
+  text-transform: none;
 }

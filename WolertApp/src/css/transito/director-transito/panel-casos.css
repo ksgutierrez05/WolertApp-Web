@@ -1,257 +1,1108 @@
 @scope (.dt) {
+
 .section-title-dash {
+
    font-family: 'Inter', sans-serif;
+
   font-weight: 700;
+
   font-size: 26px;
+
   color: #182339;
+
   margin-bottom: 4px;
+
 }
 
 .section-text-dash {
+
   color: #6b7a90;
+
   font-size: 14px;
+
 }
 
 .hero-page-dash {
+
   background: linear-gradient(135deg, var(--color-primary), var(--color-primary-2));
+
   border-radius: 18px;
+
   padding: 28px 32px;
+
   color: #ffffff;
+
 }
 
 .hero-page-title-dash {
+
   font-family: 'Space Grotesk', sans-serif;
+
   font-weight: 700;
+
   font-size: 28px;
+
   margin: 4px 0 6px;
+
 }
 
 .hero-page-text-dash {
+
   color: #cfd9ec;
+
   font-size: 14px;
+
 }
 
 .kpi-card-dash {
+
   position: relative;
+
   overflow: hidden;
+
   border-radius: 14px;
+
   padding: 20px 24px;
+
   display: flex;
+
   align-items: center;
+
   justify-content: space-between;
+
   box-shadow: 0 2px 6px rgba(16, 30, 54, 0.06);
+
 }
 
 .border-blue-dash,
+
 .border-green-dash,
+
 .border-red-dash,
+
 .border-amber-dash {
+
   background: linear-gradient(135deg, var(--color-primary), var(--color-primary-2));
+
 }
 
 .kpi-content-dash {
+
   position: relative;
+
   z-index: 2;
+
 }
 
 .kpi-value-dash {
+
   font-size: 26px;
+
   font-weight: 700;
+
   color: #ffffff;
+
 }
 
 .kpi-label-dash {
+
   font-size: 13px;
+
   font-weight: 600;
+
   color: rgba(255, 255, 255, 0.456);
+
 }
 
 .kpi-icon-box-dash {
+
   position: absolute;
+
   right: 20px;
+
   top: 50%;
+
   transform: translateY(-50%);
+
   font-size: 50px;
+
   line-height: 1;
+
   z-index: 1;
+
   color: rgba(255, 255, 255, 0.775);
+
 }
 
 .table-card-dash {
+
   background-color: #ffffff;
+
   border-radius: 14px;
+
   padding: 18px 20px;
+
   box-shadow: 0 2px 6px rgba(16, 30, 54, 0.06);
+
 }
 
 .tabs-dash {
+
   flex-wrap: wrap;
+
 }
 
 .tab-dash {
+
   border: none;
+
   background-color: #eef1f8;
+
   color: #6b7a90;
+
   font-weight: 600;
+
   font-size: 13px;
+
   padding: 8px 18px;
+
   border-radius: 20px;
+
 }
 
 .tab-dash.active-dash {
+
   background-color: var(--color-primary);
+
   color: #ffffff;
+
 }
 
 .table-card-dash table th {
+
   font-size: 12px;
+
   text-transform: uppercase;
+
   color: #8a97ab;
+
   font-weight: 600;
+
   border-bottom: 1px solid #eef1f5;
+
   padding: 12px 8px;
+
 }
 
 .table-card-dash table td {
+
   padding: 14px 8px;
+
   border-bottom: 1px solid #f2f4f8;
+
   font-size: 14px;
+
   color: #182339;
+
 }
 
 .avatar-icon-dash {
+
   width: 34px;
+
   height: 34px;
+
   border-radius: 50%;
+
   color: #ffffff;
+
   display: flex;
+
   align-items: center;
+
   justify-content: center;
+
   font-size: 12px;
+
   font-weight: 700;
+
 }
 
 .avatar-amber-dash { background-color: #cf8a08; }
+
 .avatar-red-dash { background-color: #d9364a; }
+
 .avatar-blue-dash { background-color: #2f6fed; }
 
 .badge-tipo-dash {
+
   padding: 4px 12px;
+
   border-radius: 20px;
+
   font-size: 11px;
+
   font-weight: 700;
+
 }
 
 .tipo-semaforo-dash { background-color: #fdf3e0; color: #cf8a08; }
+
 .tipo-accidente-dash { background-color: #fdecec; color: #d9364a; }
 
 .badge-estado-dash {
+
   padding: 4px 12px;
+
   border-radius: 20px;
+
   font-size: 12px;
+
   font-weight: 600;
+
 }
 
 .estado-atencion-dash { background-color: #fdf3e0; color: #cf8a08; }
+
 .estado-critica-dash { background-color: #fdecec; color: #d9364a; }
+
 .estado-camino-dash { background-color: #eaf1fe; color: #2f6fed; }
+
 .estado-resuelta-dash { background-color: #e9f8ee; color: #2fa84f; }
 
 .link-detalle-dash {
+
   color: #2f6fed;
+
   font-weight: 600;
+
   font-size: 13px;
+
   text-decoration: none;
+
 }
 
 .link-detalle-dash:hover {
+
   text-decoration: underline;
+
 }
 
 .paginacion-dash {
+
   border-top: 1px solid #eef1f5;
+
 }
 
 .page-btn-dash {
+
   width: 32px;
+
   height: 32px;
+
   border: 1px solid #eef1f5;
+
   background-color: #ffffff;
+
   color: #6b7a90;
+
   border-radius: 8px;
+
   font-size: 13px;
+
 }
 
 .page-btn-dash.active-dash {
+
   background-color: var(--color-primary);
+
   color: #ffffff;
+
   border-color: var(--color-primary);
+
 }
 
 .filtros-titulo-dash {
+
   font-family: 'Inter', sans-serif;
+
   font-weight: 700;
+
   font-size: 16px;
+
   color: #182339;
+
   margin-bottom: 16px;
+
 }
- 
+
 .filtros-subtitulo-dash {
+
   font-size: 12px;
+
   text-transform: uppercase;
+
   font-weight: 700;
+
   color: #8a97ab;
+
   margin-bottom: 8px;
+
 }
- 
+
 .filtros-fila-dash {
+
   display: flex;
+
   align-items: center;
+
   flex-wrap: wrap;
+
   gap: 12px;
+
   padding-bottom: 16px;
+
   border-bottom: 1px solid #eef1f5;
+
 }
- 
+
 .filtros-busqueda-dash {
+
   flex: 1 1 260px;
+
   max-width: 320px;
+
   background-color: #f7f8fb;
+
   border-radius: 10px;
+
 }
- 
+
 .tab-dash {
+
   cursor: pointer;
+
 }
- 
+
 .link-detalle-dash {
+
   cursor: pointer;
+
 }
- 
+
 /* Pills de filtro por estado (panel lateral) */
+
 .pill-filtro-dash {
+
   border: 1px solid transparent;
+
   border-radius: 20px;
+
   padding: 6px 14px;
+
   font-size: 12px;
+
   font-weight: 600;
+
   background-color: #eef1f8;
+
   color: #6b7a90;
+
   cursor: pointer;
+
   transition: filter 0.15s ease, transform 0.1s ease;
+
 }
- 
+
 .pill-filtro-dash:hover {
+
   filter: brightness(0.97);
+
 }
- 
+
 .pill-filtro-dash:active {
+
   transform: scale(0.97);
+
 }
- 
+
 .pill-atencion-dash.pill-activa-dash { background-color: #fdf3e0; color: #cf8a08; border-color: #cf8a08; }
+
 .pill-critica-dash.pill-activa-dash  { background-color: #fdecec; color: #d9364a; border-color: #d9364a; }
+
 .pill-camino-dash.pill-activa-dash   { background-color: #eaf1fe; color: #2f6fed; border-color: #2f6fed; }
+
 .pill-resuelta-dash.pill-activa-dash { background-color: #e9f8ee; color: #2fa84f; border-color: #2fa84f; }
- 
+
+}
+
+/* CASOS DE TRÁNSITO: perfiles y pills de colores */
+
+.dt .casos-tabla .casos-reportante {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 11px;
+
+  min-width: 190px;
+
+}
+
+.dt .casos-tabla .casos-reportante-datos {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 4px;
+
+  min-width: 0;
+
+}
+
+.dt .casos-tabla .casos-avatar {
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  flex: 0 0 38px;
+
+  width: 38px;
+
+  height: 38px;
+
+  border-radius: 50%;
+
+  color: #fff;
+
+  font:
+
+    700 11px "Inter",
+
+    sans-serif;
+
+}
+
+.dt .casos-tabla .casos-avatar-azul {
+
+  background: #3978b8;
+
+}
+
+.dt .casos-tabla .casos-avatar-rojo {
+
+  background: #d9364a;
+
+}
+
+.dt .casos-tabla .casos-avatar-ambar {
+
+  background: #cf8a08;
+
+}
+
+.dt .casos-tabla .casos-avatar-morado {
+
+  background: #8657c5;
+
+}
+
+.dt .casos-tabla .casos-avatar-verde {
+
+  background: #2e9e5b;
+
+}
+
+.dt .casos-tabla .info-title-dash {
+
+  font:
+
+    700 12px "Inter",
+
+    sans-serif;
+
+  color: #10213c;
+
+}
+
+.dt .casos-tabla .info-sub-dash {
+
+  font:
+
+    400 11px "Inter",
+
+    sans-serif;
+
+  color: #8190a8;
+
+}
+
+.dt .casos-tabla .casos-pill {
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  width: fit-content;
+
+  min-height: 30px;
+
+  padding: 6px 13px;
+
+  border: 0;
+
+  border-radius: 100px;
+
+  font:
+
+    700 11px "Inter",
+
+    sans-serif;
+
+  line-height: 1.2;
+
+  white-space: nowrap;
+
+}
+
+.dt .casos-tabla .casos-tipo-semaforo {
+
+  background: #fff1d8;
+
+  color: #b9791f;
+
+}
+
+.dt .casos-tabla .casos-tipo-accidente {
+
+  background: #fdebec;
+
+  color: #c34e59;
+
+}
+
+.dt .casos-tabla .casos-tipo-otro {
+
+  background: #e7f1ff;
+
+  color: #2f6fed;
+
+}
+
+.dt .casos-tabla .estado-atencion-dash {
+
+  background: #fff1d8;
+
+  color: #b9791f;
+
+}
+
+.dt .casos-tabla .estado-critica-dash {
+
+  background: #fdebec;
+
+  color: #c34e59;
+
+}
+
+.dt .casos-tabla .estado-camino-dash {
+
+  background: #e7f1ff;
+
+  color: #2f6fed;
+
+}
+
+.dt .casos-tabla .estado-resuelta-dash {
+
+  background: #e1f5e9;
+
+  color: #2e9e5b;
+
+}
+
+/* Cuatro indicadores en una fila, sin huecos */
+
+.dt .casos-kpis {
+
+  display: grid;
+
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+
+  gap: 16px;
+
+  margin-left: 0;
+
+  margin-right: 0;
+
+}
+
+.dt .casos-kpis > * {
+
+  width: 100%;
+
+  max-width: 100%;
+
+  padding: 0;
+
+  margin: 0;
+
+}
+
+.dt .casos-kpis .kpi-card-dash {
+
+  width: 100%;
+
+  height: 100%;
+
+}
+
+@media (max-width: 1100px) {
+
+  .dt .casos-kpis {
+
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  }
+
+}
+
+@media (max-width: 600px) {
+
+  .dt .casos-kpis {
+
+    grid-template-columns: 1fr;
+
+  }
+
+}
+
+/* Barra única de filtros: buscador, Todas, estados y Limpiar */
+
+.dt .casos-barra-filtros {
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  flex-wrap: wrap;
+
+  gap: 14px;
+
+}
+
+.dt .casos-buscador {
+
+  flex: 1 1 220px;
+
+  min-width: 180px;
+
+  max-width: 330px;
+
+  margin: 0;
+
+}
+
+.dt .casos-filtros-estados {
+
+  display: flex;
+
+  align-items: center;
+
+  flex-wrap: wrap;
+
+  gap: 8px;
+
+}
+
+.dt .casos-filtros-estados .pill-filtro-dash {
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 6px;
+
+  min-height: 34px;
+
+  padding: 7px 13px;
+
+  border: 1px solid transparent;
+
+  border-radius: 999px;
+
+  font:
+
+    700 11px "Inter",
+
+    sans-serif;
+
+  line-height: 1.2;
+
+  white-space: nowrap;
+
+  cursor: pointer;
+
+  transition:
+
+    filter 0.15s,
+
+    box-shadow 0.15s;
+
+}
+
+.dt .casos-filtros-estados .casos-filtro-todas {
+
+  background: #e7f1ff;
+
+  color: #2f6fed;
+
+}
+
+.dt .casos-filtros-estados .casos-filtro-limpiar {
+
+  background: #f1f3f7;
+
+  color: #53647b;
+
+}
+
+.dt .casos-filtros-estados .casos-filtro-activo {
+
+  box-shadow: inset 0 0 0 1.5px currentColor;
+
+}
+
+.dt .casos-filtros-estados .pill-filtro-dash:hover {
+
+  filter: brightness(0.96);
+
+}
+
+/* Tipos de alertas: colores diferenciados */
+
+.dt .casos-tabla .casos-tipo-robo {
+
+  background: #fdebec;
+
+  color: #c34e59;
+
+}
+
+.dt .casos-tabla .casos-tipo-accidente {
+
+  background: #fff0e5;
+
+  color: #c46c25;
+
+}
+
+.dt .casos-tabla .casos-tipo-pendiente {
+
+  background: #fff1d8;
+
+  color: #b9791f;
+
+}
+
+.dt .casos-tabla .casos-tipo-emergencia {
+
+  background: #fbe5ef;
+
+  color: #b72e72;
+
+}
+
+.dt .casos-tabla .casos-tipo-congestion {
+
+  background: #eee9ff;
+
+  color: #7650b7;
+
+}
+
+/* Estados: pendiente amarillo, crítico rojo, en camino azul, resuelto verde */
+
+.dt .casos-tabla .casos-estado-pendiente,
+
+.dt .casos-tabla .casos-estado-atencion {
+
+  background: #fff1d8;
+
+  color: #b9791f;
+
+}
+
+.dt .casos-tabla .casos-estado-critico {
+
+  background: #fdebec;
+
+  color: #c34e59;
+
+}
+
+.dt .casos-tabla .casos-estado-camino {
+
+  background: #e7f1ff;
+
+  color: #2f6fed;
+
+}
+
+.dt .casos-tabla .casos-estado-resuelto {
+
+  background: #e1f5e9;
+
+  color: #2e9e5b;
+
+}
+
+.dt .casos-tabla .casos-estado-otro {
+
+  background: #f0ebfb;
+
+  color: #7758ad;
+
+}
+
+@media (max-width: 900px) {
+
+  .dt .casos-buscador {
+
+    max-width: none;
+
+    flex-basis: 100%;
+
+  }
+
+}
+
+/* Filtros: inactivos pastel, seleccionados sólidos con texto blanco */
+
+.dt .casos-filtros-estados .casos-filtro-todas {
+
+  background: #e7f1ff;
+
+  color: #2f6fed;
+
+}
+
+.dt .casos-filtros-estados .casos-filtro-todas.casos-filtro-activo {
+
+  background: #2f6fed;
+
+  color: #fff;
+
+}
+
+.dt .casos-filtros-estados .casos-filtro-pendiente,
+
+.dt .casos-filtros-estados .casos-filtro-atencion {
+
+  background: #fff1d8;
+
+  color: #b9791f;
+
+}
+
+.dt .casos-filtros-estados .casos-filtro-pendiente.casos-filtro-activo,
+
+.dt .casos-filtros-estados .casos-filtro-atencion.casos-filtro-activo {
+
+  background: #b9791f;
+
+  color: #fff;
+
+}
+
+.dt .casos-filtros-estados .casos-filtro-critico {
+
+  background: #fdebec;
+
+  color: #c34e59;
+
+}
+
+.dt .casos-filtros-estados .casos-filtro-critico.casos-filtro-activo {
+
+  background: #c34e59;
+
+  color: #fff;
+
+}
+
+.dt .casos-filtros-estados .casos-filtro-camino {
+
+  background: #e7f1ff;
+
+  color: #2f6fed;
+
+}
+
+.dt .casos-filtros-estados .casos-filtro-camino.casos-filtro-activo {
+
+  background: #2f6fed;
+
+  color: #fff;
+
+}
+
+.dt .casos-filtros-estados .casos-filtro-resuelto {
+
+  background: #e1f5e9;
+
+  color: #2e9e5b;
+
+}
+
+.dt .casos-filtros-estados .casos-filtro-resuelto.casos-filtro-activo {
+
+  background: #2e9e5b;
+
+  color: #fff;
+
+}
+
+.dt .casos-filtros-estados .casos-filtro-otro {
+
+  background: #eee9ff;
+
+  color: #7650b7;
+
+}
+
+.dt .casos-filtros-estados .casos-filtro-otro.casos-filtro-activo {
+
+  background: #7650b7;
+
+  color: #fff;
+
+}
+
+.dt .casos-filtros-estados .casos-filtro-activo {
+
+  box-shadow: none;
+
+}
+
+/* Ajustes finales: filtros como las pills de Unidades de Tránsito */
+.dt .casos-filtros-estados .pill-filtro-dash {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: fit-content;
+  min-height: 29px;
+  padding: 6px 13px;
+  border: 0;
+  border-radius: 100px;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
+  text-transform: none;
+  cursor: pointer;
+  transition: background .2s ease, color .2s ease;
+}
+.dt .casos-filtros-estados .pill-filtro-dash i { font-size: 12px; }
+.dt .casos-filtros-estados .casos-filtro-todas,
+.dt .casos-filtros-estados .casos-filtro-limpiar {
+  background: #e9edff;
+  color: #5668b3;
+}
+.dt .casos-filtros-estados .casos-filtro-todas.casos-filtro-activo {
+  background: #517aac;
+  color: #fff;
+}
+.dt .casos-filtros-estados .casos-filtro-todas.casos-filtro-activo:hover {
+  background: #2d609c;
+  color: #fff;
+}
+.dt .casos-filtros-estados .casos-filtro-limpiar:hover {
+  background: #dce3ff;
+  color: #4557a0;
+}
+.dt .casos-filtros-estados .casos-filtro-activo { box-shadow: none; }
+/* Botón Limpiar - mismo azul de Todas */
+.dt .casos-filtros-estados .casos-filtro-limpiar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 29px;
+  padding: 6px 13px;
+  border: 0;
+  border-radius: 100px;
+  background: #517aac;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.2;
+  text-transform: none;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.dt .casos-filtros-estados .casos-filtro-limpiar:hover {
+  background: #2d609c;
+  color: #ffffff;
+}
+
+
+/* Pills de filtros de Casos - tamaño más grande */
+.dt .casos-filtros-estados .pill-filtro-dash {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: fit-content;
+  height: 34px;
+  min-height: 34px;
+  padding: 0 17px;
+  border: none;
+  border-radius: 100px;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  text-transform: none;
+  white-space: nowrap;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+/* Iconos */
+.dt .casos-filtros-estados .pill-filtro-dash i {
+  font-size: 13px;
+}
+
+/* Todas seleccionado */
+.dt .casos-filtros-estados .casos-filtro-todas.casos-filtro-activo {
+  background: #517aac;
+  color: #ffffff;
+}
+
+/* Limpiar */
+.dt .casos-filtros-estados .casos-filtro-limpiar {
+  background: #517aac;
+  color: #ffffff;
+}
+
+/* Hover de Limpiar */
+.dt .casos-filtros-estados .casos-filtro-limpiar:hover {
+  background: #2d609c;
+  color: #ffffff;
 }

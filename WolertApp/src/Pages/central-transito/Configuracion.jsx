@@ -93,16 +93,20 @@ export default function Configuracion() {
         placeholder: "Buscar por caso, barrio o agente...",
       }}
     >
-      <div className="mb-4">
-        <h1 className="section-title-dash">
-          Configuración
-        </h1>
+      <header className="st-header mb-4">
+        <div>
+          <span className="st-eyebrow">
+            CENTRAL DE TRÁNSITO
+          </span>
 
-        <p className="section-text-dash mb-0">
-          Preferencias de notificaciones y del turno
-          de despacho.
-        </p>
-      </div>
+          <h1>Configuración</h1>
+
+          <p>
+            Preferencias de notificaciones y del turno
+            de despacho.
+          </p>
+        </div>
+      </header>
 
       {mensaje && (
         <div

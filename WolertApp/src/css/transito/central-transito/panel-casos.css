@@ -286,3 +286,26 @@
   color: #b6bfcc;
 }
 }
+/* Añadir dentro de @scope (.ct) */
+.badge-estado-alerta-dash {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 13px;
+  border-radius: 20px;
+  font-family: "Inter", sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.estado-punto-dash {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.estado-pendiente-dash {
+  background: #fff4df;
+  color: #bd790b;
+}
+

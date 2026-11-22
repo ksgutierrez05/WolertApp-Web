@@ -1,12 +1,10 @@
+
 import { Routes, Route, Navigate } from 'react-router-dom';
-import '../../css/transito/agente-transito/panel-principal.css';
-import '../../css/transito/agente-transito/panel-grupo.css';
-import '../../css/transito/agente-transito/panel-historial.css';
-import '../../css/transito/agente-transito/panel-configuracion.css';
-import Panel from './agente/PanelPrincipal';
-import Grupo from './agente/Grupo';
-import Historial from './agente/Historial';
-import Configuracion from './agente/Configuracion';
+
+import Panel from '../agentes-transito/PanelPrincipal';
+import Grupo from '../agentes-transito/Grupo';
+import Historial from '../agentes-transito/Historial';
+import Configuracion from '../agentes-transito/Configuracion';
 
 export default function Agente() {
   return (
