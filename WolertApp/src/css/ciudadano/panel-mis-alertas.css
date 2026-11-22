@@ -174,3 +174,8 @@
   margin-bottom: 10px;
   opacity: 0.5;
 }
+
+.misalertas-badge-cancelada {
+  background: #eceff3;
+  color: #596579;
+}

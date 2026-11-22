@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { login } from '../../Services/UsuariosAPI.js'
+import { GoogleLogin } from '@react-oauth/google'
+import { login, loginGoogle } from '../../Services/UsuariosAPI.js'
 
 function FormLogin({ onLoginSuccess, aviso }) {
     const [username, setUsername] = useState('')
@@ -24,6 +25,20 @@ function FormLogin({ onLoginSuccess, aviso }) {
             // El padre (Login.jsx) guarda la sesión y navega según el rol.
             // No navegar aquí para evitar redirecciones duplicadas.
             if (onLoginSuccess) onLoginSuccess(datos)   // { token, idUsuario, username, rol }
+        } catch (err) {
+            setError(err.message)
+        } finally {
+            setCargando(false)
+        }
+    }
+
+    // Va FUERA de handleSubmit, al mismo nivel
+    async function handleGoogle(respuesta) {
+        try {
+            setCargando(true)
+            setError('')
+            const datos = await loginGoogle(respuesta.credential)
+            if (onLoginSuccess) onLoginSuccess(datos)
         } catch (err) {
             setError(err.message)
         } finally {
@@ -79,6 +94,17 @@ function FormLogin({ onLoginSuccess, aviso }) {
                     {cargando ? 'Iniciando sesión...' : 'Iniciar Sesión'}
                 </button>
 
+                <div className="divisor"><span>o</span></div>
+
+                <div className="google-wrapper">
+                    <GoogleLogin
+                        onSuccess={handleGoogle}
+                        onError={() => setError('Falló el inicio de sesión con Google')}
+                        text="continue_with"
+                        shape="pill"
+                        locale="es"
+                    />
+                </div>
             </form>
         </div>
     )

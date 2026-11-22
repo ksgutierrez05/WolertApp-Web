@@ -57,6 +57,7 @@ export default function Alertas() {
   const filtrados = useMemo(() => alertas.filter((a) => {
     const texto = buscar.trim().toLowerCase();
     const coincideTexto = !texto
+      || String(a.idAlerta ?? '').includes(texto)
       || (a.tipo || '').toLowerCase().includes(texto)
       || (a.reportadoPor || '').toLowerCase().includes(texto)
       || (a.barrioNombre || '').toLowerCase().includes(texto);
@@ -76,7 +77,7 @@ export default function Alertas() {
     }
   };
 
-  const columnas = esAdmin ? 7 : 6;
+  const columnas = esAdmin ? 8 : 7;
 
   return (
     <div className="container-fluid">
@@ -121,7 +122,7 @@ export default function Alertas() {
                 type="text"
                 id="buscador-alertas"
                 className="form-control border-0"
-                placeholder="Buscar por tipo, reportante o barrio..."
+                placeholder="Buscar por número, tipo, reportante o barrio..."
                 value={buscar}
                 onChange={(e) => setBuscar(e.target.value)}
               />
@@ -149,6 +150,7 @@ export default function Alertas() {
           <table className="tabla-alertas-dash">
             <thead>
               <tr>
+                <th>Referencia</th>
                 <th>Tipo de alerta</th>
                 <th>Prioridad</th>
                 <th>Estado</th>
@@ -183,6 +185,7 @@ export default function Alertas() {
                 const esAlta = prioridad === 'alta';
                 return (
                   <tr key={a.idAlerta}>
+                    <td><strong>#{a.idAlerta}</strong></td>
                     <td>
                       <div className="alerta-tipo-celda-dash">
                         <div className={`alerta-tipo-icono-dash ${esAlta ? 'alerta-tipo-icono-grave-dash' : 'alerta-tipo-icono-moderado-dash'}`}>

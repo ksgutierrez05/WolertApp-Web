@@ -221,12 +221,7 @@ export default function Configuracion() {
     );
   }
 
-  const estado = (detalle.estado || '').toLowerCase();
-  const claseEstado = estado === 'activo' ? 'badge-green-dash' : 'badge-gray-dash';
-
-  // La API de "un usuario" no trae el nombre completo armado: se arma aquí
-  const nombreBanner =
-    [detalle.primerNombre, detalle.primerApellido].filter(Boolean).join(' ') || detalle.username || '';
+  const claseEstado = (detalle.estado || '').toLowerCase() === 'activo' ? 'badge-green-dash' : 'badge-gray-dash';
 
   return (
     <div className="container-fluid admin-config-page">
@@ -234,20 +229,6 @@ export default function Configuracion() {
         <div><span><i className="bi bi-sliders" /> CUENTA Y PREFERENCIAS</span><h1>Configuración</h1><p>Actualiza tu perfil, personaliza el dashboard y protege el acceso a tu cuenta.</p></div>
         <div className="admin-config-hero__badge"><i className="bi bi-shield-check" /> Ajustes de tu cuenta</div>
       </header>
-      <div className="config-banner-dash mb-4">
-        <div className="d-flex align-items-center gap-3">
-          <div className="config-avatar-grande-dash"><i className="bi bi-person-fill" /></div>
-          <div>
-            <div className="config-banner-nombre-dash" id="perfil-nombre">
-              {nombreBanner.toUpperCase()}
-            </div>
-            <div className="config-banner-estado-dash">
-              <span className="dot-online-dash" /> {estado === 'activo' ? 'Cuenta activa' : 'Cuenta ' + (estado || 'sin estado')} · {nombreRol[detalle.rolNombre] || detalle.rolNombre}
-            </div>
-          </div>
-        </div>
-        <i className="bi bi-shield-check config-banner-icono-dash" />
-      </div>
 
       <div className="row g-3">
         <div className="col-lg-7">

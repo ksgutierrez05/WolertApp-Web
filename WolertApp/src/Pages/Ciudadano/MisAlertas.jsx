@@ -47,7 +47,9 @@ const formatoFecha = (fecha) =>
 // Si en tu BD los estados se llaman distinto, agrégalos a estas listas.
 const estadoUI = (estadoBD) => {
   const e = normalizar(estadoBD);
-  if (['resuelto', 'resuelta', 'cerrada', 'cerrado', 'cancelada', 'cancelado', 'finalizada', 'finalizado'].includes(e)) return 'cerrada';
+  if (['cancelada', 'cancelado'].includes(e)) return 'cancelada';
+  if (['resuelta', 'resuelto'].includes(e)) return 'resuelta';
+  if (['cerrada', 'cerrado', 'finalizada', 'finalizado', 'atendida', 'completada'].includes(e)) return 'cerrada';
   if (['en_camino', 'en_atencion', 'atendiendo', 'en_revision', 'asignada', 'asignado'].includes(e)) return 'en_revision';
   return 'activa'; // pendiente, activa, nueva, etc.
 };
@@ -64,6 +66,7 @@ const mapearAlerta = (a) => {
     tipo: a.tipo ?? a.tipoAlertaNombre ?? a.tipoAlerta?.nombre ?? a.tipoNombre ?? 'Alerta',
     estado: estadoUI(a.estado ?? a.Estado),
     estadoOriginal: a.estado ?? a.Estado ?? '',
+    prioridad: a.prioridad ?? a.Prioridad ?? '',
     descripcion: a.descripcion ?? '',
     barrio: a.barrioNombre ?? a.barrio?.nombre ?? '',
     comuna: a.comunaNombre ?? a.barrio?.comuna?.nombre ?? '',
@@ -74,9 +77,10 @@ const mapearAlerta = (a) => {
   };
 };
 
-const colorEstado = (e) => (e === 'activa' ? '#f59e0b' : e === 'en_revision' ? '#3b82f6' : '#10b981');
-const labelEstado = (e) => (e === 'activa' ? 'Pendiente' : e === 'en_revision' ? 'En atención' : 'Cerrada');
-const iconoEstado = (e) => (e === 'activa' ? 'bi-hourglass-split' : e === 'en_revision' ? 'bi-search' : 'bi-check2-circle');
+const esCerrada = (e) => ['resuelta', 'cancelada', 'cerrada'].includes(e);
+const colorEstado = (e) => (e === 'activa' ? '#f59e0b' : e === 'en_revision' ? '#3b82f6' : e === 'cancelada' ? '#64748b' : '#10b981');
+const labelEstado = (e) => ({ activa: 'Pendiente', en_revision: 'En atención', resuelta: 'Resuelta', cancelada: 'Cancelada', cerrada: 'Cerrada' }[e] || 'Pendiente');
+const iconoEstado = (e) => (e === 'activa' ? 'bi-hourglass-split' : e === 'en_revision' ? 'bi-search' : e === 'cancelada' ? 'bi-x-circle' : 'bi-check2-circle');
 
 // ---------- Componente ----------
 
@@ -107,12 +111,12 @@ export default function MisAlertas() {
   }, []);
 
   const total = alertas.length;
-  const abiertas = alertas.filter((a) => a.estado !== 'cerrada').length;
-  const cerradas = alertas.filter((a) => a.estado === 'cerrada').length;
+  const abiertas = alertas.filter((a) => !esCerrada(a.estado)).length;
+  const cerradas = alertas.filter((a) => esCerrada(a.estado)).length;
 
   const filtradas = alertas.filter((a) => {
-    if (filtro === 'activa') return a.estado !== 'cerrada';
-    if (filtro === 'cerrada') return a.estado === 'cerrada';
+    if (filtro === 'activa') return !esCerrada(a.estado);
+    if (filtro === 'cerrada') return esCerrada(a.estado);
     return true;
   });
 
@@ -149,7 +153,7 @@ export default function MisAlertas() {
           <div className="kpi-dash kpi-green-dash">
             <i className="bi bi-check2-circle kpi-icon-dash"></i>
             <p className="kpi-num-dash mb-0">{cerradas}</p>
-            <p className="kpi-label-dash">Cerradas</p>
+            <p className="kpi-label-dash">Resueltas o canceladas</p>
           </div>
         </div>
       </div>
@@ -210,13 +214,13 @@ export default function MisAlertas() {
                     backgroundColor: colorEstado(a.estado),
                   }}
                 >
-                  <i className={`bi ${a.estado === 'activa' ? 'bi-exclamation-triangle-fill' : a.estado === 'en_revision' ? 'bi-search' : 'bi-check-circle-fill'}`}></i>
+                  <i className={`bi ${a.estado === 'activa' ? 'bi-exclamation-triangle-fill' : a.estado === 'en_revision' ? 'bi-search' : a.estado === 'cancelada' ? 'bi-x-circle-fill' : 'bi-check-circle-fill'}`}></i>
                 </div>
                 <div className="flex-grow-1">
                   <div className="d-flex justify-content-between align-items-start">
                     <div>
-                      <h5 className="info-title-dash mb-1" style={{ fontSize: '11.5px' }}>{a.tipo}</h5>
-                      <span className={`badge-dash ${a.estado === 'activa' ? 'badge-amber-dash' : a.estado === 'en_revision' ? 'badge-blue-dash' : 'badge-green-dash'}`}>
+                      <h5 className="info-title-dash mb-1" style={{ fontSize: '11.5px' }}>{a.tipo} <span className="text-muted">· #{a.id}</span></h5>
+                      <span className={`badge-dash ${a.estado === 'activa' ? 'badge-amber-dash' : a.estado === 'en_revision' ? 'badge-blue-dash' : a.estado === 'cancelada' ? 'misalertas-badge-cancelada' : 'badge-green-dash'}`}>
                         <i className={`bi ${iconoEstado(a.estado)} me-1`}></i>
                         {labelEstado(a.estado)}
                       </span>
@@ -245,7 +249,10 @@ export default function MisAlertas() {
                     <div className="mt-3 pt-3 border-top" style={{ fontSize: '13px' }}>
                       <table className="table table-sm mb-0">
                         <tbody>
-                          <tr><td className="fw-bold" style={{ width: '40%' }}>Tipo de alerta</td><td>{a.tipo}</td></tr>
+                          <tr><td className="fw-bold" style={{ width: '40%' }}>Referencia</td><td>Alerta #{a.id}</td></tr>
+                          <tr><td className="fw-bold">Tipo de alerta</td><td>{a.tipo}</td></tr>
+                          {a.prioridad && <tr><td className="fw-bold">Prioridad</td><td>{a.prioridad}</td></tr>}
+                          {a.estadoOriginal && <tr><td className="fw-bold">Estado del sistema</td><td>{a.estadoOriginal}</td></tr>}
                           {a.descripcion && <tr><td className="fw-bold">Descripción</td><td>{a.descripcion}</td></tr>}
                           {a.coordenadas && <tr><td className="fw-bold">Coordenadas</td><td>{a.coordenadas}</td></tr>}
                           {(a.barrio || a.comuna) && (

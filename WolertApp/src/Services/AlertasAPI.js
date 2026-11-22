@@ -12,8 +12,8 @@ function cabeceras(conJson = false) {
     return h;
 }
 
-export async function listarAlertas() {
-    const respuesta = await fetch(`${API}/api/alertas`, { headers: cabeceras() });
+export async function listarAlertas(signal) {
+    const respuesta = await fetch(`${API}/api/alertas`, { headers: cabeceras(), signal });
     if (!respuesta.ok) {
         throw new Error(`Error al listar las alertas: ${await respuesta.text()}`);
     }

@@ -167,3 +167,24 @@ export async function listarVecinos() {
     }
     return await respuesta.json();
 }
+
+// Login con Google: manda el ID token y guarda la sesión igual que login()
+export async function loginGoogle(credential) {
+    const respuesta = await fetch(`${API}/api/Auth/google`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ credential })
+    });
+
+    if (!respuesta.ok) {
+        const texto = await respuesta.text();
+        throw new Error(texto || 'No se pudo iniciar sesión con Google');
+    }
+
+    const datos = await respuesta.json();
+    localStorage.setItem('token', datos.token);
+    localStorage.setItem('rol', datos.rol);
+    localStorage.setItem('idUsuario', datos.idUsuario);
+    localStorage.setItem('username', datos.username);
+    return datos;
+}
