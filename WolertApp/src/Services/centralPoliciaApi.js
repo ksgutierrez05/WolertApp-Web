@@ -1,7 +1,7 @@
 
 const API = (
   import.meta.env.VITE_API_URL ||
-  "https://localhost:7138"
+  "http://localhost:5039"
 ).replace(/\/$/, "");
 
 export async function consultarCentral(

@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import "../../css/Policia/administrador-policia/css/notificaciones.css";
 
 const API = (
-  import.meta.env.VITE_API_URL || "https://localhost:7138"
+  import.meta.env.VITE_API_URL || "http://localhost:5039"
 ).replace(/\/$/, "");
 
 /*

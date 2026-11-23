@@ -4,7 +4,7 @@ import Topbar from "../../Components/Administrador-policia/Topbar";
 import "../../css/Policia/administrador-policia/css/configuracion.css";
 
 const API = (
-  import.meta.env.VITE_API_URL || "https://localhost:7138"
+  import.meta.env.VITE_API_URL || "http://localhost:5039"
 ).replace(/\/$/, "");
 
 function obtenerIdUsuario() {
