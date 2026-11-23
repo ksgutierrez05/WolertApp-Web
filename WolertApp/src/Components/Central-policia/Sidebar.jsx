@@ -19,6 +19,7 @@ const MENU_CENTRAL = [
   {
     seccion: 'Operación',
     items: [
+      { id: 'mapa', label: 'Mapa', to: `${RAIZ}/Mapa`, icon: 'bi-map' },
       { id: 'alertas', label: 'Alertas', to: `${RAIZ}/Alertas`, icon: 'bi-exclamation-triangle' },
       { id: 'asignaciones', label: 'Asignaciones', to: `${RAIZ}/Asignaciones`, icon: 'bi-diagram-3' },
       { id: 'atencion-alertas', label: 'Atención a alertas', to: `${RAIZ}/AtencionAlertas`, icon: 'bi-telephone' },

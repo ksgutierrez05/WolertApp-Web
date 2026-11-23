@@ -1,125 +1,136 @@
 
-import { useEffect, useState } from 'react';
-import PageHeader from '../../Components/Patrullero/Pageheader';
-
+import { useEffect, useState } from "react";
+import PageHeader from "../../Components/Patrullero/Pageheader";
 import {
   ListarMisNotificaciones,
   FormatearFecha,
-  ObtenerIdUsuario
-} from '../../Services/PoliciaService';
+} from "../../Services/PoliciaService";
+import {
+  leerIdsLeidos,
+  guardarIdsLeidos,
+} from "../../Services/notificacionesEstado";
 
-import '../../css/Policia/Patrullero/css/notificaciones.css';
+import "../../css/Policia/Patrullero/css/notificaciones.css";
 
-function Notificaciones() {
-  const [filtro, setFiltro] = useState('todas');
+export default function Notificaciones() {
+  const [filtro, setFiltro] = useState("todas");
   const [notificaciones, setNotificaciones] = useState([]);
-  const [leidas, setLeidas] = useState([]);
+  const [leidas, setLeidas] = useState(leerIdsLeidos);
   const [cargando, setCargando] = useState(true);
-  const [error, setError] = useState('');
-
-  const claveLecturas = `notificacionesLeidas:${ObtenerIdUsuario() ?? 'sin-usuario'}`;
+  const [error, setError] = useState("");
 
   useEffect(() => {
     let activo = true;
 
-    async function cargarNotificaciones() {
+    const cargar = async () => {
       try {
-        setCargando(true);
-
-        const guardadas = JSON.parse(
-          localStorage.getItem(claveLecturas) || '[]'
-        );
-
-        const datos = await ListarMisNotificaciones();
+        const resultado = await ListarMisNotificaciones();
 
         if (!activo) return;
 
-        setLeidas(Array.isArray(guardadas) ? guardadas : []);
-        setNotificaciones(datos);
-
+        setNotificaciones(
+          Array.isArray(resultado) ? resultado : []
+        );
+        setLeidas(leerIdsLeidos());
+        setError("");
       } catch (err) {
         if (activo) {
-          setError(err.message);
+          setError(
+            err.message ||
+              "No se pudieron cargar las notificaciones."
+          );
         }
       } finally {
-        if (activo) {
-          setCargando(false);
-        }
+        if (activo) setCargando(false);
       }
-    }
+    };
 
-    cargarNotificaciones();
+    cargar();
+
+    const intervalo = window.setInterval(cargar, 30000);
+
+    const sincronizar = () => {
+      setLeidas(leerIdsLeidos());
+    };
+
+    window.addEventListener(
+      "wolertapp:notificaciones",
+      sincronizar
+    );
+    window.addEventListener("storage", sincronizar);
 
     return () => {
       activo = false;
+      window.clearInterval(intervalo);
+
+      window.removeEventListener(
+        "wolertapp:notificaciones",
+        sincronizar
+      );
+      window.removeEventListener("storage", sincronizar);
     };
-  }, [claveLecturas]);
+  }, []);
 
-  function guardarLeidas(ids) {
-    const nuevas = [...new Set(ids)];
+  const estaLeida = (notificacion) =>
+    leidas.includes(String(notificacion.idNotificacion));
 
-    setLeidas(nuevas);
+  const marcarLeida = (id) => {
+    setLeidas(guardarIdsLeidos([...leidas, id]));
+  };
 
-    localStorage.setItem(
-      claveLecturas,
-      JSON.stringify(nuevas)
+  const marcarTodas = () => {
+    setLeidas(
+      guardarIdsLeidos([
+        ...leidas,
+        ...notificaciones.map((n) => n.idNotificacion),
+      ])
     );
-  }
-
-  function marcarLeida(id) {
-    guardarLeidas([...leidas, id]);
-  }
-
-  function marcarTodas() {
-    const ids = notificaciones.map(
-      n => n.idNotificacion
-    );
-
-    guardarLeidas([...leidas, ...ids]);
-  }
-
-  const filtradas = notificaciones.filter(n => {
-    if (filtro === 'no-leidas') {
-      return !leidas.includes(n.idNotificacion);
-    }
-
-    return true;
-  });
+  };
 
   const pendientes = notificaciones.filter(
-    n => !leidas.includes(n.idNotificacion)
+    (n) => !estaLeida(n)
   ).length;
+
+  const filtradas = [...notificaciones]
+    .sort(
+      (a, b) =>
+        new Date(b.fecha || 0) - new Date(a.fecha || 0)
+    )
+    .filter(
+      (n) => filtro === "todas" || !estaLeida(n)
+    );
 
   return (
     <div className="container-fluid notificaciones-patrullero">
-
       <PageHeader
         titulo="Notificaciones"
         descripcion="Comunicaciones recibidas de la Central de Radio y del sistema."
       />
 
+    
+
       <div className="nt-barra">
-        <div
-          className="nt-filterbar"
-          role="group"
-          aria-label="Filtrar notificaciones"
-        >
+        <div className="nt-filterbar">
           <button
             type="button"
-            className={`nt-chip ${filtro === 'todas' ? 'active' : ''}`}
-            onClick={() => setFiltro('todas')}
-            aria-pressed={filtro === 'todas'}
+            className={`nt-chip ${
+              filtro === "todas" ? "active" : ""
+            }`}
+            onClick={() => setFiltro("todas")}
           >
             Todas
+            <span>{notificaciones.length}</span>
           </button>
 
           <button
             type="button"
-            className={`nt-chip ${filtro === 'no-leidas' ? 'active' : ''}`}
-            onClick={() => setFiltro('no-leidas')}
-            aria-pressed={filtro === 'no-leidas'}
+            className={`nt-chip ${
+              filtro === "no-leidas" ? "active" : ""
+            }`}
+            onClick={() => setFiltro("no-leidas")}
           >
-            No leídas ({pendientes})
+            No leídas
+            <span>{pendientes}</span>
           </button>
         </div>
 
@@ -129,95 +140,114 @@ function Notificaciones() {
           onClick={marcarTodas}
           disabled={cargando || pendientes === 0}
         >
-          <i
-            className="bi bi-check2-all"
-            aria-hidden="true"
-          />
-          {' '}Marcar todas como leídas
+          <i className="bi bi-check2-all" />
+          Marcar todas como leídas
         </button>
       </div>
 
       {cargando && (
-        <p role="status">
+        <p className="nt-mensaje">
           Cargando notificaciones...
         </p>
       )}
 
       {error && (
-        <div className="alert alert-danger" role="alert">
+        <div className="alert alert-danger">
           {error}
         </div>
       )}
 
-      <section
-        className="card-panel-dash nt-panel"
-        aria-label="Lista de notificaciones"
-      >
-        {!cargando && !error && (
-          filtradas.length === 0 ? (
+      <section className="nt-panel">
+        {!cargando &&
+          !error &&
+          (filtradas.length === 0 ? (
             <div className="nt-vacio">
               <span className="nt-vacio-icono">
-                <i
-                  className="bi bi-bell-slash"
-                  aria-hidden="true"
-                />
+                <i className="bi bi-bell-slash" />
               </span>
 
               <h3>
-                {filtro === 'no-leidas'
-                  ? 'No tienes notificaciones pendientes'
-                  : 'No tienes notificaciones'}
+                {filtro === "no-leidas"
+                  ? "No tienes notificaciones pendientes"
+                  : "No tienes notificaciones"}
               </h3>
 
               <p>
-                Los avisos de la Central de Radio y del sistema
+                Los avisos de la Central de Radio
                 aparecerán aquí.
               </p>
             </div>
           ) : (
-            <div className="d-grid gap-3">
-              {filtradas.map(n => (
+            filtradas.map((notificacion) => {
+              const sinLeer = !estaLeida(notificacion);
+
+              return (
                 <article
-                  key={n.idNotificacion}
-                  className="border rounded p-3"
+                  key={notificacion.idNotificacion}
+                  className={`nt-item ${
+                    sinLeer ? "sin-leer" : ""
+                  }`}
                 >
-                  <div className="d-flex justify-content-between gap-2">
-                    <div>
-                      <p className="mb-2">
-                        {n.mensaje || 'Nueva notificación'}
-                      </p>
+                  <div className="nt-item-icon">
+                    <i className="bi bi-bell-fill" />
+                  </div>
 
-                      <small>
-                        {FormatearFecha(n.fecha)}
-                      </small>
+                  <div className="nt-item-body">
+                    <div className="nt-item-title">
+                      <strong>
+                        {notificacion.mensaje ||
+                          "Nueva notificación"}
+                      </strong>
 
-                      {n.idAlerta != null && (
-                        <p className="mb-0">
-                          <small>
-                            Alerta #{n.idAlerta}
-                          </small>
-                        </p>
+                      {sinLeer && (
+                        <span className="nt-etiqueta">
+                          Nueva
+                        </span>
                       )}
                     </div>
 
-                    {!leidas.includes(n.idNotificacion) && (
-                      <button
-                        type="button"
-                        className="btn btn-outline-secondary btn-sm"
-                        onClick={() => marcarLeida(n.idNotificacion)}
-                      >
-                        Marcar leída
-                      </button>
-                    )}
+                    <div className="nt-item-meta">
+                      <span>
+                        <i className="bi bi-clock" />
+                        {FormatearFecha(
+                          notificacion.fecha
+                        )}
+                      </span>
+
+                      {notificacion.idAlerta != null && (
+                        <span>
+                          <i className="bi bi-geo-alt" />
+                          Alerta #
+                          {notificacion.idAlerta}
+                        </span>
+                      )}
+                    </div>
                   </div>
+
+                  {sinLeer ? (
+                    <button
+                      type="button"
+                      className="nt-item-action"
+                      onClick={() =>
+                        marcarLeida(
+                          notificacion.idNotificacion
+                        )
+                      }
+                    >
+                      <i className="bi bi-check2" />
+                      Marcar leída
+                    </button>
+                  ) : (
+                    <span className="nt-item-read">
+                      <i className="bi bi-check2-circle" />
+                      Leída
+                    </span>
+                  )}
                 </article>
-              ))}
-            </div>
-          )
-        )}
+              );
+            })
+          ))}
       </section>
     </div>
   );
 }
-
-export default Notificaciones;

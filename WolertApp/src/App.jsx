@@ -37,6 +37,7 @@ import ConfiguracionAdmin from './Pages/Administrador-Policia/Configuracion';
 // Central Policía
 import LayoutCentral from './Components/Central-policia/Layout';
 import CentroCentral from './Pages/Central-Policia/Centro-Operaciones';
+import MapaCentral from './Pages/Central-Policia/Mapa';
 import AlertasCentral from './Pages/Central-Policia/Alertas';
 import AsignacionesCentral from './Pages/Central-Policia/Asignaciones';
 import AtencionAlertasCentral from './Pages/Central-Policia/Atencion-Alertas';
@@ -52,12 +53,9 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-
-        {/* Landing y Login */}
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
 
-        {/* Administrador y Ciudadano */}
         <Route element={<RutaProtegida roles={['ADMIN']} />}>
           <Route path="/admin/*" element={<Admin />} />
         </Route>
@@ -66,22 +64,18 @@ function App() {
           <Route path="/ciudadano/*" element={<Ciudadano />} />
         </Route>
 
-        {/* Director de Tránsito */}
         <Route element={<RutaProtegida roles={['ADMIN_TRANSITO', 'DirectorTransito']} />}>
           <Route path="/transito/director/*" element={<Director />} />
         </Route>
 
-        {/* Central de Tránsito */}
         <Route element={<RutaProtegida roles={['CENTRAL_TRANSITO']} />}>
           <Route path="/transito/central/*" element={<Central />} />
         </Route>
 
-        {/* Agente de Tránsito */}
         <Route element={<RutaProtegida roles={['AGENTE_TRANSITO']} />}>
           <Route path="/transito/agente/*" element={<Agente />} />
         </Route>
 
-        {/* Patrullero */}
         <Route element={<RutaProtegida roles={['POLICIA']} />}>
           <Route path="/Patrullero" element={<LayoutPatrullero />}>
             <Route index element={<CentroPatrullero />} />
@@ -93,7 +87,6 @@ function App() {
           </Route>
         </Route>
 
-        {/* Administrador Policía */}
         <Route element={<RutaProtegida roles={['ADMIN_POLICIA']} />}>
           <Route path="/Administrador-Policia" element={<LayoutAdmin />}>
             <Route index element={<CentroAdmin />} />
@@ -110,10 +103,10 @@ function App() {
           </Route>
         </Route>
 
-        {/* Central Policía */}
         <Route element={<RutaProtegida roles={['CENTRAL_POLICIA']} />}>
           <Route path="/Central-Policia" element={<LayoutCentral />}>
             <Route index element={<CentroCentral />} />
+            <Route path="Mapa" element={<MapaCentral />} />
             <Route path="Alertas" element={<AlertasCentral />} />
             <Route path="Asignaciones" element={<AsignacionesCentral />} />
             <Route path="AtencionAlertas" element={<AtencionAlertasCentral />} />
@@ -126,9 +119,7 @@ function App() {
           </Route>
         </Route>
 
-        {/* Rutas no encontradas */}
         <Route path="*" element={<Navigate to="/" replace />} />
-
       </Routes>
     </BrowserRouter>
   );
