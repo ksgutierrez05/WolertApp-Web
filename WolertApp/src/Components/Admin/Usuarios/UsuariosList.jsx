@@ -3,6 +3,8 @@ import '../../../css/global.css';
 import '../../../css/temas.css';
 import '../../../css/admin/usuarios.css';
 import '../../../css/admin/AdminLayout.css';
+import '../../../css/admin/tipos.css';
+import '../../../css/admin/paneles-listado.css';
 import {
   listaUsuarios,
   obtenerUsuarioPorId,
@@ -232,18 +234,18 @@ export default function UsuariosList() {
   const activos = usuarios.filter((u) => (u.estado || '').toLowerCase() === 'activo').length;
 
   return (
-    <div className="container-fluid">
-      <div className="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-3">
+    <main className="container-fluid admin-listado admin-usuarios">
+      <header className="admin-listado__hero d-flex justify-content-between align-items-start mb-4 flex-wrap gap-3">
         <div>
           <h1 className="hero-title-dash" style={{ color: '#64748b', fontSize: '26px' }}>Gestión de Usuarios</h1>
           <p className="hero-text-dash" style={{ color: '#94a3b8' }}>Administra los usuarios registrados en el sistema</p>
         </div>
         {puedeCrear && (
-          <button type="button" className="btn btn-cv-azul d-inline-flex align-items-center gap-2 px-3 py-2" style={{ borderRadius: '12px', fontSize: '13.5px', fontWeight: '700' }} onClick={abrirNuevo}>
+          <button type="button" className="admin-listado__primary-action" onClick={abrirNuevo}>
             <i className="bi bi-plus-lg" /> Nuevo usuario
           </button>
         )}
-      </div>
+      </header>
 
       <div className="row g-3 mb-3">
         <div className="col-md-3">
@@ -251,7 +253,7 @@ export default function UsuariosList() {
             <i className="bi bi-people kpi-icon-dash" />
             <div className="kpi-num-dash">{total}</div>
             <div className="kpi-label-dash">Total registrados</div>
-            <div className="kpi-label-dash" style={{ marginTop: '2px' }}>Total en el sistema</div>
+            <div className="kpi-label-dash" style={{ marginTop: "2px" }}>Total en el sistema</div>
           </div>
         </div>
         <div className="col-md-3">
@@ -259,7 +261,7 @@ export default function UsuariosList() {
             <i className="bi bi-check-circle kpi-icon-dash" />
             <div className="kpi-num-dash">{activos}</div>
             <div className="kpi-label-dash">Usuarios activos</div>
-            <div className="kpi-label-dash" style={{ marginTop: '2px' }}>Con acceso al sistema</div>
+            <div className="kpi-label-dash" style={{ marginTop: "2px" }}>Con acceso al sistema</div>
           </div>
         </div>
         <div className="col-md-3">
@@ -267,7 +269,7 @@ export default function UsuariosList() {
             <i className="bi bi-exclamation-triangle kpi-icon-dash" />
             <div className="kpi-num-dash">{total - activos}</div>
             <div className="kpi-label-dash">Inactivos / Suspendidos</div>
-            <div className="kpi-label-dash" style={{ marginTop: '2px' }}>Requieren revisión</div>
+            <div className="kpi-label-dash" style={{ marginTop: "2px" }}>Requieren revisión</div>
           </div>
         </div>
         <div className="col-md-3">
@@ -275,12 +277,12 @@ export default function UsuariosList() {
             <i className="bi bi-shield-lock kpi-icon-dash" />
             <div className="kpi-num-dash">{roles.length || Object.keys(nombreRol).length}</div>
             <div className="kpi-label-dash">Roles configurados</div>
-            <div className="kpi-label-dash" style={{ marginTop: '2px' }}>Según la jerarquía del sistema</div>
+            <div className="kpi-label-dash" style={{ marginTop: "2px" }}>Según la jerarquía del sistema</div>
           </div>
         </div>
       </div>
-
-      <div className="card-panel-dash p-3 mb-3">
+      <section className="admin-listado__content" aria-label="Administración de usuarios">
+      <div className="admin-listado__toolbar">
         <div className="row g-2 align-items-center">
           <div className="col-lg-5">
             <div className="search-dash d-flex align-items-center bg-white">
@@ -307,7 +309,7 @@ export default function UsuariosList() {
         </div>
       </div>
 
-      <div className="card-panel-dash p-3">
+      <section className="card-panel-dash p-3" aria-label="Listado de usuarios">
         {errorLista && <div className="text-danger small mb-2">{errorLista}</div>}
         <div className="table-responsive">
           <table className="tabla-usuarios-dash">
@@ -325,7 +327,7 @@ export default function UsuariosList() {
               )}
               {!cargando && filtrados.map((u) => (
                 <tr key={u.idUsuario}>
-                  <td>
+                  <td data-label="Usuario">
                     <div className="d-flex align-items-center gap-2">
                       <div className="avatar-usuario-dash" style={{ backgroundColor: colorPorId(u.idUsuario) }}>{iniciales(u.nombreCompleto)}</div>
                       <div>
@@ -334,18 +336,18 @@ export default function UsuariosList() {
                       </div>
                     </div>
                   </td>
-                  <td>{u.correo || '—'}</td>
-                  <td><span className={`badge-dash ${badgeRol[u.rolNombre] || 'badge-gray-dash'}`}>{(nombreRol[u.rolNombre] || u.rolNombre || 'Desconocido').toUpperCase()}</span></td>
-                  <td>
+                  <td data-label="Correo">{u.correo || '—'}</td>
+                  <td data-label="Rol"><span className={`badge-dash ${badgeRol[u.rolNombre] || 'badge-gray-dash'}`}>{(nombreRol[u.rolNombre] || u.rolNombre || 'Desconocido').toUpperCase()}</span></td>
+                  <td data-label="Estado">
                     <span className={`status-dot-dash ${claseEstado[u.estado?.toLowerCase()] || 'status-inactive-dash'}`}>
                       <span className="dot" />{(nombreEstado[u.estado?.toLowerCase()] || u.estado || '—').toUpperCase()}
                     </span>
                   </td>
-                    <td>
+                    <td data-label="Acciones">
                     <div className="d-flex gap-2">
-                      <button className="action-btn-dash action-view-dash" title="Ver detalle" onClick={() => abrirVer(u.idUsuario)}><i className="bi bi-eye" /></button>
-                      <button className="action-btn-dash action-edit-dash" title="Editar" onClick={() => abrirEditar(u.idUsuario)}><i className="bi bi-pencil" /></button>
-                      <button className="action-btn-dash action-delete-dash" title="Desactivar" onClick={() => desactivar(u.idUsuario)}><i className="bi bi-trash" /></button>
+                      <button type="button" className="action-btn-dash action-view-dash" aria-label={`Ver ${u.nombreCompleto}`} title="Ver detalle" onClick={() => abrirVer(u.idUsuario)}><i className="bi bi-eye" /></button>
+                      {puedeEditar(u) && <button type="button" className="action-btn-dash action-edit-dash" aria-label={`Editar ${u.nombreCompleto}`} title="Editar" onClick={() => abrirEditar(u.idUsuario)}><i className="bi bi-pencil" /></button>}
+                      {puedeDesactivar(u) && <button type="button" className="action-btn-dash action-delete-dash" aria-label={`Desactivar ${u.nombreCompleto}`} title="Desactivar" onClick={() => desactivar(u.idUsuario)}><i className="bi bi-trash" /></button>}
                     </div>
                   </td>
                 </tr>
@@ -353,7 +355,8 @@ export default function UsuariosList() {
             </tbody>
           </table>
         </div>
-      </div>
+      </section>
+      </section>
 
       {/* Modal form */}
       {modalForm && (
@@ -456,6 +459,6 @@ export default function UsuariosList() {
           </div>
         </>
       )}
-    </div>
+    </main>
   );
 }

@@ -1,0 +1,479 @@
+/* Presentación adaptable compartida por los listados de administración. */
+.admin-listado {
+  --al-ink: #17283f;
+  --al-muted: #78869a;
+  --al-line: #e7edf4;
+  max-width: 1500px;
+  margin: 0 auto;
+  padding-bottom: 28px;
+  color: var(--al-ink);
+}
+
+.admin-listado__hero {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 4px 0 18px;
+  padding: 22px 25px;
+  border: 1px solid #cbdcf2;
+  border-radius: 16px;
+  background: radial-gradient(ellipse at 86% 0%, rgba(65, 117, 211, .14), transparent 42%), linear-gradient(120deg, #eff5fc 0%, #e8f0fa 58%, #edf4fc 100%);
+  box-shadow: 0 8px 28px rgba(19, 63, 119, .08);
+  animation: types-rise .4s both;
+}
+
+.admin-listado__eyebrow {
+  color: #3568aa;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .13em;
+}
+
+.admin-listado__hero h1 {
+  margin: 8px 0 5px;
+  color: #17283f !important;
+  font-size: clamp(25px, 2.7vw, 34px) !important;
+  font-weight: 800;
+  letter-spacing: -.035em;
+}
+
+.admin-listado__hero p {
+  margin: 0;
+  color: var(--al-muted) !important;
+  font-size: 12px;
+}
+
+.admin-alertas .admin-listado__hero {
+  align-items: flex-start;
+  flex-direction: column;
+}
+
+.admin-listado__primary-action {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 46px;
+  padding: 10px 17px;
+  border: 0;
+  border-radius: 11px;
+  background: #285fc2;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 750;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background .2s, transform .2s, box-shadow .2s;
+}
+
+.admin-listado__primary-action:hover {
+  transform: translateY(-1px);
+  background: #1d4fa9;
+  color: #fff;
+  box-shadow: 0 6px 14px rgba(41, 94, 175, .18);
+}
+
+.admin-listado__primary-action:focus-visible,
+.admin-listado .action-btn-dash:focus-visible,
+.admin-listado .btn-accion-dash:focus-visible {
+  outline: 3px solid #f4b942;
+  outline-offset: 3px;
+}
+
+.admin-listado__content {
+  overflow: hidden;
+  border: 1px solid var(--al-line);
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 5px 18px rgba(25, 45, 78, .035);
+  animation: types-rise .48s both;
+}
+
+.admin-listado .admin-listado__content > .card-panel-dash {
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  animation: none;
+}
+
+.admin-listado .kpi-dash {
+  display: grid;
+  grid-template-columns: 37px minmax(0, 1fr);
+  grid-template-rows: auto auto auto;
+  align-items: center;
+  column-gap: 11px;
+  row-gap: 2px;
+  min-height: 78px;
+  overflow: hidden;
+  padding: 12px 14px;
+  border: 1px solid var(--al-line);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 3px 12px rgba(25, 45, 78, .035);
+  animation: types-rise .42s both;
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+
+.admin-listado .kpi-dash:hover {
+  transform: translateY(-1px);
+  border-color: #d6e1ef;
+  box-shadow: 0 7px 18px rgba(25, 45, 78, .075);
+}
+
+.admin-listado .kpi-dash .kpi-icon-dash {
+  display: grid;
+  position: static;
+  grid-column: 1;
+  grid-row: 1 / 4;
+  width: 37px;
+  height: 37px;
+  place-items: center;
+  border-radius: 10px;
+  transform: none;
+  font-size: 15px;
+  line-height: 1;
+  opacity: 1;
+}
+
+.admin-listado .kpi-dash .kpi-num-dash {
+  grid-column: 2;
+  grid-row: 2;
+  color: #23354e;
+  font-size: 19px;
+  line-height: 1;
+}
+
+.admin-listado .kpi-dash .kpi-label-dash {
+  grid-column: 2;
+  margin-top: 0 !important;
+  color: #8794a6;
+  font-size: 10px;
+}
+
+.admin-listado .kpi-dash .kpi-num-dash + .kpi-label-dash {
+  grid-row: 1;
+  color: #23354e;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.admin-listado .kpi-dash > .kpi-label-dash:last-child {
+  grid-row: 3;
+}
+
+.admin-listado .kpi-blue-dash .kpi-icon-dash {
+  background: #edf3ff;
+  color: #3568aa;
+}
+
+.admin-listado .kpi-green-dash .kpi-icon-dash {
+  background: #e9f7f0;
+  color: #25815c;
+}
+
+.admin-listado .kpi-red-dash .kpi-icon-dash {
+  background: #fff0ee;
+  color: #b42318;
+}
+
+.admin-listado .kpi-amber-dash .kpi-icon-dash {
+  background: #fff5e8;
+  color: #99630e;
+}
+
+.admin-listado .kpi-purple-dash .kpi-icon-dash {
+  background: #f3edff;
+  color: #6941a5;
+}
+
+.admin-listado .kpi-dash::before {
+  content: none;
+}
+
+.admin-listado .row > :nth-child(2) .kpi-dash { animation-delay: .04s; }
+.admin-listado .row > :nth-child(3) .kpi-dash { animation-delay: .08s; }
+.admin-listado .row > :nth-child(4) .kpi-dash { animation-delay: .12s; }
+.admin-listado__toolbar {
+  margin: 0;
+  padding: 15px 18px;
+  border: 0;
+  border-bottom: 1px solid #edf1f6;
+  border-radius: 0;
+  background: #fff;
+  animation: types-rise .42s .04s both;
+}
+
+.admin-listado__toolbar .search-dash {
+  min-height: 42px;
+  border: 1px solid #e2e8f0;
+  border-radius: 9px;
+  box-shadow: none;
+}
+
+.admin-listado__toolbar.search-dash {
+  min-height: 48px;
+  gap: 7px;
+}
+
+.admin-listado__toolbar.search-dash input {
+  min-height: 42px;
+  font-size: 12px;
+}
+
+.admin-listado__toolbar .search-dash input {
+  min-height: 40px;
+  font-size: 12px;
+}
+
+.admin-listado__toolbar .search-dash:focus-within,
+.admin-listado__toolbar.search-dash:focus-within {
+  border-color: #9bb8e5;
+  box-shadow: 0 0 0 3px #eaf1fc;
+}
+
+.admin-listado__toolbar .filtro-select-dash {
+  min-height: 42px;
+  border-radius: 9px;
+  font-size: 12px;
+}
+
+.admin-listado .tabla-usuarios-dash,
+.admin-listado .tabla-alertas-dash {
+  margin: 0;
+}
+
+.admin-listado .tabla-usuarios-dash thead th,
+.admin-listado .tabla-alertas-dash thead th {
+  padding-top: 15px;
+  background: #f8fafc;
+}
+
+.admin-listado .tabla-usuarios-dash tbody tr:hover,
+.admin-listado .tabla-alertas-dash tbody tr:hover {
+  background: #f8faff;
+}
+
+.admin-listado .tabla-usuarios-dash tbody tr,
+.admin-listado .tabla-alertas-dash tbody tr,
+.admin-listado .tabla-comunas-fila,
+.admin-listado .tabla-barrios-fila {
+  animation: types-row-in .3s both;
+}
+
+.admin-listado .action-btn-dash,
+.admin-listado .btn-accion-dash {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  border-radius: 12px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: transform .2s, box-shadow .2s, background .2s, border-color .2s;
+}
+
+.admin-listado .action-btn-dash:hover,
+.admin-listado .btn-accion-dash:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 12px rgba(25, 45, 78, .1);
+}
+
+.admin-listado .tabla-comunas-header,
+.admin-listado .tabla-barrios-header {
+  padding: 13px 18px;
+  background: #f8fafc;
+}
+
+.admin-listado .tabla-comunas-fila,
+.admin-listado .tabla-barrios-fila {
+  min-height: 76px;
+  padding: 13px 18px;
+  transition: background .2s ease, border-color .2s ease, transform .2s ease, box-shadow .2s ease;
+}
+
+.admin-listado .tabla-comunas-fila:hover,
+.admin-listado .tabla-barrios-fila:hover {
+  background: #f8faff;
+  transform: translateY(-1px);
+  box-shadow: 0 5px 14px rgba(25, 45, 78, .06);
+}
+
+.admin-listado .comuna-avatar-dash { width: 46px; height: 46px; }
+.admin-listado .barrio-comuna-badge-dash { padding: 6px 10px; }
+
+.admin-listado__empty {
+  display: grid;
+  justify-items: center;
+  gap: 7px;
+  min-height: 170px;
+  align-content: center;
+  padding: 24px;
+  color: #8794a6;
+  font-size: 12px;
+  text-align: center;
+}
+
+.admin-listado__empty i {
+  color: #9bacbf;
+  font-size: 25px;
+}
+
+@media (max-width: 760px) {
+  .admin-listado {
+    padding: 10px 0 24px;
+  }
+
+  .admin-listado__hero {
+    align-items: stretch;
+    flex-direction: column;
+    padding: 18px;
+  }
+
+  .admin-listado__primary-action {
+    width: 100%;
+    min-height: 52px;
+    font-size: 14px;
+  }
+
+  .admin-listado__toolbar .row {
+    gap: 8px;
+  }
+
+  .admin-listado__toolbar {
+    padding: 13px;
+  }
+
+  .admin-listado__toolbar [class*="col-"] {
+    width: 100%;
+  }
+
+  .admin-listado .table-responsive {
+    overflow: visible;
+  }
+
+  .admin-listado .tabla-usuarios-dash,
+  .admin-listado .tabla-alertas-dash,
+  .admin-listado .tabla-usuarios-dash tbody,
+  .admin-listado .tabla-alertas-dash tbody {
+    display: block;
+    width: 100%;
+  }
+
+  .admin-listado .tabla-usuarios-dash thead,
+  .admin-listado .tabla-alertas-dash thead {
+    display: none;
+  }
+
+  .admin-listado .tabla-usuarios-dash tbody tr,
+  .admin-listado .tabla-alertas-dash tbody tr {
+    display: grid;
+    gap: 0;
+    margin: 11px;
+    overflow: hidden;
+    border: 1px solid var(--al-line);
+    border-radius: 12px;
+    background: #fff;
+  }
+
+  .admin-listado .tabla-usuarios-dash td,
+  .admin-listado .tabla-alertas-dash td {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    min-width: 0;
+    padding: 11px 13px;
+    border-top: 1px solid #edf1f5;
+    text-align: right;
+  }
+
+  .admin-listado .tabla-usuarios-dash td:first-child,
+  .admin-listado .tabla-alertas-dash td:first-child {
+    border-top: 0;
+  }
+
+  .admin-listado .tabla-usuarios-dash td::before,
+  .admin-listado .tabla-alertas-dash td::before {
+    flex: 0 0 auto;
+    color: #8794a6;
+    content: attr(data-label);
+    font-size: 10px;
+    font-weight: 750;
+    text-align: left;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+
+  .admin-listado .tabla-usuarios-dash td:first-child,
+  .admin-listado .tabla-alertas-dash td.tipo-alerta-mobile {
+    align-items: flex-start;
+  }
+
+  .admin-listado .tabla-usuarios-dash td:first-child::before {
+    padding-top: 10px;
+  }
+
+  .admin-listado .tabla-usuarios-dash td:last-child,
+  .admin-listado .tabla-alertas-dash td:last-child {
+    justify-content: space-between;
+  }
+
+  .admin-listado .tabla-usuarios-dash td:last-child > div,
+  .admin-listado .tabla-alertas-dash td:last-child > div {
+    margin-left: auto;
+  }
+
+  .admin-listado .tabla-usuarios-dash td[colspan]::before,
+  .admin-listado .tabla-alertas-dash td[colspan]::before {
+    display: none;
+  }
+
+  .admin-listado .tabla-usuarios-dash td[colspan],
+  .admin-listado .tabla-alertas-dash td[colspan] {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .admin-listado .tabla-comunas-header,
+  .admin-listado .tabla-barrios-header {
+    display: none;
+  }
+
+  .admin-listado .tabla-comunas-fila,
+  .admin-listado .tabla-barrios-fila {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+    margin: 10px;
+    padding: 14px;
+    border: 1px solid var(--al-line);
+    border-radius: 12px;
+  }
+
+  .admin-listado .tabla-comunas-fila > .d-flex:last-child,
+  .admin-listado .tabla-barrios-fila > .d-flex:last-child {
+    justify-content: flex-start !important;
+    padding-top: 10px;
+    border-top: 1px solid #edf1f5;
+  }
+
+  .admin-listado .action-btn-dash,
+  .admin-listado .btn-accion-dash {
+    width: 48px;
+    height: 48px;
+    flex-basis: 48px;
+  }
+}
+
+
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-listado *,
+  .admin-listado *::before,
+  .admin-listado *::after {
+    transition-duration: .01ms !important;
+  }
+}

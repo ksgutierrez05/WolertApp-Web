@@ -382,8 +382,8 @@ export default function Principal() {
         </div>
         <h1 className="hero-title-dash">{saludo}, {nombreCorto}</h1>
         <p className="hero-text-dash">Consulta el seguimiento de tus reportes y las alertas recientes de tu barrio.</p>
-        <Link to="/ciudadano/reportar-emergencia" className="btn btn-light rounded-pill fw-bold mt-3 hero-cta-dash">
-          <span className="dot-danger-dash"></span> Reportar una alerta
+        <Link to="/ciudadano/mis-alertas" className="btn btn-light rounded-pill fw-bold mt-3 hero-cta-dash">
+          <i className="bi bi-clipboard2-check" aria-hidden="true" /> Ver mis alertas
         </Link>
         <svg
           className="hero-icon-dash"
@@ -451,13 +451,14 @@ export default function Principal() {
           <span className="sos-panel-badge-usu"><i className="bi bi-bell-fill"></i></span>
           <div>
             <div className="sos-panel-titulo-usu">Botón de emergencia</div>
-            <div className="sos-panel-sub-usu">Envía tu ubicación en tiempo real a la policía y a tus vecinos conectados.</div>
+            <div className="sos-panel-sub-usu">Envía tu ubicación en tiempo real a las autoridades y a tus vecinos conectados.</div>
           </div>
         </div>
         <Link
           to="/ciudadano/reportar-emergencia"
           className="sos-btn-usu"
           title="Enviar alerta de emergencia"
+          aria-label="Reportar una alerta de emergencia"
         >
           <span className="sos-pulso-usu"></span>
           <span className="sos-contenido-usu">

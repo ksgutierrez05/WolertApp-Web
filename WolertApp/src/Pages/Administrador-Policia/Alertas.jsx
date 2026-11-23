@@ -318,7 +318,7 @@ useEffect(() => {
           role="dialog"
           aria-modal="true"
           aria-label="Detalle de alerta"
-          style={{ background: "rgba(0,0,0,.55)" }}
+          style={{ background: "rgba(10,47,92,.30)", backdropFilter: "blur(8px)" }}
           onMouseDown={e => {
             if (e.target === e.currentTarget) {
               setSeleccionada(null);

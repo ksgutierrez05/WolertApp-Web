@@ -118,14 +118,10 @@ export default function Configuracion() {
       return;
     }
 
-    // Protección: el PUT reemplaza el barrio. Si la API no lo devolvió, guardar lo borraría.
-    const barrioId = detalle.barrioId ?? detalle.idBarrio;
-    if (barrioId === undefined || barrioId === null) {
-      setError('No se puede guardar todavía: la API no está devolviendo tu barrio y se perdería. Falta actualizar el backend.');
-      return;
-    }
+    // En cuentas administrativas el barrio puede no estar asignado; la API acepta null.
+    const barrioId = detalle.barrioId ?? detalle.idBarrio ?? null;
 
-    // El PUT reemplaza TODOS los campos: reenviamos cédula y barrio tal como vinieron del GET
+    // El PUT reemplaza todos los campos: se conserva el barrio cuando existe.
     const { cedula } = detalle;
     const textoONulo = (v) => v.trim() || null;
 

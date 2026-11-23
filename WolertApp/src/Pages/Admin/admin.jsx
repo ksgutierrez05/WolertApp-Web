@@ -11,6 +11,7 @@ import Alertas from './Alertas';
 import Tipos from './Tipos';
 import Reportes from './Reportes';
 import Estadisticas from './Estadisticas';
+import MapaSucesos from './MapaSucesos';
 
 export default function Admin() {
   return (
@@ -21,6 +22,7 @@ export default function Admin() {
         <Route path="usuarios" element={<UsuariosList />} />
         <Route path="usuarios/nuevo" element={<UsuariosForm />} />
         <Route path="alertas" element={<Alertas />} />
+        <Route path="mapa-sucesos" element={<MapaSucesos />} />
         <Route path="tipos" element={<Tipos />} />
         <Route path="reportes" element={<Reportes />} />
         <Route path="estadisticas" element={<Estadisticas />} />

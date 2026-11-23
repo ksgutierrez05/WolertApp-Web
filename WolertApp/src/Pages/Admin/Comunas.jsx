@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import '../../css/global.css';
 import '../../css/temas.css';
 import '../../css/admin/comunas.css';
+import '../../css/admin/tipos.css';
+import '../../css/admin/paneles-listado.css';
 import { Link } from 'react-router-dom';
 import { ListarComunas, CrearComuna, EditarComuna, EliminarComuna } from '../../Services/ComunasAPI';
 
@@ -105,16 +107,16 @@ export default function Comunas() {
   const esEdicion = idEnEdicion !== null;
 
   return (
-    <div className="container-fluid">
-      <div className="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-3">
+    <main className="container-fluid admin-listado admin-comunas">
+      <header className="admin-listado__hero d-flex justify-content-between align-items-start mb-4 flex-wrap gap-3">
         <div>
           <h1 className="hero-title-dash" style={{ color: 'var(--ink)', fontSize: '26px' }}>Gestión de Comunas</h1>
           <p className="hero-text-dash" style={{ color: 'var(--muted)' }}>Administra las divisiones territoriales del sistema</p>
         </div>
-        <button type="button" className="btn btn-cv-azul d-inline-flex align-items-center gap-2 px-3 py-2" style={{ borderRadius: '12px', fontSize: '13.5px', fontWeight: '700' }} onClick={abrirCrear}>
+        <button type="button" className="admin-listado__primary-action" onClick={abrirCrear}>
           <i className="bi bi-plus-lg" /> Nueva comuna
         </button>
-      </div>
+      </header>
 
       <div className="row g-3 mb-3">
         <div className="col-md-4">
@@ -122,7 +124,7 @@ export default function Comunas() {
             <i className="bi bi-map kpi-icon-dash" />
             <div className="kpi-num-dash" id="kpi-total-comunas">{comunas.length}</div>
             <div className="kpi-label-dash">Total comunas</div>
-            <div className="kpi-label-dash" style={{ marginTop: '2px' }}>Divisiones registradas</div>
+            <div className="kpi-label-dash" style={{ marginTop: "2px" }}>Divisiones registradas</div>
           </div>
         </div>
         <div className="col-md-4">
@@ -130,25 +132,27 @@ export default function Comunas() {
             <i className="bi bi-houses kpi-icon-dash" />
             <div className="kpi-num-dash" id="kpi-total-barrios">{totalBarrios}</div>
             <div className="kpi-label-dash">Total barrios</div>
-            <div className="kpi-label-dash" style={{ marginTop: '2px' }}>En todas las comunas</div>
+            <div className="kpi-label-dash" style={{ marginTop: "2px" }}>En todas las comunas</div>
           </div>
         </div>
         <div className="col-md-4">
           <div className="kpi-dash kpi-red-dash">
             <i className="bi bi-exclamation-triangle kpi-icon-dash" />
-            <div className="kpi-num-dash" style={{ fontSize: '20px' }}>—</div>
+            <div className="kpi-num-dash" style={{ fontSize: "20px" }}>—</div>
             <div className="kpi-label-dash">Alertas por zona</div>
-            <Link to="/admin/alertas" className="kpi-label-dash" style={{ marginTop: '2px', color: 'var(--color-danger)', fontWeight: '700', textDecoration: 'underline' }}>Ver módulo Alertas</Link>          
-  </div>
+            <Link to="/admin/alertas" className="kpi-label-dash" style={{ marginTop: "2px", color: "var(--color-danger)", fontWeight: "700", textDecoration: "underline" }}>Ver módulo Alertas</Link>
+          </div>
+        </div>
+      </div>
+      <section className="admin-listado__content" aria-label="Administración de comunas">
+      <div className="admin-listado__toolbar">
+        <div className="input-group search-dash search-dash-comunas">
+        <span className="input-group-text bg-white border-0"><i className="bi bi-search" /></span>
+        <input type="search" id="input-buscar-comuna" className="form-control border-0" aria-label="Buscar comunas" placeholder="Buscar por nombre de comuna..." value={buscar} onChange={(e) => setBuscar(e.target.value)} />
         </div>
       </div>
 
-      <div className="input-group search-dash search-dash-comunas mb-3">
-        <span className="input-group-text bg-white border-0"><i className="bi bi-search" /></span>
-        <input type="text" id="input-buscar-comuna" className="form-control border-0" placeholder="Buscar por nombre de comuna..." value={buscar} onChange={(e) => setBuscar(e.target.value)} />
-      </div>
-
-      <div className="card-panel-dash">
+      <section className="card-panel-dash" aria-label="Listado de comunas">
         <div className="tabla-comunas-header">
           <span>NOMBRE</span>
           <span className="text-end">ACCIONES</span>
@@ -173,13 +177,13 @@ export default function Comunas() {
                   </div>
                 </div>
                 <div className="d-flex justify-content-end gap-2">
-                  <button type="button" className="btn-accion-dash btn-ver-dash" title="Ver" onClick={() => abrirVer(c.idComuna)}>
+                  <button type="button" className="btn-accion-dash btn-ver-dash" aria-label={`Ver ${c.nombre}`} title="Ver" onClick={() => abrirVer(c.idComuna)}>
                     <i className="bi bi-eye" />
                   </button>
-                  <button type="button" className="btn-accion-dash btn-editar-dash" title="Editar" onClick={() => abrirEditar(c.idComuna)}>
+                  <button type="button" className="btn-accion-dash btn-editar-dash" aria-label={`Editar ${c.nombre}`} title="Editar" onClick={() => abrirEditar(c.idComuna)}>
                     <i className="bi bi-pencil" />
                   </button>
-                  <button type="button" className="btn-accion-dash btn-eliminar-dash" title="Eliminar" onClick={() => eliminar(c.idComuna)}>
+                  <button type="button" className="btn-accion-dash btn-eliminar-dash" aria-label={`Eliminar ${c.nombre}`} title="Eliminar" onClick={() => eliminar(c.idComuna)}>
                     <i className="bi bi-trash" />
                   </button>
                 </div>
@@ -187,7 +191,8 @@ export default function Comunas() {
             ))
           )}
         </div>
-      </div>
+      </section>
+      </section>
 
       {modalAbierto && (
         <>
@@ -234,6 +239,6 @@ export default function Comunas() {
           </div>
         </>
       )}
-    </div>
+    </main>
   );
 }

@@ -4,6 +4,7 @@ import "../../css/global.css";
 import "../../css/temas.css";
 import "../../css/ciudadano/encabezados-ciudadano.css";
 import "../../css/ciudadano/panel-notificaciones.css";
+import "../../css/ciudadano/vistas-bandeja.css";
 import { destinoNotificacion, listarMisNotificaciones } from "../../Services/NotificacionesAPI";
 import { notificacionPermitidaCiudadano, obtenerPreferenciasCiudadano } from "../../Services/PreferenciasCiudadano";
 

@@ -52,7 +52,8 @@ export async function editarUsuario(id, usuario) {
     });
 
     if (!respuesta.ok) {
-        throw new Error('Error en edición del usuario');
+        const detalle = await respuesta.text();
+        throw new Error(detalle || `Error en edición del usuario (${respuesta.status})`);
     }
 }
 

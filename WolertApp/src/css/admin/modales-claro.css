@@ -1,0 +1,130 @@
+/* Tema común para paneles de creación, edición y lectura del área administrativa. */
+:is(.admin-layout, body.rol-policia) .modal-backdrop {
+  z-index: 1050;
+  background: rgba(10, 47, 92, .30);
+  backdrop-filter: blur(8px);
+  opacity: 1;
+}
+
+:is(.admin-layout, body.rol-policia) .modal {
+  background: transparent;
+}
+
+:is(.admin-layout, body.rol-policia) .modal-content,
+:is(.admin-layout, body.rol-policia) .modal-dash,
+:is(.admin-layout, body.rol-policia) .modal-alerta-dash {
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, .78);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, .88);
+  box-shadow: 0 24px 70px rgba(10, 35, 67, .20), 0 4px 16px rgba(10, 47, 92, .08);
+  backdrop-filter: blur(16px);
+  color: #0a1220;
+}
+
+:is(.admin-layout, body.rol-policia) .modal-header,
+:is(.admin-layout, body.rol-policia) .modal-header-dash {
+  border: 0;
+  border-bottom: 1px solid rgba(31, 95, 168, .10);
+  background: linear-gradient(125deg, rgba(232, 240, 251, .94), rgba(226, 242, 239, .88));
+  color: #0a2f5c;
+}
+
+:is(.admin-layout, body.rol-policia) .modal-title,
+:is(.admin-layout, body.rol-policia) .modal-title-dash,
+:is(.admin-layout, body.rol-policia) .modal-header-dash .modal-title {
+  color: #0a2f5c;
+}
+
+:is(.admin-layout, body.rol-policia) .modal-subtitle,
+:is(.admin-layout, body.rol-policia) .modal-header-dash .modal-subtitle-dash {
+  color: #66778d;
+}
+
+:is(.admin-layout, body.rol-policia) .modal-header-dash .btn-close-dash {
+  color: #315b86;
+}
+
+:is(.admin-layout, body.rol-policia) .modal-body,
+:is(.admin-layout, body.rol-policia) .modal-body-dash,
+:is(.admin-layout, body.rol-policia) .modal-footer,
+:is(.admin-layout, body.rol-policia) .modal-footer-dash {
+  background: transparent;
+  color: #24364c;
+}
+
+:is(.admin-layout, body.rol-policia) .modal .form-control,
+:is(.admin-layout, body.rol-policia) .modal .form-select,
+:is(.admin-layout, body.rol-policia) .modal .input-dash,
+:is(.admin-layout, body.rol-policia) .notificacion-modal .form-control {
+  border-color: #d7e2ee;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, .82);
+  color: #24364c;
+}
+
+:is(.admin-layout, body.rol-policia) .modal .form-control:focus,
+:is(.admin-layout, body.rol-policia) .modal .form-select:focus,
+:is(.admin-layout, body.rol-policia) .notificacion-modal .form-control:focus {
+  border-color: #6c9bd0;
+  background-color: #fff;
+  box-shadow: 0 0 0 3px rgba(31, 95, 168, .14);
+}
+
+.admin-layout .types-modal-backdrop,
+body.rol-policia .types-modal-backdrop,
+body.rol-policia .notificacion-modal-fondo {
+  background: rgba(10, 47, 92, .30);
+  backdrop-filter: blur(8px);
+}
+
+.admin-layout .types-modal,
+body.rol-policia .types-modal,
+body.rol-policia .notificacion-modal {
+  border: 1px solid rgba(255, 255, 255, .8);
+  background: rgba(255, 255, 255, .88);
+  box-shadow: 0 24px 70px rgba(10, 35, 67, .20);
+  backdrop-filter: blur(16px);
+}
+
+.admin-layout .types-modal__header,
+body.rol-policia .notificacion-modal-header {
+  border-bottom: 1px solid rgba(31, 95, 168, .10);
+  background: linear-gradient(125deg, rgba(232, 240, 251, .94), rgba(226, 242, 239, .88));
+  color: #0a2f5c;
+}
+
+.admin-layout .types-modal__header h2,
+body.rol-policia .notificacion-modal-header h2 {
+  color: #0a2f5c;
+}
+
+.admin-layout .types-modal__header > button,
+body.rol-policia .notificacion-modal-header > button {
+  border-color: #d7e2ee;
+  background: rgba(255, 255, 255, .68);
+  color: #315b86;
+}
+
+body.rol-policia .notificacion-modal-kicker,
+body.rol-policia .notificacion-modal-header p {
+  color: #66778d;
+}
+
+body.rol-policia .notificacion-modal-body,
+body.rol-policia .notificacion-modal-footer {
+  background: transparent;
+}
+
+body.rol-policia .modal-alerta-dash .detalle-item-dash,
+body.rol-policia .modal-alerta-dash .detalle-descripcion-dash {
+  border-color: #e5ebf3;
+  background: rgba(244, 247, 251, .75);
+  color: #24364c;
+}
+
+@media (max-width: 600px) {
+  :is(.admin-layout, body.rol-policia) .modal-dialog {
+    margin: 12px;
+  }
+}

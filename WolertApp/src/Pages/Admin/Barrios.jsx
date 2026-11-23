@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import '../../css/global.css';
 import '../../css/temas.css';
 import '../../css/admin/barrios.css';
+import '../../css/admin/tipos.css';
+import '../../css/admin/paneles-listado.css';
 import { Link } from 'react-router-dom';
 import { ListarBarrios, CrearBarrio, EditarBarrio, EliminarBarrio } from '../../Services/BarriosApi';
 import { ListarComunas } from '../../Services/ComunasAPI';
@@ -100,16 +102,16 @@ export default function Barrios() {
   };
 
   return (
-    <div className="container-fluid">
-      <div className="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-3">
+    <main className="container-fluid admin-listado admin-barrios">
+      <header className="admin-listado__hero d-flex justify-content-between align-items-start mb-4 flex-wrap gap-3">
         <div>
           <h1 className="hero-title-dash" style={{ color: 'var(--ink)', fontSize: '26px' }}>Gestión de Barrios</h1>
           <p className="hero-text-dash" style={{ color: 'var(--muted)' }}>Administra los barrios dentro de cada comuna</p>
         </div>
-        <button type="button" className="btn btn-cv-azul d-inline-flex align-items-center gap-2 px-3 py-2" style={{ borderRadius: '12px', fontSize: '13.5px', fontWeight: '700' }} onClick={abrirCrear}>
+        <button type="button" className="admin-listado__primary-action" onClick={abrirCrear}>
           <i className="bi bi-plus-lg" /> Nuevo barrio
         </button>
-      </div>
+      </header>
 
       <div className="row g-3 mb-3">
         <div className="col-md-4">
@@ -117,7 +119,7 @@ export default function Barrios() {
             <i className="bi bi-house kpi-icon-dash" />
             <div className="kpi-num-dash" id="kpi-total-barrios">{barrios.length}</div>
             <div className="kpi-label-dash">Total barrios</div>
-            <div className="kpi-label-dash" style={{ marginTop: '2px' }}>Registrados en el sistema</div>
+            <div className="kpi-label-dash" style={{ marginTop: "2px" }}>Registrados en el sistema</div>
           </div>
         </div>
         <div className="col-md-4">
@@ -125,7 +127,7 @@ export default function Barrios() {
             <i className="bi bi-check-circle kpi-icon-dash" />
             <div className="kpi-num-dash" id="kpi-barrios-activos">{barrios.length}</div>
             <div className="kpi-label-dash">Barrios activos</div>
-            <div className="kpi-label-dash" style={{ marginTop: '2px' }}>En el sistema</div>
+            <div className="kpi-label-dash" style={{ marginTop: "2px" }}>En el sistema</div>
           </div>
         </div>
         <div className="col-md-4">
@@ -133,16 +135,19 @@ export default function Barrios() {
             <i className="bi bi-map kpi-icon-dash" />
             <div className="kpi-num-dash" id="kpi-comunas-cubiertas">{comunasConBarrio}</div>
             <div className="kpi-label-dash">Comunas cubiertas</div>
-            <Link to="/admin/comunas" className="kpi-label-dash" style={{ marginTop: '2px', color: 'var(--color-amber)', fontWeight: '700', textDecoration: 'underline' }}> Ver módulo Comunas</Link>          </div>
+            <Link to="/admin/comunas" className="kpi-label-dash" style={{ marginTop: "2px", color: "var(--color-amber)", fontWeight: "700", textDecoration: "underline" }}>Ver módulo Comunas</Link>
+          </div>
+        </div>
+      </div>
+      <section className="admin-listado__content" aria-label="Administración de barrios">
+      <div className="admin-listado__toolbar">
+        <div className="input-group search-dash">
+        <span className="input-group-text bg-white border-0"><i className="bi bi-search" /></span>
+        <input type="search" id="input-buscar-barrio" className="form-control border-0" aria-label="Buscar barrios" placeholder="Buscar por nombre de barrio..." value={buscar} onChange={(e) => setBuscar(e.target.value)} />
         </div>
       </div>
 
-      <div className="input-group search-dash mb-3">
-        <span className="input-group-text bg-white border-0"><i className="bi bi-search" /></span>
-        <input type="text" id="input-buscar-barrio" className="form-control border-0" placeholder="Buscar por nombre de barrio..." value={buscar} onChange={(e) => setBuscar(e.target.value)} />
-      </div>
-
-      <div className="card-panel-dash">
+      <section className="card-panel-dash" aria-label="Listado de barrios">
         <div className="tabla-barrios-header">
           <span>NOMBRE</span>
           <span>COMUNA</span>
@@ -163,10 +168,10 @@ export default function Barrios() {
                   <span className="barrio-comuna-badge-dash" style={{ backgroundColor: colorPorId(b.comunaId) }}>{b.comunaNombre}</span>
                 </div>
                 <div className="d-flex justify-content-end gap-2">
-                  <button type="button" className="btn-accion-dash btn-editar-barrio" title="Editar" onClick={() => abrirEditar(b.idBarrio)}>
+                  <button type="button" className="btn-accion-dash btn-editar-barrio" aria-label={`Editar ${b.nombre}`} title="Editar" onClick={() => abrirEditar(b.idBarrio)}>
                     <i className="bi bi-pencil" />
                   </button>
-                  <button type="button" className="btn-accion-dash btn-eliminar-barrio" title="Eliminar" onClick={() => eliminar(b.idBarrio)}>
+                  <button type="button" className="btn-accion-dash btn-eliminar-barrio" aria-label={`Eliminar ${b.nombre}`} title="Eliminar" onClick={() => eliminar(b.idBarrio)}>
                     <i className="bi bi-trash" />
                   </button>
                 </div>
@@ -174,7 +179,8 @@ export default function Barrios() {
             ))
           )}
         </div>
-      </div>
+      </section>
+      </section>
 
       {modalAbierto && (
         <>
@@ -213,6 +219,6 @@ export default function Barrios() {
           </div>
         </>
       )}
-    </div>
+    </main>
   );
 }

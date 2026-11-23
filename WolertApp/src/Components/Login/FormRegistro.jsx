@@ -32,7 +32,7 @@ function FormRegistro({ onRegistroSuccess }) {
     const [cargando, setCargando] = useState(false)
 
     const datosGoogleValidos = Boolean(
-        formData.cedula.trim() && formData.username.trim()
+        formData.cedula.trim() && formData.username.trim() && formData.barrioId
     )
 
     useEffect(() => {
@@ -98,9 +98,7 @@ function FormRegistro({ onRegistroSuccess }) {
                 cedula: formData.cedula.trim(),
                 username: formData.username.trim(),
                 telefono: formData.telefono.trim() || null,
-                barrioId: formData.barrioId
-                    ? Number(formData.barrioId)
-                    : null
+                barrioId: Number(formData.barrioId)
             })
 
             if (onRegistroSuccess) onRegistroSuccess(sesion)
@@ -303,8 +301,8 @@ function FormRegistro({ onRegistroSuccess }) {
                 </div>
 
                 <div className="google-registro-ayuda">
-                    Para Google solo necesitas completar cédula y nombre de
-                    usuario. Teléfono y barrio son opcionales.
+                    Para Google completa tu cédula, nombre de usuario y
+                    selecciona tu barrio. El teléfono es opcional.
                 </div>
 
                 <div className="google-wrapper">

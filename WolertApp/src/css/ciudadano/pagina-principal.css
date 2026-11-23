@@ -374,6 +374,35 @@
   letter-spacing: 0.04em;
 }
 
+/* Acciones de reporte: mayor superficie para ratón y pantalla táctil. */
+.ciudadano-shell .hero-dash.hero-ciudadano-usu .hero-cta-dash {
+  min-height: 56px;
+  padding: 16px 30px;
+  gap: 11px;
+  border-radius: 999px;
+  font-size: 16px;
+  line-height: 1.2;
+}
+
+.ciudadano-shell .hero-dash.hero-ciudadano-usu .hero-cta-dash:focus-visible,
+.ciudadano-shell .sos-btn-usu:focus-visible {
+  outline: 4px solid #f4b942;
+  outline-offset: 4px;
+}
+
+.ciudadano-shell .sos-btn-usu {
+  width: 104px;
+  height: 104px;
+}
+
+.ciudadano-shell .sos-contenido-usu i {
+  font-size: 34px;
+}
+
+.ciudadano-shell .sos-contenido-usu span:last-child {
+  font-size: 14px;
+}
+
 /* [10] Modal de confirmación SOS --------------------------------------- */
 .sos-modal-usu {
   border-radius: 22px;
@@ -435,10 +464,32 @@
   }
 
   .sos-contenido-usu i {
-    font-size: 17px;
+    font-size: 30px;
   }
 }
- 
+
+
+@media (max-width: 768px) {
+  .ciudadano-shell .hero-dash.hero-ciudadano-usu .hero-cta-dash {
+    width: 100%;
+    min-height: 60px;
+    justify-content: center;
+    margin-right: 0;
+    margin-left: 0;
+    padding: 17px 22px;
+    font-size: 17px;
+  }
+
+  .ciudadano-shell .sos-btn-usu {
+    width: 116px;
+    height: 116px;
+  }
+
+  .ciudadano-shell .sos-contenido-usu i {
+    font-size: 36px;
+  }
+}
+
 /* [13] Hero con imagen (ciudadano) ---------------------------------
    Variante del .hero-dash de global.css. La foto llega por la
    variable --hero-img desde el JSX (style={{ '--hero-img': ... }}).
@@ -511,3 +562,4 @@
     font-size: 30px;
   }
 }
+

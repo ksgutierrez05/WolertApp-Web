@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import SidebarPolicia from '../Administrador-policia/Sidebar';
+import '../../css/admin/modales-claro.css';
 
 function Layout() {
   useEffect(() => {
