@@ -1,6 +1,6 @@
 
 import { KPIS_PATRULLERO_CONFIG } from './Kpisconfig';
-import '../../css/Policia/Patrullero/css/kpicard.css';
+import '../../css/Policia/Patrullero/css/Kpicard.css';
 
 function Kpis({ grupo, valores = {}, cargando = false }) {
   const config = KPIS_PATRULLERO_CONFIG[grupo];
