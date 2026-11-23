@@ -28,8 +28,7 @@ namespace WolertApp.Controllers
             "ADMIN,ADMIN_POLICIA,ADMIN_TRANSITO,CENTRAL_POLICIA,CENTRAL_TRANSITO,POLICIA,AGENTE_TRANSITO";
 
         private const string RolesSolicitan =
-            "POLICIA,AGENTE_TRANSITO";
-
+      "POLICIA,AGENTE_TRANSITO,CENTRAL_TRANSITO";
         private const string RolesCentral =
             "CENTRAL_POLICIA,CENTRAL_TRANSITO";
 
