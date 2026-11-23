@@ -1,3 +1,4 @@
+import SolicitarApoyoPatrullero from "../../Components/Patrullero/SolicitarApoyoPatrullero";
 
 import { useMemo, useState } from "react";
 import PageHeader from "../../Components/Patrullero/Pageheader";
@@ -384,6 +385,8 @@ export default function MisAsignaciones() {
                 </p>
               </div>
             )}
+
+            <SolicitarApoyoPatrullero asignacion={seleccion} onCreada={recargar} />
 
             {seleccion && (
               <div

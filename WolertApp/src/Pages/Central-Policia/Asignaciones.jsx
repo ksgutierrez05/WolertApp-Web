@@ -1,3 +1,4 @@
+import SolicitudesApoyoCentral from "../../Components/Central-policia/SolicitudesApoyoCentral";
 
 import { useEffect, useMemo, useState } from "react";
 import Topbar from "../../Components/Central-policia/Topbar";
@@ -342,6 +343,7 @@ function Asignaciones() {
       />
 
       <div className="asig-page">
+        <SolicitudesApoyoCentral />
         <header className="asig-page-header">
           <div>
 

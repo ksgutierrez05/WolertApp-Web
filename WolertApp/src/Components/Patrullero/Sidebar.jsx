@@ -1,92 +1,98 @@
 
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate } from "react-router-dom";
 
-const RAIZ = '/Patrullero';
+const RAIZ = "/Patrullero";
 
 const MENU_PATRULLERO = [
   {
-    seccion: 'General',
+    seccion: "General",
     items: [
       {
-        id: 'centro',
-        label: 'Centro de operaciones',
+        id: "centro",
+        label: "Centro de operaciones",
         to: RAIZ,
         end: true,
-        icon: 'bi-house'
-      }
-    ]
+        icon: "bi-house",
+      },
+    ],
   },
   {
-    seccion: 'Operación',
+    seccion: "Operación",
     items: [
       {
-        id: 'alertas',
-        label: 'Mis alertas',
+        id: "alertas",
+        label: "Mis alertas",
         to: `${RAIZ}/Alertas`,
-        icon: 'bi-exclamation-triangle'
+        icon: "bi-exclamation-triangle",
       },
       {
-        id: 'asignaciones',
-        label: 'Mis asignaciones',
+        id: "asignaciones",
+        label: "Mis asignaciones",
         to: `${RAIZ}/Asignaciones`,
-        icon: 'bi-clipboard-check'
+        icon: "bi-clipboard-check",
       },
       {
-        id: 'unidad',
-        label: 'Mi unidad',
+        id: "unidad",
+        label: "Mi unidad",
         to: `${RAIZ}/Unidad`,
-        icon: 'bi-people'
-      }
-    ]
+        icon: "bi-people",
+      },
+    ],
   },
   {
-    seccion: 'Cuenta',
+    seccion: "Cuenta",
     items: [
       {
-        id: 'notificaciones',
-        label: 'Notificaciones',
+        id: "notificaciones",
+        label: "Notificaciones",
         to: `${RAIZ}/Notificaciones`,
-        icon: 'bi-bell'
+        icon: "bi-bell",
       },
       {
-        id: 'configuracion',
-        label: 'Configuración',
+        id: "configuracion",
+        label: "Configuración",
         to: `${RAIZ}/Configuracion`,
-        icon: 'bi-sliders'
-      }
-    ]
-  }
+        icon: "bi-sliders",
+      },
+    ],
+  },
 ];
 
 function Sidebar() {
   const navigate = useNavigate();
 
+  // Cerrar sesión directamente, sin confirmación
   function cerrarSesion(evento) {
     evento.preventDefault();
 
-    if (!window.confirm('¿Seguro que deseas cerrar sesión?')) {
-      return;
-    }
-
     try {
+      // Eliminar datos de autenticación
       [
-        'token',
-        'usuario',
-        'rol',
-        'idUsuario',
-        'username'
-      ].forEach(clave => localStorage.removeItem(clave));
+        "token",
+        "usuario",
+        "rol",
+        "idUsuario",
+        "username",
+      ].forEach((clave) => {
+        localStorage.removeItem(clave);
+      });
 
+      // Limpiar datos temporales de sesión
       sessionStorage.clear();
     } catch (error) {
-      console.warn('No se pudo limpiar el almacenamiento', error);
+      console.warn(
+        "No se pudo limpiar el almacenamiento",
+        error
+      );
     }
 
-    navigate('/', { replace: true });
+    // Volver al inicio sin conservar esta ruta
+    navigate("/", { replace: true });
   }
 
   return (
     <aside className="sidebar-dash" id="sidebarDash">
+      {/* LOGO Y NOMBRE */}
       <div className="d-flex align-items-center brand-dash">
         <span className="brand-icon-dash brand-icon-dash--logo">
           <img
@@ -106,14 +112,15 @@ function Sidebar() {
         </span>
       </div>
 
-      {MENU_PATRULLERO.map(seccion => (
+      {/* MENÚ DE NAVEGACIÓN */}
+      {MENU_PATRULLERO.map((seccion) => (
         <div key={seccion.seccion}>
           <p className="glabel-dash">
             {seccion.seccion}
           </p>
 
           <nav className="nav flex-column menu-dash">
-            {seccion.items.map(item => (
+            {seccion.items.map((item) => (
               <NavLink
                 key={item.id}
                 to={item.to}
@@ -138,6 +145,7 @@ function Sidebar() {
 
       <div className="flex-grow-1" />
 
+      {/* CERRAR SESIÓN - DISEÑO ORIGINAL */}
       <a
         href="/"
         id="logoutDash"
