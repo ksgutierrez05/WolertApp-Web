@@ -1338,7 +1338,7 @@ body.rol-policia .co-status-dot {
   background: #18a66d;
 }
 
-*/* Botones VER y ACTUALIZAR: estilo de la referencia */*
+/* Botones VER y ACTUALIZAR: estilo de la referencia */
 
 body.rol-policia {
   --co-green: #006b53;
