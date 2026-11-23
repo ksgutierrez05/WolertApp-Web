@@ -1,9 +1,19 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
+
 import Topbar from "../../Components/Administrador-policia/Topbar";
 import Kpis from "../../Components/Administrador-policia/Kpicard";
+import MapaUnidadesPoliciales from "../../Components/Administrador-policia/MapaUnidadesPoliciales";
 import { apiAdminPolicia } from "../../Services/AdminPoliciaApi";
+
 import "../../css/Policia/administrador-policia/css/unidades.css";
+import "../../css/Policia/administrador-policia/css/mapa-unidades-policiales.css";
+
+// ======================================================
+// CONFIGURACIÓN
+// ======================================================
+
+const ICONO_UNIDAD = "../../../public/img/coche-de-policia.png";
 
 const FORM_INICIAL = {
   nombre: "",
@@ -13,6 +23,8 @@ const FORM_INICIAL = {
   longitud: "",
 };
 
+const POR_PAGINA = 8;
+
 const normalizar = (valor) =>
   String(valor ?? "").trim().toUpperCase();
 
@@ -21,7 +33,7 @@ const mostrar = (valor) =>
     ? "—"
     : String(valor);
 
-function obtenerLista(respuesta, recurso) {
+function obtenerLista(respuesta, nombre) {
   if (Array.isArray(respuesta)) return respuesta;
 
   const lista =
@@ -34,36 +46,76 @@ function obtenerLista(respuesta, recurso) {
   if (Array.isArray(lista)) return lista;
 
   throw new Error(
-    `La API de ${recurso} no devolvió una lista válida.`
+    `La API de ${nombre} no devolvió una lista válida.`
   );
 }
 
-function obtenerIdUnidad(policia) {
+function idUnidadPolicia(p) {
   return (
-    policia.idUnidad ??
-    policia.idUnidadPolicial ??
-    policia.unidad?.idUnidad ??
-    policia.unidadPolicial?.idUnidad ??
+    p.idUnidad ??
+    p.idUnidadPolicial ??
+    p.unidad?.idUnidad ??
+    p.unidadPolicial?.idUnidad ??
     null
   );
 }
 
-function obtenerNombrePolicia(policia) {
-  const nombre = [
-    policia.nombres ?? policia.nombre,
-    policia.apellidos ?? policia.apellido,
+function nombrePolicia(p) {
+  const completo = [
+    p.nombres ?? p.nombre,
+    p.apellidos ?? p.apellido,
   ]
     .filter(Boolean)
     .join(" ")
     .trim();
 
   return (
-    policia.nombreCompleto ||
-    policia.nombreUsuario ||
-    nombre ||
-    `Policía #${policia.idUsuario ?? "—"}`
+    p.nombreCompleto ||
+    p.nombreUsuario ||
+    completo ||
+    `Policía #${p.idUsuario ?? "—"}`
   );
 }
+
+// ======================================================
+// ICONO PERSONALIZADO
+// ======================================================
+
+function IconoUnidad({ className = "", tamaño = 24 }) {
+  const [fallo, setFallo] = useState(false);
+
+  return (
+    <span className={`unidad-icono-personalizado ${className}`}>
+      {!fallo ? (
+        <img
+          src={ICONO_UNIDAD}
+          alt="Unidad policial"
+          width={tamaño}
+          height={tamaño}
+          draggable={false}
+          onError={() => setFallo(true)}
+          style={{
+            width: tamaño,
+            height: tamaño,
+            objectFit: "contain",
+            display: "block",
+            imageRendering: "auto",
+          }}
+        />
+      ) : (
+        <i
+          className="bi bi-shield-check"
+          aria-hidden="true"
+          style={{ fontSize: tamaño * 0.75 }}
+        />
+      )}
+    </span>
+  );
+}
+
+// ======================================================
+// BUSCADOR DE BARRIOS
+// ======================================================
 
 function BuscadorBarrio({
   id,
@@ -71,107 +123,74 @@ function BuscadorBarrio({
   valor,
   onChange,
   placeholder = "Buscar barrio...",
-  incluirTodos = false,
-  requerido = false,
+  required = false,
 }) {
   const [texto, setTexto] = useState("");
   const [abierto, setAbierto] = useState(false);
-  const [activo, setActivo] = useState(0);
-  const contenedorRef = useRef(null);
-  const entradaRef = useRef(null);
+  const contenedor = useRef(null);
 
-  const seleccionado = useMemo(
-    () => barrios.find(
-      (b) => String(b.idBarrio) === String(valor)
-    ),
-    [barrios, valor]
+  const seleccionado = barrios.find(
+    (b) =>
+      String(b.idBarrio) === String(valor) &&
+      valor !== ""
   );
 
-  const nombreSeleccionado = seleccionado
-    ? String(seleccionado.nombre ?? seleccionado.nombreBarrio ?? "")
-    : "";
+  const nombreSeleccionado =
+    seleccionado?.nombre ??
+    seleccionado?.nombreBarrio ??
+    "";
 
   useEffect(() => {
     setTexto(nombreSeleccionado);
   }, [nombreSeleccionado]);
 
   useEffect(() => {
-    function cerrarSiFuera(evento) {
-      if (
-        contenedorRef.current &&
-        !contenedorRef.current.contains(evento.target)
-      ) {
+    function cerrarFuera(e) {
+      if (!contenedor.current?.contains(e.target)) {
         setAbierto(false);
         setTexto(nombreSeleccionado);
       }
     }
 
-    document.addEventListener("pointerdown", cerrarSiFuera);
+    document.addEventListener("pointerdown", cerrarFuera);
 
-    return () =>
-      document.removeEventListener("pointerdown", cerrarSiFuera);
+    return () => {
+      document.removeEventListener("pointerdown", cerrarFuera);
+    };
   }, [nombreSeleccionado]);
 
-  const opciones = useMemo(() => {
-    const termino = texto.trim().toLocaleLowerCase("es");
+  const opciones = barrios.filter((b) =>
+    String(b.nombre ?? b.nombreBarrio ?? "")
+      .toLowerCase()
+      .includes(texto.toLowerCase().trim())
+  );
 
-    return barrios.filter((b) => {
-      const nombre = String(
-        b.nombre ?? b.nombreBarrio ?? ""
-      ).toLocaleLowerCase("es");
-
-      return nombre.includes(termino);
-    });
-  }, [barrios, texto]);
-
-  const elegir = (barrio) => {
-    onChange(String(barrio.idBarrio));
-    setTexto(barrio.nombre ?? barrio.nombreBarrio ?? "");
+  function elegir(b) {
+    onChange(String(b.idBarrio));
+    setTexto(b.nombre ?? b.nombreBarrio ?? "");
     setAbierto(false);
-    setActivo(0);
-  };
-
-  const limpiar = () => {
-    onChange("");
-    setTexto("");
-    setActivo(0);
-    setAbierto(false);
-  };
+  }
 
   return (
-    <div
-      className="barrio-combobox"
-      ref={contenedorRef}
-    >
+    <div className="barrio-combobox" ref={contenedor}>
       <div className="barrio-combobox-control">
-        <i className="bi bi-search" aria-hidden="true" />
+        <i className="bi bi-search" />
 
         <input
-          ref={entradaRef}
           id={id}
           type="text"
           role="combobox"
           aria-expanded={abierto}
           aria-controls={`${id}-opciones`}
-          aria-autocomplete="list"
-          aria-activedescendant={
-            abierto && opciones.length
-              ? `${id}-opcion-${activo}`
-              : undefined
-          }
-          autoComplete="off"
           placeholder={placeholder}
-          required={requerido && !valor}
+          autoComplete="off"
+          required={required && !valor}
           value={texto}
-          onFocus={() => {
-            setAbierto(true);
-            setActivo(0);
-          }}
+          onFocus={() => setAbierto(true)}
           onChange={(e) => {
             setTexto(e.target.value);
             onChange("");
             setAbierto(true);
-            setActivo(0);
           }}
           onKeyDown={(e) => {
             if (e.key === "Escape") {
@@ -179,90 +198,43 @@ function BuscadorBarrio({
               setTexto(nombreSeleccionado);
             }
 
-            if (e.key === "ArrowDown") {
-              e.preventDefault();
-              setAbierto(true);
-              setActivo((actual) =>
-                Math.min(actual + 1, opciones.length - 1)
-              );
-            }
-
-            if (e.key === "ArrowUp") {
-              e.preventDefault();
-              setActivo((actual) => Math.max(actual - 1, 0));
-            }
-
             if (
               e.key === "Enter" &&
               abierto &&
-              opciones.length > 0
+              opciones.length
             ) {
               e.preventDefault();
-              elegir(opciones[activo] ?? opciones[0]);
+              elegir(opciones[0]);
             }
           }}
         />
 
-        {texto ? (
-          <button
-            type="button"
-            className="barrio-combobox-limpiar"
-            title="Limpiar barrio"
-            aria-label="Limpiar barrio"
-            onClick={() => {
-              limpiar();
-              entradaRef.current?.focus();
-            }}
-          >
-            <i className="bi bi-x-lg" />
-          </button>
-        ) : (
-          <button
-            type="button"
-            className="barrio-combobox-flecha"
-            title="Mostrar barrios"
-            aria-label="Mostrar barrios"
-            onClick={() => {
-              setAbierto((actual) => !actual);
-              entradaRef.current?.focus();
-            }}
-          >
-            <i className="bi bi-chevron-down" />
-          </button>
-        )}
+        <button
+          type="button"
+          className="barrio-combobox-flecha"
+          onClick={() => setAbierto((v) => !v)}
+          aria-label="Mostrar barrios"
+        >
+          <i className="bi bi-chevron-down" />
+        </button>
       </div>
 
       {abierto && (
         <div
-          className="barrio-combobox-lista"
           id={`${id}-opciones`}
+          className="barrio-combobox-lista"
           role="listbox"
         >
-          {incluirTodos && (
-            <button
-              type="button"
-              className="barrio-combobox-opcion"
-              onMouseDown={(e) => e.preventDefault()}
-              onClick={limpiar}
-            >
-              <i className="bi bi-grid" />
-              Todos los barrios
-            </button>
-          )}
-
           {opciones.length ? (
-            opciones.map((b, indice) => (
+            opciones.map((b) => (
               <button
                 type="button"
-                key={b.idBarrio}
-                id={`${id}-opcion-${indice}`}
                 role="option"
                 aria-selected={
                   String(b.idBarrio) === String(valor)
                 }
-                className={`barrio-combobox-opcion ${
-                  indice === activo ? "seleccionado" : ""
-                }`}
+                key={b.idBarrio}
+                className="barrio-combobox-opcion"
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={() => elegir(b)}
               >
@@ -272,7 +244,7 @@ function BuscadorBarrio({
             ))
           ) : (
             <div className="barrio-combobox-vacio">
-              No se encontraron barrios.
+              No se encontraron barrios
             </div>
           )}
         </div>
@@ -281,13 +253,16 @@ function BuscadorBarrio({
   );
 }
 
+// ======================================================
+// COMPONENTE PRINCIPAL
+// ======================================================
+
 export default function Unidades() {
   const [unidades, setUnidades] = useState([]);
   const [barrios, setBarrios] = useState([]);
   const [policias, setPolicias] = useState([]);
 
   const [cargando, setCargando] = useState(true);
-  const [cargandoDetalle, setCargandoDetalle] = useState(false);
   const [guardando, setGuardando] = useState(false);
 
   const [error, setError] = useState("");
@@ -300,7 +275,13 @@ export default function Unidades() {
 
   const [modal, setModal] = useState("");
   const [seleccion, setSeleccion] = useState(null);
-  const [form, setForm] = useState(FORM_INICIAL);
+  const [form, setForm] = useState({ ...FORM_INICIAL });
+
+  const [pagina, setPagina] = useState(1);
+
+  // ====================================================
+  // CARGAR DATOS
+  // ====================================================
 
   async function cargar() {
     setCargando(true);
@@ -312,46 +293,40 @@ export default function Unidades() {
       apiAdminPolicia("/api/Policias"),
     ]);
 
-    const [rUnidades, rBarrios, rPolicias] = resultados;
+    const [ru, rb, rp] = resultados;
     const errores = [];
 
-    if (rUnidades.status === "fulfilled") {
+    if (ru.status === "fulfilled") {
       try {
-        setUnidades(obtenerLista(rUnidades.value, "unidades"));
+        setUnidades(obtenerLista(ru.value, "unidades"));
       } catch (e) {
         setUnidades([]);
-        errores.push(`Unidades: ${e.message}`);
+        errores.push(e.message);
       }
     } else {
       setUnidades([]);
       errores.push(
-        `Unidades: ${
-          rUnidades.reason?.message ||
-          "No se pudo consultar GET /api/Unidades"
-        }`
+        ru.reason?.message || "Error al consultar unidades."
       );
     }
 
-    if (rBarrios.status === "fulfilled") {
+    if (rb.status === "fulfilled") {
       try {
-        setBarrios(obtenerLista(rBarrios.value, "barrios"));
+        setBarrios(obtenerLista(rb.value, "barrios"));
       } catch (e) {
         setBarrios([]);
-        errores.push(`Barrios: ${e.message}`);
+        errores.push(e.message);
       }
     } else {
       setBarrios([]);
       errores.push(
-        `Barrios: ${
-          rBarrios.reason?.message ||
-          "No se pudo consultar GET /api/Barrios"
-        }`
+        rb.reason?.message || "Error al consultar barrios."
       );
     }
 
-    if (rPolicias.status === "fulfilled") {
+    if (rp.status === "fulfilled") {
       try {
-        setPolicias(obtenerLista(rPolicias.value, "policías"));
+        setPolicias(obtenerLista(rp.value, "policías"));
         setErrorPolicias("");
       } catch (e) {
         setPolicias([]);
@@ -360,8 +335,7 @@ export default function Unidades() {
     } else {
       setPolicias([]);
       setErrorPolicias(
-        rPolicias.reason?.message ||
-        "No se pudo consultar GET /api/Policias"
+        rp.reason?.message || "Error al consultar policías."
       );
     }
 
@@ -372,6 +346,10 @@ export default function Unidades() {
   useEffect(() => {
     cargar();
   }, []);
+
+  // ====================================================
+  // BARRIOS
+  // ====================================================
 
   const barriosPorId = useMemo(
     () =>
@@ -384,92 +362,91 @@ export default function Unidades() {
     [barrios]
   );
 
-  function nombreBarrio(unidad) {
-    const nombre = barriosPorId.get(
-      String(unidad?.idBarrio ?? "")
-    );
-
+  function nombreBarrio(u) {
     return (
-      nombre ||
-      unidad?.nombreBarrio ||
-      unidad?.barrioNombre ||
+      barriosPorId.get(String(u?.idBarrio ?? "")) ||
+      u?.nombreBarrio ||
+      u?.barrioNombre ||
       "—"
     );
   }
 
+  // ====================================================
+  // POLICÍAS POR UNIDAD
+  // ====================================================
+
   const policiasPorUnidad = useMemo(() => {
-    const agrupados = new Map();
+    const mapa = new Map();
 
-    for (const policia of policias) {
-      const id = obtenerIdUnidad(policia);
+    for (const p of policias) {
+      const id = idUnidadPolicia(p);
 
-      if (id === null || id === undefined || id === "") {
-        continue;
-      }
+      if (id === null || id === "") continue;
 
       const clave = String(id);
 
-      if (!agrupados.has(clave)) {
-        agrupados.set(clave, []);
+      if (!mapa.has(clave)) {
+        mapa.set(clave, []);
       }
 
-      agrupados.get(clave).push(policia);
+      mapa.get(clave).push(p);
     }
 
-    return agrupados;
+    return mapa;
   }, [policias]);
 
-  function integrantesUnidad(idUnidad) {
-    return policiasPorUnidad.get(String(idUnidad)) || [];
+  function integrantesUnidad(id) {
+    return policiasPorUnidad.get(String(id)) ?? [];
   }
 
-  function cantidadPolicias(unidad) {
-    const vinculados = integrantesUnidad(unidad.idUnidad);
+  function cantidadPolicias(u) {
+    const vinculados = integrantesUnidad(u.idUnidad);
 
-    if (vinculados.length) return vinculados.length;
-
-    if (Array.isArray(unidad.policias)) {
-      return unidad.policias.length;
+    if (vinculados.length) {
+      return vinculados.length;
     }
 
-    const cantidad =
-      unidad.totalPolicias ??
-      unidad.cantidadPolicias ??
-      unidad.numeroPolicias;
-
-    if (cantidad !== null && cantidad !== undefined) {
-      return cantidad;
+    if (Array.isArray(u.policias)) {
+      return u.policias.length;
     }
 
-    if (
-      !errorPolicias &&
-      policias.some((p) => obtenerIdUnidad(p) !== null)
-    ) {
-      return 0;
-    }
+    const total =
+      u.totalPolicias ??
+      u.cantidadPolicias ??
+      u.numeroPolicias;
 
-    return null;
+    if (total != null) return total;
+
+    return errorPolicias ? null : 0;
   }
+
+  // ====================================================
+  // FILTROS Y PAGINACIÓN
+  // ====================================================
 
   const filtradas = useMemo(() => {
-    const termino = busqueda.trim().toLowerCase();
+    const q = busqueda.toLowerCase().trim();
 
-    return unidades.filter((unidad) => {
+    return unidades.filter((u) => {
+      const barrio =
+        barriosPorId.get(String(u.idBarrio ?? "")) ||
+        u.nombreBarrio ||
+        u.barrioNombre ||
+        "";
+
       const coincideBusqueda =
-        !termino ||
-        String(unidad.nombre || "")
-          .toLowerCase()
-          .includes(termino) ||
-        nombreBarrio(unidad).toLowerCase().includes(termino) ||
-        String(unidad.idUnidad).includes(termino);
+        !q ||
+        String(u.nombre ?? "").toLowerCase().includes(q) ||
+        String(u.idUnidad ?? "").includes(q) ||
+        String(barrio).toLowerCase().includes(q);
 
       const coincideEstado =
         !filtroEstado ||
-        normalizar(unidad.estado) === filtroEstado;
+        normalizar(u.estado) === filtroEstado;
 
       const coincideBarrio =
         !filtroBarrio ||
-        String(unidad.idBarrio ?? "") === filtroBarrio;
+        String(u.idBarrio ?? "") === filtroBarrio;
 
       return (
         coincideBusqueda &&
@@ -479,18 +456,50 @@ export default function Unidades() {
     });
   }, [
     unidades,
-    barriosPorId,
     busqueda,
     filtroEstado,
     filtroBarrio,
+    barriosPorId,
   ]);
 
+  const totalPaginas = Math.max(
+    1,
+    Math.ceil(filtradas.length / POR_PAGINA)
+  );
+
+  const paginaActual = Math.min(pagina, totalPaginas);
+
+  const paginaUnidades = filtradas.slice(
+    (paginaActual - 1) * POR_PAGINA,
+    paginaActual * POR_PAGINA
+  );
+
+  useEffect(() => {
+    setPagina(1);
+  }, [busqueda, filtroEstado, filtroBarrio]);
+
+  // ====================================================
+  // INDICADORES
+  // ====================================================
+
   const indicadores = useMemo(() => {
-    const totalPolicias = unidades.reduce(
-      (total, unidad) =>
-        total + Number(cantidadPolicias(unidad) ?? 0),
-      0
-    );
+    const totalPolicias = unidades.reduce((s, u) => {
+      const vinculados =
+        policiasPorUnidad.get(String(u.idUnidad)) ?? [];
+
+      const cantidad = vinculados.length
+        ? vinculados.length
+        : Array.isArray(u.policias)
+          ? u.policias.length
+          : Number(
+              u.totalPolicias ??
+              u.cantidadPolicias ??
+              u.numeroPolicias ??
+              0
+            );
+
+      return s + (Number.isFinite(cantidad) ? cantidad : 0);
+    }, 0);
 
     return {
       total: unidades.length,
@@ -504,9 +513,13 @@ export default function Unidades() {
       policias: totalPolicias,
       totalPolicias,
     };
-  }, [unidades, policiasPorUnidad, errorPolicias]);
+  }, [unidades, policiasPorUnidad]);
 
-  function abrirNueva() {
+  // ====================================================
+  // CREAR Y EDITAR
+  // ====================================================
+
+  function nuevaUnidad() {
     setSeleccion(null);
     setForm({ ...FORM_INICIAL });
     setError("");
@@ -514,69 +527,75 @@ export default function Unidades() {
     setModal("formulario");
   }
 
-  async function abrirEditar(unidad) {
+  async function editarUnidad(u) {
     setError("");
 
     try {
-      const detalle = await apiAdminPolicia(
-        `/api/Unidades/${unidad.idUnidad}`
+      const d = await apiAdminPolicia(
+        `/api/Unidades/${u.idUnidad}`
       );
 
-      setSeleccion(detalle);
+      setSeleccion(d);
+
       setForm({
-        nombre: detalle.nombre ?? "",
-        idBarrio: String(detalle.idBarrio ?? ""),
-        estado: detalle.estado ?? "OPERATIVA",
-        latitud: String(detalle.latitud ?? ""),
-        longitud: String(detalle.longitud ?? ""),
+        nombre: d.nombre ?? "",
+        idBarrio: String(d.idBarrio ?? ""),
+        estado: d.estado ?? "OPERATIVA",
+        latitud: String(d.latitud ?? ""),
+        longitud: String(d.longitud ?? ""),
       });
+
       setModal("formulario");
     } catch (e) {
-      setError(e.message || "No se pudo consultar la unidad.");
+      setError(
+        e.message || "No se pudo consultar la unidad."
+      );
     }
   }
 
-  async function abrirDetalle(unidad) {
+  async function verDetalle(u) {
     setError("");
-    setCargandoDetalle(true);
 
     try {
-      const detalle = await apiAdminPolicia(
-        `/api/Unidades/${unidad.idUnidad}`
+      const d = await apiAdminPolicia(
+        `/api/Unidades/${u.idUnidad}`
       );
 
-      setSeleccion(detalle);
+      setSeleccion(d);
       setModal("detalle");
-
-      try {
-        const respuesta = await apiAdminPolicia("/api/Policias");
-        setPolicias(obtenerLista(respuesta, "policías"));
-        setErrorPolicias("");
-      } catch (e) {
-        setErrorPolicias(
-          e.message || "No se pudieron consultar los integrantes."
-        );
-      }
     } catch (e) {
-      setError(e.message || "No se pudo consultar el detalle.");
-    } finally {
-      setCargandoDetalle(false);
+      setError(
+        e.message || "No se pudo consultar el detalle."
+      );
     }
+  }
+
+  function cerrarModal() {
+    if (guardando) return;
+
+    setModal("");
+    setSeleccion(null);
+    setForm({ ...FORM_INICIAL });
+    setError("");
   }
 
   function cambiar(campo, valor) {
-    setForm((actual) => ({
-      ...actual,
+    setForm((v) => ({
+      ...v,
       [campo]: valor,
     }));
   }
 
-  async function guardar(evento) {
-    evento.preventDefault();
+  // ====================================================
+  // GUARDAR O ACTUALIZAR
+  // ====================================================
+
+  async function guardar(e) {
+    e.preventDefault();
+
     if (guardando) return;
 
     setError("");
-    setMensaje("");
 
     const cuerpo = {
       nombre: form.nombre.trim(),
@@ -585,24 +604,31 @@ export default function Unidades() {
       longitud: Number(form.longitud),
     };
 
-    if (
+    const datosInvalidos =
       !cuerpo.nombre ||
       !form.idBarrio ||
+      !Number.isInteger(cuerpo.idBarrio) ||
+      cuerpo.idBarrio <= 0 ||
       form.latitud === "" ||
       form.longitud === "" ||
       !Number.isFinite(cuerpo.latitud) ||
       !Number.isFinite(cuerpo.longitud) ||
       Math.abs(cuerpo.latitud) > 90 ||
-      Math.abs(cuerpo.longitud) > 180
-    ) {
-      setError("Completa correctamente los datos de la unidad.");
+      Math.abs(cuerpo.longitud) > 180;
+
+    if (datosInvalidos) {
+      setError(
+        "Completa los datos y selecciona una ubicación válida."
+      );
       return;
     }
 
     setGuardando(true);
 
     try {
-      if (seleccion) {
+      const edicion = Boolean(seleccion);
+
+      if (edicion) {
         await apiAdminPolicia(
           `/api/Unidades/${seleccion.idUnidad}`,
           {
@@ -621,474 +647,585 @@ export default function Unidades() {
       }
 
       setModal("");
+      setSeleccion(null);
+      setForm({ ...FORM_INICIAL });
+
+      await cargar();
+
       setMensaje(
-        seleccion
+        edicion
           ? "Unidad actualizada correctamente."
           : "Unidad registrada correctamente."
       );
-
-      await cargar();
     } catch (e) {
-      setError(e.message || "No se pudo guardar la unidad.");
+      setError(
+        e.message || "No se pudo guardar la unidad."
+      );
     } finally {
       setGuardando(false);
     }
   }
 
-  async function eliminar(unidad) {
-    if (
-      !window.confirm(
-        `¿Eliminar la unidad "${unidad.nombre}"?`
-      )
-    ) {
-      return;
-    }
+  // ====================================================
+  // ELIMINAR
+  // ====================================================
 
+  function confirmarEliminar(u) {
+    setSeleccion(u);
     setError("");
-    setMensaje("");
+    setModal("eliminar");
+  }
+
+  async function eliminar() {
+    if (!seleccion || guardando) return;
+
+    setGuardando(true);
+    setError("");
 
     try {
       await apiAdminPolicia(
-        `/api/Unidades/${unidad.idUnidad}`,
+        `/api/Unidades/${seleccion.idUnidad}`,
         { method: "DELETE" }
       );
 
+      setModal("");
+      setSeleccion(null);
+
       await cargar();
+
       setMensaje("Unidad eliminada correctamente.");
     } catch (e) {
-      setError(e.message || "No se pudo eliminar la unidad.");
+      setError(
+        e.message || "No se pudo eliminar la unidad."
+      );
+    } finally {
+      setGuardando(false);
     }
   }
 
-  const integrantesSeleccionados = seleccion
-    ? integrantesUnidad(seleccion.idUnidad)
-    : [];
-
-  const integrantesDetalle =
-    integrantesSeleccionados.length > 0
-      ? integrantesSeleccionados
-      : Array.isArray(seleccion?.policias)
-        ? seleccion.policias
-        : [];
-
-  const cantidadDetalle = seleccion
-    ? cantidadPolicias(seleccion)
-    : null;
+  // ====================================================
+  // INTERFAZ
+  // ====================================================
 
   return (
     <>
-      <Topbar
-        iniciales="SG"
-        placeholder="Buscar por alerta, barrio, unidad, policía…"
-      />
+      <Topbar />
 
-      <div className="header-vista-dash mb-4">
-        <div>
-          <h1>Unidades Policiales</h1>
-          <p>
-            Administra las unidades policiales registradas
-            en el sistema.
-          </p>
-        </div>
+      <main className="container-fluid py-4 unidades-policia-page">
 
-        <button
-          type="button"
-          className="btn-cv-verde"
-          onClick={abrirNueva}
-        >
-          <i className="bi bi-plus-lg me-2" />
-          Nueva unidad
-        </button>
-      </div>
+        {/* CABECERA */}
 
-      {error && (
-        <div className="alert alert-danger" role="alert">
-          {error}
-        </div>
-      )}
-
-      {mensaje && (
-        <div className="alert alert-success" role="status">
-          {mensaje}
-        </div>
-      )}
-
-      {/* KPI originales */}
-      <Kpis
-        grupo="unidades"
-        valores={indicadores}
-        cargando={cargando}
-      />
-
-      {/* Filtros */}
-      <div className="panel-filtros-unidades mb-4">
-        <div className="panel-filtros-header">
-          <div className="panel-filtros-icono">
-            <i className="bi bi-sliders" />
-          </div>
-
-          <div className="flex-grow-1">
-            <h3>Filtrar unidades</h3>
-            <p>Busca y organiza las unidades policiales.</p>
-          </div>
-        </div>
-
-        <div className="panel-filtros-body">
-          <div className="buscador-unidades">
-            <label htmlFor="buscarUnidad">
-              <i className="bi bi-search me-2" />
-              Buscar unidad
-            </label>
-
-            <div className="buscador-unidades-input">
-              <i className="bi bi-search" />
-              <input
-                type="text"
-                id="buscarUnidad"
-                placeholder="Nombre de unidad o barrio..."
-                value={busqueda}
-                onChange={(e) =>
-                  setBusqueda(e.target.value)
-                }
-              />
-            </div>
-          </div>
-
-          <div className="filtros-unidades-selects">
-            <div className="filtro-unidad-card">
-              <label htmlFor="filtroEstadoUnidad">
-                <span className="filtro-unidad-icono estado">
-                  <i className="bi bi-activity" />
-                </span>
-
-                <span>
-                  <strong>Estado</strong>
-                  <small>Disponibilidad operativa</small>
-                </span>
-              </label>
-
-              <select
-                id="filtroEstadoUnidad"
-                className="form-select"
-                value={filtroEstado}
-                onChange={(e) =>
-                  setFiltroEstado(e.target.value)
-                }
-              >
-                <option value="">Todos los estados</option>
-                <option value="OPERATIVA">Operativa</option>
-                <option value="ACTIVA">Activa</option>
-                <option value="INACTIVA">Inactiva</option>
-              </select>
-            </div>
-
-            <div className="filtro-unidad-card filtro-barrio-card">
-              <label htmlFor="filtroBarrioUnidad">
-                <span className="filtro-unidad-icono ubicacion">
-                  <i className="bi bi-geo-alt" />
-                </span>
-
-                <span>
-                  <strong>Ubicación</strong>
-                  <small>Filtrar por barrio</small>
-                </span>
-              </label>
-
-              <BuscadorBarrio
-                id="filtroBarrioUnidad"
-                barrios={barrios}
-                valor={filtroBarrio}
-                onChange={setFiltroBarrio}
-                incluirTodos
-                placeholder="Todos los barrios"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Tabla */}
-      <div className="card-panel-dash unidad-tabla-panel mb-4">
-        <div className="unidad-tabla-superior">
+        <div className="header-vista-dash mb-4">
           <div>
-            <h2>Unidades registradas</h2>
+            <h1>Unidades policiales</h1>
             <p>
-              Consulta la información y administra cada unidad.
+              Administra las unidades, sus ubicaciones
+              y sus integrantes.
             </p>
           </div>
 
-          <span className="unidad-resultados">
-            {filtradas.length} unidades
-          </span>
+          <button
+            type="button"
+            className="btn-cv-verde"
+            onClick={nuevaUnidad}
+          >
+            <i className="bi bi-plus-lg" />
+            Nueva unidad
+          </button>
         </div>
 
-        <div className="table-responsive">
-          <table className="tabla-dash unidad-tabla">
-            <thead>
-              <tr>
-                <th>Unidad</th>
-                <th>Barrio</th>
-                <th>Estado</th>
-                <th>Policías</th>
-                <th>Coordenadas</th>
-                <th className="unidad-th-acciones">
-                  Acciones
-                </th>
-              </tr>
-            </thead>
+        {/* INDICADORES */}
 
-            <tbody id="tablaUnidades">
-              {filtradas.map((unidad) => (
-                <tr key={unidad.idUnidad}>
-                  <td>
-                    <div className="unidad-nombre-celda">
-                      <span className="unidad-tabla-icono">
-                        <i className="bi bi-shield-check" />
-                      </span>
+        <Kpis {...indicadores} />
 
-                      <div>
-                        <strong>{unidad.nombre}</strong>
-                        <small>
-                          Unidad #{unidad.idUnidad}
-                        </small>
-                      </div>
-                    </div>
-                  </td>
+        {mensaje && (
+          <div
+            className="alert alert-success mt-3"
+            role="status"
+          >
+            <i className="bi bi-check-circle me-2" />
+            {mensaje}
+          </div>
+        )}
 
-                  <td>{nombreBarrio(unidad)}</td>
+        {error && !modal && (
+          <div
+            className="alert alert-danger mt-3"
+            role="alert"
+          >
+            {error}
+          </div>
+        )}
 
-                  <td>
-                    <span
-                      className={`unidad-estado unidad-estado--${normalizar(
-                        unidad.estado
-                      ).toLowerCase()}`}
-                    >
-                      <i className="bi bi-circle-fill" />
-                      {mostrar(unidad.estado)}
-                    </span>
-                  </td>
+        {/* FILTROS */}
 
-                  <td>
-                    <span className="unidad-cantidad">
-                      <i className="bi bi-people" />
-                      {mostrar(cantidadPolicias(unidad))}
-                    </span>
-                  </td>
+        <section className="panel-filtros-unidades mt-4">
+          <div className="panel-filtros-header">
+            <div className="panel-filtros-icono">
+              <i className="bi bi-funnel" />
+            </div>
 
-                  <td>
-                    <span className="unidad-coordenadas">
-                      {mostrar(unidad.latitud)}
-                      {", "}
-                      {mostrar(unidad.longitud)}
-                    </span>
-                  </td>
+            <div>
+              <h3>Filtros de búsqueda</h3>
+              <p>
+                Encuentra las unidades policiales registradas.
+              </p>
+            </div>
 
-                  <td>
-                    <div className="unidad-acciones">
-                      <button
-                        type="button"
-                        className="unidad-accion ver"
-                        title="Ver detalles"
-                        onClick={() =>
-                          abrirDetalle(unidad)
-                        }
-                      >
-                        <i className="bi bi-eye" />
-                      </button>
+            <span className="filtros-etiqueta">
+              {filtradas.length} resultados
+            </span>
+          </div>
 
-                      <button
-                        type="button"
-                        className="unidad-accion editar"
-                        title="Editar unidad"
-                        onClick={() =>
-                          abrirEditar(unidad)
-                        }
-                      >
-                        <i className="bi bi-pencil-square" />
-                      </button>
+          <div className="panel-filtros-body">
+            <div className="buscador-unidades">
+              <label htmlFor="buscarUnidad">
+                Buscar unidad
+              </label>
 
-                      <button
-                        type="button"
-                        className="unidad-accion eliminar"
-                        title="Eliminar unidad"
-                        onClick={() =>
-                          eliminar(unidad)
-                        }
-                      >
-                        <i className="bi bi-trash3" />
-                      </button>
-                    </div>
-                  </td>
+              <div className="buscador-unidades-input">
+                <i className="bi bi-search" />
+
+                <input
+                  id="buscarUnidad"
+                  type="search"
+                  placeholder="Nombre, barrio o código..."
+                  value={busqueda}
+                  onChange={(e) =>
+                    setBusqueda(e.target.value)
+                  }
+                />
+              </div>
+            </div>
+
+            <div className="filtros-unidades-selects">
+              <div className="filtro-unidad-card">
+                <label htmlFor="filtroEstadoUnidad">
+                  <span className="filtro-unidad-icono estado">
+                    <i className="bi bi-activity" />
+                  </span>
+
+                  <span>
+                    <strong>Estado</strong>
+                    <small>Filtrar por estado</small>
+                  </span>
+                </label>
+
+                <select
+                  id="filtroEstadoUnidad"
+                  className="form-select"
+                  value={filtroEstado}
+                  onChange={(e) =>
+                    setFiltroEstado(e.target.value)
+                  }
+                >
+                  <option value="">Todos los estados</option>
+                  <option value="OPERATIVA">Operativa</option>
+                  <option value="ACTIVA">Activa</option>
+                  <option value="INACTIVA">Inactiva</option>
+                </select>
+              </div>
+
+              <div className="filtro-unidad-card">
+                <label htmlFor="filtroBarrioUnidad">
+                  <span className="filtro-unidad-icono ubicacion">
+                    <i className="bi bi-geo-alt" />
+                  </span>
+
+                  <span>
+                    <strong>Ubicación</strong>
+                    <small>Filtrar por barrio</small>
+                  </span>
+                </label>
+
+                <BuscadorBarrio
+                  id="filtroBarrioUnidad"
+                  barrios={barrios}
+                  valor={filtroBarrio}
+                  onChange={setFiltroBarrio}
+                  placeholder="Todos los barrios"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* TABLA */}
+
+        <section className="card-panel-dash">
+          <div className="tabla-header-dash">
+            <span>
+              <i className="bi bi-shield-check me-2" />
+              Unidades registradas
+            </span>
+
+            <button
+              type="button"
+              className="btn-icono-dash ms-auto"
+              onClick={cargar}
+              disabled={cargando}
+              title="Actualizar"
+            >
+              <i className="bi bi-arrow-clockwise" />
+            </button>
+          </div>
+
+          <div className="table-responsive">
+            <table className="tabla-dash">
+              <thead>
+                <tr>
+                  <th>UNIDAD</th>
+                  <th>BARRIO</th>
+                  <th>ESTADO</th>
+                  <th>POLICÍAS</th>
+                  <th>ACCIONES</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
 
-        {cargando && (
-          <div className="tabla-vacio-dash">
-            Cargando unidades...
+              <tbody>
+                {cargando ? (
+                  <tr>
+                    <td
+                      colSpan={5}
+                      className="tabla-vacio-dash"
+                    >
+                      Cargando unidades...
+                    </td>
+                  </tr>
+                ) : paginaUnidades.length ? (
+                  paginaUnidades.map((u) => (
+                    <tr key={u.idUnidad}>
+                      <td>
+                        <div className="celda-persona-dash">
+                          <div className="unidad-tabla-icono">
+                            <IconoUnidad tamaño={22} />
+                          </div>
+
+                          <div>
+                            <div className="celda-titulo-dash">
+                              {u.nombre}
+                            </div>
+
+                            <div className="celda-sub-dash">
+                              ID #{u.idUnidad}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+
+                      <td>{nombreBarrio(u)}</td>
+
+                      <td>
+                        <span
+                          className={`unidad-estado unidad-estado-${normalizar(
+                            u.estado
+                          ).toLowerCase()}`}
+                        >
+                          <span className="unidad-estado-punto" />
+                          {mostrar(u.estado)}
+                        </span>
+                      </td>
+
+                      <td>
+                        {mostrar(cantidadPolicias(u))}
+                      </td>
+
+                      <td>
+                        <div className="tabla-acciones-dash">
+                          <button
+                            type="button"
+                            className="btn-icono-dash"
+                            title="Ver detalles"
+                            aria-label={`Ver detalles de ${u.nombre}`}
+                            onClick={() => verDetalle(u)}
+                          >
+                            <i className="bi bi-eye" />
+                          </button>
+
+                          <button
+                            type="button"
+                            className="btn-icono-dash editar-dash"
+                            title="Editar"
+                            aria-label={`Editar ${u.nombre}`}
+                            onClick={() => editarUnidad(u)}
+                          >
+                            <i className="bi bi-pencil-square" />
+                          </button>
+
+                          <button
+                            type="button"
+                            className="btn-icono-dash borrar-dash"
+                            title="Eliminar"
+                            aria-label={`Eliminar ${u.nombre}`}
+                            onClick={() => confirmarEliminar(u)}
+                          >
+                            <i className="bi bi-trash3" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td
+                      colSpan={5}
+                      className="tabla-vacio-dash"
+                    >
+                      No se encontraron unidades.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
-        )}
 
-        {!cargando && filtradas.length === 0 && (
-          <div className="tabla-vacio-dash">
-            No se encontraron unidades con esos filtros.
-          </div>
-        )}
-      </div>
+          {/* PAGINACIÓN CORREGIDA */}
 
-      {/* Formulario */}
-      {modal === "formulario" && (
-        <div
-          className="modal d-block"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Formulario de unidad"
-          style={{ background: "#0008" }}
-        >
-          <div className="modal-dialog modal-dialog-centered">
-            <div className="modal-content">
-              <div className="modal-header modal-header-dash">
-                <div>
-                  <div className="modal-title">
-                    {seleccion
-                      ? "Editar unidad"
-                      : "Nueva unidad"}
-                  </div>
-                  <div className="modal-subtitle">
-                    Información de la unidad policial
-                  </div>
-                </div>
+          {totalPaginas > 1 && (
+            <div className="unidades-paginacion">
+              <div className="unidades-paginacion-info">
+                <span>
+                  Mostrando{" "}
+                  <strong>
+                    {(paginaActual - 1) * POR_PAGINA + 1}
+                  </strong>
+                  {" - "}
+                  <strong>
+                    {Math.min(
+                      paginaActual * POR_PAGINA,
+                      filtradas.length
+                    )}
+                  </strong>
+                  {" de "}
+                  <strong>{filtradas.length}</strong>
+                  {" unidades"}
+                </span>
+              </div>
+
+              <div className="unidades-paginacion-controles">
+                <button
+                  type="button"
+                  className="unidades-paginacion-btn"
+                  disabled={paginaActual === 1}
+                  onClick={() =>
+                    setPagina((p) => Math.max(1, p - 1))
+                  }
+                  aria-label="Página anterior"
+                >
+                  <i className="bi bi-chevron-left" />
+                  <span>Anterior</span>
+                </button>
+
+                <span className="unidades-paginacion-actual">
+                  Página <strong>{paginaActual}</strong> de{" "}
+                  <strong>{totalPaginas}</strong>
+                </span>
 
                 <button
                   type="button"
-                  className="btn-close"
-                  aria-label="Cerrar"
-                  onClick={() => setModal("")}
-                />
+                  className="unidades-paginacion-btn"
+                  disabled={paginaActual === totalPaginas}
+                  onClick={() =>
+                    setPagina((p) =>
+                      Math.min(totalPaginas, p + 1)
+                    )
+                  }
+                  aria-label="Página siguiente"
+                >
+                  <span>Siguiente</span>
+                  <i className="bi bi-chevron-right" />
+                </button>
+              </div>
+            </div>
+          )}
+        </section>
+      </main>
+
+      {/* MODAL REGISTRAR / EDITAR */}
+
+      {modal === "formulario" && (
+        <div
+          className="unidad-mapa-modal"
+          role="dialog"
+          aria-modal="true"
+          aria-label={
+            seleccion ? "Editar unidad" : "Registrar unidad"
+          }
+        >
+          <div className="unidad-mapa-ventana">
+            <div className="unidad-mapa-cabecera">
+              <div className="unidad-mapa-cabecera-info">
+                <div className="unidad-modal-icono unidad-icono-imagen">
+                  <IconoUnidad tamaño={32} />
+                </div>
+
+                <div>
+                  <h2>
+                    {seleccion
+                      ? "Editar unidad"
+                      : "Registrar unidad"}
+                  </h2>
+
+                  <p>
+                    Completa los datos y selecciona
+                    la ubicación en el mapa.
+                  </p>
+                </div>
               </div>
 
-              <form onSubmit={guardar}>
-                <div className="modal-body modal-body-dash">
-                  {error && (
-                    <div className="alert alert-danger">
-                      {error}
-                    </div>
-                  )}
+              <button
+                type="button"
+                className="unidad-mapa-cerrar"
+                onClick={cerrarModal}
+                disabled={guardando}
+                aria-label="Cerrar"
+              >
+                <i className="bi bi-x-lg" />
+              </button>
+            </div>
 
-                  <div className="row g-3">
-                    <div className="col-12 form-field-dash">
-                      <label htmlFor="unidadNombre">
-                        Nombre de la unidad *
-                      </label>
-                      <input
-                        id="unidadNombre"
-                        className="form-control"
-                        maxLength={50}
-                        required
-                        value={form.nombre}
-                        onChange={(e) =>
-                          cambiar("nombre", e.target.value)
-                        }
-                      />
-                    </div>
+            <div className="unidad-mapa-contenido">
+              <MapaUnidadesPoliciales
+                unidades={unidades}
+                seleccion={{
+                  idUnidad: seleccion?.idUnidad,
+                  latitud: form.latitud,
+                  longitud: form.longitud,
+                }}
+                onSeleccionar={({ latitud, longitud }) => {
+                  setForm((v) => ({
+                    ...v,
+                    latitud,
+                    longitud,
+                  }));
+                }}
+              />
 
-                    <div className="col-12 form-field-dash">
-                      <label htmlFor="unidadBarrio">
-                        Barrio *
-                      </label>
+              <form
+                className="unidad-mapa-formulario"
+                onSubmit={guardar}
+              >
+                <div className="unidad-mapa-seccion">
+                  <div className="unidad-modal-icono unidad-modal-icono-pequeno unidad-icono-imagen">
+                    <IconoUnidad tamaño={26} />
+                  </div>
 
-                      <BuscadorBarrio
-                        id="unidadBarrio"
-                        barrios={barrios}
-                        valor={form.idBarrio}
-                        onChange={(id) =>
-                          cambiar("idBarrio", id)
-                        }
-                        requerido
-                        placeholder="Escribe para buscar un barrio..."
-                      />
-                    </div>
-
-                    <div className="col-12 form-field-dash">
-                      <label htmlFor="unidadEstado">
-                        Estado
-                      </label>
-                      <select
-                        id="unidadEstado"
-                        className="form-select"
-                        value={form.estado}
-                        disabled={!seleccion}
-                        onChange={(e) =>
-                          cambiar("estado", e.target.value)
-                        }
-                      >
-                        <option value="OPERATIVA">
-                          Operativa
-                        </option>
-                        <option value="ACTIVA">
-                          Activa
-                        </option>
-                        <option value="INACTIVA">
-                          Inactiva
-                        </option>
-                      </select>
-                    </div>
-
-                    <div className="col-6 form-field-dash">
-                      <label htmlFor="unidadLat">
-                        Latitud *
-                      </label>
-                      <input
-                        id="unidadLat"
-                        type="number"
-                        step="any"
-                        className="form-control"
-                        required
-                        value={form.latitud}
-                        onChange={(e) =>
-                          cambiar("latitud", e.target.value)
-                        }
-                      />
-                    </div>
-
-                    <div className="col-6 form-field-dash">
-                      <label htmlFor="unidadLng">
-                        Longitud *
-                      </label>
-                      <input
-                        id="unidadLng"
-                        type="number"
-                        step="any"
-                        className="form-control"
-                        required
-                        value={form.longitud}
-                        onChange={(e) =>
-                          cambiar("longitud", e.target.value)
-                        }
-                      />
-                    </div>
+                  <div>
+                    <h3>Datos del sistema</h3>
+                    <p>
+                      Configuración de la unidad policial
+                    </p>
                   </div>
                 </div>
 
-                <div className="modal-footer modal-footer-dash">
-                  <button
-                    type="button"
-                    className="btn-secundario-dash"
-                    onClick={() => setModal("")}
+                {error && (
+                  <div
+                    className="alert alert-danger"
+                    role="alert"
                   >
-                    Cancelar
+                    {error}
+                  </div>
+                )}
+
+                <div className="unidad-mapa-campo">
+                  <label htmlFor="unidadNombre">
+                    Nombre de la unidad
+                  </label>
+
+                  <input
+                    id="unidadNombre"
+                    type="text"
+                    maxLength={50}
+                    placeholder="Ej. CAI Centro"
+                    required
+                    value={form.nombre}
+                    onChange={(e) =>
+                      cambiar("nombre", e.target.value)
+                    }
+                  />
+                </div>
+
+                <div className="unidad-mapa-campo">
+                  <label htmlFor="unidadBarrio">
+                    Barrio
+                  </label>
+
+                  <BuscadorBarrio
+                    id="unidadBarrio"
+                    barrios={barrios}
+                    valor={form.idBarrio}
+                    onChange={(id) =>
+                      cambiar("idBarrio", id)
+                    }
+                    placeholder="Buscar barrio..."
+                    required
+                  />
+                </div>
+
+                <div className="unidad-mapa-campo">
+                  <label htmlFor="unidadEstado">
+                    Estado
+                  </label>
+
+                  <select
+                    id="unidadEstado"
+                    value={form.estado}
+                    disabled={!seleccion}
+                    onChange={(e) =>
+                      cambiar("estado", e.target.value)
+                    }
+                  >
+                    <option value="OPERATIVA">
+                      Operativa
+                    </option>
+                    <option value="ACTIVA">
+                      Activa
+                    </option>
+                    <option value="INACTIVA">
+                      Inactiva
+                    </option>
+                  </select>
+                </div>
+
+                <div className="unidad-mapa-coordenadas">
+                  <i className="bi bi-geo-alt-fill" />
+
+                  <div>
+                    <strong>
+                      Ubicación seleccionada
+                    </strong>
+
+                    <span>
+                      {form.latitud !== "" &&
+                      form.longitud !== ""
+                        ? `${form.latitud}, ${form.longitud}`
+                        : "Selecciona un punto en el mapa"}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="unidad-mapa-botones">
+                  <button
+                    type="submit"
+                    className="unidad-mapa-boton guardar"
+                    disabled={guardando}
+                  >
+                    <i className="bi bi-floppy me-2" />
+
+                    {guardando
+                      ? "Guardando..."
+                      : seleccion
+                        ? "Actualizar unidad"
+                        : "Guardar unidad"}
                   </button>
 
                   <button
-                    type="submit"
-                    className="btn-cv-verde"
+                    type="button"
+                    className="unidad-mapa-boton cancelar"
+                    onClick={cerrarModal}
                     disabled={guardando}
                   >
-                    {guardando
-                      ? "Guardando..."
-                      : "Guardar unidad"}
+                    Cancelar
                   </button>
                 </div>
               </form>
@@ -1097,124 +1234,238 @@ export default function Unidades() {
         </div>
       )}
 
-      {/* Detalle */}
+      {/* MODAL DETALLES */}
+
       {modal === "detalle" && seleccion && (
         <div
-          className="modal d-block"
+          className="unidad-detalle-fondo"
           role="dialog"
           aria-modal="true"
-          aria-label="Detalle de unidad"
-          style={{ background: "#0008" }}
+          aria-label="Detalles de unidad"
         >
-          <div className="modal-dialog modal-dialog-centered">
-            <div className="modal-content">
-              <div className="unidad-modal-encabezado">
-                <button
-                  type="button"
-                  className="unidad-modal-cerrar"
-                  aria-label="Cerrar"
-                  onClick={() => setModal("")}
-                >
-                  <i className="bi bi-x-lg" />
-                </button>
+          <div className="unidad-detalle-ventana">
+            <div className="unidad-detalle-header">
+              <div className="unidad-detalle-header-info">
+                <div className="unidad-detalle-header-icono">
+                  <IconoUnidad tamaño={30} />
+                </div>
 
-                <span className="unidad-modal-icono">
-                  <i className="bi bi-shield-check" />
-                </span>
-
-                <h2>{seleccion.nombre}</h2>
-                <span className="unidad-modal-estado">
-                  {seleccion.estado}
-                </span>
-              </div>
-
-              <div className="modal-body modal-body-dash">
-                {[
-                  ["Barrio", nombreBarrio(seleccion)],
-                  [
-                    "Coordenadas",
-                    `${mostrar(
-                      seleccion.latitud
-                    )}, ${mostrar(seleccion.longitud)}`,
-                  ],
-                ].map(([titulo, valor]) => (
-                  <div
-                    className="detalle-fila-dash"
-                    key={titulo}
-                  >
-                    <span className="k">{titulo}</span>
-                    <span className="v">{valor}</span>
-                  </div>
-                ))}
-
-                <div className="unidad-policias-detalle">
-                  <div className="unidad-policias-titulo">
-                    <span>
-                      <i className="bi bi-people me-2" />
-                      Policías asignados
-                    </span>
-
-                    <strong>
-                      {cargandoDetalle
-                        ? "..."
-                        : mostrar(cantidadDetalle)}
-                    </strong>
-                  </div>
-
-                  {cargandoDetalle ? (
-                    <p className="unidad-policias-vacio">
-                      Consultando integrantes...
-                    </p>
-                  ) : integrantesDetalle.length ? (
-                    <div className="unidad-policias-lista">
-                      {integrantesDetalle.map(
-                        (policia, indice) => (
-                          <article
-                            className="unidad-policia-item"
-                            key={
-                              policia.idUsuario ??
-                              indice
-                            }
-                          >
-                            <span className="unidad-policia-avatar">
-                              <i className="bi bi-person-badge" />
-                            </span>
-
-                            <div>
-                              <strong>
-                                {obtenerNombrePolicia(
-                                  policia
-                                )}
-                              </strong>
-                              <small>
-                                {policia.rango || "Policía"}
-                                {policia.placa
-                                  ? ` · Placa ${policia.placa}`
-                                  : ""}
-                              </small>
-                            </div>
-                          </article>
-                        )
-                      )}
-                    </div>
-                  ) : (
-                    <p className="unidad-policias-vacio">
-                      {errorPolicias ||
-                        "No hay policías vinculados a esta unidad."}
-                    </p>
-                  )}
+                <div>
+                  <h2>{seleccion.nombre}</h2>
+                  <p>
+                    Información de la unidad policial
+                  </p>
                 </div>
               </div>
 
-              <div className="modal-footer modal-footer-dash">
-                <button
-                  type="button"
-                  className="btn-secundario-dash"
-                  onClick={() => setModal("")}
-                >
-                  Cerrar
-                </button>
+              <button
+                type="button"
+                className="unidad-detalle-cerrar"
+                onClick={cerrarModal}
+                aria-label="Cerrar"
+              >
+                <i className="bi bi-x-lg" />
+              </button>
+            </div>
+
+            <div className="unidad-detalle-body">
+              <div className="unidad-detalle-grid">
+                <div className="unidad-detalle-dato">
+                  <div className="unidad-detalle-dato-icono">
+                    <i className="bi bi-hash" />
+                  </div>
+                  <div>
+                    <span>ID de unidad</span>
+                    <strong>
+                      #{seleccion.idUnidad}
+                    </strong>
+                  </div>
+                </div>
+
+                <div className="unidad-detalle-dato">
+                  <div className="unidad-detalle-dato-icono">
+                    <i className="bi bi-activity" />
+                  </div>
+                  <div>
+                    <span>Estado</span>
+                    <strong
+                      className={`unidad-estado-${normalizar(
+                        seleccion.estado
+                      ).toLowerCase()}`}
+                    >
+                      {mostrar(seleccion.estado)}
+                    </strong>
+                  </div>
+                </div>
+
+                <div className="unidad-detalle-dato">
+                  <div className="unidad-detalle-dato-icono">
+                    <i className="bi bi-geo-alt" />
+                  </div>
+                  <div>
+                    <span>Barrio</span>
+                    <strong>
+                      {nombreBarrio(seleccion)}
+                    </strong>
+                  </div>
+                </div>
+
+                <div className="unidad-detalle-dato">
+                  <div className="unidad-detalle-dato-icono">
+                    <i className="bi bi-people" />
+                  </div>
+                  <div>
+                    <span>Policías asignados</span>
+                    <strong>
+                      {mostrar(
+                        cantidadPolicias(seleccion)
+                      )}
+                    </strong>
+                  </div>
+                </div>
+
+                <div className="unidad-detalle-dato">
+                  <div className="unidad-detalle-dato-icono">
+                    <i className="bi bi-compass" />
+                  </div>
+                  <div>
+                    <span>Latitud</span>
+                    <strong>
+                      {mostrar(seleccion.latitud)}
+                    </strong>
+                  </div>
+                </div>
+
+                <div className="unidad-detalle-dato">
+                  <div className="unidad-detalle-dato-icono">
+                    <i className="bi bi-compass-fill" />
+                  </div>
+                  <div>
+                    <span>Longitud</span>
+                    <strong>
+                      {mostrar(seleccion.longitud)}
+                    </strong>
+                  </div>
+                </div>
               </div>
+
+              <div className="unidad-detalle-integrantes">
+                <div className="unidad-detalle-seccion-titulo">
+                  <i className="bi bi-people-fill" />
+                  <h3>Integrantes de la unidad</h3>
+                  <span>
+                    {integrantesUnidad(
+                      seleccion.idUnidad
+                    ).length}
+                  </span>
+                </div>
+
+                {errorPolicias && (
+                  <p className="unidad-detalle-aviso">
+                    {errorPolicias}
+                  </p>
+                )}
+
+                {integrantesUnidad(
+                  seleccion.idUnidad
+                ).length ? (
+                  <div className="unidad-detalle-lista">
+                    {integrantesUnidad(
+                      seleccion.idUnidad
+                    ).map((p, i) => (
+                      <div
+                        className="unidad-detalle-integrante"
+                        key={p.idUsuario ?? i}
+                      >
+                        <div className="unidad-detalle-persona-icono">
+                          <i className="bi bi-person-badge" />
+                        </div>
+
+                        <span>{nombrePolicia(p)}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="unidad-detalle-vacio">
+                    No hay integrantes disponibles
+                    para mostrar.
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <div className="unidad-detalle-footer">
+              <button
+                type="button"
+                className="unidad-detalle-btn-secundario"
+                onClick={cerrarModal}
+              >
+                Cerrar
+              </button>
+
+              <button
+                type="button"
+                className="unidad-detalle-btn-principal"
+                onClick={() =>
+                  editarUnidad(seleccion)
+                }
+              >
+                <i className="bi bi-pencil-square" />
+                Editar unidad
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL ELIMINAR */}
+
+      {modal === "eliminar" && seleccion && (
+        <div
+          className="unidad-detalle-fondo"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Eliminar unidad"
+        >
+          <div className="unidad-eliminar-ventana">
+            <div className="unidad-eliminar-icono">
+              <i className="bi bi-trash3" />
+            </div>
+
+            <h3>Eliminar unidad</h3>
+
+            <p>
+              ¿Deseas eliminar la unidad{" "}
+              <strong>{seleccion.nombre}</strong>?
+              Esta acción no se puede deshacer.
+            </p>
+
+            {error && (
+              <div className="alert alert-danger">
+                {error}
+              </div>
+            )}
+
+            <div className="unidad-eliminar-acciones">
+              <button
+                type="button"
+                className="unidad-detalle-btn-secundario"
+                onClick={cerrarModal}
+                disabled={guardando}
+              >
+                Cancelar
+              </button>
+
+              <button
+                type="button"
+                className="unidad-eliminar-btn"
+                onClick={eliminar}
+                disabled={guardando}
+              >
+                {guardando
+                  ? "Eliminando..."
+                  : "Eliminar unidad"}
+              </button>
             </div>
           </div>
         </div>

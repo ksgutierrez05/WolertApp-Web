@@ -107,6 +107,19 @@ function CentroOperaciones() {
     setRecarga((n) => n + 1);
   }
 
+  const totalUnidades = datos.unidades.length;
+  const disponibles = resumen.centro.unidadesDisponibles;
+
+  const porcentajeDisponibles =
+    !cargando && !error && totalUnidades
+      ? (disponibles / totalUnidades) * 100
+      : 0;
+
+  const porcentajeOcupadas =
+    !cargando && !error && totalUnidades
+      ? (ocupadas / totalUnidades) * 100
+      : 0;
+
   return (
     <>
       <Topbar
@@ -114,6 +127,7 @@ function CentroOperaciones() {
         iniciales="CR"
       />
 
+      {/* HERO */}
       <section className="hero-dash mb-4">
         <div className="hero-content-dash">
           <div className="eyebrow-dash">
@@ -144,18 +158,25 @@ function CentroOperaciones() {
         </div>
       </section>
 
+      {/* ACTUALIZAR */}
       <div className="d-flex justify-content-end mb-3">
         <button
           type="button"
-          className="btn btn-outline-success btn-sm"
+          className="co-action co-refresh"
           onClick={actualizar}
           disabled={cargando}
         >
-          <i className="bi bi-arrow-clockwise me-1" />
+          <i
+            className={`bi bi-arrow-clockwise ${
+              cargando ? "co-spin" : ""
+            }`}
+            aria-hidden="true"
+          />
           {cargando ? "Actualizando..." : "Actualizar"}
         </button>
       </div>
 
+      {/* ERRORES */}
       {error && (
         <div className="alert alert-danger" role="alert">
           <strong>Error al consultar la central: </strong>
@@ -177,11 +198,13 @@ function CentroOperaciones() {
         </div>
       )}
 
+      {/* INDICADORES */}
       <Kpis
         grupo="centro-principal"
         valores={cargando || error ? {} : resumen.centro}
       />
 
+      {/* ALERTAS RECIENTES */}
       <section className="card-panel-dash p-4 mb-4">
         <div className="encabezado-panel-dash">
           <h2 className="section-title-dash">
@@ -228,35 +251,72 @@ function CentroOperaciones() {
                   </td>
                 </tr>
               ) : (
-                recientes.map((a, i) => (
-                  <tr key={idAlerta(a) ?? i}>
-                    <td>#{idAlerta(a)}</td>
-                    <td>{tipoAlerta(a)}</td>
-                    <td>{prioridadAlerta(a) || "—"}</td>
-                    <td>{ubicacionAlerta(a)}</td>
-                    <td>{fechaLegible(fechaAlerta(a))}</td>
-                    <td>
-                      {estadoAlerta(a).replaceAll("_", " ") || "—"}
-                    </td>
-                    <td>
-                      <Link
-                        to="/Central-Policia/Alertas"
-                        className="btn btn-sm btn-outline-success"
-                      >
-                        Ver
-                      </Link>
-                    </td>
-                  </tr>
-                ))
+                recientes.map((a, i) => {
+                  const prioridad = prioridadAlerta(a) || "";
+                  const estado = estadoAlerta(a) || "";
+
+                  return (
+                    <tr key={idAlerta(a) ?? i}>
+                      <td>
+                        <span className="co-case">
+                          #{idAlerta(a)}
+                        </span>
+                      </td>
+
+                      <td>{tipoAlerta(a)}</td>
+
+                      <td>
+                        <span
+                          className={`co-priority co-priority-${String(
+                            prioridad
+                          ).toLowerCase()}`}
+                        >
+                          {prioridad || "—"}
+                        </span>
+                      </td>
+
+                      <td>{ubicacionAlerta(a)}</td>
+
+                      <td>
+                        {fechaLegible(fechaAlerta(a))}
+                      </td>
+
+                      <td>
+                        <span
+                          className={`co-status co-status-${String(
+                            estado
+                          ).toLowerCase()}`}
+                        >
+                          {estado.replaceAll("_", " ") || "—"}
+                        </span>
+                      </td>
+
+                      <td>
+                        <Link
+                          to="/Central-Policia/Alertas"
+                          className="co-action co-view"
+                        >
+                          <i
+                            className="bi bi-eye"
+                            aria-hidden="true"
+                          />
+                          Ver
+                        </Link>
+                      </td>
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>
         </div>
       </section>
 
-      <div className="row g-4">
+      {/* TARJETAS INFERIORES */}
+      <div className="row g-4 co-summary-row">
+        {/* ATENCIONES ACTIVAS */}
         <div className="col-12 col-xl-7">
-          <section className="card-panel-dash p-4 h-100">
+          <section className="card-panel-dash co-summary-card p-4 h-100">
             <div className="encabezado-panel-dash">
               <h2 className="section-title-dash">
                 <i className="bi bi-broadcast me-2" />
@@ -272,7 +332,7 @@ function CentroOperaciones() {
               </p>
             ) : atencionesActivas.length ? (
               <div className="table-responsive">
-                <table className="table tabla-dash">
+                <table className="table tabla-dash tabla-atenciones-dash">
                   <thead>
                     <tr>
                       <th>Atención</th>
@@ -280,18 +340,39 @@ function CentroOperaciones() {
                       <th>Estado</th>
                     </tr>
                   </thead>
+
                   <tbody>
                     {atencionesActivas.slice(0, 5).map((a, i) => (
                       <tr
-                        key={campo(a, "idAtencion", "IdAtencion") ?? i}
+                        key={
+                          campo(a, "idAtencion", "IdAtencion") ??
+                          i
+                        }
                       >
                         <td>
-                          #{campo(a, "idAtencion", "IdAtencion") ?? "—"}
+                          #
+                          {campo(
+                            a,
+                            "idAtencion",
+                            "IdAtencion"
+                          ) ?? "—"}
                         </td>
+
                         <td>
-                          #{campo(a, "idAlerta", "IdAlerta") ?? "—"}
+                          #
+                          {campo(
+                            a,
+                            "idAlerta",
+                            "IdAlerta"
+                          ) ?? "—"}
                         </td>
-                        <td>EN ATENCIÓN</td>
+
+                        <td>
+                          <span className="co-status co-status-active">
+                            <span className="co-status-dot" />
+                            EN ATENCIÓN
+                          </span>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -305,8 +386,9 @@ function CentroOperaciones() {
           </section>
         </div>
 
+        {/* ESTADO DE UNIDADES */}
         <div className="col-12 col-xl-5">
-          <section className="card-panel-dash p-4 h-100">
+          <section className="card-panel-dash co-summary-card p-4 h-100">
             <div className="encabezado-panel-dash">
               <h2 className="section-title-dash">
                 <i className="bi bi-car-front me-2" />
@@ -314,17 +396,17 @@ function CentroOperaciones() {
               </h2>
             </div>
 
-            <div className="mapa-fila-dash">
+            <div className="mapa-fila-dash co-unit-row">
               <span className="dot dot-disponible-dash" />
-              <span className="lbl-dash">Disponibles</span>
+              <span className="lbl-dash">
+                Disponibles
+              </span>
               <span className="num-dash">
-                {cargando || error
-                  ? "—"
-                  : resumen.centro.unidadesDisponibles}
+                {cargando || error ? "—" : disponibles}
               </span>
             </div>
 
-            <div className="mapa-fila-dash">
+            <div className="mapa-fila-dash co-unit-row">
               <span className="dot dot-ocupada-dash" />
               <span className="lbl-dash">
                 Ocupadas / en servicio
@@ -334,16 +416,40 @@ function CentroOperaciones() {
               </span>
             </div>
 
-            <div className="mapa-fila-dash">
+            <div className="mapa-fila-dash co-unit-row">
               <span className="lbl-dash">
                 Total registradas
               </span>
               <span className="num-dash">
-                {cargando || error ? "—" : datos.unidades.length}
+                {cargando || error ? "—" : totalUnidades}
               </span>
             </div>
 
-            <p className="small text-muted mt-3 mb-0">
+            {/* BARRA DE DISTRIBUCIÓN */}
+            <div
+              className="co-unit-progress"
+              role="img"
+              aria-label={
+                cargando || error
+                  ? "Sin datos de unidades"
+                  : `${disponibles} disponibles y ${ocupadas} ocupadas`
+              }
+            >
+              <span
+                className="co-unit-progress-available"
+                style={{
+                  width: `${porcentajeDisponibles}%`,
+                }}
+              />
+              <span
+                className="co-unit-progress-busy"
+                style={{
+                  width: `${porcentajeOcupadas}%`,
+                }}
+              />
+            </div>
+
+            <p className="co-unit-note">
               Los valores reflejan el estado registrado
               en la API, no ubicación GPS en tiempo real.
             </p>

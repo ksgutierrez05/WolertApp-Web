@@ -179,13 +179,8 @@ function Historial() {
       <main className="historial-main">
         <header className="historial-header">
           <div>
-            <span className="historial-kicker">
-              <i className="bi bi-record-circle-fill me-2" />
-              CENTRAL DE RADIO
-            </span>
 
             <h1>
-              <i className="bi bi-clock-history me-2" />
               Historial
             </h1>
 

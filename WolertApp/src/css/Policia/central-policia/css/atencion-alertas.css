@@ -51,14 +51,17 @@
   letter-spacing: 1.2px;
 }
 
-.atencion-encabezado h1 {
-  margin: 0 0 8px;
-  color: #17352f;
-  font-size: clamp(25px, 2.2vw, 32px);
-  font-weight: 750;
+/* TÍTULO PRINCIPAL: MISMO ESTILO DE UNIDADES */
+.atencion-page .atencion-encabezado h1 {
+  margin: 0 0 6px;
+  color: #193b35;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: clamp(25px, 2.2vw, 31px);
+  font-weight: 700;
   letter-spacing: -0.8px;
   line-height: 1.2;
 }
+
 
 .atencion-encabezado p {
   max-width: 650px;

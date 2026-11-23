@@ -344,9 +344,6 @@ function Asignaciones() {
       <div className="asig-page">
         <header className="asig-page-header">
           <div>
-            <div className="asig-eyebrow">
-              CENTRAL DE POLICÍA / OPERACIONES
-            </div>
 
             <h1 className="page-title-dash">
               Gestión de asignaciones

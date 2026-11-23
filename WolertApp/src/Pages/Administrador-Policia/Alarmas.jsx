@@ -1,61 +1,57 @@
 
 import { useEffect, useMemo, useState } from "react";
-
 import Topbar from "../../Components/Administrador-policia/Topbar";
-import { listarAlarmas } from "../../Services/AlarmasAdminService";
+import RegistrarAlarmaMapa from "../../Components/Administrador-policia/RegistrarAlarmaMapa";
+import {
+  listarAlarmas,
+  eliminarAlarma,
+} from "../../Services/AlarmasAdminService";
 
 import "../../css/Policia/administrador-policia/css/alarmas.css";
+import "../../css/Policia/administrador-policia/css/registrar-alarma-mapa.css";
 
-const normalizar = (valor) =>
-  String(valor ?? "").trim().toUpperCase();
+const dato = (obj, ...campos) =>
+  campos.map((c) => obj?.[c]).find((v) => v != null);
 
-const obtenerId = (alarma) =>
-  alarma.idAlarma ??
-  alarma.IdAlarma ??
-  alarma.ID_ALARMA;
+const idAlarma = (a) =>
+  dato(a, "idAlarma", "IdAlarma", "ID_ALARMA");
 
-const obtenerNombre = (alarma) =>
-  alarma.nombre ??
-  alarma.Nombre ??
-  alarma.NOMBRE ??
-  "";
+const nombreAlarma = (a) =>
+  dato(a, "nombre", "Nombre", "NOMBRE") ?? "";
 
-const obtenerBarrio = (alarma) =>
-  alarma.nombreBarrio ??
-  alarma.barrioNombre ??
-  alarma.barrio?.nombre ??
-  alarma.NombreBarrio ??
-  (alarma.idBarrio != null
-    ? `Barrio #${alarma.idBarrio}`
+const estadoAlarma = (a) =>
+  String(dato(a, "estado", "Estado", "ESTADO") ?? "")
+    .trim()
+    .toUpperCase();
+
+const barrioAlarma = (a) =>
+  dato(a, "nombreBarrio", "barrioNombre", "NombreBarrio") ??
+  a.barrio?.nombre ??
+  (dato(a, "idBarrio", "IdBarrio")
+    ? `Barrio #${dato(a, "idBarrio", "IdBarrio")}`
     : "Sin barrio");
 
-const obtenerEstado = (alarma) =>
-  normalizar(
-    alarma.estado ??
-    alarma.Estado ??
-    alarma.ESTADO
-  );
+const radioAlarma = (a) =>
+  dato(a, "radioCobertura", "RadioCobertura", "RADIO_COBERTURA");
 
-const obtenerRadio = (alarma) =>
-  alarma.radioCobertura ??
-  alarma.RadioCobertura ??
-  alarma.radio_cobertura ??
-  null;
+const esMantenimiento = (e) =>
+  ["MANTENIMIENTO", "EN MANTENIMIENTO"].includes(e);
 
-const obtenerLatitud = (alarma) =>
-  alarma.latitud ?? alarma.Latitud ?? null;
-
-const obtenerLongitud = (alarma) =>
-  alarma.longitud ?? alarma.Longitud ?? null;
-
-function Alarmas() {
+export default function Alarmas() {
   const [alarmas, setAlarmas] = useState([]);
   const [busqueda, setBusqueda] = useState("");
   const [filtro, setFiltro] = useState("TODAS");
-
+  const [pagina, setPagina] = useState(1);
   const [cargando, setCargando] = useState(true);
-  const [error, setError] = useState("");
   const [recarga, setRecarga] = useState(0);
+  const [error, setError] = useState("");
+  const [aviso, setAviso] = useState("");
+
+  const [editor, setEditor] = useState(null);
+  const [eliminando, setEliminando] = useState(null);
+  const [procesando, setProcesando] = useState(false);
+
+  const POR_PAGINA = 8;
 
   useEffect(() => {
     const controller = new AbortController();
@@ -63,23 +59,15 @@ function Alarmas() {
     listarAlarmas(controller.signal)
       .then((datos) => {
         if (controller.signal.aborted) return;
-
         setAlarmas(datos);
         setError("");
       })
-      .catch((err) => {
+      .catch((e) => {
         if (controller.signal.aborted) return;
-
-        setError(
-          err.message ||
-          "No se pudieron consultar las alarmas."
-        );
-        setAlarmas([]);
+        setError(e.message || "No se pudieron cargar las alarmas.");
       })
       .finally(() => {
-        if (!controller.signal.aborted) {
-          setCargando(false);
-        }
+        if (!controller.signal.aborted) setCargando(false);
       });
 
     return () => controller.abort();
@@ -87,43 +75,51 @@ function Alarmas() {
 
   const resumen = useMemo(() => ({
     total: alarmas.length,
-
     activas: alarmas.filter(
-      (a) => obtenerEstado(a) === "ACTIVA"
+      (a) => estadoAlarma(a) === "ACTIVA"
     ).length,
-
     inactivas: alarmas.filter(
-      (a) => obtenerEstado(a) === "INACTIVA"
+      (a) => estadoAlarma(a) === "INACTIVA"
     ).length,
-
     mantenimiento: alarmas.filter(
-      (a) => obtenerEstado(a) === "MANTENIMIENTO"
+      (a) => esMantenimiento(estadoAlarma(a))
     ).length,
   }), [alarmas]);
 
   const filtradas = useMemo(() => {
     const texto = busqueda.trim().toLowerCase();
 
-    return alarmas.filter((alarma) => {
-      const coincideEstado =
+    return alarmas.filter((a) => {
+      const estado = estadoAlarma(a);
+
+      const cumpleEstado =
         filtro === "TODAS" ||
-        obtenerEstado(alarma) === filtro;
+        (filtro === "MANTENIMIENTO"
+          ? esMantenimiento(estado)
+          : estado === filtro);
 
       const contenido = [
-        obtenerId(alarma),
-        obtenerNombre(alarma),
-        obtenerBarrio(alarma),
-        obtenerEstado(alarma),
-      ]
-        .join(" ")
-        .toLowerCase();
+        idAlarma(a),
+        nombreAlarma(a),
+        barrioAlarma(a),
+        estado,
+      ].join(" ").toLowerCase();
 
-      return (
-        coincideEstado &&
-        contenido.includes(texto)
-      );
+      return cumpleEstado && contenido.includes(texto);
     });
-  }, [alarmas, busqueda, filtro]);
+  }, [alarmas, filtro, busqueda]);
+
+  const paginas = Math.max(
+    1,
+    Math.ceil(filtradas.length / POR_PAGINA)
+  );
+
+  const paginaActual = Math.min(pagina, paginas);
+
+  const visibles = filtradas.slice(
+    (paginaActual - 1) * POR_PAGINA,
+    paginaActual * POR_PAGINA
+  );
 
   const indicadores = [
     {
@@ -153,34 +149,51 @@ function Alarmas() {
   ];
 
   const filtros = [
-    {
-      clave: "TODAS",
-      titulo: "Todas",
-      cantidad: resumen.total,
-    },
-    {
-      clave: "ACTIVA",
-      titulo: "Activas",
-      cantidad: resumen.activas,
-    },
-    {
-      clave: "INACTIVA",
-      titulo: "Inactivas",
-      cantidad: resumen.inactivas,
-    },
+    { clave: "TODAS", texto: "Todas", total: resumen.total },
+    { clave: "ACTIVA", texto: "Activas", total: resumen.activas },
+    { clave: "INACTIVA", texto: "Inactivas", total: resumen.inactivas },
     {
       clave: "MANTENIMIENTO",
-      titulo: "En mantenimiento",
-      cantidad: resumen.mantenimiento,
+      texto: "Mantenimiento",
+      total: resumen.mantenimiento,
     },
   ];
 
   function actualizar() {
-    if (cargando) return;
-
     setCargando(true);
+    setRecarga((n) => n + 1);
+  }
+
+  function guardada() {
+    const estabaEditando = editor?.modo === "editar";
+
+    setEditor(null);
+    setAviso(
+      estabaEditando
+        ? "Alarma modificada correctamente."
+        : "Alarma registrada correctamente."
+    );
+    actualizar();
+  }
+
+  async function confirmarEliminar() {
+    if (!eliminando || procesando) return;
+
+    setProcesando(true);
     setError("");
-    setRecarga((actual) => actual + 1);
+    setAviso("");
+
+    try {
+      await eliminarAlarma(idAlarma(eliminando));
+      setEliminando(null);
+      setAviso("Alarma eliminada correctamente.");
+      actualizar();
+    } catch (e) {
+      setError(e.message || "No se pudo eliminar la alarma.");
+      setEliminando(null);
+    } finally {
+      setProcesando(false);
+    }
   }
 
   return (
@@ -189,132 +202,116 @@ function Alarmas() {
         iniciales="SG"
         placeholder="Buscar por nombre o barrio..."
         valor={busqueda}
-        onCambio={setBusqueda}
+        onCambio={(v) => {
+          setBusqueda(v);
+          setPagina(1);
+        }}
       />
 
-      <section className="alarmas-vista">
-
-        {/* ENCABEZADO */}
-
+      <section className="alarmas-vista alarmas-crud">
         <div className="alarmas-encabezado">
           <div className="alarmas-encabezado-texto">
             <h1>Alarmas</h1>
             <p>
-              Consulta y monitorea las alarmas
-              comunitarias registradas por barrio.
+              Administra las alarmas comunitarias y sus
+              zonas de cobertura.
             </p>
           </div>
 
-          <button
-            type="button"
-            className="alarmas-btn-actualizar"
-            onClick={actualizar}
-            disabled={cargando}
-          >
-            <i className="bi bi-arrow-clockwise" />
-            {cargando
-              ? "Actualizando..."
-              : "Actualizar"}
-          </button>
+          <div className="alarmas-acciones">
+            <button
+              type="button"
+              className="alarma-btn alarma-btn-principal"
+              onClick={() => setEditor({ modo: "crear" })}
+            >
+              <i className="bi bi-plus-circle" />
+              Agregar alarma
+            </button>
+
+            <button
+              type="button"
+              className="alarma-btn alarma-btn-secundario"
+              onClick={actualizar}
+              disabled={cargando}
+            >
+              <i className="bi bi-arrow-clockwise" />
+              {cargando ? "Actualizando..." : "Actualizar"}
+            </button>
+          </div>
         </div>
 
-        {/* ERRORES */}
+        {aviso && (
+          <div className="alert alert-success mb-3" role="status">
+            <i className="bi bi-check-circle me-2" />
+            {aviso}
+          </div>
+        )}
 
         {error && (
-          <div
-            className="alert alert-danger mb-4"
-            role="alert"
-          >
+          <div className="alert alert-danger mb-3" role="alert">
             <i className="bi bi-exclamation-triangle me-2" />
             {error}
           </div>
         )}
 
-        {/* TARJETAS */}
-
         <div className="row g-3 mb-4">
           {indicadores.map((item) => (
-            <div
-              className="col-6 col-xl-3"
-              key={item.titulo}
-            >
-              <article
-                className={`alarmas-kpi tono-${item.tono}`}
-              >
+            <div className="col-6 col-xl-3" key={item.titulo}>
+              <article className={`alarmas-kpi tono-${item.tono}`}>
                 <div className="alarmas-kpi-icono">
-                  <i
-                    className={`bi ${item.icono}`}
-                    aria-hidden="true"
-                  />
+                  <i className={`bi ${item.icono}`} />
                 </div>
-
                 <div className="alarmas-kpi-info">
                   <span className="alarmas-kpi-titulo">
                     {item.titulo}
                   </span>
-
                   <strong className="alarmas-kpi-valor">
                     {cargando ? "..." : item.valor}
                   </strong>
                 </div>
-
-                <i
-                  className="bi bi-chevron-right alarmas-kpi-flecha"
-                  aria-hidden="true"
-                />
+                <i className="bi bi-chevron-right alarmas-kpi-flecha" />
               </article>
             </div>
           ))}
         </div>
 
-        {/* FILTROS */}
-
         <div className="alarmas-filtros">
           {filtros.map((item) => (
             <button
-              type="button"
               key={item.clave}
+              type="button"
               className={`chip-filtro-dash ${
-                filtro === item.clave
-                  ? "active"
-                  : ""
+                filtro === item.clave ? "active" : ""
               }`}
-              onClick={() => setFiltro(item.clave)}
+              onClick={() => {
+                setFiltro(item.clave);
+                setPagina(1);
+              }}
             >
-              {item.titulo}
-
+              {item.texto}
               <span className="chip-count-dash">
-                {cargando
-                  ? "..."
-                  : item.cantidad}
+                {item.total}
               </span>
             </button>
           ))}
         </div>
 
-        {/* PANEL DE TABLA */}
-
         <section className="alarmas-panel-tabla">
-
           <div className="alarmas-tabla-encabezado">
             <div className="alarmas-tabla-titulo">
               <span className="alarmas-tabla-icono">
                 <i className="bi bi-broadcast-pin" />
               </span>
-
               <div>
                 <h2>Alarmas registradas</h2>
                 <p>
-                  Consulta las alarmas comunitarias
-                  por barrio.
+                  Consulta, modifica o elimina alarmas.
                 </p>
               </div>
             </div>
 
             <span className="alarmas-total-registros">
-              {cargando
-                ? "Cargando..."
-                : `${filtradas.length} registros`}
+              {filtradas.length} registros
             </span>
           </div>
 
@@ -325,115 +322,201 @@ function Alarmas() {
                   <th>Nombre</th>
                   <th>Barrio</th>
                   <th>Estado</th>
-                  <th>Radio (m)</th>
+                  <th>Radio</th>
                   <th>Coordenadas</th>
+                  <th>Acciones</th>
                 </tr>
               </thead>
 
               <tbody>
-                {!cargando &&
-                  filtradas.map((alarma, indice) => {
-                    const estado =
-                      obtenerEstado(alarma);
+                {!cargando && visibles.map((a) => {
+                  const estado = estadoAlarma(a);
+                  const lat = dato(a, "latitud", "Latitud");
+                  const lng = dato(a, "longitud", "Longitud");
+                  const clase = esMantenimiento(estado)
+                    ? "mantenimiento"
+                    : estado.toLowerCase();
 
-                    const latitud =
-                      obtenerLatitud(alarma);
+                  return (
+                    <tr key={idAlarma(a)}>
+                      <td>
+                        <div className="alarmas-nombre">
+                          {nombreAlarma(a)}
+                        </div>
+                        <span className="alarmas-codigo">
+                          Código: {idAlarma(a)}
+                        </span>
+                      </td>
 
-                    const longitud =
-                      obtenerLongitud(alarma);
+                      <td>
+                        <span className="alarmas-barrio">
+                          {barrioAlarma(a)}
+                        </span>
+                      </td>
 
-                    const radio =
-                      obtenerRadio(alarma);
+                      <td>
+                        <span
+                          className={`alarma-estado alarma-estado-${clase}`}
+                        >
+                          <span className="alarma-estado-punto" />
+                          {estado}
+                        </span>
+                      </td>
 
-                    return (
-                      <tr
-                        key={
-                          obtenerId(alarma) ??
-                          indice
-                        }
-                      >
-                        <td>
-                          <div className="alarmas-nombre">
-                            {obtenerNombre(alarma) ||
-                              "Sin nombre"}
-                          </div>
+                      <td>
+                        <span className="alarmas-radio">
+                          {radioAlarma(a) ?? "—"} m
+                        </span>
+                      </td>
 
-                          <span className="alarmas-codigo">
-                            Código:{" "}
-                            {obtenerId(alarma) ?? "—"}
-                          </span>
-                        </td>
+                      <td>
+                        <span className="alarmas-coordenadas">
+                          {lat != null && lng != null
+                            ? `${Number(lat).toFixed(5)}, ${Number(lng).toFixed(5)}`
+                            : "No disponibles"}
+                        </span>
+                      </td>
 
-                        <td>
-                          <span className="alarmas-barrio">
-                            {obtenerBarrio(alarma)}
-                          </span>
-                        </td>
-
-                        <td>
-                          <span
-                            className={`alarma-estado alarma-estado-${estado.toLowerCase()}`}
+                      <td>
+                        <div className="alarmas-acciones-tabla">
+                          <button
+                            type="button"
+                            className="alarma-accion editar"
+                            title="Modificar alarma"
+                            aria-label={`Modificar ${nombreAlarma(a)}`}
+                            onClick={() =>
+                              setEditor({
+                                modo: "editar",
+                                alarma: a,
+                              })
+                            }
                           >
-                            <span className="alarma-estado-punto" />
-                            {estado || "SIN ESTADO"}
-                          </span>
-                        </td>
+                            <i className="bi bi-pencil-square" />
+                          </button>
 
-                        <td>
-                          <span className="alarmas-radio">
-                            {radio != null
-                              ? radio
-                              : "—"}
-                          </span>
-                        </td>
-
-                        <td>
-                          <span className="alarmas-coordenadas">
-                            {latitud != null &&
-                            longitud != null
-                              ? `${latitud}, ${longitud}`
-                              : "No disponibles"}
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })}
+                          <button
+                            type="button"
+                            className="alarma-accion eliminar"
+                            title="Eliminar alarma"
+                            aria-label={`Eliminar ${nombreAlarma(a)}`}
+                            onClick={() => setEliminando(a)}
+                          >
+                            <i className="bi bi-trash3" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
 
           {cargando && (
             <div className="alarmas-tabla-vacia">
-              <div
-                className="spinner-border spinner-border-sm"
-                role="status"
-              />
               <span>Cargando alarmas...</span>
             </div>
           )}
 
-          {!cargando &&
-            !error &&
-            filtradas.length === 0 && (
-              <div className="alarmas-tabla-vacia">
-                <span className="alarmas-vacio-icono">
-                  <i className="bi bi-broadcast-pin" />
-                </span>
+          {!cargando && visibles.length === 0 && (
+            <div className="alarmas-tabla-vacia">
+              <i className="bi bi-inbox" />
+              <h3>No se encontraron alarmas</h3>
+              <p>Prueba con otra búsqueda o filtro.</p>
+            </div>
+          )}
 
-                <h3>No se encontraron alarmas</h3>
+          {!cargando && paginas > 1 && (
+            <div className="alarmas-paginacion">
+              <span>
+                Página {paginaActual} de {paginas}
+              </span>
 
-                <p>
-                  {busqueda ||
-                  filtro !== "TODAS"
-                    ? "Prueba con otro filtro o búsqueda."
-                    : "Todavía no hay alarmas registradas."}
-                </p>
+              <div>
+                <button
+                  type="button"
+                  disabled={paginaActual === 1}
+                  onClick={() => setPagina(paginaActual - 1)}
+                >
+                  <i className="bi bi-chevron-left" />
+                </button>
+
+                <button
+                  type="button"
+                  disabled={paginaActual === paginas}
+                  onClick={() => setPagina(paginaActual + 1)}
+                >
+                  <i className="bi bi-chevron-right" />
+                </button>
               </div>
-            )}
+            </div>
+          )}
         </section>
       </section>
+
+      {editor && (
+        <RegistrarAlarmaMapa
+          key={
+            editor.modo === "editar"
+              ? `editar-${idAlarma(editor.alarma)}`
+              : "crear"
+          }
+          alarmas={alarmas}
+          alarmaEditar={
+            editor.modo === "editar"
+              ? editor.alarma
+              : null
+          }
+          onClose={() => setEditor(null)}
+          onGuardada={guardada}
+        />
+      )}
+
+      {eliminando && (
+        <div className="alarma-confirmacion-fondo">
+          <section
+            className="alarma-confirmacion"
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="titulo-eliminar-alarma"
+          >
+            <div className="alarma-confirmacion-icono">
+              <i className="bi bi-trash3" />
+            </div>
+
+            <h3 id="titulo-eliminar-alarma">
+              ¿Eliminar alarma?
+            </h3>
+
+            <p>
+              Se eliminará{" "}
+              <strong>{nombreAlarma(eliminando)}</strong>.
+              Esta acción no se puede deshacer.
+            </p>
+
+            <div className="alarma-confirmacion-botones">
+              <button
+                type="button"
+                className="alarma-btn alarma-btn-secundario"
+                disabled={procesando}
+                onClick={() => setEliminando(null)}
+              >
+                Cancelar
+              </button>
+
+              <button
+                type="button"
+                className="alarma-btn alarma-btn-peligro"
+                disabled={procesando}
+                onClick={confirmarEliminar}
+              >
+                <i className="bi bi-trash3" />
+                {procesando ? "Eliminando..." : "Eliminar"}
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
     </>
   );
 }
-
-export default Alarmas;
