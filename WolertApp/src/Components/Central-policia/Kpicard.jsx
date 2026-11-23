@@ -1,5 +1,5 @@
 import { KPIS_CENTRAL_CONFIG } from './Kpisconfig';
-import '../../css/Policia/central-policia/css/kpicard.css';
+import '../../css/Policia/central-policia/css/Kpicard.css';
 
 function Kpis({ grupo, valores = {} }) {
   const config = KPIS_CENTRAL_CONFIG[grupo];
