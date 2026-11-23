@@ -20,3 +20,5 @@ transito-respaldo-temporal/
 .env.local
 
 transito-respaldo-temporal/
+
+**/.env.local
