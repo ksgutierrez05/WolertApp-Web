@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import SidebarDirector from './director-transito/Sidebar';
+import SidebarDirector from './director-transito/SideBar';
 import SidebarCentral from './central-transito/SideBar';
 import SidebarAgente from './agente-transito/SideBar';
 
