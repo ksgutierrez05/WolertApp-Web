@@ -14,7 +14,7 @@ const menu = [
   ]},
 ];
 
-export default function CiudadanoSidebar() {
+export default function CiudadanoSidebar({ onNavigate }) {
   return (
     <nav className="sidebar">
       <div className="sidebar__brand">
@@ -27,7 +27,7 @@ export default function CiudadanoSidebar() {
         <div key={sec.group}>
           <li className="sidebar__group-label">{sec.group}</li>
           {sec.items.map((item) => (
-            <NavLink key={item.label} to={item.href} end={item.label === 'Principal'} className={({ isActive }) => isActive ? 'sidebar__link active' : 'sidebar__link'}>
+            <NavLink key={item.label} to={item.href} end={item.label === 'Principal'} onClick={onNavigate} className={({ isActive }) => isActive ? 'sidebar__link active' : 'sidebar__link'}>
               <i className={`bi ${item.icon} sidebar__icon`} />
               <span className="sidebar__label">{item.label}</span>
             </NavLink>
@@ -36,7 +36,7 @@ export default function CiudadanoSidebar() {
       ))}
 
       <div className="sidebar__footer">
-        <button type="button" className="sidebar__logout" onClick={() => { cerrarSesion(); window.location.href = '/login'; }}>
+        <button type="button" className="sidebar__logout" onClick={() => { document.body.classList.remove('modo-compacto'); cerrarSesion(); window.location.href = '/login'; }}>
           <i className="bi bi-box-arrow-right sidebar__icon" />
           <span className="sidebar__label">Cerrar sesión</span>
         </button>

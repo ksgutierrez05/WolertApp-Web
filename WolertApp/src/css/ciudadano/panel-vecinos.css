@@ -77,3 +77,14 @@
   margin-bottom: 10px;
   opacity: 0.5;
 }
+
+.vecinos-mi-barrio { display:inline-flex; align-items:center; gap:7px; padding:8px 11px; border:1px solid #dce6f3; border-radius:99px; background:#f1f6fd; color:#184a8c; font-size:11px; font-weight:700; white-space:nowrap; }
+.vecinos-aviso { display:flex; align-items:flex-start; gap:9px; margin:0 0 15px; padding:11px 13px; border:1px solid #dce6f3; border-radius:9px; background:#f3f7fc; color:#365c8b; font-size:11px; }
+.vecinos-filtros { display:flex; flex-wrap:wrap; gap:6px; padding:12px 15px; border-bottom:1px solid #e7edf4; }
+.vecinos-filtros button { padding:7px 10px; border:1px solid #e2e8f0; border-radius:99px; background:#fff; color:#64748b; font-size:10px; font-weight:700; cursor:pointer; }
+.vecinos-filtros button.activo { border-color:#184a8c; background:#eaf1fb; color:#184a8c; }
+.vecino-relacion { display:inline-flex; align-items:center; gap:6px; flex:0 0 auto; padding:6px 9px; border-radius:99px; font-size:9px; font-weight:750; white-space:nowrap; }
+.vecino-relacion.es-vecino { background:#eaf1fb; color:#184a8c; }
+.vecino-relacion.otro-barrio { background:#fff5e8; color:#99630e; }
+.vecino-relacion.sin-comparacion { background:#f1f3f6; color:#65748a; }
+@media(max-width:600px) { .ciudadano-vecinos .ciudadano-page-heading { align-items:flex-start; flex-direction:column; }.vecino-row-usu { align-items:flex-start!important; flex-direction:column; gap:9px; }.vecino-relacion { margin-left:0; } }

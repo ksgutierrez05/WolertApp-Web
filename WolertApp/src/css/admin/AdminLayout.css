@@ -653,12 +653,21 @@
   border-bottom: 1px solid #f1f5f9;
 }
 
+button.top-bar__notif-item {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+}
+
 .top-bar__notif-item:last-child {
   border-bottom: none;
 }
 
 .top-bar__notif-item.unread {
-  background: #eff6ff;
+  background: #eaf6ec;
 }
 
 .top-bar__notif-item.unread .top-bar__notif-item-title {
@@ -668,6 +677,10 @@
 
 .top-bar__notif-item:hover {
   background: #f1f5f9;
+}
+
+.top-bar__notif-item.unread:hover {
+  background: #dff0e3;
 }
 
 .top-bar__notif-item-icon {

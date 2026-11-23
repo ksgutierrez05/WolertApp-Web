@@ -4,6 +4,7 @@ import Sidebar from './Sidebar';
 import TopBar from './Topbar';
 import '../../css/admin/AdminLayout.css';
 import '../../css/admin/sidebar-unificado.css';
+import '../../css/admin/modales-claro.css';
 
 const MOBILE = '(max-width: 768px)';
 

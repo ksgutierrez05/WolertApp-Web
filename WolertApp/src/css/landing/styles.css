@@ -181,9 +181,10 @@
     display: inline-block;
     width: 8px;
     height: 8px;
+    margin-inline: auto;
     border-radius: 50%;
     background: var(--acento);
-    animation: pulso-badge 1.5s ease-in-out infinite;
+    animation: pulso-badge 1s ease-in-out infinite;
 }
 
 @keyframes pulso-badge { 0%, 100% { opacity: 1; } 50% { opacity: .4; } }

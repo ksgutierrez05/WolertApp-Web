@@ -1,180 +1,210 @@
-import { useEffect, useMemo, useState } from 'react';
-import '../../css/global.css';
-import '../../css/temas.css';
-import '../../css/admin/usuarios.css';
-import '../../css/admin/alertas.css';
-import { listarAlertas } from '../../Services/AlertasAPI.js';
+import { useEffect, useMemo, useState } from "react";
+import "../../css/global.css";
+import "../../css/temas.css";
+import "../../css/ciudadano/vistas-bandeja.css";
+import { listarAlertas } from "../../Services/AlertasAPI.js";
 
 const PRIORIDADES = [
-  { valor: 'alta', etiqueta: 'Alta' },
-  { valor: 'media', etiqueta: 'Media' },
-  { valor: 'baja', etiqueta: 'Baja' },
+  { valor: "alta", etiqueta: "Alta" },
+  { valor: "media", etiqueta: "Media" },
+  { valor: "baja", etiqueta: "Baja" },
 ];
 
-const prioridadBadgeClase = {
-  alta: 'alerta-badge-pendiente-dash',
-  media: 'alerta-badge-asignada-dash',
-  baja: 'alerta-badge-resuelta-dash',
+const fechaFormato = (valor) => {
+  if (!valor) return "Fecha no disponible";
+  const fecha = new Date(valor);
+  if (Number.isNaN(fecha.getTime())) return "Fecha no disponible";
+
+  return fecha.toLocaleString("es-CO", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
 };
 
-const prioridadEtiqueta = { alta: 'Alta', media: 'Media', baja: 'Baja' };
-
-const formatearFecha = (f) => (f ? new Date(f).toLocaleDateString() : '—');
+const estiloPrioridad = (prioridad) => {
+  if (prioridad === "alta") return "danger";
+  if (prioridad === "media") return "amber";
+  return "slate";
+};
 
 export default function Alertas() {
   const [alertas, setAlertas] = useState([]);
   const [cargando, setCargando] = useState(true);
-  const [errorLista, setErrorLista] = useState('');
-  const [buscar, setBuscar] = useState('');
-  const [filtroPrioridad, setFiltroPrioridad] = useState('');
+  const [error, setError] = useState("");
+  const [busqueda, setBusqueda] = useState("");
+  const [filtroPrioridad, setFiltroPrioridad] = useState("");
 
   useEffect(() => {
+    let activo = true;
+
     listarAlertas()
-      .then(setAlertas)
-      .catch((err) => setErrorLista(err.message))
-      .finally(() => setCargando(false));
+      .then((datos) => {
+        if (activo) setAlertas(Array.isArray(datos) ? datos : []);
+      })
+      .catch((err) => {
+        if (activo) setError(err.message || "No se pudieron cargar las alertas.");
+      })
+      .finally(() => {
+        if (activo) setCargando(false);
+      });
+
+    return () => {
+      activo = false;
+    };
   }, []);
 
-  const filtrados = useMemo(() => alertas.filter((a) => {
-    const texto = buscar.trim().toLowerCase();
-    const coincideTexto = !texto
-      || (a.tipo || '').toLowerCase().includes(texto)
-      || (a.reportadoPor || '').toLowerCase().includes(texto)
-      || (a.barrioNombre || '').toLowerCase().includes(texto);
-    const coincidePrioridad = !filtroPrioridad || (a.prioridad || '').toLowerCase() === filtroPrioridad;
-    return coincideTexto && coincidePrioridad;
-  }), [alertas, buscar, filtroPrioridad]);
+  const filtradas = useMemo(() => {
+    const texto = busqueda.trim().toLocaleLowerCase("es-CO");
 
-  const contar = (p) => alertas.filter((a) => (a.prioridad || '').toLowerCase() === p).length;
+    return alertas.filter((alerta) => {
+      const contenido = [
+        alerta.tipo,
+        alerta.reportadoPor,
+        alerta.barrioNombre,
+      ].join(" ").toLocaleLowerCase("es-CO");
+      const prioridad = (alerta.prioridad || "").toLocaleLowerCase("es-CO");
+
+      return (!texto || contenido.includes(texto))
+        && (!filtroPrioridad || prioridad === filtroPrioridad);
+    });
+  }, [alertas, busqueda, filtroPrioridad]);
+
+  const contarPrioridad = (prioridad) => alertas.filter(
+    (alerta) => (alerta.prioridad || "").toLowerCase() === prioridad,
+  ).length;
 
   return (
-    <div className="container-fluid">
-      <div className="mb-4">
-        <h1 className="hero-title-dash" style={{ color: 'var(--ink)', fontSize: '26px' }}>Alertas</h1>
-        <p className="hero-text-dash" style={{ color: 'var(--muted)' }}>Alertas reportadas por la comunidad</p>
-      </div>
+    <main className="ciudadano-bandeja">
+      <header className="ciudadano-bandeja__hero">
+        <div>
+          <span className="ciudadano-bandeja__eyebrow">
+            <i className="bi bi-exclamation-triangle-fill" /> ALERTAS DE LA COMUNIDAD
+          </span>
+          <h1>Alertas</h1>
+          <p>Consulta los reportes recientes de tu comunidad y su prioridad.</p>
+        </div>
+      </header>
 
-      <div className="row g-3 mb-3">
-        <div className="col-md-4">
-          <div className="kpi-dash kpi-red-dash">
-            <i className="bi bi-exclamation-octagon kpi-icon-dash" />
-            <div className="kpi-num-dash">{cargando ? '...' : contar('alta')}</div>
-            <div className="kpi-label-dash">Prioridad alta</div>
-            <div className="kpi-label-dash" style={{ marginTop: '2px' }}>Atención inmediata</div>
-          </div>
+      <section className="ciudadano-bandeja__summary" aria-label="Resumen de alertas">
+        <div className="ciudadano-bandeja__metric">
+          <span className="ciudadano-bandeja__metric-icon danger">
+            <i className="bi bi-exclamation-octagon-fill" />
+          </span>
+          <span className="ciudadano-bandeja__metric-copy">
+            <small>Prioridad alta</small>
+            <strong>{cargando ? "—" : contarPrioridad("alta")}</strong>
+          </span>
         </div>
-        <div className="col-md-4">
-          <div className="kpi-dash kpi-amber-dash">
-            <i className="bi bi-exclamation-triangle kpi-icon-dash" />
-            <div className="kpi-num-dash">{cargando ? '...' : contar('media')}</div>
-            <div className="kpi-label-dash">Prioridad media</div>
-            <div className="kpi-label-dash" style={{ marginTop: '2px' }}>Atención programada</div>
-          </div>
+        <div className="ciudadano-bandeja__metric">
+          <span className="ciudadano-bandeja__metric-icon amber">
+            <i className="bi bi-exclamation-triangle-fill" />
+          </span>
+          <span className="ciudadano-bandeja__metric-copy">
+            <small>Prioridad media</small>
+            <strong>{cargando ? "—" : contarPrioridad("media")}</strong>
+          </span>
         </div>
-        <div className="col-md-4">
-          <div className="kpi-dash kpi-green-dash">
-            <i className="bi bi-info-circle kpi-icon-dash" />
-            <div className="kpi-num-dash">{cargando ? '...' : contar('baja')}</div>
-            <div className="kpi-label-dash">Prioridad baja</div>
-            <div className="kpi-label-dash" style={{ marginTop: '2px' }}>Seguimiento</div>
-          </div>
+        <div className="ciudadano-bandeja__metric">
+          <span className="ciudadano-bandeja__metric-icon slate">
+            <i className="bi bi-info-circle-fill" />
+          </span>
+          <span className="ciudadano-bandeja__metric-copy">
+            <small>Prioridad baja</small>
+            <strong>{cargando ? "—" : contarPrioridad("baja")}</strong>
+          </span>
         </div>
-      </div>
+      </section>
 
-      <div className="card-panel-dash p-3 mb-3">
-        <div className="row g-2 align-items-center">
-          <div className="col-lg-8">
-            <div className="search-dash d-flex align-items-center bg-white">
-              <span className="input-group-text bg-white border-0"><i className="bi bi-search" /></span>
-              <input
-                type="text"
-                id="buscador-alertas"
-                className="form-control border-0"
-                placeholder="Buscar por tipo, reportante o barrio..."
-                value={buscar}
-                onChange={(e) => setBuscar(e.target.value)}
-              />
-            </div>
-          </div>
-          <div className="col-lg-4">
+      <section className="ciudadano-bandeja__panel" aria-label="Listado de alertas">
+        <div className="ciudadano-bandeja__toolbar">
+          <label className="ciudadano-bandeja__search">
+            <i className="bi bi-search" />
+            <input
+              type="search"
+              value={busqueda}
+              onChange={(event) => setBusqueda(event.target.value)}
+              placeholder="Buscar por tipo, reportante o barrio..."
+              aria-label="Buscar alertas"
+            />
+          </label>
+          <div className="ciudadano-bandeja__filters">
+            <label className="visually-hidden" htmlFor="filtro-prioridad-alerta">
+              Filtrar por prioridad
+            </label>
             <select
               id="filtro-prioridad-alerta"
-              className="filtro-select-dash form-select"
+              className="form-select"
               value={filtroPrioridad}
-              onChange={(e) => setFiltroPrioridad(e.target.value)}
+              onChange={(event) => setFiltroPrioridad(event.target.value)}
             >
-              <option value="">Prioridad: Todas</option>
-              {PRIORIDADES.map((p) => (
-                <option key={p.valor} value={p.valor}>{p.etiqueta}</option>
+              <option value="">Todas las prioridades</option>
+              {PRIORIDADES.map((prioridad) => (
+                <option key={prioridad.valor} value={prioridad.valor}>
+                  {prioridad.etiqueta}
+                </option>
               ))}
             </select>
           </div>
         </div>
-      </div>
 
-      <div className="card-panel-dash">
-        {errorLista && <div className="text-danger small p-3">{errorLista}</div>}
-        <div className="table-responsive">
-          <table className="tabla-alertas-dash">
-            <thead>
-              <tr>
-                <th>Tipo de alerta</th>
-                <th>Prioridad</th>
-                <th>Estado</th>
-                <th>Reportado por</th>
-                <th>Barrio</th>
-                <th>Fecha</th>
-              </tr>
-            </thead>
-            <tbody>
-              {cargando && (
-                <tr><td colSpan={6}>Cargando alertas...</td></tr>
-              )}
+        {error && (
+          <div className="ciudadano-bandeja__error" role="alert">
+            <i className="bi bi-exclamation-circle-fill" />
+            {error}
+          </div>
+        )}
 
-              {!cargando && !errorLista && filtrados.length === 0 && (
-                <tr>
-                  <td colSpan={6}>
-                    <div className="alertas-vacio-dash">
-                      <i className="bi bi-inboxes" />
-                      <p>
-                        {alertas.length === 0
-                          ? 'Aún no hay alertas registradas.'
-                          : 'No se encontraron alertas con esos filtros.'}
-                      </p>
-                    </div>
-                  </td>
-                </tr>
-              )}
+        {cargando ? (
+          <div className="ciudadano-bandeja__empty">
+            <i className="bi bi-arrow-repeat" />
+            <strong>Cargando alertas...</strong>
+          </div>
+        ) : !error && filtradas.length === 0 ? (
+          <div className="ciudadano-bandeja__empty">
+            <i className="bi bi-inboxes" />
+            <strong>{alertas.length ? "No hay resultados" : "Aún no hay alertas registradas"}</strong>
+            <span>
+              {alertas.length
+                ? "Prueba con otra búsqueda o prioridad."
+                : "Los reportes de tu comunidad aparecerán aquí."}
+            </span>
+          </div>
+        ) : (
+          <div className="ciudadano-bandeja__list">
+            {filtradas.map((alerta) => {
+              const prioridad = (alerta.prioridad || "").toLowerCase();
 
-              {!cargando && filtrados.map((a) => {
-                const prioridad = (a.prioridad || '').toLowerCase();
-                const esAlta = prioridad === 'alta';
-                return (
-                  <tr key={a.idAlerta}>
-                    <td>
-                      <div className="alerta-tipo-celda-dash">
-                        <div className={`alerta-tipo-icono-dash ${esAlta ? 'alerta-tipo-icono-grave-dash' : 'alerta-tipo-icono-moderado-dash'}`}>
-                          <i className={`bi ${esAlta ? 'bi-exclamation-octagon-fill' : 'bi-exclamation-triangle-fill'}`} />
-                        </div>
-                        <span className="alerta-tipo-texto-dash">{(a.tipo || '').toUpperCase()}</span>
-                      </div>
-                    </td>
-                    <td>
-                      <span className={`alerta-badge-dash ${prioridadBadgeClase[prioridad] || 'alerta-badge-asignada-dash'}`}>
-                        <span className="dot" />{prioridadEtiqueta[prioridad] || a.prioridad || '—'}
+              return (
+                <article className="ciudadano-bandeja__item" key={alerta.idAlerta}>
+                  <span className="ciudadano-bandeja__item-icon">
+                    <i className="bi bi-exclamation-triangle-fill" />
+                  </span>
+                  <div className="ciudadano-bandeja__item-body">
+                    <div className="ciudadano-bandeja__item-heading">
+                      <h2>{alerta.tipo || "Alerta"} · #{alerta.idAlerta}</h2>
+                      <span className={`ciudadano-bandeja__badge ${estiloPrioridad(prioridad)}`}>
+                        <i className="bi bi-circle-fill" />
+                        {prioridad || "Prioridad no indicada"}
                       </span>
-                    </td>
-                    <td>{a.estado || '—'}</td>
-                    <td>{a.reportadoPor || '—'}</td>
-                    <td>{a.barrioNombre || '—'}</td>
-                    <td>{formatearFecha(a.fecha)}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
+                    </div>
+                    <div className="ciudadano-bandeja__meta">
+                      <span><i className="bi bi-flag" /> {alerta.estado || "Estado no disponible"}</span>
+                      <span><i className="bi bi-person" /> {alerta.reportadoPor || "Reportante no disponible"}</span>
+                      <span><i className="bi bi-geo-alt" /> {alerta.barrioNombre || "Barrio no disponible"}</span>
+                      <span><i className="bi bi-clock" /> {fechaFormato(alerta.fecha)}</span>
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        )}
+
+        <footer className="ciudadano-bandeja__footer">
+          <span>Mostrando {filtradas.length} de {alertas.length} alertas</span>
+          <span>Ordenadas según su registro</span>
+        </footer>
+      </section>
+    </main>
   );
 }

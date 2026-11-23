@@ -9,6 +9,7 @@ import {
   editarUsuario,
   cambiarPassword,
 } from '../../Services/UsuariosAPI.js';
+import { guardarPreferenciasAdmin, obtenerPreferenciasAdmin } from '../../Services/PreferenciasAdmin';
 
 const nombreRol = {
   ADMIN: 'Administrador',
@@ -52,12 +53,9 @@ const aForm = (u = {}) => ({
   casa: u.casa || '',
 });
 
-const PREFS_POR_DEFECTO = { notificaciones: true, sonido: true, compacto: false };
-
 export default function Configuracion() {
   const navigate = useNavigate();
   const idActual = localStorage.getItem('idUsuario');
-  const CLAVE_PREFS = `wolertapp_prefs_${idActual}`;
 
   // Perfil
   const [detalle, setDetalle] = useState(null); // datos completos que vienen de la API
@@ -69,13 +67,7 @@ export default function Configuracion() {
   const [mensaje, setMensaje] = useState('');
 
   // Preferencias (se guardan por usuario en este navegador)
-  const [prefs, setPrefs] = useState(() => {
-    try {
-      return { ...PREFS_POR_DEFECTO, ...JSON.parse(localStorage.getItem(CLAVE_PREFS)) };
-    } catch {
-      return PREFS_POR_DEFECTO;
-    }
-  });
+  const [prefs, setPrefs] = useState(() => obtenerPreferenciasAdmin());
 
   // Seguridad
   const [seguridadAbierta, setSeguridadAbierta] = useState(false);
@@ -102,13 +94,17 @@ export default function Configuracion() {
       .finally(() => setCargando(false));
   }, [idActual]);
 
-  // Guardar preferencias y aplicar modo compacto
+  // Aplicar el modo compacto; las preferencias se guardan al cambiar cada opción.
   useEffect(() => {
-    try {
-      localStorage.setItem(CLAVE_PREFS, JSON.stringify(prefs));
-    } catch { /* si el navegador bloquea el almacenamiento, se ignora */ }
     document.body.classList.toggle('modo-compacto', prefs.compacto);
-  }, [prefs, CLAVE_PREFS]);
+  }, [prefs.compacto]);
+
+  const cambiarPreferencia = (clave, valor) => {
+    const actualizadas = guardarPreferenciasAdmin({ ...prefs, [clave]: valor });
+    setPrefs(actualizadas);
+    setMensaje('Preferencia guardada en este navegador.');
+    setError('');
+  };
 
   const handleChange = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
 
@@ -122,14 +118,11 @@ export default function Configuracion() {
       return;
     }
 
-    // Protección: el PUT reemplaza el barrio. Si la API no lo devolvió, guardar lo borraría.
-    if (detalle.barrioId === undefined) {
-      setError('No se puede guardar todavía: la API no está devolviendo tu barrio y se perdería. Falta actualizar el backend.');
-      return;
-    }
+    // En cuentas administrativas el barrio puede no estar asignado; la API acepta null.
+    const barrioId = detalle.barrioId ?? detalle.idBarrio ?? null;
 
-    // El PUT reemplaza TODOS los campos: reenviamos cédula y barrio tal como vinieron del GET
-    const { cedula, barrioId } = detalle;
+    // El PUT reemplaza todos los campos: se conserva el barrio cuando existe.
+    const { cedula } = detalle;
     const textoONulo = (v) => v.trim() || null;
 
     try {
@@ -224,29 +217,14 @@ export default function Configuracion() {
     );
   }
 
-  const estado = (detalle.estado || '').toLowerCase();
-  const claseEstado = estado === 'activo' ? 'badge-green-dash' : 'badge-gray-dash';
-
-  // La API de "un usuario" no trae el nombre completo armado: se arma aquí
-  const nombreBanner =
-    [detalle.primerNombre, detalle.primerApellido].filter(Boolean).join(' ') || detalle.username || '';
+  const claseEstado = (detalle.estado || '').toLowerCase() === 'activo' ? 'badge-green-dash' : 'badge-gray-dash';
 
   return (
-    <div className="container-fluid">
-      <div className="config-banner-dash mb-4">
-        <div className="d-flex align-items-center gap-3">
-          <div className="config-avatar-grande-dash"><i className="bi bi-person-fill" /></div>
-          <div>
-            <div className="config-banner-nombre-dash" id="perfil-nombre">
-              {nombreBanner.toUpperCase()}
-            </div>
-            <div className="config-banner-estado-dash">
-              <span className="dot-online-dash" /> {estado === 'activo' ? 'Cuenta activa' : 'Cuenta ' + (estado || 'sin estado')} · {nombreRol[detalle.rolNombre] || detalle.rolNombre}
-            </div>
-          </div>
-        </div>
-        <i className="bi bi-shield-check config-banner-icono-dash" />
-      </div>
+    <div className="container-fluid admin-config-page">
+      <header className="admin-config-hero">
+        <div><span><i className="bi bi-sliders" /> CUENTA Y PREFERENCIAS</span><h1>Configuración</h1><p>Actualiza tu perfil, personaliza el dashboard y protege el acceso a tu cuenta.</p></div>
+        <div className="admin-config-hero__badge"><i className="bi bi-shield-check" /> Ajustes de tu cuenta</div>
+      </header>
 
       <div className="row g-3">
         <div className="col-lg-7">
@@ -268,10 +246,17 @@ export default function Configuracion() {
             <form id="form-configuracion" className={editando ? 'editando' : ''} onSubmit={handleSubmit}>
               {CAMPOS.map((c) => (
                 <div className="info-fila-dash" key={c.name}>
-                  <span className="info-fila-label-dash">{c.label}</span>
+                  {editando ? (
+                    <label className="info-fila-label-dash" htmlFor={`config-${c.name}`}>
+                      {c.label}
+                    </label>
+                  ) : (
+                    <span className="info-fila-label-dash">{c.label}</span>
+                  )}
                   {editando ? (
                     <input
                       type={c.type}
+                      id={`config-${c.name}`}
                       name={c.name}
                       className="form-control input-dash input-edicion-dash"
                       value={form[c.name]}
@@ -321,127 +306,103 @@ export default function Configuracion() {
         </div>
 
         <div className="col-lg-5">
-          <div className="card-panel-dash mb-3">
+          <section className="card-panel-dash admin-config-preferences">
             <div className="info-card-header-dash">
-              <h3 className="section-title-dash">Configuración</h3>
+              <div>
+                <h3 className="section-title-dash">Preferencias y cuenta</h3>
+                <p className="admin-config-help">Personaliza el panel y administra el acceso a tu cuenta.</p>
+              </div>
             </div>
             <div className="toggle-fila-dash">
-              <div>
-                <div className="toggle-titulo-dash">Notificaciones</div>
-                <div className="toggle-sub-dash">Recibir avisos de alertas del sistema</div>
-              </div>
-              <label className="switch-dash">
-                <input
-                  type="checkbox"
-                  id="pref-notificaciones"
-                  checked={prefs.notificaciones}
-                  onChange={(e) => setPrefs({ ...prefs, notificaciones: e.target.checked })}
-                />
-                <span className="switch-slider-dash" />
-              </label>
-            </div>
-            <div className="toggle-fila-dash">
-              <div>
-                <div className="toggle-titulo-dash">Sonido</div>
-                <div className="toggle-sub-dash">Reproducir sonido al recibir una alerta</div>
-              </div>
-              <label className="switch-dash">
-                <input
-                  type="checkbox"
-                  id="pref-sonido"
-                  checked={prefs.sonido}
-                  onChange={(e) => setPrefs({ ...prefs, sonido: e.target.checked })}
-                />
-                <span className="switch-slider-dash" />
-              </label>
+              <div><div className="toggle-titulo-dash">Avisos en la campana</div><div className="toggle-sub-dash">Muestra el contador y la vista previa de las notificaciones recibidas.</div></div>
+              <label className="switch-dash" aria-label="Mostrar notificaciones en la campana"><input type="checkbox" id="pref-notificaciones" checked={prefs.mostrarCampana} onChange={(e) => cambiarPreferencia('mostrarCampana', e.target.checked)} /><span className="switch-slider-dash" /></label>
             </div>
             <div className="toggle-fila-dash" style={{ borderBottom: 'none' }}>
-              <div>
-                <div className="toggle-titulo-dash">Modo compacto</div>
-                <div className="toggle-sub-dash">Reduce el espaciado de las tablas</div>
-              </div>
-              <label className="switch-dash">
-                <input
-                  type="checkbox"
-                  id="pref-compacto"
-                  checked={prefs.compacto}
-                  onChange={(e) => setPrefs({ ...prefs, compacto: e.target.checked })}
-                />
-                <span className="switch-slider-dash" />
-              </label>
+              <div><div className="toggle-titulo-dash">Modo compacto</div><div className="toggle-sub-dash">Reduce el espacio entre paneles para mostrar más información en pantalla.</div></div>
+              <label className="switch-dash" aria-label="Activar modo compacto"><input type="checkbox" id="pref-compacto" checked={prefs.compacto} onChange={(e) => cambiarPreferencia('compacto', e.target.checked)} /><span className="switch-slider-dash" /></label>
             </div>
-          </div>
+            <p className="admin-config-pref-note"><i className="bi bi-info-circle" /> Las preferencias se guardan en este navegador para tu cuenta.</p>
 
-          <div className="card-panel-dash">
-            <div className="info-card-header-dash">
-              <h3 className="section-title-dash">Cuenta</h3>
-            </div>
-            <div className="cuenta-fila-dash" id="fila-seguridad" onClick={() => setSeguridadAbierta(!seguridadAbierta)}>
-              <div className="cuenta-fila-icono-dash cuenta-icono-azul-dash"><i className="bi bi-shield-lock-fill" /></div>
-              <div className="flex-grow-1"><div className="toggle-titulo-dash">Seguridad</div></div>
+            <div className="admin-config-account-inline">
+              <div className="admin-config-inline-heading">
+                <h3>Cuenta</h3>
+                <span>Seguridad y acceso</span>
+              </div>
+            <button
+              type="button"
+              className="cuenta-fila-dash"
+              id="fila-seguridad"
+              aria-expanded={seguridadAbierta}
+              aria-controls="panel-seguridad"
+              onClick={() => setSeguridadAbierta(!seguridadAbierta)}
+            >
+              <span className="cuenta-fila-icono-dash cuenta-icono-azul-dash"><i className="bi bi-shield-lock-fill" /></span>
+              <span className="flex-grow-1"><span className="toggle-titulo-dash">Seguridad</span></span>
               <i className={`bi ${seguridadAbierta ? 'bi-chevron-down' : 'bi-chevron-right'}`} />
-            </div>
-            <div
+            </button>
+              <div
+                className="admin-config-security-inline"
+                id="panel-seguridad"
+                hidden={!seguridadAbierta}
+              >
+                <div className="admin-config-security-title">
+                  <i className="bi bi-shield-lock" />
+                  <span>Cambiar contraseña<small>Usa una contraseña nueva de al menos 8 caracteres.</small></span>
+                </div>
+                <label className="config-label-dash" htmlFor="config-pass-actual">Contraseña actual</label>
+                <input
+                  type="password"
+                  id="config-pass-actual"
+                  className="form-control input-dash"
+                  placeholder="Contraseña actual"
+                  autoComplete="current-password"
+                  value={passActual}
+                  onChange={(e) => setPassActual(e.target.value)}
+                />
+                <label className="config-label-dash" htmlFor="config-pass-nueva">Nueva contraseña</label>
+                <input
+                  type="password"
+                  id="config-pass-nueva"
+                  className="form-control input-dash"
+                  placeholder="Mínimo 8 caracteres"
+                  autoComplete="new-password"
+                  value={passNueva}
+                  onChange={(e) => setPassNueva(e.target.value)}
+                />
+                <label className="config-label-dash" htmlFor="config-pass-confirmar">Confirmar nueva contraseña</label>
+                <input
+                  type="password"
+                  id="config-pass-confirmar"
+                  className="form-control input-dash"
+                  placeholder="Repite la nueva contraseña"
+                  autoComplete="new-password"
+                  value={passConfirmar}
+                  onChange={(e) => setPassConfirmar(e.target.value)}
+                />
+                {errorPass && <div className="text-danger small" role="alert">{errorPass}</div>}
+                {mensajePass && <div className="text-success small" role="status">{mensajePass}</div>}
+                <button
+                  type="button"
+                  className="btn btn-cv-azul w-100"
+                  id="btn-cambiar-pass"
+                  onClick={handleCambiarPassword}
+                  disabled={cambiandoPass}
+                >
+                  {cambiandoPass ? 'Actualizando...' : 'Actualizar contraseña'}
+                </button>
+              </div>
+            <button
+              type="button"
               className="cuenta-fila-dash cuenta-fila-danger-dash"
               id="fila-cerrar-sesion"
-              style={{ borderBottom: 'none', cursor: 'pointer' }}
               onClick={cerrarSesion}
             >
-              <div className="cuenta-fila-icono-dash cuenta-icono-rojo-dash"><i className="bi bi-box-arrow-right" /></div>
-              <div className="flex-grow-1"><div className="toggle-titulo-dash" style={{ color: 'var(--color-danger)' }}>Cerrar sesión</div></div>
+              <span className="cuenta-fila-icono-dash cuenta-icono-rojo-dash"><i className="bi bi-box-arrow-right" /></span>
+              <span className="flex-grow-1"><span className="toggle-titulo-dash" style={{ color: 'var(--color-danger)' }}>Cerrar sesión</span></span>
               <i className="bi bi-chevron-right" />
+            </button>
             </div>
-          </div>
-
-          <div className={`card-panel-dash mt-3 ${seguridadAbierta ? '' : 'd-none'}`} id="panel-seguridad">
-            <div className="info-card-header-dash">
-              <h3 className="section-title-dash">Cambiar contraseña</h3>
-            </div>
-            <div className="p-3">
-              <label className="config-label-dash">Contraseña actual</label>
-              <input
-                type="password"
-                id="config-pass-actual"
-                className="form-control input-dash mb-3"
-                placeholder="••••••••"
-                autoComplete="current-password"
-                value={passActual}
-                onChange={(e) => setPassActual(e.target.value)}
-              />
-              <label className="config-label-dash">Nueva contraseña</label>
-              <input
-                type="password"
-                id="config-pass-nueva"
-                className="form-control input-dash mb-3"
-                placeholder="Mínimo 8 caracteres"
-                autoComplete="new-password"
-                value={passNueva}
-                onChange={(e) => setPassNueva(e.target.value)}
-              />
-              <label className="config-label-dash">Confirmar nueva contraseña</label>
-              <input
-                type="password"
-                id="config-pass-confirmar"
-                className="form-control input-dash mb-3"
-                placeholder="••••••••"
-                autoComplete="new-password"
-                value={passConfirmar}
-                onChange={(e) => setPassConfirmar(e.target.value)}
-              />
-              {errorPass && <div className="text-danger small mb-2" role="alert">{errorPass}</div>}
-              {mensajePass && <div className="text-success small mb-2" role="status">{mensajePass}</div>}
-              <button
-                type="button"
-                className="btn btn-cv-azul w-100"
-                id="btn-cambiar-pass"
-                style={{ borderRadius: '12px', fontWeight: '700' }}
-                onClick={handleCambiarPassword}
-                disabled={cambiandoPass}
-              >
-                {cambiandoPass ? 'Actualizando...' : 'Actualizar contraseña'}
-              </button>
-            </div>
-          </div>
+          </section>
         </div>
       </div>
     </div>

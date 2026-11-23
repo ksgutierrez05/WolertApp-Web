@@ -4,11 +4,7 @@ import '../../css/global.css';
 import '../../css/temas.css';
 import '../../css/admin/dashboard-admin.css';
 import '../../css/admin/dashboard-refinado.css';
-import { listaUsuarios, listaRoles } from '../../Services/UsuariosAPI.js';
-import { listarAlertas } from '../../Services/AlertasAPI.js';
-
-// Roles que define la jerarquía del sistema (se usa si la API de roles no responde)
-const TOTAL_ROLES_POR_DEFECTO = 8;
+import { obtenerDatosEstadisticas } from '../../Services/HistorialEstadisticasService.js';
 
 const estiloPrioridad = {
   alta: { icon: 'bi-exclamation-triangle', color: 'var(--color-danger)' },
@@ -17,52 +13,69 @@ const estiloPrioridad = {
 };
 
 export default function Dashboard() {
-  const [usuarios, setUsuarios] = useState(null); // null = todavía cargando
-  const [roles, setRoles] = useState(null);
-  const [alertas, setAlertas] = useState(null); // null = cargando
+  const [datos, setDatos] = useState(null);
+  const [alertas, setAlertas] = useState(null);
 
   useEffect(() => {
-    listaUsuarios()
-      .then(setUsuarios)
+    const controller = new AbortController();
+    obtenerDatosEstadisticas(controller.signal)
+      .then(({ datos: resultado }) => {
+        if (controller.signal.aborted) return;
+        setDatos(resultado);
+        setAlertas([...(resultado.alertas || [])]
+          .sort((a, b) => new Date(b.fecha || 0) - new Date(a.fecha || 0))
+          .slice(0, 3));
+      })
       .catch((err) => {
-        console.error('Error cargando usuarios:', err);
-        setUsuarios([]);
-      });
-
-    listaRoles()
-      .then(setRoles)
-      .catch((err) => {
-        console.error('Error cargando roles:', err);
-        setRoles([]);
-      });
-
-    listarAlertas()
-      .then((datos) => setAlertas(datos.slice(0, 3))) // solo las 3 más recientes
-      .catch((err) => {
-        console.error('Error cargando alertas:', err);
+        if (controller.signal.aborted) return;
+        console.error('Error cargando resumen del dashboard:', err);
+        setDatos({});
         setAlertas([]);
       });
+    return () => controller.abort();
   }, []);
-
   const fecha = new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
 
   const h = new Date().getHours();
   const saludo = h < 12 ? 'Buenos días' : h < 19 ? 'Buenas tardes' : 'Buenas noches';
 
-  // Números reales calculados a partir de la lista de usuarios
-  const cargando = usuarios === null;
-  const total = usuarios?.length ?? 0;
-  const activos = usuarios?.filter((u) => (u.estado || '').toLowerCase() === 'activo').length ?? 0;
-  const inactivos = total - activos;
-  const totalRoles = roles && roles.length > 0 ? roles.length : TOTAL_ROLES_POR_DEFECTO;
+  // Indicadores reales de distintas áreas del sistema.
+  const cargando = datos === null;
+  const alertasTotal = datos?.alertas?.length ?? 0;
+  const atencionesTotal = datos?.atenciones?.length ?? 0;
+  const personalDisponible = datos?.policias?.filter((p) => ['ACTIVO', 'DISPONIBLE'].includes((p.estado || '').toUpperCase())).length ?? 0;
+  const unidadesDisponibles = datos?.unidades?.filter((u) => ['ACTIVO', 'DISPONIBLE'].includes((u.estado || '').toUpperCase())).length ?? 0;
 
   const kpis = [
-    { color: 'kpi-blue-dash', icon: 'bi-people', num: cargando ? '...' : String(total), label: 'Usuarios registrados', sub: 'Total en el sistema' },
-    { color: 'kpi-green-dash', icon: 'bi-person-check', num: cargando ? '...' : String(activos), label: 'Usuarios activos', sub: 'Con acceso al sistema' },
-    { color: 'kpi-amber-dash', icon: 'bi-person-exclamation', num: cargando ? '...' : String(inactivos), label: 'Inactivos / Suspendidos', sub: 'Requieren revisión' },
-    { color: 'kpi-purple-dash', icon: 'bi-shield-lock', num: String(totalRoles), label: 'Roles configurados', sub: 'Según la jerarquía del sistema' },
+    {
+      color: 'kpi-blue-dash',
+      icon: 'bi-bell',
+      num: cargando ? '...' : String(alertasTotal),
+      label: 'Alertas recibidas',
+      sub: 'Total en el sistema',
+    },
+    {
+      color: 'kpi-green-dash',
+      icon: 'bi-headset',
+      num: cargando ? '...' : String(atencionesTotal),
+      label: 'Atenciones registradas',
+      sub: 'Intervenciones realizadas',
+    },
+    {
+      color: 'kpi-amber-dash',
+      icon: 'bi-shield-check',
+      num: cargando ? '...' : String(personalDisponible),
+      label: 'Personal disponible',
+      sub: 'Policías activos o disponibles',
+    },
+    {
+      color: 'kpi-purple-dash',
+      icon: 'bi-truck-front',
+      num: cargando ? '...' : String(unidadesDisponibles),
+      label: 'Unidades disponibles',
+      sub: 'Activas o listas para operar',
+    },
   ];
-
   const alertasRecientes = (alertas || []).map((a) => {
     const est = estiloPrioridad[(a.prioridad || '').toLowerCase()] || estiloPrioridad.baja;
     return {

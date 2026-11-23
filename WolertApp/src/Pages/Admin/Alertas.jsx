@@ -3,6 +3,8 @@ import '../../css/global.css';
 import '../../css/temas.css';
 import '../../css/admin/usuarios.css';
 import '../../css/admin/alertas.css';
+import '../../css/admin/tipos.css';
+import '../../css/admin/paneles-listado.css';
 import { listarAlertas, eliminarAlerta } from '../../Services/AlertasAPI.js';
 
 const PRIORIDADES = [
@@ -57,6 +59,7 @@ export default function Alertas() {
   const filtrados = useMemo(() => alertas.filter((a) => {
     const texto = buscar.trim().toLowerCase();
     const coincideTexto = !texto
+      || String(a.idAlerta ?? '').includes(texto)
       || (a.tipo || '').toLowerCase().includes(texto)
       || (a.reportadoPor || '').toLowerCase().includes(texto)
       || (a.barrioNombre || '').toLowerCase().includes(texto);
@@ -76,43 +79,43 @@ export default function Alertas() {
     }
   };
 
-  const columnas = esAdmin ? 7 : 6;
+  const columnas = esAdmin ? 8 : 7;
 
   return (
-    <div className="container-fluid">
-      <div className="mb-4">
+    <main className="container-fluid admin-listado admin-alertas">
+      <header className="admin-listado__hero mb-4">
         <h1 className="hero-title-dash" style={{ color: 'var(--ink)', fontSize: '26px' }}>Gestión de Alertas</h1>
         <p className="hero-text-dash" style={{ color: 'var(--muted)' }}>Alertas reportadas por la comunidad</p>
-      </div>
+      </header>
 
       <div className="row g-3 mb-3">
         <div className="col-md-4">
           <div className="kpi-dash kpi-red-dash">
             <i className="bi bi-exclamation-octagon kpi-icon-dash" />
-            <div className="kpi-num-dash">{cargando ? '...' : contar('alta')}</div>
+            <div className="kpi-num-dash">{cargando ? "..." : contar("alta")}</div>
             <div className="kpi-label-dash">Prioridad alta</div>
-            <div className="kpi-label-dash" style={{ marginTop: '2px' }}>Atención inmediata</div>
+            <div className="kpi-label-dash" style={{ marginTop: "2px" }}>Atención inmediata</div>
           </div>
         </div>
         <div className="col-md-4">
           <div className="kpi-dash kpi-amber-dash">
             <i className="bi bi-exclamation-triangle kpi-icon-dash" />
-            <div className="kpi-num-dash">{cargando ? '...' : contar('media')}</div>
+            <div className="kpi-num-dash">{cargando ? "..." : contar("media")}</div>
             <div className="kpi-label-dash">Prioridad media</div>
-            <div className="kpi-label-dash" style={{ marginTop: '2px' }}>Atención programada</div>
+            <div className="kpi-label-dash" style={{ marginTop: "2px" }}>Atención programada</div>
           </div>
         </div>
         <div className="col-md-4">
           <div className="kpi-dash kpi-green-dash">
             <i className="bi bi-info-circle kpi-icon-dash" />
-            <div className="kpi-num-dash">{cargando ? '...' : contar('baja')}</div>
+            <div className="kpi-num-dash">{cargando ? "..." : contar("baja")}</div>
             <div className="kpi-label-dash">Prioridad baja</div>
-            <div className="kpi-label-dash" style={{ marginTop: '2px' }}>Seguimiento</div>
+            <div className="kpi-label-dash" style={{ marginTop: "2px" }}>Seguimiento</div>
           </div>
         </div>
       </div>
-
-      <div className="card-panel-dash p-3 mb-3">
+      <section className="admin-listado__content" aria-label="Administración de alertas">
+      <div className="admin-listado__toolbar">
         <div className="row g-2 align-items-center">
           <div className="col-lg-8">
             <div className="search-dash d-flex align-items-center bg-white">
@@ -121,7 +124,7 @@ export default function Alertas() {
                 type="text"
                 id="buscador-alertas"
                 className="form-control border-0"
-                placeholder="Buscar por tipo, reportante o barrio..."
+                placeholder="Buscar por número, tipo, reportante o barrio..."
                 value={buscar}
                 onChange={(e) => setBuscar(e.target.value)}
               />
@@ -143,12 +146,13 @@ export default function Alertas() {
         </div>
       </div>
 
-      <div className="card-panel-dash">
+      <section className="card-panel-dash" aria-label="Listado de alertas">
         {errorLista && <div className="text-danger small p-3">{errorLista}</div>}
         <div className="table-responsive">
           <table className="tabla-alertas-dash">
             <thead>
               <tr>
+                <th>Referencia</th>
                 <th>Tipo de alerta</th>
                 <th>Prioridad</th>
                 <th>Estado</th>
@@ -183,7 +187,8 @@ export default function Alertas() {
                 const esAlta = prioridad === 'alta';
                 return (
                   <tr key={a.idAlerta}>
-                    <td>
+                    <td data-label="Referencia"><strong>#{a.idAlerta}</strong></td>
+                    <td className="tipo-alerta-mobile" data-label="Tipo de alerta">
                       <div className="alerta-tipo-celda-dash">
                         <div className={`alerta-tipo-icono-dash ${esAlta ? 'alerta-tipo-icono-grave-dash' : 'alerta-tipo-icono-moderado-dash'}`}>
                           <i className={`bi ${esAlta ? 'bi-exclamation-octagon-fill' : 'bi-exclamation-triangle-fill'}`} />
@@ -191,18 +196,18 @@ export default function Alertas() {
                         <span className="alerta-tipo-texto-dash">{(a.tipo || '').toUpperCase()}</span>
                       </div>
                     </td>
-                    <td>
+                    <td data-label="Prioridad">
                       <span className={`alerta-badge-dash ${prioridadBadgeClase[prioridad] || 'alerta-badge-asignada-dash'}`}>
                         <span className="dot" />{prioridadEtiqueta[prioridad] || a.prioridad || '—'}
                       </span>
                     </td>
-                    <td>{a.estado || '—'}</td>
-                    <td>{a.reportadoPor || '—'}</td>
-                    <td>{a.barrioNombre || '—'}</td>
-                    <td>{formatearFecha(a.fecha)}</td>
+                    <td data-label="Estado">{a.estado || '—'}</td>
+                    <td data-label="Reportado por">{a.reportadoPor || '—'}</td>
+                    <td data-label="Barrio">{a.barrioNombre || '—'}</td>
+                    <td data-label="Fecha">{formatearFecha(a.fecha)}</td>
                     {esAdmin && (
-                      <td>
-                        <button className="action-btn-dash action-delete-dash" title="Eliminar" onClick={() => eliminar(a)}>
+                      <td data-label="Acciones">
+                        <button type="button" className="action-btn-dash action-delete-dash" aria-label={`Eliminar alerta ${a.idAlerta}`} title="Eliminar" onClick={() => eliminar(a)}>
                           <i className="bi bi-trash" />
                         </button>
                       </td>
@@ -213,7 +218,8 @@ export default function Alertas() {
             </tbody>
           </table>
         </div>
-      </div>
-    </div>
+      </section>
+      </section>
+    </main>
   );
 }

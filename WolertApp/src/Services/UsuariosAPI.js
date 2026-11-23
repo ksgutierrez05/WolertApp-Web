@@ -52,7 +52,8 @@ export async function editarUsuario(id, usuario) {
     });
 
     if (!respuesta.ok) {
-        throw new Error('Error en edición del usuario');
+        const detalle = await respuesta.text();
+        throw new Error(detalle || `Error en edición del usuario (${respuesta.status})`);
     }
 }
 
@@ -166,4 +167,50 @@ export async function listarVecinos() {
         throw new Error('No se pudieron cargar tus vecinos');
     }
     return await respuesta.json();
+}
+
+// Login con Google: manda el ID token y guarda la sesión igual que login()
+export async function loginGoogle(credential) {
+    const respuesta = await fetch(`${API}/api/Auth/google`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ credential })
+    });
+
+    if (!respuesta.ok) {
+        const texto = await respuesta.text();
+        throw new Error(texto || 'No se pudo iniciar sesión con Google');
+    }
+
+    const datos = await respuesta.json();
+    localStorage.setItem('token', datos.token);
+    localStorage.setItem('rol', datos.rol);
+    localStorage.setItem('idUsuario', datos.idUsuario);
+    localStorage.setItem('username', datos.username);
+    return datos;
+}
+
+// Registro ciudadano con Google. El backend valida la credencial y devuelve
+// la sesión lista, por lo que no se llama después al endpoint de login.
+export async function registrarConGoogle(registro) {
+    const respuesta = await fetch(`${API}/api/Auth/google/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(registro)
+    });
+
+    if (!respuesta.ok) {
+        const texto = await respuesta.text();
+        const mensaje = respuesta.status === 409
+            ? 'Ese correo ya tiene una cuenta. Inicia sesión con Google.'
+            : texto || 'No se pudo completar el registro con Google.';
+        throw new Error(mensaje);
+    }
+
+    const datos = await respuesta.json();
+    localStorage.setItem('token', datos.token);
+    localStorage.setItem('rol', datos.rol);
+    localStorage.setItem('idUsuario', datos.idUsuario);
+    localStorage.setItem('username', datos.username);
+    return datos;
 }

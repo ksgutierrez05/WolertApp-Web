@@ -1,13 +1,79 @@
 /* Encabezados de Ciudadano con el lenguaje visual de Semáforos. */
-.ciudadano-shell .ciudadano-pagina-refinada {max-width:1500px;margin:0 auto;padding:20px 4px 35px;}
-.ciudadano-shell .ciudadano-pagina-refinada .ciudadano-page-heading {display:flex;justify-content:space-between;align-items:center;margin-bottom:27px;}
-.ciudadano-shell .ciudadano-pagina-refinada .ciudadano-page-heading h1 {font-size:clamp(25px,2.3vw,32px);font-weight:800;letter-spacing:-.035em;color:#102c4b;margin:0 0 8px;}
-.ciudadano-shell .ciudadano-pagina-refinada .ciudadano-page-heading p {font-size:14px;color:#657994;margin:0;}
-.ciudadano-shell .ciudadano-pagina-refinada .ciudadano-pagina-panel {background:#fff;border:1px solid #e8edf4;border-radius:19px;overflow:hidden;box-shadow:0 3px 12px rgba(14,47,87,.035);}
-.ciudadano-shell .ciudadano-pagina-refinada .config-section-title-dash {font-weight:800;color:#173657;font-size:17px;}
-.ciudadano-shell .ciudadano-pagina-refinada .config-section-sub-dash {color:#71829b;font-size:13px;}
-.ciudadano-shell .ciudadano-pagina-refinada .kpi-dash {min-height:124px;border-radius:18px;padding:19px 20px;}
-.ciudadano-shell .ciudadano-pagina-refinada .kpi-num-dash {font-size:29px;line-height:1.2;display:block;}
-.ciudadano-shell .ciudadano-pagina-refinada .kpi-label-dash {display:block;font-size:12px;margin-top:7px;}
-.ciudadano-shell .ciudadano-pagina-refinada .kpi-icon-dash {position:absolute;right:0;top:50%;transform:translateY(-50%);font-size:78px;opacity:.12;}
-@media(max-width:700px){.ciudadano-shell .ciudadano-pagina-refinada{padding:12px 0 25px;}}
+.ciudadano-shell .ciudadano-pagina-refinada {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 20px 4px 35px;
+}
+
+.ciudadano-shell .ciudadano-pagina-refinada .ciudadano-page-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 27px;
+}
+
+.ciudadano-shell .ciudadano-pagina-refinada .ciudadano-page-heading h1 {
+  font-size: clamp(25px, 2.3vw, 32px);
+  font-weight: 800;
+  letter-spacing: -.035em;
+  color: #102c4b;
+  margin: 0 0 8px;
+}
+
+.ciudadano-shell .ciudadano-pagina-refinada .ciudadano-page-heading p {
+  font-size: 14px;
+  color: #657994;
+  margin: 0;
+}
+
+.ciudadano-shell .ciudadano-pagina-refinada .ciudadano-pagina-panel {
+  background: #fff;
+  border: 1px solid #e8edf4;
+  border-radius: 19px;
+  overflow: hidden;
+  box-shadow: 0 3px 12px rgba(14, 47, 87, .035);
+}
+
+.ciudadano-shell .ciudadano-pagina-refinada .config-section-title-dash {
+  font-weight: 800;
+  color: #173657;
+  font-size: 17px;
+}
+
+.ciudadano-shell .ciudadano-pagina-refinada .config-section-sub-dash {
+  color: #71829b;
+  font-size: 13px;
+}
+
+.ciudadano-shell .ciudadano-pagina-refinada .kpi-dash {
+  min-height: 124px;
+  border-radius: 18px;
+  padding: 19px 20px;
+}
+
+.ciudadano-shell .ciudadano-pagina-refinada .kpi-num-dash {
+  font-size: 29px;
+  line-height: 1.2;
+  display: block;
+}
+
+.ciudadano-shell .ciudadano-pagina-refinada .kpi-label-dash {
+  display: block;
+  font-size: 12px;
+  margin-top: 7px;
+}
+
+.ciudadano-shell .ciudadano-pagina-refinada .kpi-icon-dash {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 78px;
+  opacity: .12;
+}
+
+@media (max-width: 700px) {
+  .ciudadano-shell .ciudadano-pagina-refinada {
+    padding: 12px 0 25px;
+  }
+}

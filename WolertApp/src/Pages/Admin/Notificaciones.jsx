@@ -1,217 +1,137 @@
-import { useState, useMemo } from 'react';
-import '../../css/global.css';
-import '../../css/temas.css';
-import '../../css/admin/notificaciones.css';
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "../../css/admin/notificaciones.css";
+import { destinoNotificacion, listarNotificaciones } from "../../Services/NotificacionesAPI";
+import { listarAlertas } from "../../Services/AlertasAPI";
 
-const STORAGE_KEY_NOTI = 'wolertapp_notificaciones';
-
-const notificacionesSemilla = [
-  { mensaje: 'Una unidad policial ha sido asignada a tu alerta reportada en el barrio Centro.', destinatario: 'sofia@gmail.com', fecha: '2026-06-10T05:42:00', tipo: 'asignacion', estado: 'pendiente' },
-  { mensaje: 'Nueva alerta asignada a tu unidad. Revisa el mapa para más detalles.', destinatario: 'miigue05@gmail.com', fecha: '2026-06-10T05:45:00', tipo: 'asignacion', estado: 'error' },
-  { mensaje: 'Una unidad policial ha sido asignada a tu alerta reportada en el barrio Centro.', destinatario: 'sofia@gmail.com', fecha: '2026-06-10T05:49:00', tipo: 'asignacion', estado: 'pendiente' },
-  { mensaje: 'Nueva alerta asignada a tu unidad. Revisa el mapa para más detalles.', destinatario: 'miigue05@gmail.com', fecha: '2026-06-10T05:55:00', tipo: 'asignacion', estado: 'error' },
-  { mensaje: 'Nueva alerta de robo reportada en el barrio San José, a 200 metros de tu ubicación.', destinatario: 'gutierrezkatherine015@gmail.com', fecha: '2026-06-05T12:03:00', tipo: 'alerta', estado: 'enviado' },
-  { mensaje: 'Tu cuenta ha sido verificada correctamente. Ya puedes reportar alertas.', destinatario: 'yamil@gmail.com', fecha: '2026-06-04T09:15:00', tipo: 'sistema', estado: 'enviado' },
-];
-
-const iconoPorTipo = {
-  alerta: { clase: 'noti-icono-alerta-dash', icono: 'bi-exclamation-triangle-fill' },
-  asignacion: { clase: 'noti-icono-asignacion-dash', icono: 'bi-shield-check' },
-  sistema: { clase: 'noti-icono-sistema-dash', icono: 'bi-gear-fill' },
+const TERMINALES = ["RESUELTA", "CERRADA", "ATENDIDA", "FINALIZADA", "COMPLETADA", "CANCELADA"];
+const PENDIENTES = ["PENDIENTE", "REPORTADA", "RECIBIDA", "NUEVA"];
+const normalizar = (valor) => String(valor ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toUpperCase();
+const valor = (obj, ...claves) => claves.map((clave) => obj?.[clave]).find((dato) => dato != null && dato !== "") ?? null;
+const estadoDe = (alerta) => valor(alerta, "estado", "Estado") ?? "Estado no informado";
+const idDe = (alerta) => valor(alerta, "idAlerta", "IdAlerta", "id");
+const fechaDe = (item) => valor(item, "fecha", "Fecha", "fechaReporte", "createdAt");
+const parsearFecha = (fecha) => {
+  if (!fecha) return null;
+  const texto = String(fecha);
+  const date = new Date(/(Z|[+-]\d{2}:\d{2})$/i.test(texto) ? texto : `${texto}Z`);
+  return Number.isNaN(date.getTime()) ? null : date;
 };
 
-const tipoLabel = { alerta: 'Alerta', asignacion: 'Asignación', sistema: 'Sistema' };
-const estadoBadgeClase = { enviado: 'noti-badge-enviado-dash', pendiente: 'noti-badge-pendiente-dash', error: 'noti-badge-error-dash' };
-const estadoLabel = { enviado: 'Enviado', pendiente: 'Pendiente', error: 'Error' };
-
-const paletaAvatares = ['#1f5fa8', '#1f9d5b', '#7c4fd1', '#c81e2c', '#c9821c', '#0a2f5c'];
-
-function colorParaCorreo(correo) {
-  let suma = 0;
-  for (let i = 0; i < correo.length; i++) suma += correo.charCodeAt(i);
-  return paletaAvatares[suma % paletaAvatares.length];
+function fechaFormato(fecha) {
+  const date = parsearFecha(fecha);
+  return date ? date.toLocaleString("es-CO", { dateStyle: "medium", timeStyle: "short" }) : "Fecha no disponible";
 }
 
-function inicialesCorreo(correo) {
-  return correo.trim()[0].toUpperCase();
-}
+function crearAvisos(alertas) {
+  const abiertas = alertas.filter((a) => {
+    const estado = normalizar(estadoDe(a));
+    return estado && !TERMINALES.includes(estado);
+  });
+  const altas = abiertas.filter((a) => normalizar(valor(a, "prioridad", "Prioridad")) === "ALTA");
+  const idsAltas = new Set(altas.map((a) => String(idDe(a))));
+  const pendientes = abiertas.filter((a) => PENDIENTES.includes(normalizar(estadoDe(a))) && !idsAltas.has(String(idDe(a))));
+  const corte = Date.now() - 24 * 60 * 60 * 1000;
+  const reportesRecientes = alertas.filter((a) => {
+    const fecha = parsearFecha(fechaDe(a))?.getTime();
+    return fecha != null && fecha >= corte;
+  });
+  const avisos = [];
 
-function formatearFecha(fechaIso) {
-  const fecha = new Date(fechaIso);
-  const fechaTexto = fecha.toLocaleDateString('es-CO', { day: '2-digit', month: '2-digit', year: 'numeric' });
-  const horaTexto = fecha.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit', hour12: false });
-  return `${fechaTexto} · ${horaTexto}`;
-}
-
-function tiempoRelativo(fechaIso) {
-  const ahora = new Date();
-  const fecha = new Date(fechaIso);
-  const diffMs = ahora - fecha;
-  const diffMin = Math.floor(diffMs / 60000);
-  const diffHoras = Math.floor(diffMin / 60);
-  const diffDias = Math.floor(diffHoras / 24);
-
-  if (diffMin < 1) return 'Hace un momento';
-  if (diffMin < 60) return `Hace ${diffMin} min`;
-  if (diffHoras < 24) return `Hace ${diffHoras} h`;
-  if (diffDias === 1) return 'Ayer';
-  return `Hace ${diffDias} días`;
-}
-
-function cargarNotificaciones() {
-  try {
-    const guardado = localStorage.getItem(STORAGE_KEY_NOTI);
-    if (guardado) return JSON.parse(guardado);
-  } catch (e) {}
-  localStorage.setItem(STORAGE_KEY_NOTI, JSON.stringify(notificacionesSemilla));
-  return notificacionesSemilla;
+  if (altas.length) {
+    const referencia = [...altas].sort((a, b) => (parsearFecha(fechaDe(a))?.getTime() ?? 0) - (parsearFecha(fechaDe(b))?.getTime() ?? 0))[0];
+    avisos.push({
+      idNotificacion: "gestion-altas", idAlerta: idDe(referencia), categoria: "Prioridad alta", origen: "operativo", fecha: new Date().toISOString(),
+      mensaje: `${altas.length} alerta${altas.length === 1 ? "" : "s"} de prioridad alta permanece${altas.length === 1 ? "" : "n"} abierta${altas.length === 1 ? "" : "s"}. La referencia más antigua es #${idDe(referencia) ?? "sin código"}: ${valor(referencia, "tipo", "Tipo") ?? "tipo no informado"}, ${estadoDe(referencia).toLowerCase()}${valor(referencia, "barrioNombre", "BarrioNombre") ? ` en ${valor(referencia, "barrioNombre", "BarrioNombre")}` : ""}. Revisa su atención y asignación.`,
+    });
+  }
+  if (pendientes.length) {
+    const referencia = [...pendientes].sort((a, b) => (parsearFecha(fechaDe(a))?.getTime() ?? 0) - (parsearFecha(fechaDe(b))?.getTime() ?? 0))[0];
+    avisos.push({
+      idNotificacion: "gestion-pendientes", idAlerta: idDe(referencia), categoria: "Alertas por revisar", origen: "operativo", fecha: new Date().toISOString(),
+      mensaje: `${pendientes.length} alerta${pendientes.length === 1 ? "" : "s"} está${pendientes.length === 1 ? "" : "n"} en estado pendiente o recién reportada. Prioriza la #${idDe(referencia) ?? "sin código"} (${valor(referencia, "tipo", "Tipo") ?? "tipo no informado"}) para definir su atención.`,
+    });
+  }
+  if (reportesRecientes.length) {
+    const resueltas = reportesRecientes.filter((a) => normalizar(estadoDe(a)) === "RESUELTA").length;
+    const canceladas = reportesRecientes.filter((a) => normalizar(estadoDe(a)) === "CANCELADA").length;
+    avisos.push({
+      idNotificacion: "gestion-actividad-reciente", categoria: "Actividad reciente", origen: "operativo", fecha: new Date().toISOString(),
+      mensaje: `En las últimas 24 horas se reportaron ${reportesRecientes.length} alerta${reportesRecientes.length === 1 ? "" : "s"}. De ese grupo, ${resueltas} figura${resueltas === 1 ? "" : "n"} como resuelta${resueltas === 1 ? "" : "s"} y ${canceladas} como cancelada${canceladas === 1 ? "" : "s"} al consultar el estado actual.`,
+    });
+  }
+  return avisos;
 }
 
 export default function Notificaciones() {
-  const [notificaciones] = useState(() => cargarNotificaciones());
-  const [buscar, setBuscar] = useState('');
-  const [filtroEstado, setFiltroEstado] = useState('');
-  const [filtroTipo, setFiltroTipo] = useState('');
+  const navigate = useNavigate();
+  const [notificaciones, setNotificaciones] = useState([]);
+  const [alertas, setAlertas] = useState([]);
+  const [busqueda, setBusqueda] = useState("");
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState("");
+  const [errorAlertas, setErrorAlertas] = useState("");
+  const [recarga, setRecarga] = useState(0);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    setCargando(true);
+    Promise.allSettled([listarNotificaciones(controller.signal), listarAlertas(controller.signal)]).then(([notis, listaAlertas]) => {
+      if (controller.signal.aborted) return;
+      if (notis.status === "fulfilled" && Array.isArray(notis.value)) {
+        setNotificaciones(notis.value);
+        setError("");
+      } else {
+        setNotificaciones([]);
+        setError(notis.status === "rejected" ? notis.reason?.message : "El servicio devolvió notificaciones con formato no válido.");
+      }
+      if (listaAlertas.status === "fulfilled" && Array.isArray(listaAlertas.value)) {
+        setAlertas(listaAlertas.value);
+        setErrorAlertas("");
+      } else {
+        setAlertas([]);
+        setErrorAlertas("No se pudieron consultar las alertas actuales; se muestran solo los avisos guardados.");
+      }
+    }).finally(() => { if (!controller.signal.aborted) setCargando(false); });
+    return () => controller.abort();
+  }, [recarga]);
+
+  const avisos = useMemo(() => {
+    const alertasPorId = new Map(alertas.map((a) => [String(idDe(a)), a]));
+    const guardadas = notificaciones.map((n, index) => {
+      const idAlerta = valor(n, "idAlerta", "IdAlerta");
+      const alerta = idAlerta == null ? null : alertasPorId.get(String(idAlerta));
+      const base = valor(n, "mensaje", "Mensaje") ?? "Aviso del sistema";
+      const contexto = alerta
+        ? ` Alerta #${idAlerta}: ${valor(alerta, "tipo", "Tipo") ?? "tipo no informado"}, prioridad ${String(valor(alerta, "prioridad", "Prioridad") ?? "no informada").toLowerCase()}, estado ${String(estadoDe(alerta)).toLowerCase()}${valor(alerta, "barrioNombre", "BarrioNombre") ? `, barrio ${valor(alerta, "barrioNombre", "BarrioNombre")}` : ""}.`
+        : idAlerta != null ? ` Referencia: alerta #${idAlerta}.` : "";
+      return { ...n, idNotificacion: valor(n, "idNotificacion", "IdNotificacion", "id") ?? `sistema-${index}`, idAlerta, fecha: fechaDe(n), mensaje: `${base}${contexto}`, categoria: idAlerta != null ? `Alerta #${idAlerta}` : "Aviso del sistema", origen: "sistema" };
+    });
+    return [...guardadas, ...crearAvisos(alertas)].sort((a, b) => (parsearFecha(b.fecha)?.getTime() ?? 0) - (parsearFecha(a.fecha)?.getTime() ?? 0));
+  }, [alertas, notificaciones]);
 
   const filtradas = useMemo(() => {
-    const texto = buscar.trim().toLowerCase();
-    const filtradas = notificaciones.filter((n) => {
-      const coincideTexto = !texto || n.mensaje.toLowerCase().includes(texto) || n.destinatario.toLowerCase().includes(texto);
-      const coincideEstado = !filtroEstado || n.estado === filtroEstado;
-      const coincideTipo = !filtroTipo || n.tipo === filtroTipo;
-      return coincideTexto && coincideEstado && coincideTipo;
-    });
-    filtradas.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
-    return filtradas;
-  }, [notificaciones, buscar, filtroEstado, filtroTipo]);
+    const q = busqueda.trim().toLocaleLowerCase("es-CO");
+    return avisos.filter((item) => !q || `${item.categoria} ${item.mensaje} ${item.idAlerta ?? ""}`.toLocaleLowerCase("es-CO").includes(q));
+  }, [avisos, busqueda]);
 
   return (
-    <div className="container-fluid">
-      <div className="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-3">
-        <div>
-          <h1 className="hero-title-dash" style={{ color: 'var(--ink)', fontSize: '26px' }}>Notificaciones del sistema</h1>
-          <p className="hero-text-dash" style={{ color: 'var(--muted)' }}>Historial de mensajes enviados a los usuarios</p>
-        </div>
-        <button type="button" className="btn btn-cv-azul d-inline-flex align-items-center gap-2 px-3 py-2" style={{ borderRadius: '12px', fontSize: '13.5px', fontWeight: '700' }}>
-          <i className="bi bi-arrow-clockwise" /> Reintentar fallidas
-        </button>
-      </div>
-
-      <div className="row g-3 mb-3">
-        <div className="col-md-4">
-          <div className="kpi-dash kpi-blue-dash">
-            <i className="bi bi-bell kpi-icon-dash" />
-            <div className="kpi-num-dash">{notificaciones.length}</div>
-            <div className="kpi-label-dash">Total enviadas</div>
-            <div className="kpi-label-dash" style={{ marginTop: '2px' }}>Últimos registros</div>
-          </div>
-        </div>
-        <div className="col-md-4">
-          <div className="kpi-dash kpi-amber-dash">
-            <i className="bi bi-hourglass-split kpi-icon-dash" />
-            <div className="kpi-num-dash">{notificaciones.filter((n) => n.estado === 'pendiente').length}</div>
-            <div className="kpi-label-dash">Pendientes</div>
-            <div className="kpi-label-dash" style={{ marginTop: '2px' }}>Por confirmar entrega</div>
-          </div>
-        </div>
-        <div className="col-md-4">
-          <div className="kpi-dash kpi-red-dash">
-            <i className="bi bi-exclamation-triangle kpi-icon-dash" />
-            <div className="kpi-num-dash">{notificaciones.filter((n) => n.estado === 'error').length}</div>
-            <div className="kpi-label-dash">Con error</div>
-            <div className="kpi-label-dash" style={{ marginTop: '2px' }}>Necesitan reintento</div>
-          </div>
-        </div>
-      </div>
-
-      <div className="card-panel-dash p-3 mb-3">
-        <div className="row g-2 align-items-center">
-          <div className="col-lg-6">
-            <div className="search-dash d-flex align-items-center bg-white">
-              <span className="input-group-text bg-white border-0"><i className="bi bi-search" /></span>
-              <input type="text" className="form-control border-0" placeholder="Buscar por mensaje o destinatario..." value={buscar} onChange={(e) => setBuscar(e.target.value)} />
-            </div>
-          </div>
-          <div className="col-lg-3 col-6">
-            <select className="filtro-select-dash form-select" value={filtroEstado} onChange={(e) => setFiltroEstado(e.target.value)}>
-              <option value="">Estado: Todos</option>
-              <option value="enviado">Enviado</option>
-              <option value="pendiente">Pendiente</option>
-              <option value="error">Error</option>
-            </select>
-          </div>
-          <div className="col-lg-3 col-6">
-            <select className="filtro-select-dash form-select" value={filtroTipo} onChange={(e) => setFiltroTipo(e.target.value)}>
-              <option value="">Tipo: Todos</option>
-              <option value="alerta">Alerta</option>
-              <option value="asignacion">Asignación</option>
-              <option value="sistema">Sistema</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <div className="card-panel-dash">
-        <div className="table-responsive">
-          <table className="tabla-noti-dash">
-            <thead>
-              <tr>
-                <th>Mensaje</th>
-                <th>Destinatario</th>
-                <th>Fecha</th>
-                <th>Estado</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtradas.length > 0 ? (
-                filtradas.map((n, idx) => {
-                  const tipoInfo = iconoPorTipo[n.tipo] || iconoPorTipo.sistema;
-                  const color = colorParaCorreo(n.destinatario);
-                  return (
-                    <tr key={n.mensaje + n.fecha + idx}>
-                      <td>
-                        <div className="noti-mensaje-celda-dash">
-                          <div className={`noti-icono-tipo-dash ${tipoInfo.clase}`}>
-                            <i className={`bi ${tipoInfo.icono}`} />
-                          </div>
-                          <div>
-                            <div className="noti-mensaje-texto-dash">{n.mensaje}</div>
-                            <div className="noti-mensaje-tipo-dash">{tipoLabel[n.tipo] || 'Sistema'}</div>
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <div className="noti-destinatario-dash">
-                          <div className="noti-avatar-dash" style={{ backgroundColor: color }}>{inicialesCorreo(n.destinatario)}</div>
-                          <span className="noti-correo-dash">{n.destinatario}</span>
-                        </div>
-                      </td>
-                      <td>
-                        <div className="noti-fecha-dash">{formatearFecha(n.fecha)}</div>
-                        <div className="noti-fecha-relativa-dash">{tiempoRelativo(n.fecha)}</div>
-                      </td>
-                      <td>
-                        <span className={`noti-badge-dash ${estadoBadgeClase[n.estado]}`}>
-                          <span className="dot" />{estadoLabel[n.estado]}
-                        </span>
-                      </td>
-                    </tr>
-                  );
-                })
-              ) : (
-                <tr>
-                  <td colSpan={4}>
-                    <div className="noti-vacio-dash">
-                      <i className="bi bi-bell-slash" />
-                      <p>No se encontraron notificaciones con esos filtros.</p>
-                    </div>
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
+    <main className="admin-notifications">
+      <header className="admin-notifications__hero">
+        <div><span className="admin-notifications__eyebrow"><i className="bi bi-bell-fill" /> CENTRO DE ACTIVIDAD ADMINISTRATIVA</span><h1>Notificaciones</h1><p>Seguimiento de prioridades, cierres y alertas que requieren gestión.</p></div>
+        <button type="button" onClick={() => setRecarga((n) => n + 1)} disabled={cargando}><i className={`bi bi-arrow-clockwise ${cargando ? "admin-notifications__spin" : ""}`} /> Actualizar</button>
+      </header>
+      <section className="admin-notifications__summary"><div><span className="admin-notifications__summary-icon"><i className="bi bi-bell" /></span><span><small>Avisos guardados</small><strong>{notificaciones.length}</strong></span></div><div><span className="admin-notifications__summary-icon admin-notifications__summary-icon--action"><i className="bi bi-clipboard2-check" /></span><span><small>Seguimientos actuales</small><strong>{crearAvisos(alertas).length}</strong></span></div><p>Los seguimientos se basan en las alertas devueltas por el sistema.</p></section>
+      <section className="admin-notifications__panel">
+        <div className="admin-notifications__toolbar"><label className="admin-notifications__search"><i className="bi bi-search" /><input value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Buscar por alerta, estado, barrio o mensaje..." aria-label="Buscar notificaciones" /></label><span className="admin-notifications__sort"><i className="bi bi-clock-history" /> Más recientes primero</span></div>
+        {error && <div className="admin-notifications__error" role="alert"><i className="bi bi-exclamation-triangle-fill" /><span>{error}</span><button type="button" onClick={() => setRecarga((n) => n + 1)}>Reintentar</button></div>}
+        {errorAlertas && !cargando && <div className="admin-notifications__data-note" role="status"><i className="bi bi-info-circle" />{errorAlertas}</div>}
+        {cargando ? <div className="admin-notifications__empty"><span className="admin-notifications__loader" /><b>Consultando actividad...</b></div> : filtradas.length === 0 ? <div className="admin-notifications__empty"><i className="bi bi-bell-slash" /><b>{busqueda ? "No hay coincidencias" : "No hay avisos"}</b><span>{busqueda ? "Prueba con otro término de búsqueda." : "Los avisos de gestión aparecerán cuando haya alertas que revisar."}</span></div> : <div className="admin-notifications__list">{filtradas.map((item) => {
+          const destino = item.origen === "operativo" ? { ruta: "/admin/alertas", menu: "Alertas" } : destinoNotificacion(item);
+          return <article key={item.idNotificacion} className={`admin-notifications__item ${item.origen === "operativo" ? "is-operational" : ""}`}><span className="admin-notifications__item-icon"><i className={`bi ${item.origen === "operativo" ? "bi-clipboard2-check-fill" : item.idAlerta != null ? "bi-exclamation-triangle-fill" : "bi-info-circle-fill"}`} /></span><div className="admin-notifications__item-content"><div className="admin-notifications__item-meta"><span>{item.categoria}</span><time>{fechaFormato(item.fecha)}</time></div><p>{item.mensaje}</p><button type="button" className="admin-notifications__open" onClick={() => navigate(destino.ruta)}>Revisar en {destino.menu}<i className="bi bi-arrow-up-right" /></button></div>{item.origen === "operativo" && <span className="admin-notifications__tag">GESTIÓN</span>}</article>;
+        })}</div>}
+        <footer className="admin-notifications__footer"><span>Mostrando {filtradas.length} de {avisos.length} avisos</span><span>Los cierres distinguen alertas resueltas y canceladas</span></footer>
+      </section>
+    </main>
   );
 }

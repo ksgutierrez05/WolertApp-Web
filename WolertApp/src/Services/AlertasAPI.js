@@ -12,8 +12,8 @@ function cabeceras(conJson = false) {
     return h;
 }
 
-export async function listarAlertas() {
-    const respuesta = await fetch(`${API}/api/alertas`, { headers: cabeceras() });
+export async function listarAlertas(signal) {
+    const respuesta = await fetch(`${API}/api/alertas`, { headers: cabeceras(), signal });
     if (!respuesta.ok) {
         throw new Error(`Error al listar las alertas: ${await respuesta.text()}`);
     }
@@ -29,7 +29,19 @@ export async function crearAlerta(alerta) {
     if (!respuesta.ok) {
         throw new Error(`Error al crear la alerta: ${await respuesta.text()}`);
     }
-    return await respuesta.json();
+
+    const texto = await respuesta.text();
+    if (texto.trim()) {
+        try {
+            return JSON.parse(texto);
+        } catch {
+            return { mensaje: texto };
+        }
+    }
+
+    const ubicacion = respuesta.headers.get('Location');
+    const id = ubicacion?.match(/\/(\d+)(?:\?.*)?$/)?.[1];
+    return id ? { idAlerta: Number(id) } : {};
 }
 
 export async function editarAlerta(id, alerta) {

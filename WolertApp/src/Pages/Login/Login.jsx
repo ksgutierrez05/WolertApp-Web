@@ -21,7 +21,12 @@ function Login() {
         navigate(ruta, { replace: true });
     }
 
-    function handleRegistroSuccess() {
+    function handleRegistroSuccess(usuario) {
+        if (usuario) {
+            handleLoginSuccess(usuario);
+            return;
+        }
+
         setRegistro(false);
     }
 
