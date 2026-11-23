@@ -127,3 +127,35 @@ export async function actualizarAgenteDirector(id, datos) {
     body: JSON.stringify(datos),
   });
 }
+
+// Agregar al final de src/Services/directorTransitoService.js
+// Usa el mismo cliente autenticado que las otras funciones del service.
+export async function registrarCentralTransito(datos) {
+  return consultarTransito("/api/Usuarios/personal", {
+    method: "POST",
+    body: JSON.stringify({
+      cedula: datos.cedula,
+      primerNombre: datos.primerNombre,
+      segundoNombre: datos.segundoNombre,
+      primerApellido: datos.primerApellido,
+      segundoApellido: datos.segundoApellido,
+      correo: datos.correo,
+      telefono: datos.telefono,
+      username: datos.username,
+      password: datos.password,
+      barrioId: datos.barrioId ?? null,
+      calle: datos.calle,
+      carrera: datos.carrera,
+      etapa: datos.etapa,
+      manzana: datos.manzana,
+      casa: datos.casa,
+      rolId: 9, // CENTRAL_TRANSITO en el SQL proporcionado
+    }),
+  });
+}
+
+// Listar personal de central desde USUARIOS (no desde AGENTES_TRANSITO).
+export async function listarUsuariosTransito() {
+  const respuesta = await consultarTransito("/api/Usuarios");
+  return Array.isArray(respuesta) ? respuesta : [];
+}

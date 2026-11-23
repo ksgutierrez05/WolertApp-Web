@@ -1,505 +1,404 @@
-import { useEffect, useMemo, useState } from "react";
-
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import Layout from "../../Components/transito/Layout";
-
 import KpiCard from "../../Components/transito/KpiCard";
-
 import {
-  listarAlertasCentral,
-  listarAtencionesCentral,
-  listarUnidadesCentral,
-  listarAgentesCentral,
-  asignarGrupoCentral,
-  prepararCasosAsignablesCentral,
-  listarTiposAlertaCentral,
-  estadoAlertaCentral,
-  prepararGruposCentral,
-  finalizadaCentral,
-  idAlertaCentral,
-  tipoCentral,
-  lugarCentral,
-  reportanteCentral,
-  badgeTipoCentral,
-  fechaRegistroCentral,
-  tiempoEsperaCentral,
-  normalizarCentral,
-} from "../../Services/centralTransitoService";
+  listarAtencionesDirector,
+  listarAlertasDirector,
+  listarAgentesDirector,
+  idAtencion,
+  idAlerta,
+  nombreAgente,
+  fechaCaso,
+  fechaTransito,
+  fechaEsHoy,
+  estadoCaso,
+  tipoCaso,
+  estadoFinalizado,
+  estadoActivoAgente,
+  normalizar,
+} from "../../Services/directorTransitoService";
+
+const POR_PAGINA = 5;
+const coloresPerfil = ["azul", "rojo", "ambar", "morado", "verde"];
+const SIN_MAYUSCULAS = { textTransform: "none" };
+
+function iniciales(nombre) {
+  const partes = String(nombre || "").trim().split(/\s+/).filter(Boolean);
+  return partes.length ? (partes[0][0] + (partes[1]?.[0] || "")).toUpperCase() : "?";
+}
+
+function colorPerfil(caso) {
+  const clave = String(caso.identificador ?? caso.reportante ?? "");
+  const suma = [...clave].reduce((total, letra) => total + letra.charCodeAt(0), 0);
+  return coloresPerfil[suma % coloresPerfil.length];
+}
+
+function claseTipoCaso(tipo) {
+  const valor = normalizar(tipo);
+  if (valor.includes("SEMAFORO") || valor.includes("SEMÁFORO")) return "casos-tipo-semaforo";
+  if (valor.includes("ROBO") || valor.includes("HURTO") || valor.includes("ATRACO")) return "casos-tipo-robo";
+  if (valor.includes("ACCIDENTE") || valor.includes("CHOQUE") || valor.includes("SINIESTRO")) return "casos-tipo-accidente";
+  if (valor.includes("PENDIENTE")) return "casos-tipo-pendiente";
+  if (valor.includes("EMERGENCIA") || valor.includes("CRITIC")) return "casos-tipo-emergencia";
+  if (valor.includes("CONGESTION") || valor.includes("TRAFICO")) return "casos-tipo-congestion";
+  return "casos-tipo-otro";
+}
+
+function claseEstadoCaso(estado) {
+  const valor = normalizar(estado);
+  if (valor.includes("PENDIENTE") || valor.includes("ESPERA") || valor.includes("RECIBIDA")) return "casos-estado-pendiente";
+  if (valor.includes("CRITIC") || valor.includes("CANCELADA") || valor.includes("RECHAZADA")) return "casos-estado-critico";
+  if (valor.includes("RESUEL") || valor.includes("FINALIZ") || valor.includes("CERRAD") || valor.includes("ATENDID")) return "casos-estado-resuelto";
+  if (valor.includes("CAMINO") || valor.includes("ASIGNADA")) return "casos-estado-camino";
+  if (valor.includes("PROCESO") || valor.includes("ATENCION")) return "casos-estado-atencion";
+  return "casos-estado-otro";
+}
+
+function textoVisible(valor) {
+  const texto = String(valor ?? "").replace(/_/g, " ").replace(/\s+/g, " ").trim().toLocaleLowerCase("es");
+  return texto.replace(/(^|\s)(\p{L})/gu, (coincidencia, espacio, letra) => espacio + letra.toLocaleUpperCase("es"));
+}
+
+function claseFiltroEstado(valor) {
+  return `casos-filtro-${claseEstadoCaso(valor).replace("casos-estado-", "")}`;
+}
+
+function prepararCasos(alertas, atenciones) {
+  if (alertas.length > 0) {
+    return alertas.map((alerta) => {
+      const atencion = atenciones.find((a) => String(a.idAlerta) === String(idAlerta(alerta)));
+      return {
+        ...alerta,
+        atencion,
+        identificador: idAlerta(alerta),
+        tipoVisual: tipoCaso(alerta),
+        estadoVisual: estadoCaso(atencion ?? alerta),
+        fechaVisual: fechaCaso(alerta) ?? fechaCaso(atencion),
+        reportante:
+          alerta.nombreReportante ||
+          alerta.nombreUsuario ||
+          alerta.reportanteNombre ||
+          alerta.usuario?.nombre ||
+          "No registrado",
+        barrio: alerta.nombreBarrio || alerta.barrioNombre || alerta.barrio?.nombre || "No registrado",
+      };
+    });
+  }
+  return atenciones.map((atencion) => ({
+    ...atencion,
+    identificador: idAtencion(atencion),
+    tipoVisual: tipoCaso(atencion),
+    estadoVisual: estadoCaso(atencion),
+    fechaVisual: fechaCaso(atencion),
+    reportante: atencion.nombreReportante || "No disponible",
+    barrio: atencion.nombreBarrio || atencion.barrioNombre || "No disponible",
+  }));
+}
+
+function AvisosCasos({ avisos, cerrar }) {
+  return createPortal(
+    <div
+      style={{
+        position: "fixed",
+        right: 20,
+        bottom: 20,
+        zIndex: 99999,
+        display: "grid",
+        gap: 10,
+        width: "min(370px, calc(100vw - 32px))",
+        pointerEvents: "none",
+      }}
+      aria-live="polite"
+    >
+      {avisos.map((aviso) => {
+        const peligro = aviso.tipo === "error";
+        return (
+          <div
+            key={aviso.id}
+            role={peligro ? "alert" : "status"}
+            style={{
+              pointerEvents: "auto",
+              display: "flex",
+              alignItems: "flex-start",
+              gap: 12,
+              background: peligro ? "#fff3f2" : "#eef7ff",
+              border: `1px solid ${peligro ? "#f4c8c4" : "#c8def5"}`,
+              borderLeft: `4px solid ${peligro ? "#cf5c56" : "#517aac"}`,
+              borderRadius: 14,
+              padding: "13px 14px",
+              color: "#263b52",
+              boxShadow: "0 12px 30px rgba(25,48,78,.14)",
+              fontFamily: "Inter, sans-serif",
+              fontSize: 13,
+            }}
+          >
+            <i
+              className={`bi ${peligro ? "bi-exclamation-circle-fill" : "bi-info-circle-fill"}`}
+              style={{ color: peligro ? "#cf5c56" : "#517aac", fontSize: 18 }}
+            />
+            <div style={{ flex: 1, lineHeight: 1.5 }}>
+              <strong style={{ display: "block", marginBottom: 2 }}>
+                {peligro ? "No se pudo completar" : "Información"}
+              </strong>
+              {aviso.texto}
+            </div>
+            <button
+              type="button"
+              aria-label="Cerrar notificación"
+              onClick={() => cerrar(aviso.id)}
+              style={{ border: 0, background: "transparent", color: "#687a8b", padding: 0, cursor: "pointer" }}
+            >
+              <i className="bi bi-x-lg" />
+            </button>
+          </div>
+        );
+      })}
+    </div>,
+    document.body,
+  );
+}
 
 export default function Casos() {
-  const [alertas, setAlertas] = useState([]);
-
-  const [atenciones, setAtenciones] = useState([]);
-
-  const [unidades, setUnidades] = useState([]);
-
+  const [casos, setCasos] = useState([]);
   const [agentes, setAgentes] = useState([]);
-  const [tiposAlerta, setTiposAlerta] = useState([]);
-  const [filtroEstado, setFiltroEstado] = useState("TODOS");
-
   const [cargando, setCargando] = useState(true);
+  const [avisos, setAvisos] = useState([]);
+  const [busqueda, setBusqueda] = useState("");
+  const [estado, setEstado] = useState("");
+  const [pagina, setPagina] = useState(1);
+  const [detalle, setDetalle] = useState(null);
 
-  const [errores, setErrores] = useState([]);
+  const cerrarAviso = useCallback((id) => setAvisos((prev) => prev.filter((a) => a.id !== id)), []);
 
-  const [alertasCargadas, setAlertasCargadas] = useState(false);
-
-  const [caso, setCaso] = useState(null);
-
-  const [grupoSeleccionado, setGrupoSeleccionado] = useState(null);
-
-  const [filtro, setFiltro] = useState("todos");
-
-  const [buscar, setBuscar] = useState("");
-
-  const [buscarCaso, setBuscarCaso] = useState("");
-
-  const [guardandoAsignacion, setGuardandoAsignacion] = useState(false);
-
-  const [errorAsignacion, setErrorAsignacion] = useState("");
-
-  const [mensajeAsignacion, setMensajeAsignacion] = useState("");
+  const notificar = useCallback((texto, tipo = "error") => {
+    if (!texto) return;
+    const id = `${Date.now()}-${Math.random()}`;
+    setAvisos((prev) => [...prev.slice(-3), { id, texto, tipo }]);
+    window.setTimeout(() => setAvisos((prev) => prev.filter((a) => a.id !== id)), tipo === "error" ? 6500 : 4000);
+  }, []);
 
   useEffect(() => {
     let activo = true;
-
     async function cargar() {
-      const resultados = await Promise.allSettled([
-        listarAlertasCentral(),
-
-        listarAtencionesCentral(),
-
-        listarUnidadesCentral(),
-
-        listarAgentesCentral(),
-        listarTiposAlertaCentral(),
+      const [rAtenciones, rAlertas, rAgentes] = await Promise.allSettled([
+        listarAtencionesDirector(),
+        listarAlertasDirector(),
+        listarAgentesDirector(),
       ]);
-
       if (!activo) return;
-
-      const [al, t, u, a, tipos] = resultados;
-
-      const mensajes = [];
-
-      if (al.status === "fulfilled") {
-        setAlertas(al.value);
-
-        setAlertasCargadas(true);
-      } else {
-        mensajes.push("No se pudieron cargar las alertas.");
-      }
-
-      if (t.status === "fulfilled") {
-        setAtenciones(t.value);
-      } else {
-        mensajes.push("No se cargaron las atenciones.");
-      }
-
-      if (u.status === "fulfilled") {
-        setUnidades(u.value);
-      } else {
-        mensajes.push("No se cargaron las unidades.");
-      }
-
-      if (a.status === "fulfilled") {
-        setAgentes(a.value);
-      } else {
-        mensajes.push("No se cargaron los agentes.");
-      }
-
-      if (tipos.status === "fulfilled") {
-        setTiposAlerta(tipos.value);
-      } else {
-        mensajes.push(
-          "No se pudieron cargar los tipos de alerta; solo se mostrarán casos con central identificada.",
-        );
-      }
-
-      setErrores(mensajes);
-
+      const atenciones = rAtenciones.status === "fulfilled" ? rAtenciones.value : [];
+      const alertas = rAlertas.status === "fulfilled" ? rAlertas.value : [];
+      setCasos(prepararCasos(alertas, atenciones));
+      if (rAgentes.status === "fulfilled") setAgentes(rAgentes.value);
+      const errores = [];
+      if (rAtenciones.status === "rejected")
+        errores.push(rAtenciones.reason?.message || "No se pudieron consultar las atenciones.");
+      if (rAlertas.status === "rejected")
+        errores.push("No se pudieron consultar las alertas. Se muestran las atenciones disponibles.");
+      if (rAgentes.status === "rejected") errores.push("No se pudo consultar la disponibilidad de agentes.");
+      if (errores.length) notificar(errores.join(" | "));
       setCargando(false);
     }
-
     cargar();
-
     return () => {
       activo = false;
     };
-  }, []);
+  }, [notificar]);
 
-  const casos = useMemo(
-    () => prepararCasosAsignablesCentral(alertas, tiposAlerta),
-    [alertas, tiposAlerta],
-  );
-
-  const grupos = useMemo(
+  const estadosDisponibles = useMemo(
     () =>
-      prepararGruposCentral(
-        unidades,
-
-        agentes,
-
-        atenciones,
-      ),
-
-    [unidades, agentes, atenciones],
+      [...new Set(casos.map((caso) => String(caso.estadoVisual ?? "").trim()))]
+        .filter(Boolean)
+        .sort((a, b) => textoVisible(a).localeCompare(textoVisible(b), "es")),
+    [casos],
   );
 
-  const casosFiltrados = casos.filter((item) => {
-    if (filtroEstado !== "TODOS" && estadoAlertaCentral(item) !== filtroEstado)
-      return false;
+  const filtrados = useMemo(
+    () =>
+      casos.filter((caso) => {
+        if (estado && normalizar(caso.estadoVisual) !== normalizar(estado)) return false;
+        const contenido = normalizar(
+          [
+            caso.identificador,
+            caso.reportante,
+            caso.barrio,
+            caso.tipoVisual,
+            caso.estadoVisual,
+            caso.descripcion,
+          ].join(" "),
+        );
+        return contenido.includes(normalizar(busqueda));
+      }),
+    [casos, estado, busqueda],
+  );
 
-    const texto = normalizarCentral(
-      [
-        tipoCentral(item),
+  const totalPaginas = Math.max(1, Math.ceil(filtrados.length / POR_PAGINA));
+  const paginaActual = Math.min(pagina, totalPaginas);
+  const visibles = filtrados.slice((paginaActual - 1) * POR_PAGINA, paginaActual * POR_PAGINA);
 
-        lugarCentral(item),
+  const activos = casos.filter((caso) => !estadoFinalizado(caso.estadoVisual)).length;
 
-        reportanteCentral(item),
+  const cerradosHoy = casos.filter(
+    (caso) =>
+      estadoFinalizado(caso.estadoVisual) && fechaEsHoy(caso.atencion?.fechaAtencion ?? caso.fechaVisual),
+  ).length;
 
-        idAlertaCentral(item),
-      ].join(" "),
-    );
-
-    return texto.includes(normalizarCentral(buscarCaso));
-  });
-
-  const gruposFiltrados = grupos.filter((grupo) => {
-    if (filtro === "disponible" && !grupo.disponible) {
-      return false;
-    }
-
-    if (filtro === "no-disponible" && grupo.disponible) {
-      return false;
-    }
-
-    return normalizarCentral(`${grupo.nombre} ${grupo.zona}`).includes(
-      normalizarCentral(buscar),
-    );
-  });
-
-  const disponibles = grupos.filter((grupo) => grupo.disponible).length;
-
-  const cerradosHoy = atenciones.filter((atencion) => {
-    if (!finalizadaCentral(atencion)) return false;
-
-    const valor =
-      atencion.fechaFinalizacion ||
-      atencion.fechaCierre ||
-      atencion.fechaAtencion;
-
-    if (!valor) return false;
-
-    const fecha = new Date(valor);
-
+  const cerradosMes = casos.filter((caso) => {
+    if (!estadoFinalizado(caso.estadoVisual)) return false;
+    const fecha = caso.atencion?.fechaAtencion ?? caso.fechaVisual;
+    if (!fecha) return false;
+    const fechaCierre = new Date(fecha);
+    const hoy = new Date();
     return (
-      !Number.isNaN(fecha.getTime()) &&
-      fecha.toDateString() === new Date().toDateString()
+      !Number.isNaN(fechaCierre.getTime()) &&
+      fechaCierre.getMonth() === hoy.getMonth() &&
+      fechaCierre.getFullYear() === hoy.getFullYear()
     );
   }).length;
 
-  function abrirAsignacion(item) {
-    setCaso(item);
+  const disponibles = agentes.filter((agente) => estadoActivoAgente(agente.estadoAgente ?? agente.estado)).length;
 
-    setGrupoSeleccionado(null);
-
-    setBuscar("");
-
-    setFiltro("todos");
-
-    setErrorAsignacion("");
-
-    setMensajeAsignacion("");
-  }
-
-  function cerrarAsignacion() {
-    if (guardandoAsignacion) return;
-
-    setCaso(null);
-
-    setGrupoSeleccionado(null);
-
-    setErrorAsignacion("");
-  }
-
-  async function confirmarAsignacion() {
-    if (!caso || !grupoSeleccionado || guardandoAsignacion) {
-      return;
-    }
-
-    if (!grupoSeleccionado.disponible) {
-      setErrorAsignacion("El grupo seleccionado no está disponible.");
-
-      return;
-    }
-
-    const idAlerta = idAlertaCentral(caso);
-
-    if (idAlerta == null) {
-      setErrorAsignacion("No se encontró el identificador del caso.");
-
-      return;
-    }
-
-    setGuardandoAsignacion(true);
-
-    setErrorAsignacion("");
-
-    setMensajeAsignacion("");
-
-    let asignacionRegistrada = false;
-
-    try {
-      await asignarGrupoCentral(
-        idAlerta,
-
-        grupoSeleccionado.nombre,
-
-        "Asignación manual desde Central de Tránsito",
-      );
-
-      asignacionRegistrada = true;
-
-      //* Actualización local para evitar que el caso*
-
-      //* siga apareciendo mientras se recarga la API.*
-
-      setAlertas((anteriores) =>
-        anteriores.map((alerta) =>
-          String(idAlertaCentral(alerta)) === String(idAlerta)
-            ? {
-                ...alerta,
-
-                estado: "UNIDAD_ASIGNADA",
-
-                estadoAlerta: "UNIDAD_ASIGNADA",
-              }
-            : alerta,
-        ),
-      );
-
-      setCaso(null);
-
-      setGrupoSeleccionado(null);
-
-      setMensajeAsignacion(
-        `Caso #${idAlerta} asignado correctamente al grupo ${grupoSeleccionado.nombre}.`,
-      );
-
-      //* Sincronizar con los datos reales del backend.*
-
-      const resultados = await Promise.allSettled([
-        listarAlertasCentral(),
-
-        listarAtencionesCentral(),
-
-        listarUnidadesCentral(),
-
-        listarAgentesCentral(),
-        listarTiposAlertaCentral(),
-      ]);
-
-      const [al, at, un, ag, tipos] = resultados;
-
-      if (al.status === "fulfilled") {
-        setAlertas(al.value);
-      }
-
-      if (at.status === "fulfilled") {
-        setAtenciones(at.value);
-      }
-
-      if (un.status === "fulfilled") {
-        setUnidades(un.value);
-      }
-
-      if (ag.status === "fulfilled") {
-        setAgentes(ag.value);
-      }
-      if (tipos.status === "fulfilled") {
-        setTiposAlerta(tipos.value);
-      }
-
-      if (al.status === "rejected") {
-        setMensajeAsignacion(
-          `Caso #${idAlerta} asignado. No se pudo actualizar la lista; recarga la página para consultar el estado.`,
-        );
-      }
-    } catch (error) {
-      if (!asignacionRegistrada) {
-        setErrorAsignacion(
-          error.message || "No se pudo registrar la asignación.",
-        );
-      }
-    } finally {
-      setGuardandoAsignacion(false);
-    }
+  function limpiar() {
+    setBusqueda("");
+    setEstado("");
+    setPagina(1);
   }
 
   return (
     <Layout
-      rol="central"
-      titulo="Asignación de casos"
-      activo="asignar"
-      busqueda={{
-        placeholder: "Buscar por caso o barrio...",
-      }}
+      titulo="Casos de Tránsito"
+      activo="casos"
+      busqueda={{ placeholder: "Buscar por caso, barrio o agente..." }}
     >
       <div className="mb-4">
-        <h1 className="section-title-dash">Casos pendientes de Tránsito</h1>
-
+        <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: "1.6px", color: "#517aac", marginBottom: 6 }}>
+          DIRECCIÓN DE TRÁNSITO
+        </div>
+        <h1
+          className="section-title-dash"
+          style={{
+            fontFamily: "'Space Grotesk', sans-serif",
+            fontSize: "clamp(22px, 2.3vw, 27px)",
+            fontWeight: 800,
+            letterSpacing: "-0.9px",
+            lineHeight: 1.2,
+          }}
+        >
+          Casos de Tránsito
+        </h1>
         <p className="section-text-dash mb-0">
-          Consulta los casos pendientes y los grupos disponibles para su
-          asignación.
+          Consulta y supervisa los casos reportados en el módulo de tránsito.
         </p>
       </div>
-
       {cargando && (
-        <div className="alert alert-info">Cargando casos y grupos...</div>
-      )}
-
-      {errores.length > 0 && (
-        <div className="alert alert-warning">{errores.join(" ")}</div>
-      )}
-
-      {mensajeAsignacion && (
-        <div
-          className="alert alert-success alert-dismissible fade show"
-          role="alert"
-        >
-          <i className="bi bi-check-circle me-2" />
-
-          {mensajeAsignacion}
-
-          <button
-            type="button"
-            className="btn-close"
-            aria-label="Cerrar mensaje"
-            onClick={() => setMensajeAsignacion("")}
-          />
+        <div className="text-muted small mb-3" role="status">
+          Cargando casos de tránsito...
         </div>
       )}
-
-      <div className="row g-3 mb-5">
-        <KpiCard
-          color="red"
-          valor={alertasCargadas ? casos.length : "—"}
-          label="Casos sin asignar"
-          icono="bi-geo-alt"
-        />
-
-        <KpiCard
-          color="blue"
-          valor="—"
-          label="Tiempo de respuesta"
-          icono="bi-clock"
-        />
-
-        <KpiCard
-          color="green"
-          valor={cerradosHoy}
-          label="Casos cerrados hoy"
-          icono="bi-check2"
-        />
-
-        <KpiCard
-          color="amber"
-          valor={`${disponibles}/${grupos.length}`}
-          label="Grupos disponibles"
-          icono="bi-truck"
-        />
+      <div className="row g-3 mb-4 mt-4 casos-kpis">
+        <KpiCard color="red" valor={activos} label="Casos activos" icono="bi-geo-alt" />
+        <KpiCard color="blue" valor={cerradosMes} label="Casos cerrados del mes" icono="bi-calendar-check" />
+        <KpiCard color="green" valor={cerradosHoy} label="Casos cerrados hoy" icono="bi-check2" />
+        <KpiCard color="amber" valor={`${disponibles}/${agentes.length}`} label="Agentes disponibles" icono="bi-truck" />
       </div>
-
-      <div className="table-card-dash">
-        <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-          <h2 className="panel-title-dash mb-0">Casos que puedes asignar</h2>
-
-          <div className="input-group search-panel-dash">
+      <div className="table-card-dash casos-tabla">
+        <div className="casos-barra-filtros mb-3">
+          <div className="input-group search-dash filtros-busqueda-dash casos-buscador">
             <span className="input-group-text bg-white border-0">
               <i className="bi bi-search" />
             </span>
-
             <input
               type="search"
               className="form-control border-0"
-              placeholder="Buscar caso, barrio o reportante..."
-              value={buscarCaso}
-              onChange={(e) => setBuscarCaso(e.target.value)}
+              placeholder="Buscar por reportante, barrio..."
+              value={busqueda}
+              onChange={(e) => {
+                setBusqueda(e.target.value);
+                setPagina(1);
+              }}
             />
           </div>
-        </div>
-
-        <div className="d-flex flex-wrap gap-2 mb-3 tabs-dash">
-          {[
-            ["TODOS", "Todos"],
-            ["PENDIENTE", "Pendientes"],
-          ].map(([valor, etiqueta]) => (
+          <div className="casos-filtros-estados">
             <button
-              key={valor}
               type="button"
-              className={`tab-dash ${filtroEstado === valor ? "active-dash" : ""}`}
-              onClick={() => setFiltroEstado(valor)}
+              className={`pill-filtro-dash casos-filtro-todas ${estado === "" ? "casos-filtro-activo" : ""}`}
+              style={SIN_MAYUSCULAS}
+              onClick={() => {
+                setEstado("");
+                setPagina(1);
+              }}
             >
-              {etiqueta} ({casos.length})
+              Todas ({casos.length})
             </button>
-          ))}
+            {estadosDisponibles.map((valor) => (
+              <button
+                key={valor}
+                type="button"
+                className={`pill-filtro-dash ${claseFiltroEstado(valor)} ${estado === valor ? "casos-filtro-activo" : ""}`}
+                style={SIN_MAYUSCULAS}
+                aria-pressed={estado === valor}
+                onClick={() => {
+                  setEstado(valor);
+                  setPagina(1);
+                }}
+              >
+                {textoVisible(valor)}
+              </button>
+            ))}
+            <button
+              type="button"
+              className="pill-filtro-dash casos-filtro-limpiar"
+              style={SIN_MAYUSCULAS}
+              onClick={limpiar}
+            >
+              <i className="bi bi-x-circle" /> Limpiar
+            </button>
+          </div>
         </div>
-
         <div className="table-responsive">
-          <table className="table align-middle mb-0">
+          <table className="table align-middle mb-0 casos-table">
             <thead>
               <tr>
+                <th>Reportado por</th>
                 <th>Tipo</th>
-
-                <th>Ubicación / reportante</th>
-
+                <th>Barrio</th>
                 <th>Estado</th>
-
-                <th>Espera</th>
-
-                <th className="text-end">Acciones</th>
+                <th className="text-end"> </th>
               </tr>
             </thead>
-
             <tbody>
-              {casosFiltrados.map((item, indice) => (
-                <tr key={idAlertaCentral(item) ?? indice}>
+              {visibles.map((caso, indice) => (
+                <tr key={caso.identificador ?? indice}>
                   <td>
-                    <span
-                      className={`badge-dash badge-${badgeTipoCentral(
-                        tipoCentral(item),
-                      )}-dash`}
-                    >
-                      {tipoCentral(item)}
-                    </span>
-                  </td>
-
-                  <td>
-                    <div className="info-title-dash">{lugarCentral(item)}</div>
-
-                    <div className="info-sub-dash">
-                      Reportado por {reportanteCentral(item)}
+                    <div className="casos-reportante">
+                      <span className={`casos-avatar casos-avatar-${colorPerfil(caso)}`}>
+                        {iniciales(caso.reportante)}
+                      </span>
+                      <div className="casos-reportante-datos">
+                        <div className="info-title-dash">{caso.reportante}</div>
+                        <div className="info-sub-dash">{fechaTransito(caso.fechaVisual)}</div>
+                      </div>
                     </div>
                   </td>
-
                   <td>
-                    <span className="badge-estado-alerta-dash estado-pendiente-dash">
-                      <span className="estado-punto-dash" />
-                      Pendiente
+                    <span className={`badge-dash casos-pill ${claseTipoCaso(caso.tipoVisual)}`} style={SIN_MAYUSCULAS}>
+                      {textoVisible(caso.tipoVisual)}
                     </span>
                   </td>
-
+                  <td>{caso.barrio}</td>
                   <td>
-                    <span className="wait-dash wait-warn-dash">
-                      {tiempoEsperaCentral(fechaRegistroCentral(item))}
+                    <span className={`badge-dash casos-pill ${claseEstadoCaso(caso.estadoVisual)}`} style={SIN_MAYUSCULAS}>
+                      {textoVisible(caso.estadoVisual)}
                     </span>
                   </td>
-
                   <td className="text-end">
                     <button
                       type="button"
-                      className="btn-asignar-dash"
-                      onClick={() => abrirAsignacion(item)}
+                      className="link-btn-dash border-0 bg-transparent"
+                      onClick={() => setDetalle(caso)}
                     >
-                      Asignar
+                      Ver detalle
                     </button>
                   </td>
                 </tr>
@@ -507,233 +406,96 @@ export default function Casos() {
             </tbody>
           </table>
         </div>
-
-        {casosFiltrados.length === 0 && (
-          <p className="text-center text-muted py-4 mb-0">
-            {alertasCargadas
-              ? "No hay alertas pendientes de Tránsito que puedas asignar."
-              : "La cola de alertas no está disponible."}
-          </p>
-        )}
-
+        {visibles.length === 0 && <p className="text-center text-muted py-4 mb-0">No se encontraron casos.</p>}
         <div className="d-flex justify-content-between align-items-center pt-3 paginacion-dash">
           <span className="text-muted small">
-            Mostrando {casosFiltrados.length} de {casos.length} casos
+            Mostrando {visibles.length} de {filtrados.length} reportes
           </span>
+          <div className="d-flex gap-1">
+            <button
+              type="button"
+              className="page-btn-dash"
+              disabled={paginaActual === 1}
+              onClick={() => setPagina((p) => Math.max(1, p - 1))}
+            >
+              <i className="bi bi-chevron-left" />
+            </button>
+            {Array.from({ length: totalPaginas }, (_, i) => i + 1).map((numero) => (
+              <button
+                key={numero}
+                type="button"
+                className={`page-btn-dash ${paginaActual === numero ? "active-dash" : ""}`}
+                onClick={() => setPagina(numero)}
+              >
+                {numero}
+              </button>
+            ))}
+            <button
+              type="button"
+              className="page-btn-dash"
+              disabled={paginaActual === totalPaginas}
+              onClick={() => setPagina((p) => Math.min(totalPaginas, p + 1))}
+            >
+              <i className="bi bi-chevron-right" />
+            </button>
+          </div>
         </div>
       </div>
-
-      {caso && (
+      {detalle && (
         <div
           className="modal fade show"
-          id="modalAsignar"
           role="dialog"
           aria-modal="true"
-          aria-labelledby="tituloAsignarCentral"
-          style={{
-            display: "block",
-
-            backgroundColor: "rgba(0,0,0,.5)",
-          }}
+          aria-labelledby="tituloDetalleCaso"
+          style={{ display: "block", backgroundColor: "rgba(0,0,0,.5)" }}
         >
-          <div className="modal-dialog modal-lg modal-dialog-centered">
+          <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content modal-dash">
-              <div className="modal-header border-0 pb-0">
-                <div>
-                  <h5
-                    id="tituloAsignarCentral"
-                    className="panel-title-dash mb-0"
-                  >
-                    Asignar grupo
-                  </h5>
-
-                  <p className="modal-subtitulo-dash mb-0">
-                    {tipoCentral(caso)} · {lugarCentral(caso)}
-                  </p>
-                </div>
-
-                <button
-                  type="button"
-                  className="btn-close"
-                  aria-label="Cerrar"
-                  disabled={guardandoAsignacion}
-                  onClick={cerrarAsignacion}
-                />
+              <div className="modal-header">
+                <h5 id="tituloDetalleCaso" className="modal-title">
+                  Detalle del caso #{detalle.identificador ?? "—"}
+                </h5>
+                <button type="button" className="btn-close" aria-label="Cerrar" onClick={() => setDetalle(null)} />
               </div>
-
               <div className="modal-body">
-                <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-                  <div className="d-flex gap-2 tabs-dash flex-wrap">
-                    {[
-                      ["todos", "Todos"],
-
-                      ["disponible", "Disponibles"],
-
-                      ["no-disponible", "No disponibles"],
-                    ].map(([id, texto]) => (
-                      <button
-                        key={id}
-                        type="button"
-                        className={`tab-dash ${
-                          filtro === id ? "active-dash" : ""
-                        }`}
-                        onClick={() => setFiltro(id)}
-                      >
-                        {texto}
-                      </button>
-                    ))}
-                  </div>
-
-                  <div className="input-group search-panel-dash">
-                    <span className="input-group-text bg-white border-0">
-                      <i className="bi bi-search" />
-                    </span>
-
-                    <input
-                      type="search"
-                      className="form-control border-0"
-                      placeholder="Buscar grupo..."
-                      value={buscar}
-                      onChange={(e) => setBuscar(e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <div className="tabla-grupos-modal-dash">
-                  <div className="table-responsive">
-                    <table className="table align-middle mb-0">
-                      <thead>
-                        <tr>
-                          <th>Grupo</th>
-
-                          <th>Zona</th>
-
-                          <th>Estado</th>
-
-                          <th className="text-end">Acción</th>
-                        </tr>
-                      </thead>
-
-                      <tbody>
-                        {gruposFiltrados.map((grupo, indice) => (
-                          <tr key={grupo.id ?? indice}>
-                            <td>
-                              <div className="info-title-dash">
-                                {grupo.nombre}
-                              </div>
-
-                              <div className="info-sub-dash">
-                                {grupo.disponibles} de {grupo.totalAgentes}{" "}
-                                agentes disponibles
-                              </div>
-                            </td>
-
-                            <td>{grupo.zona}</td>
-
-                            <td>
-                              <span
-                                className={`badge-state-dash ${
-                                  grupo.disponible
-                                    ? "badge-active-dash"
-                                    : "badge-inactive-dash"
-                                }`}
-                              >
-                                {grupo.disponible
-                                  ? "Operativa"
-                                  : "No operativa"}
-                              </span>
-                            </td>
-
-                            <td className="text-end">
-                              <button
-                                type="button"
-                                className="btn-asignar-fila-dash"
-                                disabled={
-                                  !grupo.disponible ||
-                                  grupo.id == null ||
-                                  guardandoAsignacion
-                                }
-                                onClick={() => {
-                                  setGrupoSeleccionado(grupo);
-
-                                  setErrorAsignacion("");
-                                }}
-                              >
-                                {grupoSeleccionado?.id === grupo.id
-                                  ? "Seleccionado"
-                                  : "Seleccionar"}
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-
-                  {gruposFiltrados.length === 0 && (
-                    <p className="text-center text-muted py-4 mb-0">
-                      No hay grupos disponibles para esta búsqueda.
-                    </p>
+                <p>
+                  <b>Tipo:</b> {textoVisible(detalle.tipoVisual)}
+                </p>
+                <p>
+                  <b>Reportante:</b> {detalle.reportante}
+                </p>
+                <p>
+                  <b>Barrio:</b> {detalle.barrio}
+                </p>
+                <p>
+                  <b>Estado:</b> {textoVisible(detalle.estadoVisual)}
+                </p>
+                <p>
+                  <b>Fecha:</b> {fechaTransito(detalle.fechaVisual)}
+                </p>
+                <p>
+                  <b>Descripción:</b> {detalle.descripcion ?? "No disponible"}
+                </p>
+                <p>
+                  <b>Agente asignado:</b>{" "}
+                  {nombreAgente(
+                    agentes.find(
+                      (a) =>
+                        String(a.idAgenteTransito ?? a.idUsuario) === String(detalle.atencion?.idAgenteTransito),
+                    ) ?? {},
                   )}
-                </div>
-
-                {grupoSeleccionado && (
-                  <div className="alert alert-info mt-3 mb-0">
-                    <i className="bi bi-check-circle me-2" />
-                    Grupo seleccionado:{" "}
-                    <strong>{grupoSeleccionado.nombre}</strong>
-                  </div>
-                )}
-
-                {errorAsignacion && (
-                  <div className="alert alert-danger mt-3 mb-0" role="alert">
-                    <i className="bi bi-exclamation-triangle me-2" />
-
-                    {errorAsignacion}
-                  </div>
-                )}
+                </p>
               </div>
-
-              <div className="modal-footer border-0">
-                <button
-                  type="button"
-                  className="btn btn-light"
-                  onClick={cerrarAsignacion}
-                  disabled={guardandoAsignacion}
-                >
-                  Cancelar
-                </button>
-
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  disabled={
-                    !grupoSeleccionado ||
-                    !grupoSeleccionado.disponible ||
-                    guardandoAsignacion
-                  }
-                  onClick={confirmarAsignacion}
-                >
-                  {guardandoAsignacion ? (
-                    <>
-                      <span
-                        className="spinner-border spinner-border-sm me-2"
-                        aria-hidden="true"
-                      />
-                      Asignando...
-                    </>
-                  ) : (
-                    <>
-                      <i className="bi bi-check2-circle me-2" />
-                      Confirmar asignación
-                    </>
-                  )}
+              <div className="modal-footer">
+                <button type="button" className="btn btn-light" onClick={() => setDetalle(null)}>
+                  Cerrar
                 </button>
               </div>
             </div>
           </div>
         </div>
       )}
+      <AvisosCasos avisos={avisos} cerrar={cerrarAviso} />
     </Layout>
   );
 }

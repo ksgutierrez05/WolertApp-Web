@@ -1,16 +1,29 @@
 
-import { consultarTransito, obtenerSesionTransito } from "./transitoApi";
+import {
+  consultarTransito,
+  obtenerSesionTransito,
+} from "./transitoApi";
 
-// Verifica la ruta de alertas en Swagger.
+// ======================================================
+// RUTAS DE LA API
+// ======================================================
+
 const RUTAS = {
   agentes: "/api/AgentesTransitoes",
   unidades: "/api/UnidadTransitoes",
   atenciones: "/api/AtencionesTransito",
   alertas: "/api/Alertas",
+  asignaciones: "/api/Asignaciones/mias",
 };
 
+// ======================================================
+// FUNCIONES GENERALES
+// ======================================================
+
 function convertirLista(datos) {
-  if (Array.isArray(datos)) return datos;
+  if (Array.isArray(datos)) {
+    return datos;
+  }
 
   for (const clave of [
     "items",
@@ -24,10 +37,47 @@ function convertirLista(datos) {
     }
   }
 
-  if (datos == null) return [];
+  if (datos == null) {
+    return [];
+  }
 
-  throw new Error("La API no devolviÃ³ una lista vÃ¡lida.");
+  throw new Error("La API no devolvió una lista válida.");
 }
+
+function iguales(a, b) {
+  return (
+    a != null &&
+    b != null &&
+    String(a) === String(b)
+  );
+}
+
+function idUsuarioActual() {
+  const { idUsuario } = obtenerSesionTransito();
+
+  if (!idUsuario) {
+    throw new Error(
+      "No hay sesión de agente. Inicia sesión nuevamente."
+    );
+  }
+
+  return Number(idUsuario);
+}
+
+function idDeUnidad(obj) {
+  return (
+    obj?.unidadTransitoId ??
+    obj?.idUnidadTransito ??
+    obj?.IdUnidadTransito ??
+    obj?.UnidadTransitoId ??
+    obj?.idUnidad ??
+    null
+  );
+}
+
+// ======================================================
+// CONSULTAS PARA CENTRAL DE TRÁNSITO
+// ======================================================
 
 export async function listarAgentesCentral() {
   return convertirLista(
@@ -53,6 +103,10 @@ export async function listarAlertasCentral() {
   );
 }
 
+// ======================================================
+// NORMALIZACIÓN
+// ======================================================
+
 export function normalizarCentral(valor) {
   return String(valor ?? "")
     .normalize("NFD")
@@ -60,6 +114,10 @@ export function normalizarCentral(valor) {
     .trim()
     .toUpperCase();
 }
+
+// ======================================================
+// IDENTIFICADORES
+// ======================================================
 
 export function idAgenteCentral(agente) {
   return (
@@ -98,6 +156,10 @@ export function idAtencionCentral(atencion) {
   );
 }
 
+// ======================================================
+// DATOS DE LOS AGENTES
+// ======================================================
+
 export function nombreAgenteCentral(agente) {
   return (
     agente?.nombreUsuario ||
@@ -119,20 +181,24 @@ export function inicialesCentral(nombre) {
     .toUpperCase();
 }
 
+// ======================================================
+// UNIDADES DE TRÁNSITO
+// ======================================================
+
 export function obtenerUnidadDeAgente(
   agente,
   unidades = []
 ) {
-  const id =
-    agente?.unidadTransitoId ??
-    agente?.idUnidadTransito;
+  const id = idDeUnidad(agente);
 
-  if (id == null) return null;
+  if (id == null) {
+    return null;
+  }
 
   return (
     unidades.find(
       (unidad) =>
-        String(idUnidadCentral(unidad)) === String(id)
+        iguales(idUnidadCentral(unidad), id)
     ) || null
   );
 }
@@ -154,7 +220,10 @@ export function nombreUnidadCentral(
   );
 }
 
-export function zonaCentral(agente, unidades = []) {
+export function zonaCentral(
+  agente,
+  unidades = []
+) {
   const unidad = obtenerUnidadDeAgente(
     agente,
     unidades
@@ -170,9 +239,14 @@ export function zonaCentral(agente, unidades = []) {
   );
 }
 
+// ======================================================
+// ESTADOS DE ATENCIÓN
+// ======================================================
+
 export function finalizadaCentral(atencion) {
   const estado = normalizarCentral(
-    atencion?.estadoFinal ?? atencion?.estado
+    atencion?.estadoFinal ??
+    atencion?.estado
   );
 
   return [
@@ -192,17 +266,16 @@ export function atencionesDeAgenteCentral(
 ) {
   const id = idAgenteCentral(agente);
 
-  if (id == null) return [];
+  if (id == null) {
+    return [];
+  }
 
   return atenciones.filter((atencion) => {
     const idAsignado =
       atencion?.idAgenteTransito ??
       atencion?.agenteTransitoId;
 
-    return (
-      idAsignado != null &&
-      String(idAsignado) === String(id)
-    );
+    return iguales(idAsignado, id);
   });
 }
 
@@ -211,7 +284,8 @@ export function estadoAgenteCentral(
   atenciones = []
 ) {
   const estado = normalizarCentral(
-    agente?.estadoAgente ?? agente?.estado
+    agente?.estadoAgente ??
+    agente?.estado
   );
 
   if (
@@ -226,12 +300,17 @@ export function estadoAgenteCentral(
     return "no-disponible";
   }
 
-  const tieneAtencion = atencionesDeAgenteCentral(
-    agente,
-    atenciones
-  ).some((atencion) => !finalizadaCentral(atencion));
+  const tieneAtencion =
+    atencionesDeAgenteCentral(
+      agente,
+      atenciones
+    ).some(
+      (atencion) => !finalizadaCentral(atencion)
+    );
 
-  if (tieneAtencion) return "atencion";
+  if (tieneAtencion) {
+    return "atencion";
+  }
 
   if (
     [
@@ -246,6 +325,10 @@ export function estadoAgenteCentral(
   return "desconocido";
 }
 
+// ======================================================
+// FECHAS
+// ======================================================
+
 export function fechaRegistroCentral(registro) {
   return (
     registro?.fechaReporte ||
@@ -259,7 +342,9 @@ export function fechaRegistroCentral(registro) {
 }
 
 export function fechaCentral(valor) {
-  if (!valor) return "Sin fecha";
+  if (!valor) {
+    return "Sin fecha";
+  }
 
   const fecha = new Date(valor);
 
@@ -275,6 +360,10 @@ export function fechaCentral(valor) {
     minute: "2-digit",
   });
 }
+
+// ======================================================
+// INFORMACIÓN DE LAS ALERTAS
+// ======================================================
 
 export function tipoCentral(registro) {
   return (
@@ -294,7 +383,7 @@ export function lugarCentral(registro) {
     registro?.nombreBarrio ||
     registro?.barrioNombre ||
     registro?.barrio?.nombre ||
-    "UbicaciÃ³n no registrada"
+    "Ubicación no registrada"
   );
 }
 
@@ -303,12 +392,12 @@ export function reportanteCentral(registro) {
     registro?.nombreReportante ||
     registro?.nombreUsuario ||
     registro?.reportanteNombre ||
+    registro?.reportadoPor ||
     registro?.usuario?.nombre ||
     "No registrado"
   );
 }
 
-// ESTA ES LA EXPORTACIÃ“N QUE FALTABA.
 export function badgeTipoCentral(tipo) {
   const valor = normalizarCentral(tipo);
 
@@ -327,7 +416,9 @@ export function badgeTipoCentral(tipo) {
 }
 
 export function tiempoEsperaCentral(valor) {
-  if (!valor) return "Sin fecha";
+  if (!valor) {
+    return "Sin fecha";
+  }
 
   const fecha = new Date(valor);
 
@@ -350,6 +441,10 @@ export function tiempoEsperaCentral(valor) {
 
   return `${horas} h ${minutos % 60} min`;
 }
+
+// ======================================================
+// COLA DE ALERTAS DE CENTRAL
+// ======================================================
 
 export function prepararColaCentral(
   alertas = [],
@@ -378,8 +473,10 @@ export function prepararColaCentral(
 
   return alertas.filter((alerta) => {
     const id = idAlertaCentral(alerta);
+
     const estado = normalizarCentral(
-      alerta?.estadoAlerta ?? alerta?.estado
+      alerta?.estadoAlerta ??
+      alerta?.estado
     );
 
     return (
@@ -390,6 +487,10 @@ export function prepararColaCentral(
   });
 }
 
+// ======================================================
+// PREPARACIÓN DE AGENTES PARA CENTRAL
+// ======================================================
+
 export function prepararAgentesCentral(
   agentes = [],
   unidades = [],
@@ -398,10 +499,12 @@ export function prepararAgentesCentral(
   return agentes.map((agente) => {
     const id = idAgenteCentral(agente);
     const nombre = nombreAgenteCentral(agente);
+
     const casos = atencionesDeAgenteCentral(
       agente,
       atenciones
     );
+
     const actual = casos.find(
       (caso) => !finalizadaCentral(caso)
     );
@@ -410,28 +513,43 @@ export function prepararAgentesCentral(
       id,
       nombre,
       iniciales: inicialesCentral(nombre),
+
       cedula:
         agente?.cedula ||
         agente?.numeroDocumento ||
         "No registrada",
+
       zona: zonaCentral(agente, unidades),
-      grupo: nombreUnidadCentral(agente, unidades),
+
+      grupo: nombreUnidadCentral(
+        agente,
+        unidades
+      ),
+
       estado: estadoAgenteCentral(
         agente,
         atenciones
       ),
+
       casoActual: actual
         ? tipoCentral(actual)
         : "Sin caso activo",
+
       totalAtenciones: casos.length,
+
       canal:
         agente?.canalRadio ||
         agente?.canal ||
         "No registrado",
+
       original: agente,
     };
   });
 }
+
+// ======================================================
+// PREPARACIÓN DE GRUPOS PARA CENTRAL
+// ======================================================
 
 export function prepararGruposCentral(
   unidades = [],
@@ -441,34 +559,32 @@ export function prepararGruposCentral(
   return unidades.map((unidad) => {
     const id = idUnidadCentral(unidad);
 
-    const integrantes = agentes.filter((agente) => {
-      const idGrupo =
-        agente?.unidadTransitoId ??
-        agente?.idUnidadTransito;
-
-      return (
-        id != null &&
-        idGrupo != null &&
-        String(idGrupo) === String(id)
-      );
-    });
+    const integrantes = agentes.filter(
+      (agente) =>
+        iguales(idDeUnidad(agente), id)
+    );
 
     const disponibles = integrantes.filter(
       (agente) =>
-        estadoAgenteCentral(agente, atenciones) ===
-        "disponible"
+        estadoAgenteCentral(
+          agente,
+          atenciones
+        ) === "disponible"
     ).length;
 
     return {
       id,
+
       nombre:
         unidad?.nombre ||
         unidad?.nombreUnidad ||
         `Grupo ${id ?? "sin ID"}`,
+
       zona:
         unidad?.nombreBarrio ||
         unidad?.nombreComuna ||
         "Sin zona registrada",
+
       totalAgentes: integrantes.length,
       disponibles,
       disponible: disponibles > 0,
@@ -476,107 +592,414 @@ export function prepararGruposCentral(
   });
 }
 
+// ======================================================
+// FUNCIONES DEL AGENTE DE TRÁNSITO
+// ======================================================
 
-
-const RUTAS_AGENTE = {
-  agentes: "/api/AgentesTransitoes",
-  unidades: "/api/UnidadTransitoes",
-  atenciones: "/api/AtencionesTransito",
-};
-
-function convertirListaAgente(datos) {
-  if (Array.isArray(datos)) return datos;
-  if (Array.isArray(datos?.items)) return datos.items;
-  if (Array.isArray(datos?.data)) return datos.data;
-  if (Array.isArray(datos?.results)) return datos.results;
-  if (Array.isArray(datos?.$values)) return datos.$values;
-  if (datos == null) return [];
-  throw new Error("La API no devolvio una lista valida.");
-}
-
-function idUsuarioActual() {
-  const { idUsuario } = obtenerSesionTransito();
-  if (!idUsuario) {
-    throw new Error("No hay sesion de agente. Inicia sesion de nuevo.");
-  }
-  return idUsuario;
-}
-
-function idDeUnidad(obj) {
-  return obj?.idUnidadTransito ?? obj?.idUnidad ?? obj?.IdUnidadTransito ?? null;
-}
+// PERFIL DEL AGENTE
 
 export async function obtenerPerfilAgente() {
   const idUsuario = idUsuarioActual();
-  const agentes = convertirListaAgente(await consultarTransito(RUTAS_AGENTE.agentes));
+
+  const agentes = convertirLista(
+    await consultarTransito(RUTAS.agentes)
+  );
 
   const agente = agentes.find(
-    (a) => Number(a.idUsuario ?? a.IdUsuario) === idUsuario
+    (a) =>
+      Number(
+        a.idUsuario ??
+        a.IdUsuario
+      ) === idUsuario
   );
 
   if (!agente) {
-    throw new Error("No se encontro el agente asociado a tu usuario.");
+    throw new Error(
+      "No se encontró el agente asociado a tu usuario."
+    );
   }
+
   return agente;
 }
 
+// UNIDAD DEL AGENTE
+
 export async function obtenerUnidadAgente() {
   const agente = await obtenerPerfilAgente();
-  const idUnidad = idDeUnidad(agente);
-  if (idUnidad == null) return null;
 
-  const unidades = convertirListaAgente(await consultarTransito(RUTAS_AGENTE.unidades));
-  return unidades.find((u) => idDeUnidad(u) === idUnidad) ?? null;
+  const idUnidad = idDeUnidad(agente);
+
+  if (idUnidad == null) {
+    return null;
+  }
+
+  const unidades = convertirLista(
+    await consultarTransito(RUTAS.unidades)
+  );
+
+  return (
+    unidades.find(
+      (unidad) =>
+        iguales(
+          idUnidadCentral(unidad),
+          idUnidad
+        )
+    ) ?? null
+  );
 }
+
+// GRUPO DEL AGENTE
 
 export async function obtenerGrupoAgente() {
   const idUsuario = idUsuarioActual();
+
   const [agentes, unidades] = await Promise.all([
-    consultarTransito(RUTAS_AGENTE.agentes).then(convertirLista),
-    consultarTransito(RUTAS_AGENTE.unidades).then(convertirLista),
+    listarAgentesCentral(),
+    listarUnidadesCentral(),
   ]);
 
   const yo = agentes.find(
-    (a) => Number(a.idUsuario ?? a.IdUsuario) === idUsuario
+    (agente) =>
+      Number(
+        agente.idUsuario ??
+        agente.IdUsuario
+      ) === idUsuario
   );
+
+  if (!yo) {
+    throw new Error(
+      "No se encontró el agente autenticado."
+    );
+  }
+
   const idUnidad = idDeUnidad(yo);
 
-  const unidad = unidades.find((u) => idDeUnidad(u) === idUnidad) ?? null;
+  const unidad =
+    unidades.find(
+      (u) =>
+        iguales(
+          idUnidadCentral(u),
+          idUnidad
+        )
+    ) ?? null;
+
   const integrantes =
-    idUnidad == null ? [] : agentes.filter((a) => idDeUnidad(a) === idUnidad);
+    idUnidad == null
+      ? []
+      : agentes.filter(
+          (agente) =>
+            iguales(
+              idDeUnidad(agente),
+              idUnidad
+            )
+        );
 
-  return { unidad, integrantes };
-}
-
-export async function obtenerAtencionesAgente() {
-  const perfil = await obtenerPerfilAgente();
-  const idUnidad = idDeUnidad(perfil);
-
-  const atenciones = convertirListaAgente(await consultarTransito(RUTAS_AGENTE.atenciones));
-
-  // Si las atenciones traen la unidad, se filtra por la del agente.
-  return atenciones.filter((x) => {
-    const u = idDeUnidad(x);
-    return u == null || idUnidad == null || u === idUnidad;
-  });
-}
-
-export async function obtenerResumenAgente() {
-  const atenciones = await obtenerAtencionesAgente();
   return {
-    atenciones,
-    enProceso: atenciones.filter((x) => x.estadoFinal === "EN_PROCESO"),
-    finalizadas: atenciones.filter((x) => x.estadoFinal === "FINALIZADA"),
+    unidad,
+    integrantes,
+    agente: yo,
+    idUnidad,
   };
 }
 
+// ATENCIONES DEL AGENTE
+
+export async function obtenerAtencionesAgente() {
+  const perfil = await obtenerPerfilAgente();
+
+  const idUnidad = idDeUnidad(perfil);
+
+  if (idUnidad == null) {
+    return [];
+  }
+
+  const atenciones = convertirLista(
+    await consultarTransito(RUTAS.atenciones)
+  );
+
+  return atenciones.filter((atencion) => {
+    const unidadAtencion = idDeUnidad(atencion);
+
+    if (unidadAtencion != null) {
+      return iguales(
+        unidadAtencion,
+        idUnidad
+      );
+    }
+
+    const idAgente =
+      atencion?.idAgenteTransito ??
+      atencion?.agenteTransitoId;
+
+    return iguales(
+      idAgente,
+      idAgenteCentral(perfil)
+    );
+  });
+}
+
+// RESUMEN DEL AGENTE
+
+export async function obtenerResumenAgente() {
+  const atenciones = await obtenerAtencionesAgente();
+
+  return {
+    atenciones,
+
+    enProceso: atenciones.filter(
+      (atencion) =>
+        normalizarCentral(
+          atencion.estadoFinal
+        ) === "EN_PROCESO"
+    ),
+
+    finalizadas: atenciones.filter(
+      (atencion) =>
+        normalizarCentral(
+          atencion.estadoFinal
+        ) === "FINALIZADA"
+    ),
+  };
+}
+
+// FECHA DE ATENCIÓN
+
 export function fechaAtencion(valor) {
   const crudo =
-    valor && typeof valor === "object" ? valor.fechaAtencion : valor;
-  if (!crudo) return "Sin fecha";
+    valor && typeof valor === "object"
+      ? valor.fechaAtencion ??
+        valor.fechaInicio ??
+        valor.fecha
+      : valor;
+
+  if (!crudo) {
+    return "Sin fecha";
+  }
 
   const fecha = new Date(crudo);
-  if (Number.isNaN(fecha.getTime())) return String(crudo);
+
+  if (Number.isNaN(fecha.getTime())) {
+    return String(crudo);
+  }
+
+  return fecha.toLocaleString("es-CO", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+// ======================================================
+// ASIGNACIONES DEL AGENTE
+// ======================================================
+
+export async function obtenerAsignacionesAgente() {
+  return convertirLista(
+    await consultarTransito(RUTAS.asignaciones)
+  );
+}
+
+// ======================================================
+// CASOS ASIGNADOS A LA UNIDAD
+// ======================================================
+
+export async function obtenerCasosAgente() {
+  const [asignaciones, alertas, atenciones] =
+    await Promise.all([
+      obtenerAsignacionesAgente(),
+      listarAlertasCentral(),
+      listarAtencionesCentral(),
+    ]);
+
+  const alertasPorId = new Map(
+    alertas.map((alerta) => [
+      String(idAlertaCentral(alerta)),
+      alerta,
+    ])
+  );
+
+  return asignaciones.map((asignacion) => {
+    const idAlerta = asignacion.idAlerta;
+
+    const alerta = alertasPorId.get(
+      String(idAlerta)
+    );
+
+    const atencionesDelCaso = atenciones
+      .filter((atencion) => {
+        const coincideAlerta = iguales(
+          atencion.idAlerta,
+          idAlerta
+        );
+
+        const coincideUnidad = iguales(
+          idDeUnidad(atencion),
+          idDeUnidad(asignacion)
+        );
+
+        return coincideAlerta && coincideUnidad;
+      })
+      .sort(
+        (a, b) =>
+          Number(
+            idAtencionCentral(b) ?? 0
+          ) -
+          Number(
+            idAtencionCentral(a) ?? 0
+          )
+      );
+
+    const atencion =
+      atencionesDelCaso[0] ?? null;
+
+    return {
+      idAsignacion:
+        asignacion.idAsignacion,
+
+      idAlerta,
+
+      idUnidadTransito:
+        asignacion.idUnidadTransito,
+
+      fechaCaso:
+        asignacion.fecha ??
+        alerta?.fecha ??
+        null,
+
+      estadoAsignacion: normalizarCentral(
+        asignacion.estadoAsignacion
+      ),
+
+      estadoAlerta: normalizarCentral(
+        alerta?.estado
+      ),
+
+      estadoAtencion: normalizarCentral(
+        atencion?.estadoFinal
+      ),
+
+      idAtencionTransito:
+        idAtencionCentral(atencion),
+
+      tipoCaso: alerta
+        ? tipoCentral(alerta)
+        : "Alerta de tránsito",
+
+      descripcion:
+        alerta?.descripcion ||
+        asignacion.observacion ||
+        "",
+
+      nombreReportante:
+        alerta?.reportadoPor ||
+        reportanteCentral(alerta),
+
+      barrio: alerta
+        ? lugarCentral(alerta)
+        : "Ubicación no registrada",
+
+      observacion:
+        asignacion.observacion || "",
+
+      atencion,
+    };
+  });
+}
+
+// ======================================================
+// ESTADOS DE LOS CASOS
+// ======================================================
+
+export function casoFinalizado(caso) {
+  const estado = normalizarCentral(
+    caso.estadoAsignacion
+  );
+
+  return [
+    "FINALIZADA",
+    "CANCELADA",
+  ].includes(estado);
+}
+
+export function pasoDelCaso(caso) {
+  const estado = normalizarCentral(
+    caso.estadoAsignacion
+  );
+
+  if (estado === "FINALIZADA") {
+    return 3;
+  }
+
+  if (estado === "EN_ATENCION") {
+    return 2;
+  }
+
+  return 0;
+}
+
+// ======================================================
+// CAMBIOS DE ESTADO EN ORACLE
+// ======================================================
+
+// ASIGNADA -> EN_ATENCION
+
+export async function registrarLlegada(
+  idAsignacion
+) {
+  const id = Number(idAsignacion);
+
+  if (!Number.isInteger(id) || id <= 0) {
+    throw new Error(
+      "El ID de la asignación no es válido."
+    );
+  }
+
+  return consultarTransito(
+    `/api/Asignaciones/${id}/llegada`,
+    {
+      method: "POST",
+    }
+  );
+}
+
+// EN_ATENCION -> FINALIZADA
+// Requiere una atención FINALIZADA.
+
+export async function finalizarAsignacion(
+  idAsignacion
+) {
+  const id = Number(idAsignacion);
+
+  if (!Number.isInteger(id) || id <= 0) {
+    throw new Error(
+      "El ID de la asignación no es válido."
+    );
+  }
+
+  return consultarTransito(
+    `/api/Asignaciones/${id}/finalizar`,
+    {
+      method: "POST",
+    }
+  );
+}
+
+// ======================================================
+// FORMATO DE FECHAS DE CASOS
+// ======================================================
+
+export function fechaCaso(valor) {
+  if (!valor) {
+    return "Sin fecha";
+  }
+
+  const fecha = new Date(valor);
+
+  if (Number.isNaN(fecha.getTime())) {
+    return String(valor);
+  }
 
   return fecha.toLocaleString("es-CO", {
     day: "2-digit",

@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import Layout from "../../Components/transito/Layout";
 import KpiCard from "../../Components/transito/KpiCard";
 import {
@@ -23,6 +24,22 @@ const FILTROS = [
   ["desconocido", "Sin estado"],
 ];
 const lista = (valor) => (Array.isArray(valor) ? valor : []);
+function AvisoAgentes({ aviso, cerrar }) {
+  useEffect(() => {
+    const temporizador = setTimeout(() => cerrar(aviso.id), aviso.tipo === "error" ? 6500 : 4000);
+    return () => clearTimeout(temporizador);
+  }, [aviso.id, aviso.tipo, cerrar]);
+  return (
+    <div className={`agentes-toast agentes-toast-${aviso.tipo}`} role={aviso.tipo === "error" ? "alert" : "status"}>
+      <i className={`bi ${aviso.tipo === "error" ? "bi-exclamation-circle-fill" : "bi-check-circle-fill"}`} />
+      <span>{aviso.mensaje}</span>
+      <button type="button" aria-label="Cerrar aviso" onClick={() => cerrar(aviso.id)}>
+        <i className="bi bi-x-lg" />
+      </button>
+    </div>
+  );
+}
+
 export default function Agentes() {
   const [agentes, setAgentes] = useState([]);
   const [unidades, setUnidades] = useState([]);
@@ -31,7 +48,10 @@ export default function Agentes() {
   const [buscar, setBuscar] = useState("");
   const [seleccionado, setSeleccionado] = useState(null);
   const [cargando, setCargando] = useState(true);
-  const [errores, setErrores] = useState([]);
+  const [avisos, setAvisos] = useState([]);
+  const cerrarAviso = useCallback((id) => {
+    setAvisos((actuales) => actuales.filter((aviso) => aviso.id !== id));
+  }, []);
   useEffect(() => {
     let activo = true;
     async function cargar() {
@@ -48,7 +68,13 @@ export default function Agentes() {
       else mensajes.push("No se pudieron cargar las unidades.");
       if (t.status === "fulfilled") setAtenciones(lista(t.value));
       else mensajes.push("No se pudieron cargar las atenciones.");
-      setErrores(mensajes);
+      if (mensajes.length) {
+        setAvisos((actuales) => [...actuales, {
+          id: `${Date.now()}-${Math.random()}`,
+          tipo: "error",
+          mensaje: mensajes.join(" "),
+        }]);
+      }
       setCargando(false);
     }
     cargar();
@@ -96,10 +122,7 @@ export default function Agentes() {
           <p>Consulta el estado y la disponibilidad de los agentes de tránsito.</p>
         </div>
       </header>
-      {cargando && <div className="alert alert-info">Cargando agentes...</div>}
-      {errores.length > 0 && (
-        <div className="alert alert-warning">{errores.join(" ")}</div>
-      )}
+      {cargando && <p className="small text-muted">Cargando agentes...</p>}
       <div className="row g-3 mb-5">
         <KpiCard color="blue" valor={datos.length} label="Agentes totales" icono="bi-people" />
         <KpiCard color="green" valor={contar("disponible")} label="Disponibles ahora" icono="bi-person-check" />
@@ -258,6 +281,23 @@ export default function Agentes() {
           </div>
         </div>
       )}
+      {createPortal(
+        <div className="agentes-toast-contenedor" aria-live="polite">
+          {avisos.map((aviso) => <AvisoAgentes key={aviso.id} aviso={aviso} cerrar={cerrarAviso} />)}
+        </div>,
+        document.body
+      )}
+      <style>{`
+        .agentes-toast-contenedor { position:fixed; bottom:20px; right:20px; z-index:99999; width:min(365px,calc(100vw - 32px)); display:flex; flex-direction:column; gap:10px; pointer-events:none; }
+        .agentes-toast { display:flex; align-items:flex-start; gap:12px; padding:14px; border:1px solid #e5eaf1; border-left:4px solid #299b69; border-radius:12px; background:#fff; color:#34465f; box-shadow:0 12px 30px rgba(27,47,73,.14); font:500 13px/1.5 Inter,sans-serif; pointer-events:auto; animation:agentesToastEntrada .2s ease-out; }
+        .agentes-toast-error { border-left-color:#db6471; }
+        .agentes-toast > i { font-size:18px; color:#299b69; }
+        .agentes-toast-error > i { color:#db6471; }
+        .agentes-toast span { flex:1; overflow-wrap:anywhere; }
+        .agentes-toast button { background:none; border:0; color:#8390a0; cursor:pointer; }
+        @keyframes agentesToastEntrada { from { opacity:0; transform:translateX(16px); } to { opacity:1; transform:translateX(0); } }
+        @media(max-width:600px) { .agentes-toast-contenedor { bottom:14px; right:16px; } }
+      `}</style>
     </Layout>
   );
 }

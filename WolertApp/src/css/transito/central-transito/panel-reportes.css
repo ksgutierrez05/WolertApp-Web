@@ -117,3 +117,32 @@
 }
 
 }
+/* Estado finalizado - Central de Tránsito */
+
+.estado-finalizado-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+
+  padding: 6px 13px;
+  border-radius: 999px;
+
+  background-color: #e7f5ed;
+  color: #23834d;
+
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.2;
+
+  white-space: nowrap;
+}
+
+.estado-finalizado-punto {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+
+  background-color: #34a66a;
+  flex-shrink: 0;
+}

@@ -843,3 +843,47 @@
   color: #e04444 !important;
 }
 }
+
+.dt-accion-agente i {
+  font-size: 18px;
+  font-weight: 900;
+  -webkit-text-stroke: 0.7px currentColor;
+}
+
+.dt-accion-agente.editar {
+  background: #fff3d6;
+  color: #b7791f;
+  border: 1px solid #f5d89a;
+  border-radius: 12px;
+}
+
+.dt-accion-agente.eliminar {
+  background: #ffe5e5;
+  color: #dc3545;
+  border: 1px solid #f5bcbc;
+  border-radius: 12px;
+}
+/* Botones Agente y Central - Azul Tránsito */
+
+.dt-registro-body .btn-outline-primary {
+  background: #edf3fb;
+  color: #2d609c;
+  border-color: #c9d9ed;
+}
+
+.dt-registro-body .btn-outline-primary:hover {
+  background: #dce9f8;
+  color: #2d609c;
+  border-color: #517aac;
+}
+
+.dt-registro-body .btn-primary {
+  background: #517aac;
+  color: #ffffff;
+  border-color: #517aac;
+}
+
+.dt-registro-body .btn-primary:hover {
+  background: #2d609c;
+  border-color: #2d609c;
+}

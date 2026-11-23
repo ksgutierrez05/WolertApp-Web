@@ -665,3 +665,195 @@
     font-size: 32px;
   }
 }
+
+/* ==========================================
+   BOTÓN AVANZAR - MI GRUPO
+   ========================================== */
+
+.btn-avanzar-grupo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+
+  min-height: 48px;
+  padding: 8px 18px 8px 9px;
+
+  border: 1px solid rgba(45, 96, 156, 0.12);
+  border-radius: 12px;
+
+  background: linear-gradient(
+    135deg,
+    #517aac 0%,
+    #2d609c 100%
+  );
+
+  color: #ffffff;
+  font-family: "Inter", sans-serif;
+  font-size: 13px;
+  font-weight: 650;
+
+  box-shadow: 0 5px 14px rgba(45, 96, 156, 0.18);
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.btn-avanzar-grupo-icono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.18);
+
+  color: #ffffff;
+  font-size: 15px;
+}
+
+.btn-avanzar-flecha {
+  margin-left: 4px;
+  transition: transform 0.2s ease;
+}
+
+.btn-avanzar-grupo:hover:not(:disabled) {
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 9px 20px rgba(45, 96, 156, 0.25);
+}
+
+.btn-avanzar-grupo:hover:not(:disabled)
+.btn-avanzar-flecha {
+  transform: translateX(4px);
+}
+
+.btn-avanzar-grupo:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-avanzar-grupo:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+@media (max-width: 480px) {
+  .btn-avanzar-grupo {
+    width: 100%;
+  }
+}
+
+/* Botón integrado al seguimiento */
+.progreso-caso-dash {
+  margin-bottom: 0;
+}
+
+.progreso-caso-dash + .d-flex {
+  justify-content: center !important;
+  margin-top: 0 !important;
+  padding: 18px 16px 8px;
+}
+
+.btn-avanzar-grupo {
+  min-width: 235px;
+  min-height: 45px;
+  justify-content: center;
+  border-radius: 11px;
+  box-shadow: 0 4px 12px rgba(45, 96, 156, 0.15);
+}
+
+/* Espaciado más compacto */
+.progreso-linea-dash {
+  padding-bottom: 8px;
+}
+
+@media (max-width: 600px) {
+  .btn-avanzar-grupo {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+/* =========================================
+   PROGRESO: DE EXTREMO A EXTREMO
+   ========================================= */
+
+.progreso-caso-dash .progreso-linea-dash {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+  position: relative;
+  padding: 0;
+}
+
+/* Línea horizontal completa entre los círculos */
+.progreso-caso-dash .progreso-linea-dash::before {
+  content: "";
+  position: absolute;
+  top: 22px;
+  left: 22px;
+  right: 22px;
+  height: 3px;
+  background: #dce5f0;
+  border-radius: 4px;
+  z-index: 0;
+}
+
+/* Cada etapa ocupa solo el espacio necesario */
+.progreso-caso-dash .progreso-paso-dash {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: auto;
+  min-width: 75px;
+}
+
+/* Primer paso a la izquierda */
+.progreso-caso-dash .progreso-paso-dash:first-child {
+  align-items: flex-start;
+}
+
+/* Segundo paso en el centro */
+.progreso-caso-dash .progreso-paso-dash:nth-child(2) {
+  align-items: center;
+}
+
+/* Bandera al extremo derecho */
+.progreso-caso-dash .progreso-paso-dash:last-child {
+  align-items: flex-end;
+}
+
+/* Círculos */
+.progreso-caso-dash .progreso-circulo-dash {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+}
+
+/* Etiquetas */
+.progreso-caso-dash .progreso-label-dash {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Evitar una segunda línea generada por CSS anterior */
+.progreso-caso-dash .progreso-linea-dash::after {
+  content: none;
+}
+

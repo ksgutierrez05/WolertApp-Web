@@ -9,7 +9,9 @@ import {
   eliminarSemaforo,
 } from "../../Services/semaforosDirectorService";
 import "../../css/transito/director-transito/panel-semaforos.css";
+
 const POR_PAGINA = 5;
+
 const FORMULARIO_VACIO = {
   codigo: "",
   direccion: "",
@@ -20,6 +22,7 @@ const FORMULARIO_VACIO = {
   longitud: "",
   observacion: "",
 };
+
 function normalizar(valor) {
   return String(valor ?? "")
     .trim()
@@ -27,19 +30,18 @@ function normalizar(valor) {
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "");
 }
+
 function estadoSemaforo(valor) {
   const estado = normalizar(valor);
-  if (["FUNCIONANDO", "ACTIVO", "OPERATIVO"].includes(estado)) {
+  if (["FUNCIONANDO", "ACTIVO", "OPERATIVO"].includes(estado))
     return "FUNCIONANDO";
-  }
-  if (["DANADO", "AVERIADO", "INACTIVO"].includes(estado)) {
-    return "DANADO";
-  }
-  if (["MANTENIMIENTO", "EN MANTENIMIENTO"].includes(estado)) {
+  if (["DANADO", "AVERIADO"].includes(estado)) return "DANADO";
+  if (["INACTIVO", "DESACTIVADO"].includes(estado)) return "INACTIVO";
+  if (["MANTENIMIENTO", "EN MANTENIMIENTO"].includes(estado))
     return "MANTENIMIENTO";
-  }
   return estado;
 }
+
 function etiquetaEstado(estado) {
   switch (estadoSemaforo(estado)) {
     case "FUNCIONANDO":
@@ -48,10 +50,13 @@ function etiquetaEstado(estado) {
       return "Dañado";
     case "MANTENIMIENTO":
       return "En mantenimiento";
+    case "INACTIVO":
+      return "Inactivo";
     default:
       return estado || "Sin estado";
   }
 }
+
 export default function Semaforos() {
   const [semaforos, setSemaforos] = useState([]);
   const [barrios, setBarrios] = useState([]);
@@ -64,10 +69,19 @@ export default function Semaforos() {
   const [filtroTipo, setFiltroTipo] = useState("TODOS");
   const [pagina, setPagina] = useState(1);
   const [editandoId, setEditandoId] = useState(null);
-  const [formulario, setFormulario] = useState({
-    ...FORMULARIO_VACIO,
-  });
+  const [formulario, setFormulario] = useState({ ...FORMULARIO_VACIO });
   const [modalAbierto, setModalAbierto] = useState(false);
+  const [confirmarEliminar, setConfirmarEliminar] = useState(null);
+
+  useEffect(() => {
+    if (!error && !aviso) return;
+    const temporizador = setTimeout(() => {
+      setError("");
+      setAviso("");
+    }, 5500);
+    return () => clearTimeout(temporizador);
+  }, [error, aviso]);
+
   async function cargarDatos() {
     setCargando(true);
     setError("");
@@ -77,27 +91,24 @@ export default function Semaforos() {
     ]);
     const [resultadoSemaforos, resultadoBarrios] = resultados;
     const errores = [];
-    if (resultadoSemaforos.status === "fulfilled") {
+    if (resultadoSemaforos.status === "fulfilled")
       setSemaforos(resultadoSemaforos.value);
-    } else {
+    else
       errores.push(
         resultadoSemaforos.reason?.message ||
           "No se pudieron cargar los semáforos.",
       );
-    }
-    if (resultadoBarrios.status === "fulfilled") {
+    if (resultadoBarrios.status === "fulfilled")
       setBarrios(resultadoBarrios.value);
-    } else {
+    else
       errores.push(
         resultadoBarrios.reason?.message ||
           "No se pudieron cargar los barrios.",
       );
-    }
-    if (errores.length) {
-      setError(errores.join(" | "));
-    }
+    if (errores.length) setError(errores.join(" | "));
     setCargando(false);
   }
+
   useEffect(() => {
     let activo = true;
     async function cargarInicial() {
@@ -108,25 +119,21 @@ export default function Semaforos() {
       if (!activo) return;
       const [resultadoSemaforos, resultadoBarrios] = resultados;
       const errores = [];
-      if (resultadoSemaforos.status === "fulfilled") {
+      if (resultadoSemaforos.status === "fulfilled")
         setSemaforos(resultadoSemaforos.value);
-      } else {
+      else
         errores.push(
           resultadoSemaforos.reason?.message ||
             "No se pudieron cargar los semáforos.",
         );
-      }
-      if (resultadoBarrios.status === "fulfilled") {
+      if (resultadoBarrios.status === "fulfilled")
         setBarrios(resultadoBarrios.value);
-      } else {
+      else
         errores.push(
           resultadoBarrios.reason?.message ||
             "No se pudieron cargar los barrios.",
         );
-      }
-      if (errores.length > 0) {
-        setError(errores.join(" | "));
-      }
+      if (errores.length > 0) setError(errores.join(" | "));
       setCargando(false);
     }
     cargarInicial();
@@ -134,8 +141,9 @@ export default function Semaforos() {
       activo = false;
     };
   }, []);
-  const estadisticas = useMemo(() => {
-    return {
+
+  const estadisticas = useMemo(
+    () => ({
       total: semaforos.length,
       funcionando: semaforos.filter(
         (s) => estadoSemaforo(s.estado) === "FUNCIONANDO",
@@ -149,8 +157,10 @@ export default function Semaforos() {
         .length,
       peatonales: semaforos.filter((s) => normalizar(s.tipo) === "PEATONAL")
         .length,
-    };
-  }, [semaforos]);
+    }),
+    [semaforos],
+  );
+
   const filtrados = useMemo(() => {
     const texto = normalizar(busqueda);
     return semaforos.filter((semaforo) => {
@@ -171,24 +181,25 @@ export default function Semaforos() {
       return coincideBusqueda && coincideEstado && coincideTipo;
     });
   }, [semaforos, busqueda, filtroEstado, filtroTipo]);
+
   const totalPaginas = Math.max(1, Math.ceil(filtrados.length / POR_PAGINA));
   const paginaActual = Math.min(pagina, totalPaginas);
   const visibles = filtrados.slice(
     (paginaActual - 1) * POR_PAGINA,
     paginaActual * POR_PAGINA,
   );
+
   function limpiarFiltros() {
     setBusqueda("");
     setFiltroEstado("");
     setFiltroTipo("TODOS");
     setPagina(1);
   }
+
   function cambiarCampo(campo, valor) {
-    setFormulario((anterior) => ({
-      ...anterior,
-      [campo]: valor,
-    }));
+    setFormulario((anterior) => ({ ...anterior, [campo]: valor }));
   }
+
   function abrirNuevo() {
     setEditandoId(null);
     setFormulario({ ...FORMULARIO_VACIO });
@@ -196,6 +207,7 @@ export default function Semaforos() {
     setAviso("");
     setModalAbierto(true);
   }
+
   function abrirEditar(semaforo) {
     setEditandoId(semaforo.idSemaforo);
     setFormulario({
@@ -212,10 +224,12 @@ export default function Semaforos() {
     setAviso("");
     setModalAbierto(true);
   }
+
   function cerrarModal() {
     if (guardando) return;
     setModalAbierto(false);
   }
+
   async function guardarSemaforo(evento) {
     evento.preventDefault();
     setError("");
@@ -263,33 +277,32 @@ export default function Semaforos() {
       setGuardando(false);
     }
   }
+
   async function borrarSemaforo(semaforo) {
-    const confirmado = window.confirm(
-      `¿Deseas eliminar el semáforo ${semaforo.codigo || semaforo.idSemaforo}?`,
-    );
-    if (!confirmado) return;
+    setConfirmarEliminar(null);
     setError("");
     setAviso("");
     try {
+      // El backend marca Estado = "ELIMINADO" sin borrar el registro.
       await eliminarSemaforo(semaforo.idSemaforo);
-      setAviso("Semáforo eliminado correctamente.");
       await cargarDatos();
+      setAviso("Semáforo eliminado correctamente.");
     } catch (err) {
       setError(err.message || "No se pudo eliminar el semáforo.");
     }
   }
+
   return (
     <Layout
       titulo="Semáforos"
       activo="semaforos"
-      busqueda={{
-        placeholder: "Buscar por código, ubicación o barrio...",
-      }}
+      busqueda={{ placeholder: "Buscar por código, ubicación o barrio..." }}
     >
       <div className="sem-panel">
         <div className="row align-items-center mb-4">
           <div className="col">
-            <h1 className="section-title-dash">Semáforos</h1>
+            <div className="sem-encabezado-etiqueta">DIRECCIÓN DE TRÁNSITO</div>
+            <h1 className="sem-titulo-principal">Semáforos</h1>
             <p className="section-text-dash mb-0">
               Consulta, registra y da seguimiento al estado de los semáforos de
               la ciudad.
@@ -312,19 +325,7 @@ export default function Semaforos() {
             Cargando semáforos...
           </div>
         )}
-        {error && (
-          <div className="alert alert-danger" role="alert">
-            <i className="bi bi-exclamation-triangle me-2" />
-            {error}
-          </div>
-        )}
-        {aviso && (
-          <div className="alert alert-success" role="status">
-            <i className="bi bi-check-circle me-2" />
-            {aviso}
-          </div>
-        )}
-        <div className="row g-3 mb-4">
+        <div className="row g-3 mt-4 mb-4">
           <KpiCard
             color="blue"
             valor={estadisticas.total}
@@ -382,9 +383,7 @@ export default function Semaforos() {
                   key={valor}
                   type="button"
                   aria-pressed={filtroEstado === valor}
-                  className={`pill-filtro-dash ${clase} ${
-                    filtroEstado === valor ? "pill-activa-dash" : ""
-                  }`}
+                  className={`pill-filtro-dash ${clase} ${filtroEstado === valor ? "pill-activa-dash" : ""}`}
                   onClick={() => {
                     setFiltroEstado(filtroEstado === valor ? "" : valor);
                     setPagina(1);
@@ -412,9 +411,7 @@ export default function Semaforos() {
               <button
                 key={valor}
                 type="button"
-                className={`tab-dash-sem ${
-                  filtroTipo === valor ? "active-dash" : ""
-                }`}
+                className={`tab-dash-sem ${filtroTipo === valor ? "active-dash" : ""}`}
                 onClick={() => {
                   setFiltroTipo(valor);
                   setPagina(1);
@@ -500,7 +497,7 @@ export default function Semaforos() {
                           className="sem-accion-btn eliminar"
                           title="Eliminar semáforo"
                           aria-label={`Eliminar ${semaforo.codigo || "semáforo"}`}
-                          onClick={() => borrarSemaforo(semaforo)}
+                          onClick={() => setConfirmarEliminar(semaforo)}
                         >
                           <i className="bi bi-trash3-fill" />
                         </button>
@@ -521,7 +518,6 @@ export default function Semaforos() {
             <span className="text-muted small">
               Mostrando {visibles.length} de {filtrados.length} semáforos
             </span>
-
             <div className="d-flex gap-1">
               <button
                 type="button"
@@ -531,22 +527,18 @@ export default function Semaforos() {
               >
                 <i className="bi bi-chevron-left" />
               </button>
-
               {Array.from({ length: totalPaginas }, (_, i) => i + 1).map(
                 (numero) => (
                   <button
                     key={numero}
                     type="button"
-                    className={`page-btn-dash ${
-                      paginaActual === numero ? "active-dash" : ""
-                    }`}
+                    className={`page-btn-dash ${paginaActual === numero ? "active-dash" : ""}`}
                     onClick={() => setPagina(numero)}
                   >
                     {numero}
                   </button>
                 ),
               )}
-
               <button
                 type="button"
                 className="page-btn-dash"
@@ -566,10 +558,7 @@ export default function Semaforos() {
             role="dialog"
             aria-modal="true"
             aria-labelledby="tituloModalSemaforo"
-            style={{
-              display: "block",
-              backgroundColor: "rgba(0, 0, 0, 0.5)",
-            }}
+            style={{ display: "block", backgroundColor: "rgba(0, 0, 0, 0.5)" }}
           >
             <div className="modal-dialog modal-dialog-centered">
               <div className="modal-content">
@@ -774,6 +763,70 @@ export default function Semaforos() {
                     </button>
                   </div>
                 </form>
+              </div>
+            </div>
+          </div>
+        )}
+        {(error || aviso) && (
+          <div
+            className={`sem-toast ${error ? "sem-toast-error" : "sem-toast-exito"}`}
+            role={error ? "alert" : "status"}
+          >
+            <i
+              className={`bi ${error ? "bi-exclamation-circle-fill" : "bi-check-circle-fill"}`}
+            />
+            <span>{error || aviso}</span>
+            <button
+              type="button"
+              aria-label="Cerrar notificación"
+              onClick={() => {
+                setError("");
+                setAviso("");
+              }}
+            >
+              <i className="bi bi-x-lg" />
+            </button>
+          </div>
+        )}
+        {confirmarEliminar && (
+          <div
+            className="sem-confirmar-fondo"
+            role="presentation"
+            onMouseDown={(e) => {
+              if (e.target === e.currentTarget) setConfirmarEliminar(null);
+            }}
+          >
+            <div
+              className="sem-confirmar"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="sem-confirmar-titulo"
+            >
+              <span className="sem-confirmar-icono">
+                <i className="bi bi-trash3" />
+              </span>
+              <h2 id="sem-confirmar-titulo">¿Eliminar semáforo?</h2>
+              <p>
+                ¿Deseas eliminar el semáforo{" "}
+                <strong>
+                  {confirmarEliminar.codigo || confirmarEliminar.idSemaforo}
+                </strong>
+                ? Dejará de aparecer en los listados.
+              </p>
+              <div className="sem-confirmar-botones">
+                <button
+                  type="button"
+                  onClick={() => setConfirmarEliminar(null)}
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="button"
+                  className="sem-confirmar-eliminar"
+                  onClick={() => borrarSemaforo(confirmarEliminar)}
+                >
+                  Eliminar
+                </button>
               </div>
             </div>
           </div>
