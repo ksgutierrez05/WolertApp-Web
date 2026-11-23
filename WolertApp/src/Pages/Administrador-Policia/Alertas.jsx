@@ -1,23 +1,84 @@
 
 import { useEffect, useMemo, useState } from "react";
-
 import Topbar from "../../Components/Administrador-policia/Topbar";
 import Kpis from "../../Components/Administrador-policia/Kpicard";
-
-import {
-  listarAlertasAdmin,
-} from "../../Services/AlertasAdminService";
-
-import {
-  formatearFecha,
-} from "../../Utils/centroOperacionesAdmin";
-
+import { listarAlertasAdmin } from "../../Services/AlertasAdminService";
+import { formatearFecha } from "../../Utils/centroOperacionesAdmin";
 import "../../css/Policia/administrador-policia/css/alertas.css";
 
 const POR_PAGINA = 10;
 
-const normalizar = valor =>
+const normalizar = (valor) =>
   String(valor ?? "").trim().toUpperCase();
+
+const mostrar = (valor) =>
+  String(valor ?? "").trim() || "—";
+
+const textoBonito = (valor) =>
+  mostrar(valor).replaceAll("_", " ");
+
+function iniciales(nombre) {
+  const palabras = String(nombre ?? "")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  if (!palabras.length) return "?";
+
+  return (palabras.length > 1
+    ? palabras[0][0] + palabras[1][0]
+    : palabras[0].slice(0, 2)
+  ).toUpperCase();
+}
+
+function clasePrioridad(valor) {
+  switch (normalizar(valor)) {
+    case "ALTA":
+      return "alta";
+    case "MEDIA":
+      return "media";
+    case "BAJA":
+      return "baja";
+    default:
+      return "neutra";
+  }
+}
+
+function claseEstado(valor) {
+  switch (normalizar(valor)) {
+    case "PENDIENTE":
+      return "pendiente";
+    case "UNIDAD_ASIGNADA":
+    case "ASIGNADA":
+      return "asignada";
+    case "EN_ATENCION":
+      return "atencion";
+    case "RESUELTA":
+    case "FINALIZADA":
+      return "resuelta";
+    case "CANCELADA":
+      return "cancelada";
+    default:
+      return "neutro";
+  }
+}
+
+function Prioridad({ valor }) {
+  return (
+    <span className={`alertas-prioridad ${clasePrioridad(valor)}`}>
+      <span className="alertas-prioridad-punto" />
+      {textoBonito(valor)}
+    </span>
+  );
+}
+
+function Estado({ valor }) {
+  return (
+    <span className={`alertas-estado ${claseEstado(valor)}`}>
+      {textoBonito(valor)}
+    </span>
+  );
+}
 
 function Alertas() {
   const [alertas, setAlertas] = useState([]);
@@ -29,308 +90,415 @@ function Alertas() {
   const [seleccionada, setSeleccionada] = useState(null);
   const [recarga, setRecarga] = useState(0);
 
- 
-useEffect(() => {
-  const controlador = new AbortController();
+  useEffect(() => {
+    const controlador = new AbortController();
 
-  listarAlertasAdmin(controlador.signal)
-    .then(datos => {
-      if (controlador.signal.aborted) return;
+    listarAlertasAdmin(controlador.signal)
+      .then((datos) => {
+        if (controlador.signal.aborted) return;
 
-      if (!Array.isArray(datos)) {
-        throw new Error(
-          "La API no devolvió una lista de alertas."
+        if (!Array.isArray(datos)) {
+          throw new Error(
+            "La API no devolvió una lista de alertas."
+          );
+        }
+
+        setAlertas(datos);
+        setError("");
+      })
+      .catch((err) => {
+        if (controlador.signal.aborted) return;
+
+        setError(
+          err.message ||
+          "No se pudieron cargar las alertas."
         );
-      }
-
-      setAlertas(datos);
-      setError("");
-    })
-    .catch(err => {
-      if (!controlador.signal.aborted) {
-        setError(err.message);
         setAlertas([]);
-      }
-    })
-    .finally(() => {
-      if (!controlador.signal.aborted) {
-        setCargando(false);
-      }
-    });
+      })
+      .finally(() => {
+        if (!controlador.signal.aborted) {
+          setCargando(false);
+        }
+      });
 
-  return () => controlador.abort();
-}, [recarga]);
+    return () => controlador.abort();
+  }, [recarga]);
 
   const tipos = useMemo(
-    () => [
-      ...new Set(
-        alertas.map(a => a.tipo).filter(Boolean)
-      ),
-    ].sort(),
+    () =>
+      [...new Set(
+        alertas.map((a) => normalizar(a.tipo)).filter(Boolean)
+      )].sort(),
     [alertas]
   );
+
+  const conteosTipo = useMemo(() => {
+    const conteos = {};
+
+    for (const alerta of alertas) {
+      const nombre = normalizar(alerta.tipo);
+      conteos[nombre] = (conteos[nombre] || 0) + 1;
+    }
+
+    return conteos;
+  }, [alertas]);
 
   const filtradas = useMemo(() => {
     const texto = busqueda.trim().toLowerCase();
 
-    return alertas.filter(a => {
+    return alertas.filter((a) => {
       const coincideTexto = [
         a.idAlerta,
         a.reportadoPor,
         a.barrioNombre,
         a.tipo,
         a.descripcion,
-      ].some(valor =>
+      ].some((valor) =>
         String(valor ?? "").toLowerCase().includes(texto)
       );
 
-      return (
-        coincideTexto &&
-        (tipo === "TODAS" ||
-          normalizar(a.tipo) === tipo)
-      );
+      const coincideTipo =
+        tipo === "TODAS" || normalizar(a.tipo) === tipo;
+
+      return coincideTexto && coincideTipo;
     });
   }, [alertas, busqueda, tipo]);
 
-  const kpis = useMemo(() => ({
-    total: alertas.length,
-
-    pendientes: alertas.filter(
-      a => normalizar(a.estado) === "PENDIENTE"
-    ).length,
-
-    enAtencion: alertas.filter(
-      a => normalizar(a.estado) === "EN_ATENCION"
-    ).length,
-
-    resueltas: alertas.filter(
-      a => normalizar(a.estado) === "RESUELTA"
-    ).length,
-  }), [alertas]);
+  const kpis = useMemo(
+    () => ({
+      total: alertas.length,
+      pendientes: alertas.filter(
+        (a) => normalizar(a.estado) === "PENDIENTE"
+      ).length,
+      enAtencion: alertas.filter(
+        (a) => normalizar(a.estado) === "EN_ATENCION"
+      ).length,
+      resueltas: alertas.filter(
+        (a) => normalizar(a.estado) === "RESUELTA"
+      ).length,
+    }),
+    [alertas]
+  );
 
   const totalPaginas = Math.max(
     1,
     Math.ceil(filtradas.length / POR_PAGINA)
   );
 
-  const paginaActual = Math.min(
-    pagina,
-    totalPaginas
-  );
-
+  const paginaActual = Math.min(pagina, totalPaginas);
   const inicio = (paginaActual - 1) * POR_PAGINA;
-
-  const visibles = filtradas.slice(
-    inicio,
-    inicio + POR_PAGINA
-  );
+  const visibles = filtradas.slice(inicio, inicio + POR_PAGINA);
 
   function cambiarTipo(valor) {
     setTipo(valor);
     setPagina(1);
   }
 
+  function actualizar() {
+    if (cargando) return;
+    setCargando(true);
+    setRecarga((n) => n + 1);
+  }
+
   return (
     <>
       <Topbar placeholder="Consultar alertas..." />
 
-      <div className="d-flex align-items-end justify-content-between flex-wrap gap-2 mb-4">
-        <div>
-          <h1 className="page-title-dash fw-bold m-0">
-            Alertas
-          </h1>
+      <div className="alertas-admin-vista">
+        <div className="alertas-encabezado mb-4">
+          <div>
+            <h1 className="page-title-dash fw-bold m-0">
+              Alertas
+            </h1>
+            <p className="info-sub-dash m-0">
+              Seguimiento de las alertas reportadas por
+              los ciudadanos.
+            </p>
+          </div>
 
-          <p className="info-sub-dash m-0">
-            Seguimiento de las alertas reportadas por los ciudadanos.
-          </p>
-        </div>
-
-        <button
-          type="button"
-          className="btn btn-outline-primary"
-          disabled={cargando}
-          onClick={() => {
-            setCargando(true);
-            setRecarga(n => n + 1);
-          }}
-        >
-          <i className="bi bi-arrow-clockwise me-2" />
-          Actualizar
-        </button>
-      </div>
-
-      {error && (
-        <div className="alert alert-warning" role="alert">
-          {error}
-        </div>
-      )}
-
-      <Kpis
-        grupo="alertas"
-        valores={error ? {} : kpis}
-        cargando={cargando}
-      />
-
-      <div className="mb-3">
-        <input
-          className="form-control"
-          placeholder="Buscar por ciudadano, barrio, tipo o número..."
-          value={busqueda}
-          onChange={e => {
-            setBusqueda(e.target.value);
-            setPagina(1);
-          }}
-        />
-      </div>
-
-      <div className="d-flex gap-2 flex-wrap mb-3">
-        <button
-          type="button"
-          className={`chip-filtro-dash ${
-            tipo === "TODAS" ? "active" : ""
-          }`}
-          onClick={() => cambiarTipo("TODAS")}
-        >
-          Todas
-          <span className="chip-count-dash">
-            {alertas.length}
-          </span>
-        </button>
-
-        {tipos.map(nombre => (
           <button
             type="button"
-            key={nombre}
-            className={`chip-filtro-dash ${
-              tipo === normalizar(nombre) ? "active" : ""
-            }`}
-            onClick={() => cambiarTipo(normalizar(nombre))}
+            className="alertas-btn-actualizar"
+            disabled={cargando}
+            onClick={actualizar}
           >
-            {nombre}
-            <span className="chip-count-dash">
-              {
-                alertas.filter(
-                  a => normalizar(a.tipo) === normalizar(nombre)
-                ).length
-              }
-            </span>
+            <i
+              className={`bi bi-arrow-clockwise ${
+                cargando ? "alertas-girando" : ""
+              }`}
+            />
+            {cargando ? "Actualizando..." : "Actualizar"}
           </button>
-        ))}
-      </div>
-
-      <div className="card-panel-dash p-3">
-        <div className="table-responsive">
-          <table className="table table-borderless align-middle tabla-alertas-dash mb-0">
-            <thead>
-              <tr>
-                <th>N.º</th>
-                <th>Reportado por</th>
-                <th>Tipo</th>
-                <th>Prioridad</th>
-                <th>Barrio</th>
-                <th>Estado</th>
-                <th>Fecha</th>
-                <th className="text-end">Acciones</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {visibles.map(alerta => (
-                <tr key={alerta.idAlerta}>
-                  <td>#{alerta.idAlerta}</td>
-                  <td>{alerta.reportadoPor || "—"}</td>
-                  <td>{alerta.tipo || "—"}</td>
-                  <td>{alerta.prioridad || "—"}</td>
-                  <td>{alerta.barrioNombre || "—"}</td>
-
-                  <td>
-                    <span className="badge bg-secondary">
-                      {alerta.estado || "Sin estado"}
-                    </span>
-                  </td>
-
-                  <td>{formatearFecha(alerta.fecha)}</td>
-
-                  <td className="text-end">
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-outline-primary"
-                      onClick={() => setSeleccionada(alerta)}
-                    >
-                      <i className="bi bi-eye me-1" />
-                      Ver
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
         </div>
 
-        {cargando && (
-          <p role="status" className="text-center p-3">
-            Cargando alertas...
-          </p>
-        )}
-
-        {!cargando && !error && visibles.length === 0 && (
-          <p className="text-center p-3">
-            No se encontraron alertas.
-          </p>
-        )}
-
-        <div className="d-flex align-items-center justify-content-between flex-wrap gap-2 pt-3">
-          <span className="info-sub-dash m-0">
-            Mostrando {filtradas.length ? inicio + 1 : 0}
-            –{Math.min(inicio + POR_PAGINA, filtradas.length)}
-            {" "}de {filtradas.length} alertas
-          </span>
-
-          <div className="d-flex align-items-center gap-1">
-            <button
-              type="button"
-              className="pagina-btn-dash"
-              disabled={paginaActual <= 1}
-              onClick={() => setPagina(p => p - 1)}
-            >
-              Anterior
-            </button>
-
-            <span className="px-2">
-              {paginaActual} / {totalPaginas}
-            </span>
-
-            <button
-              type="button"
-              className="pagina-btn-dash"
-              disabled={paginaActual >= totalPaginas}
-              onClick={() => setPagina(p => p + 1)}
-            >
-              Siguiente
-            </button>
+        {error && (
+          <div className="alert alert-warning" role="alert">
+            <i className="bi bi-exclamation-triangle me-2" />
+            {error}
           </div>
-        </div>
+        )}
+
+        <Kpis
+          grupo="alertas"
+          valores={error ? {} : kpis}
+          cargando={cargando}
+        />
+
+        <section className="alertas-filtros">
+          <div className="alertas-buscador">
+            <i className="bi bi-search" aria-hidden="true" />
+            <input
+              type="search"
+              value={busqueda}
+              onChange={(e) => {
+                setBusqueda(e.target.value);
+                setPagina(1);
+              }}
+              placeholder="Buscar por ciudadano, barrio, tipo o número..."
+              aria-label="Buscar alertas"
+            />
+            {busqueda && (
+              <button
+                type="button"
+                className="alertas-limpiar-busqueda"
+                onClick={() => {
+                  setBusqueda("");
+                  setPagina(1);
+                }}
+                aria-label="Limpiar búsqueda"
+              >
+                <i className="bi bi-x-lg" />
+              </button>
+            )}
+          </div>
+
+          <div className="alertas-chips">
+            <button
+              type="button"
+              className={`alertas-chip ${
+                tipo === "TODAS" ? "activo" : ""
+              }`}
+              onClick={() => cambiarTipo("TODAS")}
+            >
+              Todas
+              <span>{alertas.length}</span>
+            </button>
+
+            {tipos.map((nombre) => (
+              <button
+                type="button"
+                key={nombre}
+                className={`alertas-chip ${
+                  tipo === nombre ? "activo" : ""
+                }`}
+                onClick={() => cambiarTipo(nombre)}
+              >
+                {textoBonito(nombre)}
+                <span>{conteosTipo[nombre] || 0}</span>
+              </button>
+            ))}
+          </div>
+        </section>
+
+        <section className="alertas-tabla-panel">
+          <div className="alertas-tabla-cabecera">
+            <div className="alertas-tabla-titulo">
+              <span className="alertas-tabla-icono">
+                <i className="bi bi-list-ul" />
+              </span>
+              <div>
+                <h2>Alertas registradas</h2>
+                <p>
+                  Consulta y seguimiento de reportes ciudadanos.
+                </p>
+              </div>
+            </div>
+
+            <span className="alertas-total-registros">
+              {filtradas.length}{" "}
+              {filtradas.length === 1 ? "registro" : "registros"}
+            </span>
+          </div>
+
+          <div className="table-responsive alertas-tabla-scroll">
+            <table className="tabla-alertas-dash">
+              <thead>
+                <tr>
+                  <th>N.º</th>
+                  <th>Reportado por</th>
+                  <th>Tipo de alerta</th>
+                  <th>Prioridad</th>
+                  <th>Barrio</th>
+                  <th>Estado</th>
+                  <th>Fecha</th>
+                  <th className="alertas-col-acciones">
+                    Acciones
+                  </th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {!cargando &&
+                  visibles.map((alerta) => (
+                    <tr key={alerta.idAlerta}>
+                      <td>
+                        <span className="alertas-numero">
+                          #{alerta.idAlerta}
+                        </span>
+                      </td>
+
+                      <td>
+                        <div className="alertas-ciudadano">
+                          <span className="alertas-avatar">
+                            {iniciales(alerta.reportadoPor)}
+                          </span>
+                          <div className="alertas-ciudadano-datos">
+                            <strong>
+                              {mostrar(alerta.reportadoPor)}
+                            </strong>
+                            <small>Ciudadano</small>
+                          </div>
+                        </div>
+                      </td>
+
+                      <td>
+                        <span className="alertas-tipo">
+                          <i
+                            className="bi bi-exclamation-circle"
+                            aria-hidden="true"
+                          />
+                          {textoBonito(alerta.tipo)}
+                        </span>
+                      </td>
+
+                      <td>
+                        <Prioridad valor={alerta.prioridad} />
+                      </td>
+
+                      <td>
+                        <div className="alertas-barrio">
+                          <i
+                            className="bi bi-geo-alt"
+                            aria-hidden="true"
+                          />
+                          <span>
+                            {mostrar(alerta.barrioNombre)}
+                          </span>
+                        </div>
+                      </td>
+
+                      <td>
+                        <Estado valor={alerta.estado} />
+                      </td>
+
+                      <td>
+                        <span className="alertas-fecha">
+                          {alerta.fecha
+                            ? formatearFecha(alerta.fecha)
+                            : "—"}
+                        </span>
+                      </td>
+
+                      <td className="alertas-col-acciones">
+                        <button
+                          type="button"
+                          className="alertas-btn-ver"
+                          onClick={() => setSeleccionada(alerta)}
+                          aria-label={`Ver alerta ${alerta.idAlerta}`}
+                        >
+                          <i className="bi bi-eye" />
+                          Ver
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </div>
+
+          {cargando && (
+            <div className="alertas-tabla-vacia" role="status">
+              <i className="bi bi-arrow-repeat alertas-girando" />
+              <strong>Cargando alertas...</strong>
+              <span>Consultando los registros de WOLERTAPP.</span>
+            </div>
+          )}
+
+          {!cargando && !error && visibles.length === 0 && (
+            <div className="alertas-tabla-vacia">
+              <i className="bi bi-inbox" />
+              <strong>No se encontraron alertas</strong>
+              <span>
+                Prueba con otro término o selecciona otro tipo.
+              </span>
+            </div>
+          )}
+
+          {!cargando && filtradas.length > 0 && (
+            <div className="alertas-paginacion">
+              <span className="alertas-paginacion-info">
+                Mostrando {inicio + 1}–
+                {Math.min(inicio + POR_PAGINA, filtradas.length)}
+                {" "}de {filtradas.length} alertas
+              </span>
+
+              <div className="alertas-paginacion-controles">
+                <button
+                  type="button"
+                  disabled={paginaActual <= 1}
+                  onClick={() =>
+                    setPagina((p) => Math.max(1, p - 1))
+                  }
+                >
+                  <i className="bi bi-chevron-left" />
+                  Anterior
+                </button>
+
+                <span className="alertas-pagina-actual">
+                  {paginaActual} / {totalPaginas}
+                </span>
+
+                <button
+                  type="button"
+                  disabled={paginaActual >= totalPaginas}
+                  onClick={() =>
+                    setPagina((p) =>
+                      Math.min(totalPaginas, p + 1)
+                    )
+                  }
+                >
+                  Siguiente
+                  <i className="bi bi-chevron-right" />
+                </button>
+              </div>
+            </div>
+          )}
+        </section>
       </div>
 
       {seleccionada && (
         <div
-          className="modal d-block"
+          className="modal d-block alertas-modal-fondo"
           role="dialog"
           aria-modal="true"
           aria-label="Detalle de alerta"
-          style={{ background: "rgba(0,0,0,.55)" }}
-          onMouseDown={e => {
+          onMouseDown={(e) => {
             if (e.target === e.currentTarget) {
               setSeleccionada(null);
             }
           }}
         >
-          <div className="modal-dialog modal-dialog-centered">
+          <div className="modal-dialog modal-dialog-centered modal-lg">
             <div className="modal-content modal-alerta-dash">
               <div className="modal-header">
-                <h5 className="modal-title">
-                  Detalle de alerta #{seleccionada.idAlerta}
-                </h5>
+                <div>
+                  <h5 className="modal-title">
+                    Detalle de alerta #{seleccionada.idAlerta}
+                  </h5>
+                  <p className="modal-subtitulo-dash">
+                    Información del reporte ciudadano
+                  </p>
+                </div>
 
                 <button
                   type="button"
@@ -344,17 +512,19 @@ useEffect(() => {
                 <div className="detalle-principal-dash">
                   <div>
                     <small>TIPO DE ALERTA</small>
-                    <div>{seleccionada.tipo || "—"}</div>
+                    <span className="alertas-tipo">
+                      {textoBonito(seleccionada.tipo)}
+                    </span>
                   </div>
 
                   <div>
                     <small>PRIORIDAD</small>
-                    <div>{seleccionada.prioridad || "—"}</div>
+                    <Prioridad valor={seleccionada.prioridad} />
                   </div>
 
                   <div>
                     <small>ESTADO</small>
-                    <div>{seleccionada.estado || "—"}</div>
+                    <Estado valor={seleccionada.estado} />
                   </div>
                 </div>
 
@@ -363,7 +533,9 @@ useEffect(() => {
                     <i className="bi bi-person" />
                     <div>
                       <small>Ciudadano</small>
-                      <strong>{seleccionada.reportadoPor || "—"}</strong>
+                      <strong>
+                        {mostrar(seleccionada.reportadoPor)}
+                      </strong>
                     </div>
                   </div>
 
@@ -371,7 +543,9 @@ useEffect(() => {
                     <i className="bi bi-geo-alt" />
                     <div>
                       <small>Barrio</small>
-                      <strong>{seleccionada.barrioNombre || "—"}</strong>
+                      <strong>
+                        {mostrar(seleccionada.barrioNombre)}
+                      </strong>
                     </div>
                   </div>
 
@@ -379,7 +553,11 @@ useEffect(() => {
                     <i className="bi bi-clock" />
                     <div>
                       <small>Fecha</small>
-                      <strong>{formatearFecha(seleccionada.fecha)}</strong>
+                      <strong>
+                        {seleccionada.fecha
+                          ? formatearFecha(seleccionada.fecha)
+                          : "—"}
+                      </strong>
                     </div>
                   </div>
 
@@ -388,8 +566,7 @@ useEffect(() => {
                     <div>
                       <small>Coordenadas</small>
                       <strong>
-                        {seleccionada.latitud ?? "—"},
-                        {" "}
+                        {seleccionada.latitud ?? "—"},{" "}
                         {seleccionada.longitud ?? "—"}
                       </strong>
                     </div>
@@ -399,7 +576,8 @@ useEffect(() => {
                 <div className="detalle-descripcion-dash">
                   <small>DESCRIPCIÓN</small>
                   <p>
-                    {seleccionada.descripcion || "Sin descripción"}
+                    {seleccionada.descripcion ||
+                      "Sin descripción"}
                   </p>
                 </div>
               </div>

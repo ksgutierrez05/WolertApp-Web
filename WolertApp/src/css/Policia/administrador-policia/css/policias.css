@@ -1,331 +1,814 @@
-/* Piezas de Policías: encabezado, tabla, avatares y modales.
-   Usan las variables del rol activo (rol-policia = verde). */
+
+/* ==========================================
+   WOLERTAPP - ADMINISTRADOR POLICÍA
+   DISEÑO COMPLETO DEL MÓDULO POLICÍAS
+   Compatible con el JSX actual
+========================================== */
 
 :root {
-  --ring-policia: 0 0 0 3px rgba(28, 120, 30, 0.15);
+  --pol-verde: #004d40;
+  --pol-verde-hover: #006454;
+  --pol-texto: #183b31;
+  --pol-muted: #73877e;
+  --pol-borde: #e1e9e4;
+  --pol-fondo: #ffffff;
 }
 
-/* Fuente de títulos */
-.header-vista-dash h1,
-.modal-header-dash .modal-title,
-.avatar-sm-dash,
-.avatar-lg-dash {
-  font-family: "Space Grotesk", sans-serif;
-  font-weight: 700;
-}
+/* ENCABEZADO */
 
-/* Focus verde */
-.form-field-dash .form-control:focus,
-.form-field-dash .form-select:focus {
-  box-shadow: var(--ring-policia);
-  border-color: var(--color-primary);
-}
-
-/* ---------- Encabezado ---------- */
 .header-vista-dash {
   display: flex;
-  align-items: flex-end;
   justify-content: space-between;
+  align-items: center;
   flex-wrap: wrap;
-  gap: 14px;
+  gap: 18px;
+  margin-bottom: 22px;
 }
 
 .header-vista-dash h1 {
-  font-size: 24px;
-  margin: 0 0 4px;
-  color: var(--ink);
+  margin: 0 0 5px;
+  color: var(--pol-texto);
+  font-size: 27px;
+  font-weight: 750;
+  line-height: 1.25;
+  letter-spacing: -0.5px;
 }
 
 .header-vista-dash p {
   margin: 0;
-  color: var(--muted);
-  font-size: 13.5px;
+  color: var(--pol-muted);
+  font-size: 13px;
 }
 
-/* ---------- Botones ---------- */
-.btn-cv-verde,
-.btn-secundario-dash {
-  font-size: 13.5px;
-  border-radius: 100px;
+.policias-botones-cabecera {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* BOTONES */
+
+.policias-botones-cabecera .btn-cv-verde,
+.modal-policias .btn-cv-verde {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-}
-
-.btn-cv-verde {
-  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-2));
-  border: none;
+  justify-content: center;
+  gap: 9px;
+  min-height: 40px;
+  padding: 10px 17px;
+  border: 1px solid var(--pol-verde);
+  border-radius: 10px;
+  background: var(--pol-verde);
   color: #fff;
+  font-family: inherit;
+  font-size: 12px;
   font-weight: 700;
-  padding: 11px 20px;
-  box-shadow: var(--shadow-sm);
-  transition: box-shadow 0.15s ease, transform 0.15s ease;
+  line-height: 1.2;
+  cursor: pointer;
+  box-shadow: 0 3px 8px #004d4018;
+  transition: background .2s, transform .2s;
 }
 
-.btn-cv-verde:hover {
+.policias-botones-cabecera .btn-cv-verde:hover,
+.modal-policias .btn-cv-verde:hover {
+  background: var(--pol-verde-hover);
   color: #fff;
-  box-shadow: var(--shadow-md);
   transform: translateY(-1px);
 }
 
-.btn-secundario-dash {
-  background: var(--fog);
-  border: 1px solid var(--line);
-  color: var(--ink);
-  font-weight: 600;
-  padding: 10px 20px;
+.policias-botones-cabecera .btn-secundario-dash,
+.modal-policias .btn-secundario-dash {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 40px;
+  padding: 10px 16px;
+  border: 1px solid #ccddd3;
+  border-radius: 10px;
+  background: #fff;
+  color: var(--pol-verde);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .2s;
 }
 
-.btn-secundario-dash:hover {
-  background: var(--line);
-  color: var(--ink);
+.policias-botones-cabecera .btn-secundario-dash:hover,
+.modal-policias .btn-secundario-dash:hover {
+  background: #edf6f1;
 }
 
-/* ---------- Panel de filtros (mismo estilo que Unidades) ---------- */
+.policias-botones-cabecera button i {
+  font-size: 15px;
+}
+
+/* ==========================================
+   TARJETAS KPI
+========================================== */
+
+.kpi-card-policial {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+  min-height: 94px;
+  padding: 18px;
+  border: 1px solid var(--pol-borde);
+  border-left: 4px solid transparent;
+  border-radius: 13px;
+  background: #fff;
+  box-shadow: 0 5px 15px #173e320d;
+  transition: transform .2s, box-shadow .2s;
+}
+
+.kpi-card-policial:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px #173e3215;
+}
+
+.kpi-card-policial.tono-azul {
+  border-left-color: #2878d7;
+}
+
+.kpi-card-policial.tono-verde {
+  border-left-color: #008c62;
+}
+
+.kpi-card-policial.tono-ambar {
+  border-left-color: #ee9200;
+}
+
+.kpi-card-icono {
+  display: grid;
+  place-items: center;
+  flex: 0 0 46px;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  font-size: 20px;
+}
+
+.tono-azul .kpi-card-icono {
+  background: #e5efff;
+  color: #2878d7;
+}
+
+.tono-verde .kpi-card-icono {
+  background: #dff5ea;
+  color: #008c62;
+}
+
+.tono-ambar .kpi-card-icono {
+  background: #fff0d9;
+  color: #ee9200;
+}
+
+.kpi-card-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  gap: 4px;
+}
+
+.kpi-card-titulo {
+  color: #687c72;
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.kpi-card-valor {
+  color: #193e32;
+  font-size: 25px;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.kpi-card-flecha {
+  margin-left: auto;
+  font-size: 13px;
+}
+
+.tono-azul .kpi-card-flecha {
+  color: #2878d7;
+}
+
+.tono-verde .kpi-card-flecha {
+  color: #008c62;
+}
+
+.tono-ambar .kpi-card-flecha {
+  color: #ee9200;
+}
+
+/* ==========================================
+   PANEL DE FILTROS
+========================================== */
+
 .panel-filtros-policias {
   overflow: hidden;
-  border: 1px solid #d5e5dd;
-  border-radius: 16px;
+  border: 1px solid var(--pol-borde);
+  border-radius: 14px;
   background: #fff;
-  box-shadow: 0 5px 18px rgba(6, 59, 50, 0.07);
+  box-shadow: 0 4px 14px #173e320c;
+}
+
+.panel-filtros-policias .panel-filtros-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 19px;
+  background: linear-gradient(
+    110deg,
+    #004d40,
+    #006b58
+  );
+  color: #fff;
+}
+
+.panel-filtros-policias .panel-filtros-icono {
+  display: grid;
+  place-items: center;
+  flex: 0 0 38px;
+  width: 38px;
+  height: 38px;
+  border: 1px solid #ffffff35;
+  border-radius: 10px;
+  background: #ffffff18;
+  color: #fff;
+  font-size: 17px;
+}
+
+.panel-filtros-policias .panel-filtros-header h3 {
+  margin: 0 0 3px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 750;
+}
+
+.panel-filtros-policias .panel-filtros-header p {
+  margin: 0;
+  color: #d5eae2;
+  font-size: 11px;
 }
 
 .panel-filtros-policias .panel-filtros-body {
-  grid-template-columns: minmax(220px, 0.85fr) minmax(0, 1.5fr);
+  display: grid;
+  grid-template-columns: minmax(220px, 1.1fr)
+                         minmax(0, 1.9fr);
+  align-items: end;
+  gap: 16px;
+  padding: 18px;
+  background: #f5f9f6;
 }
 
-@media (max-width: 640px) {
-  .panel-filtros-policias .filtros-etiqueta {
-    display: none;
-  }
+.panel-filtros-policias .buscador-unidades {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+}
 
-  .panel-filtros-policias .panel-filtros-body,
-  .panel-filtros-policias .filtros-unidades-selects {
+.panel-filtros-policias label {
+  display: block;
+  margin: 0 0 7px;
+  color: #315348;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.panel-filtros-policias .buscador-unidades label {
+  margin-bottom: 0;
+}
+
+.panel-filtros-policias .buscador-unidades-input {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  min-height: 42px;
+  padding: 0 12px;
+  border: 1px solid #d5e3da;
+  border-radius: 9px;
+  background: #fff;
+  color: var(--pol-verde);
+}
+
+.panel-filtros-policias .buscador-unidades-input:focus-within {
+  border-color: var(--pol-verde);
+  box-shadow: 0 0 0 3px #004d4012;
+}
+
+.panel-filtros-policias .buscador-unidades-input input {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--pol-texto);
+  font-family: inherit;
+  font-size: 12px;
+}
+
+.panel-filtros-policias .buscador-unidades-input input::placeholder {
+  color: #94a39b;
+}
+
+.panel-filtros-policias .filtros-unidades-selects {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  min-width: 0;
+}
+
+.panel-filtros-policias .filtro-unidad-card {
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid #dfe9e2;
+  border-radius: 11px;
+  background: #fff;
+}
+
+.panel-filtros-policias .filtro-unidad-card label {
+  margin-bottom: 8px;
+}
+
+.panel-filtros-policias .form-select {
+  display: block;
+  width: 100%;
+  min-height: 39px;
+  padding: 9px 32px 9px 11px;
+  border: 1px solid #d5e3da;
+  border-radius: 8px;
+  background-color: #fff;
+  color: var(--pol-texto);
+  font-family: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.panel-filtros-policias .form-select:focus {
+  border-color: var(--pol-verde);
+  box-shadow: 0 0 0 3px #004d4012;
+}
+
+/* ==========================================
+   TABLA POLICÍAS
+========================================== */
+
+.policias-tabla-panel {
+  overflow: hidden;
+  border: 1px solid var(--pol-borde);
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 4px 14px #173e320c;
+}
+
+.policias-tabla-panel .table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.tabla-policias-alineada {
+  width: 100%;
+  min-width: 830px;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-family: inherit;
+}
+
+.tabla-policias-alineada th,
+.tabla-policias-alineada td {
+  box-sizing: border-box;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.tabla-policias-alineada th:first-child,
+.tabla-policias-alineada td:first-child {
+  padding-left: 18px;
+}
+
+.tabla-policias-alineada thead {
+  background: #f5f8f6;
+}
+
+.tabla-policias-alineada th {
+  padding: 15px 12px;
+  border-bottom: 1px solid #e2eae5;
+  color: #587469;
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: .035em;
+  text-transform: uppercase;
+}
+
+.tabla-policias-alineada td {
+  padding: 15px 12px;
+  border-bottom: 1px solid #edf1ee;
+  color: #294339;
+  font-size: 12.5px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.tabla-policias-alineada tbody tr:hover {
+  background: #f8fbf9;
+}
+
+.tabla-policias-alineada tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+/* AVATAR */
+
+.tabla-policias-alineada .celda-persona-dash {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.tabla-policias-alineada .avatar-sm-dash {
+  display: grid !important;
+  place-items: center;
+  flex: 0 0 39px !important;
+  width: 39px !important;
+  min-width: 39px !important;
+  max-width: 39px !important;
+  height: 39px !important;
+  min-height: 39px !important;
+  max-height: 39px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border-radius: 11px !important;
+  background: var(--pol-verde) !important;
+  color: #fff !important;
+  font-size: 15px !important;
+  font-weight: 750;
+  line-height: 1;
+  overflow: hidden;
+}
+
+.tabla-policias-alineada .celda-persona-dash > div:last-child {
+  flex: 1;
+  min-width: 0;
+}
+
+.tabla-policias-alineada .celda-titulo-dash {
+  color: #173e32;
+  font-size: 12.5px;
+  font-weight: 750;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.tabla-policias-alineada .celda-sub-dash {
+  margin-top: 3px;
+  color: #829187;
+  font-size: 11px;
+}
+
+/* ESTADOS */
+
+.tabla-policias-alineada .badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 25px;
+  padding: 5px 11px;
+  border-radius: 7px;
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.tabla-policias-alineada .badge.bg-success {
+  background: #e3f3e9 !important;
+  color: #08734d !important;
+}
+
+.tabla-policias-alineada .badge.bg-secondary {
+  background: #edf0f2 !important;
+  color: #64717b !important;
+}
+
+/* BOTONES DE ACCIONES */
+
+.tabla-policias-alineada .tabla-acciones-dash {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 7px;
+}
+
+.tabla-policias-alineada .btn-icono-dash {
+  display: inline-grid !important;
+  place-items: center;
+  flex: 0 0 34px;
+  width: 34px !important;
+  height: 34px !important;
+  padding: 0 !important;
+  border: 1px solid #dce7e0 !important;
+  border-radius: 9px !important;
+  background: #edf6f0 !important;
+  color: var(--pol-verde) !important;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background .2s, color .2s;
+}
+
+.tabla-policias-alineada .btn-icono-dash:hover {
+  background: var(--pol-verde) !important;
+  border-color: var(--pol-verde) !important;
+  color: #fff !important;
+}
+
+.tabla-policias-alineada .btn-icono-dash.borrar-dash {
+  background: #fff3f3 !important;
+  border-color: #f3dcdc !important;
+  color: #c34a4a !important;
+}
+
+.tabla-policias-alineada .btn-icono-dash.borrar-dash:hover {
+  background: #c34a4a !important;
+  border-color: #c34a4a !important;
+  color: #fff !important;
+}
+
+.tabla-policias-alineada .btn-icono-dash:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+.policias-tabla-panel .tabla-vacio-dash {
+  padding: 32px 18px;
+  color: #788a80;
+  font-size: 13px;
+  text-align: center;
+}
+
+/* ==========================================
+   MODALES
+========================================== */
+
+.modal-policias {
+  z-index: 1060;
+  overflow-y: auto;
+}
+
+.modal-policias .modal-dialog {
+  max-width: 760px;
+  margin: 20px auto;
+}
+
+.modal-policias .modal-content {
+  border: 0;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 20px 60px #00000025;
+}
+
+.modal-policias .modal-header-dash {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 19px 24px;
+  background: linear-gradient(110deg, #004d40, #087b58);
+}
+
+.modal-policias .modal-title {
+  margin: 0;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 750;
+}
+
+.modal-policias .modal-subtitle {
+  margin: 4px 0 0;
+  color: #def2e7;
+  font-size: 12px;
+}
+
+.modal-policias .modal-header-dash .btn-close {
+  flex-shrink: 0;
+  filter: invert(1) brightness(2);
+}
+
+.modal-policias .modal-body-dash {
+  max-height: 65vh;
+  padding: 22px 24px;
+  overflow-y: auto;
+}
+
+/* SECCIONES */
+
+.modal-policias .form-seccion-policias {
+  margin-bottom: 20px;
+}
+
+.modal-policias .form-seccion-policias:last-child {
+  margin-bottom: 0;
+}
+
+.modal-policias .form-seccion-titulo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 13px;
+  padding-bottom: 9px;
+  border-bottom: 1px solid #e5eee8;
+}
+
+.modal-policias .form-seccion-titulo > i {
+  display: grid;
+  place-items: center;
+  flex: 0 0 35px;
+  width: 35px;
+  height: 35px;
+  border-radius: 10px;
+  background: #e5f5ec;
+  color: var(--pol-verde);
+  font-size: 17px;
+}
+
+.modal-policias .form-seccion-titulo h3 {
+  margin: 0;
+  color: #203c30;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.modal-policias .form-seccion-titulo p {
+  margin: 3px 0 0;
+  color: #718177;
+  font-size: 11px;
+}
+
+/* TIPO DE REGISTRO */
+
+.modal-policias .registro-opciones-policias {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.modal-policias .registro-opcion-policias {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid #dce7df;
+  border-radius: 11px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.modal-policias .registro-opcion-policias.seleccionada {
+  border-color: var(--pol-verde);
+  background: #f0faf4;
+}
+
+.modal-policias .registro-opcion-policias > i {
+  color: var(--pol-verde);
+}
+
+.modal-policias .registro-opcion-policias span {
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-policias .registro-opcion-policias strong {
+  font-size: 12px;
+}
+
+.modal-policias .registro-opcion-policias small {
+  color: #718177;
+  font-size: 11px;
+}
+
+/* CAMPOS */
+
+.modal-policias .form-field-dash label {
+  display: block;
+  margin-bottom: 6px;
+  color: #486455;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.modal-policias .form-field-dash .form-control,
+.modal-policias .form-field-dash .form-select {
+  width: 100%;
+  min-height: 41px;
+  padding: 9px 12px;
+  border: 1px solid #dce7df;
+  border-radius: 10px;
+  background-color: #fff;
+  color: var(--pol-texto);
+  font-family: inherit;
+  font-size: 13px;
+}
+
+.modal-policias .form-field-dash .form-control:focus,
+.modal-policias .form-field-dash .form-select:focus {
+  border-color: var(--pol-verde);
+  box-shadow: 0 0 0 3px #004d4014;
+}
+
+.modal-policias .modal-footer-dash {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 14px 24px;
+  border-top: 1px solid #e5eee8;
+  background: #fff;
+}
+
+/* IMPORTACIÓN DE EXCEL */
+
+.modal-policias .policias-ayuda {
+  color: #53647b;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.modal-policias .tabla-importacion {
+  width: 100%;
+  font-size: 12px;
+}
+
+.modal-policias .tabla-importacion th {
+  background: #f5f8f6;
+  color: #456155;
+  font-weight: 700;
+}
+
+.modal-policias .policias-resultados {
+  max-height: 130px;
+  overflow: auto;
+  font-size: 12px;
+}
+
+.modal-policias .policias-resultados p {
+  margin: 4px 0;
+  overflow-wrap: anywhere;
+}
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media (max-width: 992px) {
+  .panel-filtros-policias .panel-filtros-body {
     grid-template-columns: 1fr;
   }
 }
 
-/* ---------- Tabla ---------- */
-.tabla-header-dash {
-  display: flex;
-  align-items: center;
-  padding: 14px 20px;
-  border-bottom: 1px solid var(--line);
-  gap: 12px;
-}
+@media (max-width: 640px) {
+  .header-vista-dash h1 {
+    font-size: 23px;
+  }
 
-.tabla-header-dash span {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-  color: var(--subtle);
-}
+  .policias-botones-cabecera {
+    width: 100%;
+  }
 
-.tabla-dash {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 13.5px;
-}
+  .kpi-card-policial {
+    min-height: 82px;
+  }
 
-.tabla-dash tbody tr {
-  border-bottom: 1px solid var(--line);
-  transition: background 0.12s ease;
-}
+  .panel-filtros-policias .panel-filtros-body {
+    padding: 14px;
+  }
 
-.tabla-dash tbody tr:last-child {
-  border-bottom: none;
-}
+  .panel-filtros-policias .filtros-unidades-selects {
+    grid-template-columns: 1fr;
+  }
 
-.tabla-dash tbody tr:hover {
-  background: var(--fog);
-}
+  .modal-policias .modal-dialog {
+    margin: 8px;
+  }
 
-.tabla-dash td {
-  padding: 13px 20px 13px 0;
-  vertical-align: middle;
-  color: var(--ink);
-}
+  .modal-policias .modal-body-dash {
+    max-height: 70vh;
+    padding: 16px;
+  }
 
-.tabla-dash td:first-child {
-  padding-left: 20px;
-}
+  .modal-policias .modal-header-dash,
+  .modal-policias .modal-footer-dash {
+    padding: 16px;
+  }
 
-.celda-persona-dash {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.celda-titulo-dash {
-  font-weight: 700;
-  font-size: 13.5px;
-  color: var(--ink);
-  line-height: 1.25;
-}
-
-.celda-sub-dash {
-  font-size: 11.5px;
-  color: var(--muted);
-}
-
-.tabla-vacio-dash {
-  text-align: center;
-  padding: 48px 20px;
-  color: var(--muted);
-  font-size: 13.5px;
-}
-
-/* ---------- Avatares ---------- */
-.avatar-sm-dash,
-.avatar-lg-dash {
-  border-radius: 50%;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.avatar-sm-dash {
-  width: 36px;
-  height: 36px;
-  min-width: 36px;
-  font-size: 12.5px;
-}
-
-.avatar-lg-dash {
-  width: 68px;
-  height: 68px;
-  border: 3px solid rgba(255, 255, 255, 0.6);
-  font-size: 22px;
-}
-
-/* ---------- Botones de acción de la tabla ---------- */
-.tabla-acciones-dash {
-  display: flex;
-  gap: 6px;
-}
-
-.btn-icono-dash {
-  width: 32px;
-  height: 32px;
-  border-radius: 9px;
-  border: 1px solid var(--line);
-  background: #fff;
-  color: var(--muted);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
-}
-
-.btn-icono-dash:hover {
-  background: var(--fog);
-  color: var(--ink);
-}
-
-.btn-icono-dash.editar-dash:hover {
-  background: #fcf0da;
-  color: var(--color-amber);
-  border-color: #fcf0da;
-}
-
-.btn-icono-dash.borrar-dash:hover {
-  background: #fce8e9;
-  color: var(--color-danger);
-  border-color: #fce8e9;
-}
-
-/* ---------- Modales ---------- */
-.modal-content {
-  border: none;
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: var(--shadow-md);
-}
-
-.modal-header-dash {
-  background: linear-gradient(120deg, var(--color-primary), var(--color-primary-2));
-  color: #fff;
-  padding: 22px 26px;
-  border: none;
-}
-
-.modal-header-dash .modal-title {
-  font-size: 18px;
-}
-
-.modal-header-dash .modal-subtitle {
-  font-size: 12.5px;
-  color: #d7ddec;
-  margin-top: 2px;
-}
-
-.modal-header-dash .btn-close {
-  filter: invert(1) brightness(2);
-}
-
-.modal-body-dash {
-  padding: 24px 26px;
-  background: #fff;
-}
-
-.modal-footer-dash {
-  padding: 16px 26px 24px;
-  border: none;
-  background: #fff;
-  gap: 10px;
-}
-
-.form-field-dash label {
-  font-size: 11.5px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  color: var(--muted);
-  margin-bottom: 6px;
-  display: block;
-}
-
-.form-field-dash .form-control,
-.form-field-dash .form-select {
-  border-radius: 10px;
-  border-color: var(--line);
-  font-size: 13.5px;
-  padding: 10px 12px;
-}
-
-/* ---------- Modal "ver detalle" ---------- */
-.detalle-header-dash {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  text-align: center;
-}
-
-.detalle-fila-dash {
-  display: flex;
-  justify-content: space-between;
-  gap: 14px;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--line);
-}
-
-.detalle-fila-dash:last-child {
-  border-bottom: none;
-}
-
-.detalle-fila-dash .k {
-  font-size: 11.5px;
-  color: var(--muted);
-  font-weight: 600;
-}
-
-.detalle-fila-dash .v {
-  font-size: 13.5px;
-  font-weight: 700;
-  color: var(--ink);
-  text-align: right;
+  .modal-policias .registro-opciones-policias {
+    grid-template-columns: 1fr;
+  }
 }

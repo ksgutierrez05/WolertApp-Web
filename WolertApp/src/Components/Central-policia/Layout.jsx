@@ -1,14 +1,18 @@
 
-import { useEffect } from 'react';
-import { Outlet } from 'react-router-dom';
-import Sidebar from './Sidebar';
+import { useEffect } from "react";
+import { Outlet, useLocation } from "react-router-dom";
+import Sidebar from "./Sidebar";
 
-function Layout() {
+export default function Layout() {
+  const location = useLocation();
+
+  const esMapa = /\/mapa\/?$/i.test(location.pathname);
+
   useEffect(() => {
-    document.body.classList.add('rol-policia');
+    document.body.classList.add("rol-policia");
 
     return () => {
-      document.body.classList.remove('rol-policia');
+      document.body.classList.remove("rol-policia");
     };
   }, []);
 
@@ -16,9 +20,18 @@ function Layout() {
     <>
       <Sidebar />
 
-      <div id="wrapperDash">
-        <main className="main-dash">
-          <div className="container-fluid">
+      <div
+        id="wrapperDash"
+        className={esMapa ? "wrapper-mapa-central" : ""}
+      >
+        <main
+          className={`main-dash ${esMapa ? "main-dash-mapa" : ""}`}
+        >
+          <div
+            className={`container-fluid ${
+              esMapa ? "container-mapa-central" : ""
+            }`}
+          >
             <Outlet />
           </div>
         </main>
@@ -26,5 +39,3 @@ function Layout() {
     </>
   );
 }
-
-export default Layout;

@@ -1,47 +1,107 @@
+
 import { useCallback, useEffect, useMemo, useState } from "react";
-import Kpis from "../../Components/Administrador-policia/Kpicard";
 import "../../css/Policia/administrador-policia/css/notificaciones.css";
 
 const API = (
   import.meta.env.VITE_API_URL || "https://localhost:7138"
 ).replace(/\/$/, "");
 
-async function apiNotificaciones(ruta, opciones = {}) {
+/*
+ * Obtiene el ID del usuario autenticado desde su JWT.
+ * Si el token no incluye un identificador reconocido,
+ * NO se muestran notificaciones de otros usuarios.
+ */
+function obtenerIdUsuario() {
   const token = localStorage.getItem("token");
 
-  const respuesta = await fetch(`${API}${ruta}`, {
-    ...opciones,
+  if (!token) return null;
+
+  try {
+    const parte = token.split(".")[1];
+    if (!parte) return null;
+
+    const base64 = parte
+      .replace(/-/g, "+")
+      .replace(/_/g, "/");
+
+    const payload = JSON.parse(
+      atob(base64.padEnd(Math.ceil(base64.length / 4) * 4, "="))
+    );
+
+    const claves = [
+      "idUsuario",
+      "IdUsuario",
+      "id_usuario",
+      "ID_USUARIO",
+      "nameid",
+      "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier",
+      "sub",
+    ];
+
+    for (const clave of claves) {
+      const valor = payload[clave];
+      const numero = Number(valor);
+
+      if (
+        valor !== undefined &&
+        valor !== null &&
+        Number.isSafeInteger(numero) &&
+        numero > 0
+      ) {
+        return numero;
+      }
+    }
+
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+async function consultarNotificaciones(signal) {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    throw new Error("Debes iniciar sesión para consultar tus notificaciones.");
+  }
+
+  const respuesta = await fetch(`${API}/api/Notificaciones`, {
+    method: "GET",
+    signal,
     headers: {
       Accept: "application/json",
-      ...(opciones.body ? { "Content-Type": "application/json" } : {}),
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...opciones.headers,
+      Authorization: `Bearer ${token}`,
     },
   });
 
-  if (!respuesta.ok) {
-    const mensaje = await respuesta.text();
-
-    if (respuesta.status === 401) {
-      throw new Error("Sesión no válida. Inicia sesión para continuar.");
-    }
-
-    if (respuesta.status === 403) {
-      throw new Error(
-        "Tu usuario no tiene permisos para consultar o administrar notificaciones."
-      );
-    }
-
-    throw new Error(mensaje || `Error HTTP ${respuesta.status}`);
+  if (respuesta.status === 401) {
+    throw new Error("Tu sesión expiró. Inicia sesión nuevamente.");
   }
 
-  if (respuesta.status === 204) return null;
+  if (respuesta.status === 403) {
+    throw new Error(
+      "No tienes permisos para consultar las notificaciones."
+    );
+  }
 
-  const texto = await respuesta.text();
-  return texto ? JSON.parse(texto) : null;
+  if (!respuesta.ok) {
+    throw new Error(
+      `No se pudieron consultar las notificaciones (${respuesta.status}).`
+    );
+  }
+
+  const datos = await respuesta.json();
+
+  if (!Array.isArray(datos)) {
+    throw new Error(
+      "La API no devolvió una lista válida de notificaciones."
+    );
+  }
+
+  return datos;
 }
 
-function fechaFormato(fecha) {
+function formatearFecha(fecha) {
   if (!fecha) return "Fecha no disponible";
 
   const valor = new Date(fecha);
@@ -59,410 +119,192 @@ function fechaFormato(fecha) {
   });
 }
 
-function estadoNotificacion(notificacion) {
-  return String(
-    notificacion.estado ??
-      (notificacion.enviada === "S" ? "ENVIADA" : "PENDIENTE")
-  ).toUpperCase();
+function esHoy(fecha) {
+  if (!fecha) return false;
+
+  const valor = new Date(fecha);
+
+  return (
+    !Number.isNaN(valor.getTime()) &&
+    valor.toDateString() === new Date().toDateString()
+  );
 }
 
-function Notificaciones() {
-  // ================================
-  // ESTADOS
-  // ================================
 
+
+function Notificaciones() {
   const [notificaciones, setNotificaciones] = useState([]);
   const [cargando, setCargando] = useState(true);
-  const [procesando, setProcesando] = useState(false);
-
   const [error, setError] = useState("");
-  const [mensajeExito, setMensajeExito] = useState("");
 
   const [busqueda, setBusqueda] = useState("");
-  const [filtroEstado, setFiltroEstado] = useState("TODOS");
+  const [filtroFecha, setFiltroFecha] = useState("TODAS");
+  const [recarga, setRecarga] = useState(0);
 
-  const [modalAbierto, setModalAbierto] = useState(false);
-
-  const [formulario, setFormulario] = useState({
-    idUsuario: "",
-    idAlerta: "",
-    mensaje: "",
-  });
-
-  // ================================
-  // CONSULTAR NOTIFICACIONES
-  // ================================
+  const idUsuarioActual = obtenerIdUsuario();
 
   const cargarNotificaciones = useCallback(async (signal) => {
     try {
-      const datos = await apiNotificaciones(
-        "/api/Notificaciones",
-        { signal }
-      );
-
-      if (!Array.isArray(datos)) {
+      if (!idUsuarioActual) {
+        setNotificaciones([]);
         throw new Error(
-          "La API no devolvió una lista válida de notificaciones."
+          "No se pudo identificar tu ID de usuario en la sesión. " +
+          "Verifica que el token incluya el identificador del usuario."
         );
       }
 
+      const datos = await consultarNotificaciones(signal);
+
       if (signal?.aborted) return;
 
-      setNotificaciones(datos);
-      setError("");
+      /*
+       * Solo se conservan notificaciones dirigidas
+       * al usuario que inició sesión.
+       *
+       * No se filtra por ENVIADA/PENDIENTE porque
+       * esos estados no significan leída/no leída.
+       */
+      const recibidas = datos.filter((notificacion) => {
+        const destinatario = Number(
+          notificacion.idUsuario ??
+          notificacion.IdUsuario ??
+          notificacion.id_usuario
+        );
 
+        return destinatario === idUsuarioActual;
+      });
+
+      recibidas.sort((a, b) => {
+        const fechaA = new Date(a.fecha || 0).getTime() || 0;
+        const fechaB = new Date(b.fecha || 0).getTime() || 0;
+
+        return fechaB - fechaA;
+      });
+
+      setNotificaciones(recibidas);
+      setError("");
     } catch (err) {
       if (err.name !== "AbortError" && !signal?.aborted) {
         setError(
           err.message || "No se pudieron cargar las notificaciones."
         );
       }
-
     } finally {
       if (!signal?.aborted) {
         setCargando(false);
       }
     }
-  }, []);
+  }, [idUsuarioActual]);
 
-  // ================================
-  // CARGA INICIAL
-  // ================================
-
- useEffect(() => {
+ 
+useEffect(() => {
   const controller = new AbortController();
-  let activo = true;
 
-  Promise.resolve().then(() => {
-    if (activo) {
-      cargarNotificaciones(controller.signal);
+  const ejecutarCarga = async () => {
+    await cargarNotificaciones(controller.signal);
+  };
+
+  const tarea = Promise.resolve().then(() => {
+    if (!controller.signal.aborted) {
+      return ejecutarCarga();
     }
   });
 
-  return () => {
-    activo = false;
-    controller.abort();
-  };
-}, [cargarNotificaciones]);
-  // ================================
-  // KPI REALES
-  // ================================
+  tarea.catch((error) => {
+    if (!controller.signal.aborted) {
+      console.error("Error al cargar notificaciones:", error);
+    }
+  });
 
-  const valoresKpi = useMemo(() => {
-    const hoy = new Date();
+  return () => controller.abort();
+}, [cargarNotificaciones, recarga]);
 
-    const enviadas = notificaciones.filter(
-      (n) => estadoNotificacion(n) === "ENVIADA"
-    ).length;
 
-    const pendientes = notificaciones.filter(
-      (n) => estadoNotificacion(n) === "PENDIENTE"
-    ).length;
+  function actualizar() {
+    if (cargando) return;
 
-    const totalHoy = notificaciones.filter((n) => {
-      if (!n.fecha) return false;
+    setCargando(true);
+    setError("");
+    setRecarga((valor) => valor + 1);
+  }
 
-      const fecha = new Date(n.fecha);
-
-      return (
-        !Number.isNaN(fecha.getTime()) &&
-        fecha.toDateString() === hoy.toDateString()
-      );
-    }).length;
-
+  const resumen = useMemo(() => {
     return {
       total: notificaciones.length,
-      enviadas,
-      pendientes,
-      hoy: totalHoy,
+      hoy: notificaciones.filter((n) => esHoy(n.fecha)).length,
+      alertas: notificaciones.filter(
+        (n) => n.idAlerta !== null && n.idAlerta !== undefined
+      ).length,
     };
-
   }, [notificaciones]);
-
-  // ================================
-  // FILTROS Y BÚSQUEDA
-  // ================================
 
   const filtradas = useMemo(() => {
     const texto = busqueda.trim().toLowerCase();
 
-    return notificaciones.filter((n) => {
-      const estado = estadoNotificacion(n);
+    return notificaciones.filter((notificacion) => {
+      if (filtroFecha === "HOY" && !esHoy(notificacion.fecha)) {
+        return false;
+      }
 
-      const coincideEstado =
-        filtroEstado === "TODOS" ||
-        estado === filtroEstado;
+      if (filtroFecha === "CON_ALERTA") {
+        if (
+          notificacion.idAlerta === null ||
+          notificacion.idAlerta === undefined
+        ) {
+          return false;
+        }
+      }
 
       const contenido = [
-        n.idNotificacion,
-        n.idUsuario,
-        n.usuarioCedula,
-        n.mensaje,
-        n.idAlerta,
-        n.estado,
+        notificacion.idNotificacion,
+        notificacion.mensaje,
+        notificacion.idAlerta,
+        notificacion.fecha,
       ]
+        .filter((valor) => valor !== null && valor !== undefined)
         .join(" ")
         .toLowerCase();
 
-      return (
-        coincideEstado &&
-        (!texto || contenido.includes(texto))
-      );
+      return !texto || contenido.includes(texto);
     });
-
-  }, [notificaciones, busqueda, filtroEstado]);
-
-  // ================================
-  // ACTUALIZAR FORMULARIO
-  // ================================
-
-  function cambiarFormulario(evento) {
-    const { name, value } = evento.target;
-
-    setFormulario((anterior) => ({
-      ...anterior,
-      [name]: value,
-    }));
-  }
-
-  // ================================
-  // ABRIR MODAL
-  // ================================
-
-  function abrirModal() {
-    setFormulario({
-      idUsuario: "",
-      idAlerta: "",
-      mensaje: "",
-    });
-
-    setError("");
-    setMensajeExito("");
-
-    setModalAbierto(true);
-  }
-
-  // ================================
-  // CREAR NOTIFICACIÓN
-  // ================================
-
-  async function crearNotificacion(evento) {
-    evento.preventDefault();
-
-    if (
-      !formulario.idUsuario ||
-      !formulario.mensaje.trim()
-    ) {
-      setError(
-        "El usuario y el mensaje son obligatorios."
-      );
-      return;
-    }
-
-    const idUsuario = Number(formulario.idUsuario);
-
-    const idAlerta = formulario.idAlerta
-      ? Number(formulario.idAlerta)
-      : null;
-
-    if (
-      !Number.isInteger(idUsuario) ||
-      idUsuario <= 0
-    ) {
-      setError("El ID del usuario no es válido.");
-      return;
-    }
-
-    if (
-      idAlerta !== null &&
-      (!Number.isInteger(idAlerta) || idAlerta <= 0)
-    ) {
-      setError("El ID de la alerta no es válido.");
-      return;
-    }
-
-    setProcesando(true);
-    setError("");
-    setMensajeExito("");
-
-    try {
-      await apiNotificaciones("/api/Notificaciones", {
-        method: "POST",
-        body: JSON.stringify({
-          idUsuario,
-          idAlerta,
-          mensaje: formulario.mensaje.trim(),
-        }),
-      });
-
-      setModalAbierto(false);
-
-      setMensajeExito(
-        "Notificación creada correctamente."
-      );
-
-      setCargando(true);
-
-      await cargarNotificaciones();
-
-    } catch (err) {
-      setError(err.message);
-
-    } finally {
-      setProcesando(false);
-    }
-  }
-
-  // ================================
-  // MARCAR COMO ENVIADA
-  // ================================
-
-  async function marcarEnviada(id) {
-    if (
-      !window.confirm(
-        "¿Confirmas marcar esta notificación como enviada?"
-      )
-    ) {
-      return;
-    }
-
-    setProcesando(true);
-    setError("");
-    setMensajeExito("");
-
-    try {
-      await apiNotificaciones(
-        `/api/Notificaciones/${id}/enviada`,
-        {
-          method: "PUT",
-        }
-      );
-
-      setMensajeExito(
-        "Notificación marcada como enviada."
-      );
-
-      setCargando(true);
-
-      await cargarNotificaciones();
-
-    } catch (err) {
-      setError(err.message);
-
-    } finally {
-      setProcesando(false);
-    }
-  }
-
-  // ================================
-  // ELIMINAR NOTIFICACIÓN
-  // ================================
-
-  async function eliminarNotificacion(id) {
-    if (
-      !window.confirm(
-        "¿Seguro que deseas eliminar esta notificación?"
-      )
-    ) {
-      return;
-    }
-
-    setProcesando(true);
-    setError("");
-    setMensajeExito("");
-
-    try {
-      await apiNotificaciones(
-        `/api/Notificaciones/${id}`,
-        {
-          method: "DELETE",
-        }
-      );
-
-      setMensajeExito(
-        "Notificación eliminada correctamente."
-      );
-
-      setCargando(true);
-
-      await cargarNotificaciones();
-
-    } catch (err) {
-      setError(err.message);
-
-    } finally {
-      setProcesando(false);
-    }
-  }
-
-  // ================================
-  // ACTUALIZAR MANUALMENTE
-  // ================================
-
-  async function actualizar() {
-    setCargando(true);
-    setError("");
-    setMensajeExito("");
-
-    await cargarNotificaciones();
-  }
-
-  // ================================
-  // VISTA
-  // ================================
+  }, [notificaciones, busqueda, filtroFecha]);
 
   return (
     <main className="notificaciones-page">
-
       {/* ENCABEZADO */}
 
       <header className="notificaciones-header">
-
         <div className="notificaciones-header-info">
-
           <span className="notificaciones-etiqueta">
-            <i
-              className="bi bi-shield-check"
-              aria-hidden="true"
-            />
+            <i className="bi bi-shield-check" aria-hidden="true" />
             ADMINISTRACIÓN POLICIAL
           </span>
 
-          <h1>Notificaciones</h1>
+          <h1>Mis notificaciones</h1>
 
           <p>
-            Administra y consulta las notificaciones del sistema.
+            Consulta los avisos y mensajes que has recibido
+            en WOLERTAPP.
           </p>
-
         </div>
 
         <div className="notificaciones-header-acciones">
-
-          <button
-            type="button"
-            className="btn-notif-secundario"
-            onClick={actualizar}
-            disabled={cargando || procesando}
-          >
-            <i className="bi bi-arrow-clockwise" />
-            Actualizar
-          </button>
-
           <button
             type="button"
             className="btn-notif-primario"
-            onClick={abrirModal}
-            disabled={procesando}
+            onClick={actualizar}
+            disabled={cargando}
           >
-            <i className="bi bi-plus-lg" />
-            Nueva notificación
+            <i
+              className="bi bi-arrow-clockwise"
+              aria-hidden="true"
+            />
+            {cargando ? "Actualizando..." : "Actualizar"}
           </button>
-
         </div>
-
       </header>
 
-      {/* MENSAJES */}
+      {/* MENSAJE DE ERROR */}
 
       {error && (
         <div
@@ -483,412 +325,186 @@ function Notificaciones() {
         </div>
       )}
 
-      {mensajeExito && (
-        <div
-          className="notificaciones-mensaje notificaciones-mensaje-exito"
-          role="status"
-        >
-          <i className="bi bi-check-circle" />
-
-          <span>{mensajeExito}</span>
-
-          <button
-            type="button"
-            onClick={() => setMensajeExito("")}
-            aria-label="Cerrar aviso"
-          >
-            <i className="bi bi-x-lg" />
-          </button>
-        </div>
-      )}
-
-      {/* KPI */}
+      {/* RESUMEN */}
 
       <section
-        className="notificaciones-kpis"
-        aria-label="Resumen de notificaciones"
+        className="notificaciones-resumen-recibidas"
+        aria-label="Resumen de notificaciones recibidas"
       >
-        <Kpis
-          grupo="notificaciones"
-          valores={valoresKpi}
-          cargando={cargando}
-        />
+        <article className="notificaciones-resumen-tarjeta">
+          <span className="notificaciones-resumen-icono">
+            <i className="bi bi-bell-fill" />
+          </span>
+
+          <div>
+            <span>Total recibidas</span>
+            <strong>{cargando ? "..." : resumen.total}</strong>
+          </div>
+        </article>
+
+        <article className="notificaciones-resumen-tarjeta">
+          <span className="notificaciones-resumen-icono">
+            <i className="bi bi-calendar-check" />
+          </span>
+
+          <div>
+            <span>Recibidas hoy</span>
+            <strong>{cargando ? "..." : resumen.hoy}</strong>
+          </div>
+        </article>
+
+        <article className="notificaciones-resumen-tarjeta">
+          <span className="notificaciones-resumen-icono">
+            <i className="bi bi-exclamation-circle" />
+          </span>
+
+          <div>
+            <span>Relacionadas con alertas</span>
+            <strong>{cargando ? "..." : resumen.alertas}</strong>
+          </div>
+        </article>
       </section>
 
       {/* BANDEJA */}
 
       <section className="notificaciones-panel">
-
         <div className="notificaciones-panel-header">
-
           <div className="notificaciones-panel-titulo">
-
             <span className="notificaciones-panel-icono">
               <i className="bi bi-inbox" />
             </span>
 
             <div>
-              <h2>Bandeja de notificaciones</h2>
-
+              <h2>Bandeja de entrada</h2>
               <p>
-                Consulta los mensajes enviados y pendientes.
+                Notificaciones dirigidas a tu usuario.
               </p>
             </div>
-
           </div>
 
           <span className="notificaciones-contador">
             {filtradas.length}{" "}
-            {filtradas.length === 1 ? "registro" : "registros"}
+            {filtradas.length === 1
+              ? "notificación"
+              : "notificaciones"}
           </span>
-
         </div>
 
         {/* FILTROS */}
 
         <div className="notificaciones-filtros">
-
           <label className="notificaciones-buscador">
-
             <i className="bi bi-search" />
 
             <input
               type="search"
-              placeholder="Buscar por mensaje, usuario o alerta..."
+              placeholder="Buscar por mensaje o alerta..."
               value={busqueda}
               onChange={(evento) =>
                 setBusqueda(evento.target.value)
               }
             />
-
           </label>
 
           <label className="notificaciones-filtro-estado">
-
-            <span>Estado</span>
+            <span>Mostrar</span>
 
             <select
               className="form-select"
-              value={filtroEstado}
+              value={filtroFecha}
               onChange={(evento) =>
-                setFiltroEstado(evento.target.value)
+                setFiltroFecha(evento.target.value)
               }
             >
-              <option value="TODOS">
-                Todos los estados
+              <option value="TODAS">
+                Todas las recibidas
               </option>
 
-              <option value="ENVIADA">
-                Enviadas
+              <option value="HOY">
+                Recibidas hoy
               </option>
 
-              <option value="PENDIENTE">
-                Pendientes
+              <option value="CON_ALERTA">
+                Relacionadas con alertas
               </option>
-
             </select>
-
           </label>
-
         </div>
 
-        {/* LISTA */}
+        {/* LISTADO */}
 
         <div className="notificaciones-lista">
-
           {cargando ? (
-
             <div className="notificaciones-vacio">
-
               <span
                 className="spinner-border"
                 role="status"
+                aria-label="Cargando"
               />
 
               <h3>Cargando notificaciones</h3>
-
-              <p>
-                Estamos consultando los registros del sistema.
-              </p>
-
+              <p>Consultando tu bandeja de entrada...</p>
             </div>
-
           ) : filtradas.length === 0 ? (
-
             <div className="notificaciones-vacio">
-
               <span className="notificaciones-vacio-icono">
                 <i className="bi bi-bell-slash" />
               </span>
 
-              <h3>No hay notificaciones</h3>
+              <h3>No hay notificaciones recibidas</h3>
 
               <p>
-                {busqueda || filtroEstado !== "TODOS"
-                  ? "No se encontraron registros con los filtros seleccionados."
-                  : "Todavía no hay notificaciones registradas en el sistema."}
+                {busqueda || filtroFecha !== "TODAS"
+                  ? "No hay notificaciones que coincidan con los filtros."
+                  : "Todavía no tienes notificaciones en tu bandeja."}
               </p>
-
             </div>
-
           ) : (
+            filtradas.map((notificacion) => (
+              <article
+                className="notificacion-item"
+                key={notificacion.idNotificacion}
+              >
+                <div className="notificacion-icono normal">
+                  <i className="bi bi-bell-fill" />
+                </div>
 
-            filtradas.map((n) => {
+                <div className="notificacion-contenido">
+                  <div className="notificacion-superior">
+                    <h3>
+                      Notificación #{notificacion.idNotificacion}
+                    </h3>
 
-              const enviada =
-                estadoNotificacion(n) === "ENVIADA";
-
-              return (
-
-                <article
-                  key={n.idNotificacion}
-                  className={`notificacion-item ${
-                    enviada
-                      ? "notificacion-leida"
-                      : "notificacion-no-leida"
-                  }`}
-                >
-
-                  <div
-                    className={`notificacion-icono ${
-                      enviada ? "normal" : "pendiente"
-                    }`}
-                  >
-                    <i
-                      className={`bi ${
-                        enviada
-                          ? "bi-send-check-fill"
-                          : "bi-hourglass-split"
-                      }`}
-                    />
+                    <span className="notificacion-prioridad prioridad-enviada">
+                      RECIBIDA
+                    </span>
                   </div>
 
-                  <div className="notificacion-contenido">
+                  <p className="notificacion-mensaje">
+                    {notificacion.mensaje ||
+                      "Notificación sin descripción."}
+                  </p>
 
-                    <div className="notificacion-superior">
-
-                      <h3>
-                        Notificación #{n.idNotificacion}
-                      </h3>
-
-                      <span
-                        className={`notificacion-prioridad ${
-                          enviada
-                            ? "prioridad-enviada"
-                            : "prioridad-pendiente"
-                        }`}
-                      >
-                        {enviada ? "ENVIADA" : "PENDIENTE"}
-                      </span>
-
-                    </div>
-
-                    <p className="notificacion-mensaje">
-                      {n.mensaje}
-                    </p>
-
-                    <div className="notificacion-detalles">
-
-                      <span>
-                        <i className="bi bi-person" />
-                        Usuario: {n.usuarioCedula || n.idUsuario}
-                      </span>
-
-                      <span>
-                        <i className="bi bi-exclamation-circle" />
-                        Alerta: {n.idAlerta ?? "No asociada"}
-                      </span>
-
-                      <span>
-                        <i className="bi bi-calendar3" />
-                        {fechaFormato(n.fecha)}
-                      </span>
-
-                    </div>
-
-                    {/* ACCIONES */}
-
-                    <div className="notificacion-acciones">
-
-                      {!enviada && (
-                        <button
-                          type="button"
-                          className="btn-notif-accion btn-notif-marcar"
-                          disabled={procesando}
-                          onClick={() =>
-                            marcarEnviada(n.idNotificacion)
-                          }
-                        >
-                          <i className="bi bi-send-check" />
-                          Marcar enviada
-                        </button>
+                  <div className="notificacion-detalles">
+                    {notificacion.idAlerta !== null &&
+                      notificacion.idAlerta !== undefined && (
+                        <span>
+                          <i className="bi bi-exclamation-circle" />
+                          Alerta #{notificacion.idAlerta}
+                        </span>
                       )}
 
-                      <button
-                        type="button"
-                        className="btn-notif-accion btn-notif-eliminar"
-                        disabled={procesando}
-                        onClick={() =>
-                          eliminarNotificacion(n.idNotificacion)
-                        }
-                      >
-                        <i className="bi bi-trash" />
-                        Eliminar
-                      </button>
-
-                    </div>
-
+                    <span>
+                      <i className="bi bi-calendar3" />
+                      {formatearFecha(notificacion.fecha)}
+                    </span>
                   </div>
-
-                </article>
-
-              );
-            })
-
+                </div>
+              </article>
+            ))
           )}
-
         </div>
-
       </section>
-
-      {/* MODAL CREAR */}
-
-      {modalAbierto && (
-
-        <div
-          className="notificacion-modal-fondo"
-          onMouseDown={(evento) => {
-            if (
-              evento.target === evento.currentTarget &&
-              !procesando
-            ) {
-              setModalAbierto(false);
-            }
-          }}
-        >
-
-          <section
-            className="notificacion-modal"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="tituloModalNotificacion"
-          >
-
-            <div className="notificacion-modal-header">
-
-              <div>
-
-                <span className="notificacion-modal-kicker">
-                  GESTIÓN DE MENSAJES
-                </span>
-
-                <h2 id="tituloModalNotificacion">
-                  Nueva notificación
-                </h2>
-
-                <p>
-                  Registra un mensaje para un usuario del sistema.
-                </p>
-
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setModalAbierto(false)}
-                disabled={procesando}
-                aria-label="Cerrar"
-              >
-                <i className="bi bi-x-lg" />
-              </button>
-
-            </div>
-
-            <form onSubmit={crearNotificacion}>
-
-              <div className="notificacion-modal-body">
-
-                <label>
-                  ID del usuario <span>*</span>
-
-                  <input
-                    type="number"
-                    name="idUsuario"
-                    min="1"
-                    required
-                    className="form-control"
-                    value={formulario.idUsuario}
-                    onChange={cambiarFormulario}
-                    placeholder="Ej. 5"
-                  />
-                </label>
-
-                <label>
-                  ID de alerta <small>(opcional)</small>
-
-                  <input
-                    type="number"
-                    name="idAlerta"
-                    min="1"
-                    className="form-control"
-                    value={formulario.idAlerta}
-                    onChange={cambiarFormulario}
-                    placeholder="Ej. 12"
-                  />
-                </label>
-
-                <label>
-                  Mensaje <span>*</span>
-
-                  <textarea
-                    name="mensaje"
-                    required
-                    maxLength="1000"
-                    rows="4"
-                    className="form-control"
-                    value={formulario.mensaje}
-                    onChange={cambiarFormulario}
-                    placeholder="Escribe el mensaje..."
-                  />
-
-                  <small className="notificacion-caracteres">
-                    {formulario.mensaje.length}/1000 caracteres
-                  </small>
-
-                </label>
-
-              </div>
-
-              <div className="notificacion-modal-footer">
-
-                <button
-                  type="button"
-                  className="btn-notif-secundario"
-                  onClick={() => setModalAbierto(false)}
-                  disabled={procesando}
-                >
-                  Cancelar
-                </button>
-
-                <button
-                  type="submit"
-                  className="btn-notif-primario"
-                  disabled={procesando}
-                >
-                  {procesando
-                    ? "Guardando..."
-                    : "Crear notificación"}
-                </button>
-
-              </div>
-
-            </form>
-
-          </section>
-
-        </div>
-
-      )}
-
     </main>
   );
 }

@@ -209,9 +209,6 @@ function Unidades() {
         <div className="container-fluid">
           <header className="unidad-header mb-4">
             <div className="unidad-titulo">
-              <div className="unidad-icono">
-                <i className="bi bi-car-front-fill" />
-              </div>
 
               <div>
                 <h1 className="page-title-dash">

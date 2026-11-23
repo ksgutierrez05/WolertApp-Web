@@ -1,6 +1,10 @@
 
 import { consultarCentral } from "./centralPoliciaApi";
 
+// ==================================================
+// UTILIDADES
+// ==================================================
+
 const campo = (obj, ...nombres) =>
   nombres.reduce(
     (valor, nombre) => valor ?? obj?.[nombre],
@@ -12,7 +16,13 @@ const normalizar = (valor) =>
     .trim()
     .toUpperCase()
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "");
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[\s-]+/g, "_");
+
+const texto = (valor, defecto = "—") =>
+  valor == null || String(valor).trim() === ""
+    ? defecto
+    : String(valor);
 
 export const fechaLegible = (valor) => {
   if (!valor) return "—";
@@ -29,12 +39,19 @@ const fechaDe = (obj) =>
     obj,
     "fechaCreacion", "FechaCreacion",
     "fechaAlerta", "FechaAlerta",
+    "fechaReporte", "FechaReporte",
     "fechaRegistro", "FechaRegistro",
     "fecha", "Fecha"
   );
 
 const idAlerta = (obj) =>
-  campo(obj, "idAlerta", "IdAlerta");
+  campo(obj, "idAlerta", "IdAlerta", "ID_ALERTA");
+
+const idAsignacion = (obj) =>
+  campo(obj, "idAsignacion", "IdAsignacion");
+
+const idAtencion = (obj) =>
+  campo(obj, "idAtencion", "IdAtencion");
 
 const estadoAlerta = (obj) =>
   normalizar(campo(obj, "estado", "Estado"));
@@ -43,44 +60,76 @@ const prioridadAlerta = (obj) =>
   normalizar(campo(obj, "prioridad", "Prioridad"));
 
 const tipoAlerta = (obj) =>
-  campo(
-    obj,
-    "nombreTipoAlerta", "NombreTipoAlerta",
-    "tipoAlerta", "TipoAlerta",
-    "tipo", "Tipo"
-  ) || "Sin categoría";
+  texto(
+    campo(
+      obj,
+      "nombreTipoAlerta", "NombreTipoAlerta",
+      "tipoAlerta", "TipoAlerta",
+      "tipo", "Tipo"
+    ),
+    "Sin categoría"
+  );
 
 const zonaAlerta = (obj) =>
-  campo(
-    obj,
-    "direccion", "Direccion",
-    "barrio", "Barrio",
-    "nombreBarrio", "NombreBarrio",
-    "ubicacion", "Ubicacion"
-  ) || "No disponible";
+  texto(
+    campo(
+      obj,
+      "direccion", "Direccion",
+      "nombreBarrio", "NombreBarrio",
+      "barrio", "Barrio",
+      "ubicacion", "Ubicacion"
+    ),
+    "No disponible"
+  );
 
 const descripcionAlerta = (obj) =>
+  texto(
+    campo(
+      obj,
+      "descripcion", "Descripcion",
+      "detalle", "Detalle"
+    ),
+    "Sin descripción"
+  );
+
+const nombreUnidad = (obj) =>
   campo(
     obj,
-    "descripcion", "Descripcion",
-    "detalle", "Detalle"
-  ) || "Sin descripción";
+    "unidadNombre", "UnidadNombre",
+    "nombreUnidad", "NombreUnidad",
+    "codigoUnidad", "CodigoUnidad",
+    "nombre", "Nombre"
+  );
 
 const esResuelta = (obj) =>
   [
-    "RESUELTA", "RESUELTO",
-    "CERRADA", "CERRADO",
-    "FINALIZADA", "FINALIZADO",
-    "COMPLETADA", "COMPLETADO",
+    "RESUELTA",
+    "RESUELTO",
+    "CANCELADA",
+    "CERRADA",
+    "CERRADO",
+    "FINALIZADA",
+    "FINALIZADO",
   ].includes(estadoAlerta(obj));
 
 const esCritica = (obj) =>
-  ["CRITICA", "CRITICO"].includes(prioridadAlerta(obj));
+  [
+    "ALTA",
+    "CRITICA",
+    "CRITICO",
+    "URGENTE",
+  ].includes(prioridadAlerta(obj));
+
+// ==================================================
+// CONSULTAS A LA API
+// ==================================================
 
 async function consultarLista(ruta, signal) {
   const respuesta = await consultarCentral(ruta, { signal });
 
-  if (Array.isArray(respuesta)) return respuesta;
+  if (Array.isArray(respuesta)) {
+    return respuesta;
+  }
 
   const lista = campo(
     respuesta,
@@ -90,127 +139,289 @@ async function consultarLista(ruta, signal) {
     "resultados", "Resultados"
   );
 
-  if (Array.isArray(lista)) return lista;
+  if (Array.isArray(lista)) {
+    return lista;
+  }
 
   throw new Error(
-    `La respuesta de ${ruta} no contiene una lista válida.`
+    `${ruta}: la API no devolvió una lista válida.`
   );
 }
 
 export async function cargarCasosCentral(signal) {
   const rutas = [
-    "/api/Alertas?alcance=todas",
-    "/api/AtencionesAlerta",
-    "/api/Asignaciones",
-    "/api/Unidades",
+    ["alertas", "/api/Alertas?alcance=todas"],
+    ["atenciones", "/api/AtencionesAlerta"],
+    ["asignaciones", "/api/Asignaciones"],
   ];
 
   const resultados = await Promise.allSettled(
-    rutas.map((ruta) => consultarLista(ruta, signal))
+    rutas.map(([, ruta]) => consultarLista(ruta, signal))
   );
 
+  if (signal?.aborted) {
+    throw new DOMException(
+      "Consulta cancelada",
+      "AbortError"
+    );
+  }
+
+  // Las alertas son necesarias para construir
+  // el historial. Las demás consultas son
+  // complementarias.
   if (resultados[0].status === "rejected") {
     throw resultados[0].reason;
   }
 
-  const errores = [];
+  const datos = {
+    alertas: [],
+    atenciones: [],
+    asignaciones: [],
+    unidades: [],
+    errores: [],
+  };
 
-  const listas = resultados.map((resultado, indice) => {
+  resultados.forEach((resultado, indice) => {
+    const [nombre, ruta] = rutas[indice];
+
     if (resultado.status === "fulfilled") {
-      return resultado.value;
+      datos[nombre] = resultado.value;
+    } else {
+      datos.errores.push(
+        `${ruta}: ${
+          resultado.reason?.message ||
+          "No se pudo consultar"
+        }`
+      );
     }
-
-    errores.push(
-      `${rutas[indice]}: ${resultado.reason.message}`
-    );
-
-    return [];
   });
 
-  return {
-    alertas: listas[0],
-    atenciones: listas[1],
-    asignaciones: listas[2],
-    unidades: listas[3],
-    errores,
-  };
+  return datos;
 }
 
-export function construirCasos(datos) {
-  return datos.alertas.map((alerta, indice) => {
+// ==================================================
+// CONSTRUCCIÓN DEL HISTORIAL
+// ==================================================
+
+export function construirCasos(datos = {}) {
+  const alertas = datos.alertas || [];
+  const atenciones = datos.atenciones || [];
+  const asignaciones = datos.asignaciones || [];
+  const unidades = datos.unidades || [];
+
+  const atencionesPorAlerta = new Map();
+  const asignacionesPorAlerta = new Map();
+
+  for (const atencion of atenciones) {
+    const id = idAlerta(atencion);
+    if (id == null) continue;
+
+    const clave = String(id);
+
+    if (!atencionesPorAlerta.has(clave)) {
+      atencionesPorAlerta.set(clave, []);
+    }
+
+    atencionesPorAlerta.get(clave).push(atencion);
+  }
+
+  for (const asignacion of asignaciones) {
+    const id = idAlerta(asignacion);
+    if (id == null) continue;
+
+    const clave = String(id);
+
+    if (!asignacionesPorAlerta.has(clave)) {
+      asignacionesPorAlerta.set(clave, []);
+    }
+
+    asignacionesPorAlerta.get(clave).push(asignacion);
+  }
+
+  return alertas.map((alerta, indice) => {
     const id = idAlerta(alerta);
+    const claveId = String(id);
 
-    const atencion = datos.atenciones.find(
-      (a) => String(idAlerta(a)) === String(id)
+    const atencionesCaso = [
+      ...(atencionesPorAlerta.get(claveId) || []),
+    ].sort(
+      (a, b) =>
+        Number(idAtencion(b) || 0) -
+        Number(idAtencion(a) || 0)
     );
 
-    const asignacion = datos.asignaciones.find(
-      (a) => String(idAlerta(a)) === String(id)
+    const asignacionesCaso = [
+      ...(asignacionesPorAlerta.get(claveId) || []),
+    ].sort(
+      (a, b) =>
+        Number(idAsignacion(b) || 0) -
+        Number(idAsignacion(a) || 0)
     );
 
-    const unidad = datos.unidades.find(
+    const atencion = atencionesCaso[0] || null;
+
+    const asignacion =
+      asignacionesCaso.find(
+        (a) =>
+          normalizar(
+            campo(
+              a,
+              "tipoParticipacion",
+              "TipoParticipacion"
+            )
+          ) === "PRINCIPAL"
+      ) ||
+      asignacionesCaso[0] ||
+      null;
+
+    const idUnidad = campo(
+      asignacion,
+      "idUnidad",
+      "IdUnidad"
+    );
+
+    const unidad = unidades.find(
       (u) =>
+        idUnidad != null &&
         String(campo(u, "idUnidad", "IdUnidad")) ===
-        String(campo(asignacion, "idUnidad", "IdUnidad"))
+          String(idUnidad)
+    ) || null;
+
+    const observaciones = campo(
+      atencion,
+      "observacion", "Observacion",
+      "observaciones", "Observaciones",
+      "descripcionResultado", "DescripcionResultado"
     );
+
+    const descripcionAtencion = campo(
+      atencion,
+      "descripcion", "Descripcion",
+      "detalle", "Detalle"
+    );
+
+    const resultadoRegistrado = campo(
+      atencion,
+      "resultado", "Resultado",
+      "estadoFinal", "EstadoFinal"
+    );
+
+    const estado = estadoAlerta(alerta);
 
     return {
-      clave: `${id ?? indice}`,
+      clave: String(id ?? `caso-${indice}`),
+
       alerta,
       atencion,
       asignacion,
       unidad,
+
       id,
       fecha: fechaDe(alerta),
-      estado: estadoAlerta(alerta),
+      estado,
       prioridad: prioridadAlerta(alerta),
       tipo: tipoAlerta(alerta),
       zona: zonaAlerta(alerta),
       descripcion: descripcionAlerta(alerta),
-      resultado:
-        campo(atencion, "resultado", "Resultado") || "—",
+
+      resultado: resultadoRegistrado
+        ? texto(resultadoRegistrado).replaceAll("_", " ")
+        : atencion
+          ? "Atención registrada"
+          : "Sin informe",
+
       observaciones:
-        campo(
-          atencion,
-          "observaciones", "Observaciones",
-          "descripcionResultado", "DescripcionResultado"
-        ) || "Sin observaciones",
+        observaciones ||
+        descripcionAtencion ||
+        "Sin observaciones registradas",
+
       unidadNombre:
+        nombreUnidad(asignacion) ||
+        nombreUnidad(atencion) ||
+        nombreUnidad(unidad) ||
+        (idUnidad != null
+          ? `Unidad #${idUnidad}`
+          : "Sin unidad"),
+
+      estadoAsignacion: normalizar(
         campo(
-          unidad,
-          "nombreUnidad", "NombreUnidad",
-          "codigoUnidad", "CodigoUnidad",
-          "nombre", "Nombre"
-        ) || "Sin unidad",
+          asignacion,
+          "estadoAsignacion", "EstadoAsignacion",
+          "estado", "Estado"
+        )
+      ),
+
+      fechaAtencion: campo(
+        atencion,
+        "fechaAtencion", "FechaAtencion",
+        "fecha", "Fecha"
+      ),
+
       resuelta: esResuelta(alerta),
       critica: esCritica(alerta),
-      conInforme: Boolean(atencion),
+      conInforme: atencionesCaso.length > 0,
+
+      totalAtenciones: atencionesCaso.length,
+      totalAsignaciones: asignacionesCaso.length,
     };
   });
 }
 
-export function kpisHistorial(casos) {
+// ==================================================
+// ESTADÍSTICAS DE HISTORIAL
+// ==================================================
+
+export function kpisHistorial(casos = []) {
   return {
     totalCasos: casos.length,
-    casosResueltos: casos.filter((c) => c.resuelta).length,
-    casosCriticos: casos.filter((c) => c.critica).length,
-    casosConInforme: casos.filter((c) => c.conInforme).length,
+
+    casosResueltos: casos.filter(
+      (caso) => caso.resuelta
+    ).length,
+
+    casosCriticos: casos.filter(
+      (caso) => caso.critica
+    ).length,
+
+    casosConInforme: casos.filter(
+      (caso) => caso.conInforme
+    ).length,
   };
 }
 
+// ==================================================
+// FILTROS DE FECHA
+// ==================================================
+
 export function coincideFecha(fecha, desde, hasta) {
-  if (!desde && !hasta) return true;
-  if (!fecha) return false;
+  if (!desde && !hasta) {
+    return true;
+  }
 
-  const valor = new Date(fecha);
-  if (Number.isNaN(valor.getTime())) return false;
-
-  if (desde && valor < new Date(`${desde}T00:00:00`)) {
+  if (!fecha) {
     return false;
   }
 
-  if (hasta && valor > new Date(`${hasta}T23:59:59`)) {
+  const valor = new Date(fecha);
+
+  if (Number.isNaN(valor.getTime())) {
     return false;
+  }
+
+  if (desde) {
+    const inicio = new Date(`${desde}T00:00:00`);
+
+    if (valor < inicio) {
+      return false;
+    }
+  }
+
+  if (hasta) {
+    const fin = new Date(`${hasta}T23:59:59.999`);
+
+    if (valor > fin) {
+      return false;
+    }
   }
 
   return true;

@@ -1,351 +1,470 @@
-/* ============================================================
-   ASIGNACIÓN — Central de Radio
-   ============================================================ */
+
+/* WOLERTAPP - ASIGNACIONES CENTRAL POLICÍA */
+
+.asig-page {
+  --asig-green: #004d40;
+  --asig-green-hover: #006453;
+  --asig-soft: #e8f3ef;
+  --asig-border: #e5eae9;
+  --asig-text: #243b36;
+  --asig-muted: #71817c;
+  padding-bottom: 32px;
+}
+
+.asig-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.asig-eyebrow {
+  color: #527a6e;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  margin-bottom: 8px;
+}
+
+.asig-description {
+  color: var(--asig-muted);
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 5px 0 0;
+}
+
+.asig-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 9px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.asig-btn-outline {
+  background: white;
+  color: var(--asig-green);
+  border: 1px solid var(--asig-green);
+}
+
+.asig-btn-outline:hover {
+  background: var(--asig-green);
+  color: white;
+}
+
+.asig-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
 
 .asig-layout {
-    display: grid;
-    grid-template-columns: 380px minmax(0, 1fr);
-    gap: 20px;
-    align-items: start;
+  display: grid;
+  grid-template-columns: minmax(300px, 390px) minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+  margin-top: 22px;
+}
+
+.asig-page .card-panel-dash {
+  background: #fff;
+  border: 1px solid var(--asig-border);
+  border-radius: 18px;
+  box-shadow: 0 4px 20px rgba(20, 55, 45, 0.035);
 }
 
 .asig-col-list {
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    max-height: calc(100vh - 220px);
-    min-height: 420px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 500px;
 }
 
-/* Tabs */
+.asig-list-header h2 {
+  color: var(--asig-text);
+  font-size: 16px;
+  font-weight: 750;
+  margin: 0 0 4px;
+}
+
+.asig-list-subtitle {
+  font-size: 12px;
+  color: var(--asig-muted);
+}
+
 .asig-tabs {
-    display: flex;
-    gap: 6px;
-    padding: 4px;
-    background: var(--fog);
-    border-radius: 12px;
+  display: flex;
+  gap: 5px;
+  padding: 5px;
+  background: #f2f6f4;
+  border-radius: 12px;
 }
 
 .asig-tab {
-    flex: 1;
-    border: 0;
-    background: transparent;
-    padding: 9px 10px;
-    border-radius: 9px;
-    color: var(--muted);
-    font-size: 12.5px;
-    font-weight: 700;
-    cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  gap: 8px;
+  padding: 11px 8px;
+  background: transparent;
+  border: 0;
+  border-radius: 9px;
+  color: #657a72;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
 }
 
 .asig-tab.active {
-    background: #fff;
-    color: var(--ink);
-    box-shadow: var(--shadow-xs);
+  color: white;
+  background: var(--asig-green);
+  box-shadow: 0 3px 9px rgba(0, 77, 64, 0.13);
 }
 
 .asig-tab-count {
-    padding: 1px 7px;
-    border-radius: 100px;
-    background: var(--line);
-    font-size: 10.5px;
+  background: #e2eae6;
+  color: #466358;
+  padding: 2px 7px;
+  border-radius: 7px;
+  font-size: 10px;
 }
 
 .asig-tab.active .asig-tab-count {
-    background: var(--color-primary);
-    color: #fff;
+  background: rgba(255, 255, 255, 0.18);
+  color: white;
 }
 
-/* Búsqueda */
-.asig-search .input-group-text {
-    background: #fff;
-    border-right: 0;
-    color: var(--subtle);
+.asig-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+  min-height: 44px;
+  border: 1px solid #dce5e1;
+  border-radius: 10px;
+  background: #fbfcfc;
+  color: #7b8d85;
 }
 
-.asig-search .form-control {
-    border-left: 0;
-    font-size: 13px;
+.asig-search:focus-within {
+  border-color: var(--asig-green);
+  box-shadow: 0 0 0 3px rgba(0, 77, 64, 0.07);
 }
 
-.asig-search .form-control:focus {
-    box-shadow: none;
+.asig-search input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--asig-text);
+  font-size: 12px;
 }
 
-/* Listas */
 .asig-lista {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    overflow-y: auto;
-    padding-right: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  max-height: 570px;
+  padding-right: 3px;
 }
 
-/* Alertas */
 .asig-card {
-    position: relative;
-    padding: 12px 14px 12px 16px;
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    background: #fff;
-    cursor: pointer;
-    transition: .15s;
+  position: relative;
+  width: 100%;
+  text-align: left;
+  padding: 15px 16px;
+  background: #fff;
+  border: 1px solid var(--asig-border);
+  border-radius: 13px;
+  cursor: pointer;
+  transition: 0.18s ease;
 }
 
 .asig-card:hover {
-    box-shadow: var(--shadow-sm);
-    transform: translateY(-1px);
+  background: #f7faf8;
+  border-color: #c6d9d0;
 }
 
 .asig-card.selected {
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 2px rgba(21,77,140,.14);
-}
-
-.asig-card::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 10px;
-    bottom: 10px;
-    width: 4px;
-    border-radius: 4px;
-}
-
-.asig-card[data-prioridad="critica"]::before,
-.asig-card[data-prioridad="alta"]::before {
-    background: var(--color-danger);
-}
-
-.asig-card[data-prioridad="media"]::before {
-    background: var(--color-amber);
-}
-
-.asig-card[data-prioridad="baja"]::before {
-    background: var(--color-blue);
+  background: #f1f8f4;
+  border-color: var(--asig-green);
+  box-shadow: 0 0 0 2px rgba(0, 77, 64, 0.06);
 }
 
 .asig-card-top,
-.asig-patrullero {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
+.asig-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
 }
 
-.asig-card-caso,
-.asig-detalle-caso {
-    color: var(--subtle);
-    font-size: 11.5px;
-    font-weight: 700;
-}
-
-.asig-card-tipo,
-.asig-patrullero-nombre {
-    font-weight: 700;
+.asig-card-caso {
+  color: #688076;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
 }
 
 .asig-card-tipo {
-    margin-top: 2px;
-    font-size: 13.5px;
+  margin-top: 11px;
+  color: var(--asig-text);
+  font-size: 14px;
+  font-weight: 750;
 }
 
 .asig-card-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 6px;
-    color: var(--muted);
-    font-size: 11.5px;
+  display: flex;
+  margin-top: 8px;
+  color: var(--asig-muted);
+  font-size: 12px;
 }
 
-/* Detalle */
+.asig-card-meta span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.asig-card-footer {
+  margin-top: 15px;
+  padding-top: 12px;
+  border-top: 1px solid #edf1ef;
+  color: var(--asig-green);
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.asig-prioridad {
+  padding: 5px 9px;
+  border-radius: 7px;
+  background: #eef1f0;
+  color: #687a74;
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.asig-prioridad-alta,
+.asig-prioridad-critica {
+  background: #f8e9e8;
+  color: #9c4844;
+}
+
+.asig-prioridad-media {
+  background: #faf1dc;
+  color: #8b6a2e;
+}
+
+.asig-prioridad-baja {
+  background: #e3f1e9;
+  color: #286b4d;
+}
+
 .asig-col-detalle {
-    min-height: 420px;
-    padding: 22px;
+  min-height: 500px;
+  padding: 26px;
+}
+
+.asig-detalle-empty {
+  display: flex;
+  min-height: 420px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  gap: 10px;
+}
+
+.asig-empty-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 66px;
+  height: 66px;
+  border-radius: 18px;
+  background: var(--asig-soft);
+  color: var(--asig-green);
+  font-size: 27px;
+}
+
+.asig-detalle-empty h2 {
+  color: var(--asig-text);
+  font-size: 18px;
+  font-weight: 750;
+  margin: 8px 0 0;
+}
+
+.asig-detalle-empty p {
+  max-width: 310px;
+  color: var(--asig-muted);
+  font-size: 13px;
+  line-height: 1.6;
 }
 
 .asig-detalle-header {
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    padding-bottom: 16px;
-    margin-bottom: 16px;
-    border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding-bottom: 22px;
+  margin-bottom: 22px;
+  border-bottom: 1px solid var(--asig-border);
 }
 
 .asig-detalle-titulo {
-    margin-top: 2px;
-    font-size: 19px;
-    font-weight: 700;
-}
-
-.asig-detalle-meta,
-.asig-patrullero-sub {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 8px;
-    color: var(--muted);
-    font-size: 12px;
-}
-
-/* Bloques */
-.asig-bloque {
-    margin-bottom: 18px;
-}
-
-.asig-bloque-titulo {
-    margin-bottom: 8px;
-    color: var(--subtle);
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-}
-
-.asig-texto-reporte {
-    padding: 12px 14px;
-    border-radius: 12px;
-    background: var(--fog);
-    color: var(--ink);
-    font-size: 13px;
-    line-height: 1.5;
-}
-
-.asig-texto-reporte.central {
-    background: #eaf1fb;
-}
-
-/* Patrulleros */
-.asig-patrullero {
-    padding: 12px 14px;
-    margin-bottom: 10px;
-    border: 1px solid var(--line);
-    border-radius: 14px;
-}
-
-.asig-patrullero-info {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.asig-patrullero-avatar {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    flex-shrink: 0;
-    border-radius: 12px;
-    background: linear-gradient(
-        135deg,
-        var(--color-primary),
-        var(--color-primary-2)
-    );
-    color: #fff;
-    font-weight: 700;
-}
-
-.asig-sugerido-tag {
-    padding: 2px 8px;
-    margin-left: 6px;
-    border-radius: 100px;
-    background: #e3f8ec;
-    color: var(--color-green);
-    font-size: 10px;
-    font-weight: 700;
+  color: var(--asig-text);
+  font-size: 23px;
+  font-weight: 800;
+  margin: 0;
 }
 
 .asig-estado-pill {
-    padding: 3px 9px;
-    border-radius: 100px;
-    font-size: 10.5px;
-    font-weight: 700;
+  padding: 8px 12px;
+  background: var(--asig-soft);
+  color: var(--asig-green);
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 800;
 }
 
-.asig-estado-disponible {
-    background: #e3f8ec;
-    color: var(--color-green);
+.asig-detalle-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
 }
 
-.asig-estado-en_camino {
-    background: #e8f0fb;
-    color: var(--color-blue);
+.asig-dato {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
 }
 
-.asig-estado-en_sitio {
-    background: #fcf0da;
-    color: var(--color-amber);
+.asig-dato span {
+  color: var(--asig-muted);
+  font-size: 11px;
+  font-weight: 600;
 }
 
-.asig-estado-ocupado {
-    background: #fce8e9;
-    color: var(--color-danger);
+.asig-dato strong {
+  color: var(--asig-text);
+  font-size: 13px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
 }
 
-.asig-estado-fuera_servicio {
-    background: var(--fog);
-    color: var(--subtle);
+.asig-dato-full {
+  grid-column: 1 / -1;
 }
 
-/* Seguimiento */
-.asig-seguimiento-card {
-    padding: 16px;
-    margin-bottom: 16px;
-    border: 1px solid var(--line);
-    border-radius: 16px;
+.asig-asignacion-info {
+  margin-top: 28px;
+  padding: 22px;
+  border: 1px solid var(--asig-border);
+  border-radius: 13px;
+  background: #fbfdfc;
 }
 
-.asig-aviso-sin-respuesta {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 14px;
-    margin-bottom: 14px;
-    border-radius: 12px;
-    background: #fce8e9;
-    color: var(--color-danger);
-    font-size: 12.5px;
-    font-weight: 600;
+.asig-asignacion-info h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 20px;
+  color: var(--asig-green);
+  font-size: 14px;
+  font-weight: 750;
+}
+
+.asig-observacion {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid var(--asig-border);
+}
+
+.asig-observacion span {
+  color: var(--asig-muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.asig-observacion p {
+  color: var(--asig-text);
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 6px 0 0;
+}
+
+.asig-aviso {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 25px;
+  padding: 16px;
+  border-radius: 12px;
+  background: #eaf3ee;
+  color: #315e49;
+}
+
+.asig-aviso i {
+  font-size: 18px;
+}
+
+.asig-aviso strong {
+  font-size: 13px;
+}
+
+.asig-aviso p {
+  margin: 5px 0 0;
+  font-size: 12px;
+  line-height: 1.6;
 }
 
 .asig-empty {
-    padding: 40px 12px;
-    color: var(--subtle);
-    font-size: 13px;
-    text-align: center;
+  padding: 55px 15px;
+  text-align: center;
+  color: var(--asig-muted);
+  font-size: 13px;
 }
 
 .asig-empty i {
-    display: block;
-    margin-bottom: 10px;
-    font-size: 26px;
+  display: block;
+  font-size: 27px;
+  margin-bottom: 12px;
+  color: #a0b4aa;
 }
 
-.asig-toast {
-    border: 0;
-    background: var(--ink);
-    color: #fff;
-    font-size: 13px;
-    font-weight: 600;
+@media (max-width: 1050px) {
+  .asig-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .asig-lista {
+    max-height: 400px;
+  }
 }
 
-/* Responsive */
-@media (max-width: 992px) {
-    .asig-layout {
-        grid-template-columns: 1fr;
-    }
-}
+@media (max-width: 600px) {
+  .asig-col-list,
+  .asig-col-detalle {
+    padding: 16px;
+  }
 
-@media (max-width: 576px) {
-    .asig-patrullero {
-        flex-direction: column;
-        align-items: stretch;
-    }
+  .asig-detalle-grid {
+    grid-template-columns: 1fr;
+  }
 
-    .asig-detalle-header {
-        flex-direction: column;
-    }
+  .asig-dato-full {
+    grid-column: auto;
+  }
 }

@@ -1,31 +1,30 @@
-
-import { NavLink, useNavigate } from 'react-router-dom';
-import logoPolicia from '../../../public/img/logopolicia.png';
+import { NavLink, useNavigate } from "react-router-dom";
+import logoPolicia from "../../../public/img/logopolicia.png";
 
 const ICONOS_POLICIA = {
-  centrooperaciones: 'bi-house',
-  alertas: 'bi-exclamation-triangle',
-  alarmas: 'bi-megaphone',
-  tiposalertas: 'bi-list-check',
-  policias: 'bi-person-badge',
-  unidades: 'bi-car-front',
-  historial: 'bi-clock-history',
-  estadisticas: 'bi-bar-chart-line',
-  reportes: 'bi-file-earmark-bar-graph',
-  notificaciones: 'bi-bell',
-  configuracion: 'bi-sliders',
-  logout: 'bi-box-arrow-right',
+  centrooperaciones: "bi-house",
+  alertas: "bi-exclamation-triangle",
+  alarmas: "bi-megaphone",
+  tiposalertas: "bi-list-check",
+  policias: "bi-person-badge",
+  unidades: "bi-car-front",
+  historial: "bi-clock-history",
+  estadisticas: "bi-bar-chart-line",
+  reportes: "bi-file-earmark-bar-graph",
+  notificaciones: "bi-bell",
+  configuracion: "bi-sliders",
+  logout: "bi-box-arrow-right",
 };
 
-const RAIZ = '/Administrador-Policia';
+const RAIZ = "/Administrador-Policia";
 
 const MENU_POLICIA = [
   {
-    seccion: 'General',
+    seccion: "General",
     items: [
       {
-        id: 'centrooperaciones',
-        label: 'Centro de Operaciones',
+        id: "centrooperaciones",
+        label: "Centro de Operaciones",
         to: RAIZ,
         icon: ICONOS_POLICIA.centrooperaciones,
         end: true,
@@ -33,23 +32,73 @@ const MENU_POLICIA = [
     ],
   },
   {
-    seccion: 'Operación',
+    seccion: "Operación",
     items: [
-      { id: 'alertas', label: 'Alertas', to: `${RAIZ}/Alertas`, icon: ICONOS_POLICIA.alertas },
-      { id: 'alarmas', label: 'Alarmas', to: `${RAIZ}/Alarmas`, icon: ICONOS_POLICIA.alarmas },
-      { id: 'tiposalertas', label: 'Tipos de Alertas', to: `${RAIZ}/Tipos-Alertas`, icon: ICONOS_POLICIA.tiposalertas },
-      { id: 'unidades', label: 'Unidades', to: `${RAIZ}/Unidades`, icon: ICONOS_POLICIA.unidades },
-      { id: 'policias', label: 'Policías', to: `${RAIZ}/Policias`, icon: ICONOS_POLICIA.policias },
+      {
+        id: "alertas",
+        label: "Alertas",
+        to: `${RAIZ}/Alertas`,
+        icon: ICONOS_POLICIA.alertas,
+      },
+      {
+        id: "alarmas",
+        label: "Alarmas",
+        to: `${RAIZ}/Alarmas`,
+        icon: ICONOS_POLICIA.alarmas,
+      },
+      {
+        id: "tiposalertas",
+        label: "Tipos de Alertas",
+        to: `${RAIZ}/Tipos-Alertas`,
+        icon: ICONOS_POLICIA.tiposalertas,
+      },
+      {
+        id: "unidades",
+        label: "Unidades",
+        to: `${RAIZ}/Unidades`,
+        icon: ICONOS_POLICIA.unidades,
+      },
+      {
+        id: "policias",
+        label: "Policías",
+        to: `${RAIZ}/Policias`,
+        icon: ICONOS_POLICIA.policias,
+      },
     ],
   },
   {
-    seccion: 'Gestión',
+    seccion: "Gestión",
     items: [
-      { id: 'historial', label: 'Historial', to: `${RAIZ}/Historial`, icon: ICONOS_POLICIA.historial },
-      { id: 'estadisticas', label: 'Estadísticas', to: `${RAIZ}/Estadisticas`, icon: ICONOS_POLICIA.estadisticas },
-      { id: 'reportes', label: 'Reportes', to: `${RAIZ}/Reportes`, icon: ICONOS_POLICIA.reportes },
-      { id: 'notificaciones', label: 'Notificaciones', to: `${RAIZ}/Notificaciones`, icon: ICONOS_POLICIA.notificaciones },
-      { id: 'configuracion', label: 'Configuración', to: `${RAIZ}/Configuracion`, icon: ICONOS_POLICIA.configuracion },
+      {
+        id: "historial",
+        label: "Historial",
+        to: `${RAIZ}/Historial`,
+        icon: ICONOS_POLICIA.historial,
+      },
+      {
+        id: "estadisticas",
+        label: "Estadísticas",
+        to: `${RAIZ}/Estadisticas`,
+        icon: ICONOS_POLICIA.estadisticas,
+      },
+      {
+        id: "reportes",
+        label: "Reportes",
+        to: `${RAIZ}/Reportes`,
+        icon: ICONOS_POLICIA.reportes,
+      },
+      {
+        id: "notificaciones",
+        label: "Notificaciones",
+        to: `${RAIZ}/Notificaciones`,
+        icon: ICONOS_POLICIA.notificaciones,
+      },
+      {
+        id: "configuracion",
+        label: "Configuración",
+        to: `${RAIZ}/Configuracion`,
+        icon: ICONOS_POLICIA.configuracion,
+      },
     ],
   },
 ];
@@ -57,18 +106,17 @@ const MENU_POLICIA = [
 function SidebarPolicia() {
   const navigate = useNavigate();
 
+  // Cerrar sesión sin confirmación del navegador
   function cerrarSesion(evento) {
     evento.preventDefault();
 
-    if (!window.confirm('¿Seguro que deseas cerrar sesión?')) return;
+    localStorage.removeItem("token");
 
-    localStorage.removeItem('token');
-    navigate('/');
+    navigate("/", { replace: true });
   }
-
   return (
     <aside className="sidebar-dash" id="sidebarDash">
-
+      {/* LOGO */}
       <div className="d-flex align-items-center brand-dash">
         <span className="brand-icon-dash brand-icon-dash--logo">
           <img src={logoPolicia} alt="Policía Nacional" />
@@ -76,10 +124,12 @@ function SidebarPolicia() {
 
         <span className="brand-text-dash">
           <span className="brand-name-dash">WolertApp</span>
+
           <span className="brand-role-dash">Administrador Policía</span>
         </span>
       </div>
 
+      {/* MENÚ */}
       {MENU_POLICIA.map((sec) => (
         <div key={sec.seccion}>
           <p className="glabel-dash">{sec.seccion}</p>
@@ -90,17 +140,13 @@ function SidebarPolicia() {
                 key={item.id}
                 to={item.to}
                 end={item.end ?? true}
-                className={({ isActive }) =>
-                  isActive ? 'active' : ''
-                }
+                className={({ isActive }) => (isActive ? "active" : "")}
               >
                 <span className="ic-dash">
                   <i className={`bi ${item.icon}`} />
                 </span>
 
-                <span className="lbl-dash">
-                  {item.label}
-                </span>
+                <span className="lbl-dash">{item.label}</span>
               </NavLink>
             ))}
           </nav>
@@ -109,6 +155,7 @@ function SidebarPolicia() {
 
       <div className="flex-grow-1" />
 
+      {/* CERRAR SESIÓN */}
       <a
         href="/"
         id="logoutDash"
@@ -121,7 +168,6 @@ function SidebarPolicia() {
 
         <span className="lbl-dash">Cerrar sesión</span>
       </a>
-
     </aside>
   );
 }

@@ -51,14 +51,17 @@
   letter-spacing: 1.2px;
 }
 
-.atencion-encabezado h1 {
-  margin: 0 0 8px;
-  color: #17352f;
-  font-size: clamp(25px, 2.2vw, 32px);
-  font-weight: 750;
+/* TÍTULO PRINCIPAL: MISMO ESTILO DE UNIDADES */
+.atencion-page .atencion-encabezado h1 {
+  margin: 0 0 6px;
+  color: #193b35;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: clamp(25px, 2.2vw, 31px);
+  font-weight: 700;
   letter-spacing: -0.8px;
   line-height: 1.2;
 }
+
 
 .atencion-encabezado p {
   max-width: 650px;
@@ -880,5 +883,263 @@
   .atencion-page *::after {
     transition: none !important;
     animation: none !important;
+  }
+}
+
+/* =============================================
+   CENTRAL POLICÍA - ATENCIÓN DE ALERTAS
+   REFINAMIENTO VISUAL INSTITUCIONAL
+   ============================================= */
+
+.atencion-page {
+  --atencion-verde: #004d40;
+  --atencion-verde-oscuro: #003d33;
+  --atencion-verde-activo: #004d40;
+  --atencion-fondo: #f5f7f8;
+  --atencion-borde: #e4eae7;
+  --atencion-texto: #243b36;
+  --atencion-secundario: #74847d;
+  background: transparent;
+}
+
+.atencion-contenido {
+  padding: 24px 0 36px;
+}
+
+.atencion-encabezado h1 {
+  font-size: 26px;
+  color: #203c33;
+}
+
+.atencion-page .btn-outline-success {
+  background: white;
+  border: 1px solid #004d40;
+  color: #004d40;
+  padding: 10px 16px;
+  border-radius: 9px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.atencion-page .btn-outline-success:hover {
+  background: #004d40;
+  color: white;
+  border-color: #004d40;
+}
+
+.atencion-panel {
+  border: 1px solid #e4eae7;
+  border-radius: 18px;
+  box-shadow: 0 4px 20px rgba(20, 55, 45, 0.035);
+}
+
+.atencion-tabs {
+  gap: 7px;
+}
+
+.atencion-tabs button {
+  background: #f1f5f3;
+  color: #62776e;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  padding: 10px 13px;
+}
+
+.atencion-tabs button.activo {
+  background: #004d40;
+  color: #fff;
+  border-color: #004d40;
+}
+
+.atencion-tabs button:hover:not(.activo) {
+  background: #e8f3ef;
+  color: #004d40;
+}
+
+.atencion-busqueda {
+  background: #fbfcfc;
+  border-color: #dce5e1;
+}
+
+.atencion-busqueda:focus-within {
+  border-color: #004d40;
+  box-shadow: 0 0 0 3px rgba(0, 77, 64, 0.08);
+}
+
+.atencion-item {
+  padding: 17px 12px;
+  border-radius: 11px;
+}
+
+.atencion-item:hover {
+  background: #f6faf8;
+}
+
+.atencion-item.seleccionado {
+  background: #eef6f2;
+  box-shadow: inset 3px 0 0 #004d40;
+}
+
+.atencion-item-icono {
+  background: #e8f3ef;
+  color: #004d40;
+  border-color: #d9e9e1;
+}
+
+.atencion-item-info strong {
+  color: #263f36;
+  font-size: 12.5px;
+}
+
+.atencion-item-info small {
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.atencion-estado {
+  max-width: none;
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.025em;
+}
+
+.atencion-estado.en-revision {
+  background: #e8eef2;
+  color: #47687a;
+}
+
+.atencion-estado.finalizada {
+  background: #e3f1e9;
+  color: #286b4d;
+}
+
+.atencion-estado.por-revisar {
+  background: #faf1dc;
+  color: #8b6a2e;
+}
+
+.atencion-detalle {
+  padding: 26px;
+}
+
+.atencion-detalle-header h2 {
+  font-size: 21px;
+  color: #203d35;
+}
+
+.atencion-unidad {
+  background: #f7faf8;
+  border-color: #e2ebe6;
+}
+
+.atencion-unidad-icono {
+  background: #e3f1e9;
+  color: #004d40;
+}
+
+.atencion-datos-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.atencion-datos-grid > div {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+}
+
+.atencion-datos-grid span {
+  color: #7a8b82;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.atencion-datos-grid strong {
+  color: #263f36;
+  font-size: 13px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.atencion-vacio {
+  display: flex;
+  min-height: 430px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 10px;
+}
+
+.atencion-vacio-icono {
+  display: grid;
+  width: 68px;
+  height: 68px;
+  place-items: center;
+  background: #e8f3ef;
+  color: #004d40;
+  border-radius: 18px;
+  font-size: 28px;
+}
+
+.atencion-vacio h2 {
+  font-size: 18px;
+  font-weight: 750;
+  color: #203d35;
+}
+
+.atencion-vacio p {
+  max-width: 300px;
+  color: #74847d;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.atencion-ayuda {
+  background: #edf5f1;
+  color: #496c5e;
+  font-size: 11px;
+}
+
+.atencion-ayuda i {
+  color: #004d40;
+}
+
+@media (max-width: 1100px) {
+  .atencion-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .atencion-contenido {
+    padding: 16px 0;
+  }
+
+  .atencion-encabezado {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .atencion-detalle {
+    padding: 18px;
+  }
+
+  .atencion-datos-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .atencion-unidad {
+    flex-wrap: wrap;
+  }
+
+  .atencion-unidad-hora {
+    margin-left: 0;
+    align-items: flex-start;
+    text-align: left;
   }
 }

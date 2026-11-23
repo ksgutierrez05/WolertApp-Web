@@ -1,10 +1,7 @@
-
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-
 import Topbar from "../../Components/Central-policia/Topbar";
 import Kpis from "../../Components/Central-policia/Kpicard";
-
 import {
   cargarOperaciones,
   resumenOperativo,
@@ -19,55 +16,47 @@ import {
   esPendiente,
   esResuelta,
 } from "../../Services/OperacionesCentralService.js";
-
-
 import "../../css/Policia/central-policia/css/alertas.css";
-
+const datosVacios = () => ({
+  alertas: [],
+  asignaciones: [],
+  atenciones: [],
+  unidades: [],
+});
 function Alertas() {
-  const [datos, setDatos] = useState({
-    alertas: [],
-    asignaciones: [],
-    atenciones: [],
-    unidades: [],
-  });
-
+  const [datos, setDatos] = useState(datosVacios);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
   const [avisos, setAvisos] = useState([]);
-
   const [filtro, setFiltro] = useState("todas");
   const [busqueda, setBusqueda] = useState("");
   const [recarga, setRecarga] = useState(0);
-
+  const [alertaSeleccionada, setAlertaSeleccionada] = useState(null);
+  const [pagina, setPagina] = useState(1);
+  const porPagina = 10;
   useEffect(() => {
     const controller = new AbortController();
-
     cargarOperaciones(controller.signal)
       .then(({ datos: resultado, errores }) => {
-        if (!controller.signal.aborted) {
-          setDatos(resultado);
-          setAvisos(errores);
-        }
+        if (controller.signal.aborted) return;
+        setDatos(resultado);
+        setAvisos(errores);
+        setError("");
       })
-      .catch((e) => {
-        if (!controller.signal.aborted) {
-          setError(e.message);
-        }
+      .catch((err) => {
+        if (controller.signal.aborted) return;
+        setDatos(datosVacios());
+        setAvisos([]);
+        setError(err.message || "No se pudieron cargar las alertas.");
       })
       .finally(() => {
         if (!controller.signal.aborted) {
           setCargando(false);
         }
       });
-
     return () => controller.abort();
   }, [recarga]);
-
-  const valores = useMemo(
-    () => resumenOperativo(datos).alertas,
-    [datos]
-  );
-
+  const valores = useMemo(() => resumenOperativo(datos).alertas, [datos]);
   const filtradas = useMemo(
     () =>
       datos.alertas
@@ -77,79 +66,84 @@ function Alertas() {
             (filtro === "criticas" && esCritica(a)) ||
             (filtro === "pendientes" && esPendiente(a)) ||
             (filtro === "resueltas" && esResuelta(a));
-
           const coincideBusqueda = [
             idAlerta(a),
             tipoAlerta(a),
+            prioridadAlerta(a),
             ubicacionAlerta(a),
             estadoAlerta(a),
           ]
             .join(" ")
             .toLowerCase()
-            .includes(busqueda.toLowerCase());
-
+            .includes(busqueda.trim().toLowerCase());
           return coincide && coincideBusqueda;
         })
         .sort(
           (a, b) =>
-            new Date(fechaAlerta(b) || 0) -
-            new Date(fechaAlerta(a) || 0)
+            new Date(fechaAlerta(b) || 0) - new Date(fechaAlerta(a) || 0),
         ),
-    [datos.alertas, filtro, busqueda]
+    [datos.alertas, filtro, busqueda],
   );
-
+  const totalPaginas = Math.max(1, Math.ceil(filtradas.length / porPagina));
+  const paginaActual = Math.min(pagina, totalPaginas);
+  const alertasPagina = useMemo(
+    () =>
+      filtradas.slice((paginaActual - 1) * porPagina, paginaActual * porPagina),
+    [filtradas, paginaActual],
+  );
+  useEffect(() => {
+    setPagina(1);
+  }, [filtro, busqueda]);
   function actualizar() {
+    setAlertaSeleccionada(null);
     setCargando(true);
     setError("");
+    setAvisos([]);
     setRecarga((n) => n + 1);
   }
-
+  function cerrarModal() {
+    setAlertaSeleccionada(null);
+  }
   return (
     <>
       <Topbar
         placeholder="Buscar por caso, tipo, dirección o barrio..."
         iniciales="CR"
       />
-
       <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
         <div>
-          <h1 className="page-title-dash">
-            Alertas entrantes
-          </h1>
-
+          <h1 className="page-title-dash">Alertas entrantes</h1>
           <p className="info-sub-dash mb-0">
-            Consulta y filtra las alertas recibidas
-            desde los ciudadanos.
+            Consulta y filtra las alertas recibidas desde los ciudadanos.
           </p>
         </div>
-
         <button
+          type="button"
           className="btn btn-outline-success btn-sm"
           disabled={cargando}
           onClick={actualizar}
         >
           <i className="bi bi-arrow-clockwise me-1" />
-          Actualizar
+          {cargando ? "Actualizando..." : "Actualizar"}
         </button>
       </div>
-
       {error && (
-        <div className="alert alert-danger">
+        <div className="alert alert-danger" role="alert">
+          <strong>Error al cargar las alertas: </strong>
           {error}
         </div>
       )}
-
       {avisos.length > 0 && (
-        <div className="alert alert-warning">
-          Consultas parciales: {avisos.join(" | ")}
+        <div className="alert alert-warning" role="alert">
+          <strong>Consultas parciales.</strong>
+          <ul className="mb-0 mt-1">
+            {avisos.map((aviso, i) => (
+              <li key={i}>{aviso}</li>
+            ))}
+          </ul>
         </div>
       )}
-
-      <Kpis
-        grupo="alertas"
-        valores={cargando ? {} : valores}
-      />
-
+      <Kpis grupo="alertas" valores={cargando || error ? {} : valores} />
       <section className="card-panel-dash p-4 mb-4">
         <div className="encabezado-panel-dash">
           <h2 className="section-title-dash">
@@ -157,7 +151,6 @@ function Alertas() {
             Filtros de alertas
           </h2>
         </div>
-
         <div className="d-flex flex-wrap gap-2 mb-3">
           {[
             ["todas", "Todas"],
@@ -170,9 +163,7 @@ function Alertas() {
               type="button"
               onClick={() => setFiltro(clave)}
               className={`btn btn-sm ${
-                filtro === clave
-                  ? "btn-success"
-                  : "btn-outline-secondary"
+                filtro === clave ? "btn-success" : "btn-outline-secondary"
               }`}
               aria-pressed={filtro === clave}
             >
@@ -180,8 +171,8 @@ function Alertas() {
             </button>
           ))}
         </div>
-
         <input
+          type="search"
           className="form-control"
           placeholder="Buscar por caso, tipo, barrio o estado..."
           value={busqueda}
@@ -189,19 +180,16 @@ function Alertas() {
           aria-label="Buscar alertas"
         />
       </section>
-
       <section className="card-panel-dash p-4 mb-4">
         <div className="encabezado-panel-dash">
           <h2 className="section-title-dash">
             <i className="bi bi-inboxes me-2" />
             Listado de alertas
           </h2>
-
           <span className="see-all-dash">
-            {filtradas.length} registros
+            {cargando || error ? "—" : filtradas.length} registros
           </span>
         </div>
-
         <div className="table-responsive">
           <table className="table tabla-dash align-middle">
             <thead>
@@ -215,49 +203,63 @@ function Alertas() {
                 <th>Acción</th>
               </tr>
             </thead>
-
             <tbody>
-              {cargando ? (
+              {cargando || error ? (
                 <tr>
-                  <td
-                    colSpan="7"
-                    className="estado-vacio-dash"
-                  >
-                    Cargando alertas...
+                  <td colSpan={7} className="estado-vacio-dash">
+                    {cargando
+                      ? "Cargando alertas..."
+                      : "No fue posible cargar las alertas."}
                   </td>
                 </tr>
               ) : filtradas.length === 0 ? (
                 <tr>
-                  <td
-                    colSpan="7"
-                    className="estado-vacio-dash"
-                  >
+                  <td colSpan={7} className="estado-vacio-dash">
                     No se encontraron alertas.
                   </td>
                 </tr>
               ) : (
-                filtradas.map((a) => (
-                  <tr key={idAlerta(a)}>
-                    <td>#{idAlerta(a)}</td>
+                alertasPagina.map((a, i) => (
+                  <tr key={idAlerta(a) ?? i}>
+                    <td className="fw-semibold">#{idAlerta(a)}</td>
                     <td>{tipoAlerta(a)}</td>
                     <td>
-                      {prioridadAlerta(a) || "—"}
+                      <span
+                        className={`badge ${
+                          esCritica(a)
+                            ? "bg-danger"
+                            : prioridadAlerta(a) === "MEDIA"
+                              ? "bg-warning text-dark"
+                              : "bg-secondary"
+                        }`}
+                      >
+                        {prioridadAlerta(a) || "—"}
+                      </span>
                     </td>
                     <td>{ubicacionAlerta(a)}</td>
+                    <td>{fechaLegible(fechaAlerta(a))}</td>
                     <td>
-                      {fechaLegible(fechaAlerta(a))}
-                    </td>
-                    <td>
-                      {estadoAlerta(a) || "—"}
-                    </td>
-
-                    <td>
-                      <Link
-                        to="/Central-Policia/Asignaciones"
-                        className="btn btn-sm btn-outline-success"
+                      <span
+                        className={`badge ${
+                          esResuelta(a)
+                            ? "bg-success"
+                            : esPendiente(a)
+                              ? "bg-warning text-dark"
+                              : "bg-primary"
+                        }`}
                       >
-                        Asignaciones
-                      </Link>
+                        {estadoAlerta(a).replaceAll("_", " ") || "—"}
+                      </span>
+                    </td>
+                    <td>
+                      <button
+                        type="button"
+                        className="al-btn-ver"
+                        onClick={() => setAlertaSeleccionada(a)}
+                      >
+                        <i className="bi bi-eye me-1" />
+                        Ver detalles
+                      </button>
                     </td>
                   </tr>
                 ))
@@ -265,9 +267,133 @@ function Alertas() {
             </tbody>
           </table>
         </div>
+        {!cargando && !error && filtradas.length > 0 && (
+          <nav className="al-paginacion" aria-label="Paginación de alertas">
+            <span className="al-paginacion-info">
+              Mostrando {(paginaActual - 1) * porPagina + 1}–
+              {Math.min(paginaActual * porPagina, filtradas.length)} de{" "}
+              {filtradas.length} alertas
+            </span>
+            <div className="al-paginacion-controles">
+              <button
+                type="button"
+                onClick={() => setPagina((p) => Math.max(1, p - 1))}
+                disabled={paginaActual === 1}
+              >
+                Anterior
+              </button>
+              <span>
+                {paginaActual} / {totalPaginas}
+              </span>
+              <button
+                type="button"
+                onClick={() => setPagina((p) => Math.min(totalPaginas, p + 1))}
+                disabled={paginaActual === totalPaginas}
+              >
+                Siguiente
+              </button>
+            </div>
+          </nav>
+        )}
       </section>
+      {alertaSeleccionada && (
+        <div
+          className="modal d-block"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Detalle de alerta"
+          style={{
+            background: "rgba(0, 0, 0, 0.55)",
+            overflowY: "auto",
+          }}
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget) {
+              cerrarModal();
+            }
+          }}
+        >
+          <div className="modal-dialog modal-dialog-centered modal-lg">
+            <div className="modal-content border-0 rounded-4 shadow">
+              <div className="modal-header">
+                <div>
+                  <h5 className="modal-title fw-bold">
+                    Alerta #{idAlerta(alertaSeleccionada)}
+                  </h5>
+                  <small className="text-muted">
+                    Información del reporte ciudadano
+                  </small>
+                </div>
+                <button
+                  type="button"
+                  className="btn-close"
+                  aria-label="Cerrar"
+                  onClick={cerrarModal}
+                />
+              </div>
+              <div className="modal-body p-4">
+                <div className="row g-4">
+                  <div className="col-md-6">
+                    <small className="text-muted">Tipo de alerta</small>
+                    <p className="fw-semibold mb-0">
+                      {tipoAlerta(alertaSeleccionada)}
+                    </p>
+                  </div>
+                  <div className="col-md-6">
+                    <small className="text-muted">Prioridad</small>
+                    <p className="fw-semibold mb-0">
+                      {prioridadAlerta(alertaSeleccionada) || "—"}
+                    </p>
+                  </div>
+                  <div className="col-md-6">
+                    <small className="text-muted">Ubicación</small>
+                    <p className="fw-semibold mb-0">
+                      {ubicacionAlerta(alertaSeleccionada)}
+                    </p>
+                  </div>
+                  <div className="col-md-6">
+                    <small className="text-muted">Estado</small>
+                    <p className="fw-semibold mb-0">
+                      {estadoAlerta(alertaSeleccionada).replaceAll("_", " ") ||
+                        "—"}
+                    </p>
+                  </div>
+                  <div className="col-md-6">
+                    <small className="text-muted">Fecha del reporte</small>
+                    <p className="fw-semibold mb-0">
+                      {fechaLegible(fechaAlerta(alertaSeleccionada))}
+                    </p>
+                  </div>
+                  <div className="col-12">
+                    <small className="text-muted">Descripción</small>
+                    <p className="mb-0">
+                      {alertaSeleccionada.descripcion ||
+                        alertaSeleccionada.Descripcion ||
+                        "Sin descripción registrada."}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-outline-secondary"
+                  onClick={cerrarModal}
+                >
+                  Cerrar
+                </button>
+                <Link
+                  to="/Central-Policia/Asignaciones"
+                  className="btn btn-success"
+                >
+                  <i className="bi bi-truck me-2" />
+                  Ir a asignaciones
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
-
 export default Alertas;

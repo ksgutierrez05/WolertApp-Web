@@ -1,9 +1,6 @@
-
 import { useEffect, useMemo, useState } from "react";
-
 import Topbar from "../../Components/Central-policia/Topbar";
 import Kpis from "../../Components/Central-policia/Kpicard";
-
 import {
   cargarCasosCentral,
   construirCasos,
@@ -11,15 +8,42 @@ import {
   fechaLegible,
   coincideFecha,
 } from "../../Services/reportesCentralService";
-
 import "../../css/Policia/central-policia/css/reportes.css";
 
+const mostrar = (valor) =>
+  valor === null || valor === undefined || String(valor).trim() === ""
+    ? "No registrado"
+    : String(valor).replaceAll("_", " ");
+
+const codigoInforme = (caso) =>
+  `WLT-POL-AL-${String(caso.id ?? "0").padStart(5, "0")}`;
+
+function IconoOjo() {
+  return (
+    <svg
+      width="17"
+      height="17"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.9"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M2.3 12s3.5-6.5 9.7-6.5 9.7 6.5 9.7 6.5-3.5 6.5-9.7 6.5S2.3 12 2.3 12Z" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  );
+}
+
 function Reportes() {
+  // Datos y carga
   const [datos, setDatos] = useState(null);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
   const [recarga, setRecarga] = useState(0);
-
+  // Filtros
   const [tipo, setTipo] = useState("todos");
   const [prioridad, setPrioridad] = useState("todas");
   const [estado, setEstado] = useState("todos");
@@ -28,59 +52,158 @@ function Reportes() {
   const [zona, setZona] = useState("todas");
   const [desde, setDesde] = useState("");
   const [hasta, setHasta] = useState("");
+  // Selección y paginación
   const [seleccion, setSeleccion] = useState(null);
+  const [busqueda, setBusqueda] = useState("");
+  const [pagina, setPagina] = useState(1);
+  const POR_PAGINA = 10;
 
   useEffect(() => {
     const controller = new AbortController();
-
+    setCargando(true);
+    setError("");
     cargarCasosCentral(controller.signal)
       .then((respuesta) => {
         if (controller.signal.aborted) return;
         setDatos(respuesta);
-        setError("");
       })
       .catch((err) => {
-        if (!controller.signal.aborted) {
-          setError(err.message);
-        }
+        if (controller.signal.aborted) return;
+        setDatos(null);
+        setSeleccion(null);
+        setError(err?.message || "No se pudieron consultar los reportes.");
       })
       .finally(() => {
-        if (!controller.signal.aborted) {
-          setCargando(false);
-        }
+        if (!controller.signal.aborted) setCargando(false);
       });
-
     return () => controller.abort();
   }, [recarga]);
 
-  const casos = useMemo(
-    () => (datos ? construirCasos(datos) : []),
-    [datos]
-  );
-
+  // Casos, búsqueda y paginación
+  const casos = useMemo(() => (datos ? construirCasos(datos) : []), [datos]);
   const opciones = (campo) =>
-    [...new Set(casos.map((c) => c[campo]).filter(Boolean))]
-      .sort();
-
-  const filtrados = useMemo(() => {
-    return casos.filter((caso) =>
-      (tipo === "todos" || caso.tipo === tipo) &&
-      (prioridad === "todas" || caso.prioridad === prioridad) &&
-      (estado === "todos" || caso.estado === estado) &&
-      (resultado === "todos" || caso.resultado === resultado) &&
-      (unidad === "todas" || caso.unidadNombre === unidad) &&
-      (zona === "todas" || caso.zona === zona) &&
-      coincideFecha(caso.fecha, desde, hasta)
-    );
+    [...new Set(casos.map((c) => c[campo]).filter(Boolean))].sort();
+  const filtrados = useMemo(
+    () =>
+      casos.filter(
+        (c) =>
+          (!busqueda.trim() ||
+            [
+              c.id,
+              c.tipo,
+              c.descripcion,
+              c.zona,
+              c.unidadNombre,
+              c.estado,
+            ].some((v) =>
+              String(v ?? "")
+                .toLowerCase()
+                .includes(busqueda.trim().toLowerCase()),
+            )) &&
+          (tipo === "todos" || c.tipo === tipo) &&
+          (prioridad === "todas" || c.prioridad === prioridad) &&
+          (estado === "todos" || c.estado === estado) &&
+          (resultado === "todos" || c.resultado === resultado) &&
+          (unidad === "todas" || c.unidadNombre === unidad) &&
+          (zona === "todas" || c.zona === zona) &&
+          coincideFecha(c.fecha, desde, hasta),
+      ),
+    [
+      casos,
+      busqueda,
+      tipo,
+      prioridad,
+      estado,
+      resultado,
+      unidad,
+      zona,
+      desde,
+      hasta,
+    ],
+  );
+  const totalPaginas = Math.max(1, Math.ceil(filtrados.length / POR_PAGINA));
+  const paginaActual = Math.min(pagina, totalPaginas);
+  const visibles = filtrados.slice(
+    (paginaActual - 1) * POR_PAGINA,
+    paginaActual * POR_PAGINA,
+  );
+  useEffect(() => {
+    setPagina(1);
   }, [
-    casos, tipo, prioridad, estado, resultado,
-    unidad, zona, desde, hasta,
+    busqueda,
+    tipo,
+    prioridad,
+    estado,
+    resultado,
+    unidad,
+    zona,
+    desde,
+    hasta,
   ]);
-
-  const seleccionado = casos.find(
-    (caso) => caso.clave === seleccion
+  const seleccionado = useMemo(
+    () => casos.find((c) => c.clave === seleccion) || null,
+    [casos, seleccion],
   );
 
+  // Configuración de los selectores
+  const filtros = [
+    {
+      id: "tipo",
+      label: "Tipo de alerta",
+      valor: tipo,
+      setter: setTipo,
+      base: "todos",
+      texto: "Todos los tipos",
+      campo: "tipo",
+    },
+    {
+      id: "prioridad",
+      label: "Prioridad",
+      valor: prioridad,
+      setter: setPrioridad,
+      base: "todas",
+      texto: "Todas las prioridades",
+      campo: "prioridad",
+    },
+    {
+      id: "estado",
+      label: "Estado",
+      valor: estado,
+      setter: setEstado,
+      base: "todos",
+      texto: "Todos los estados",
+      campo: "estado",
+    },
+    {
+      id: "resultado",
+      label: "Resultado",
+      valor: resultado,
+      setter: setResultado,
+      base: "todos",
+      texto: "Todos los resultados",
+      campo: "resultado",
+    },
+    {
+      id: "unidad",
+      label: "Unidad",
+      valor: unidad,
+      setter: setUnidad,
+      base: "todas",
+      texto: "Todas las unidades",
+      campo: "unidadNombre",
+    },
+    {
+      id: "zona",
+      label: "Zona",
+      valor: zona,
+      setter: setZona,
+      base: "todas",
+      texto: "Todas las zonas",
+      campo: "zona",
+    },
+  ];
+
+  // Acciones
   function limpiar() {
     setTipo("todos");
     setPrioridad("todas");
@@ -90,255 +213,211 @@ function Reportes() {
     setZona("todas");
     setDesde("");
     setHasta("");
-  }
-
-  function actualizar() {
-    setCargando(true);
-    setError("");
-    setRecarga((n) => n + 1);
+    setBusqueda("");
+    setPagina(1);
   }
 
   function exportarCSV() {
-    if (filtrados.length === 0) return;
-
-    const encabezados = [
-      "Caso", "Fecha", "Tipo", "Prioridad", "Zona",
-      "Unidad", "Estado", "Resultado", "Descripción",
+    if (cargando || error || !filtrados.length) return;
+    const columnas = [
+      "Caso",
+      "Fecha",
+      "Tipo",
+      "Prioridad",
+      "Zona",
+      "Unidad",
+      "Estado",
+      "Resultado",
+      "Descripción",
       "Observaciones",
     ];
-
-    const filas = filtrados.map((caso) => [
-      caso.id,
-      fechaLegible(caso.fecha),
-      caso.tipo,
-      caso.prioridad,
-      caso.zona,
-      caso.unidadNombre,
-      caso.estado,
-      caso.resultado,
-      caso.descripcion,
-      caso.observaciones,
+    const filas = filtrados.map((c) => [
+      c.id,
+      fechaLegible(c.fecha),
+      c.tipo,
+      c.prioridad,
+      c.zona,
+      c.unidadNombre,
+      c.estado,
+      c.resultado,
+      c.descripcion,
+      c.observaciones,
     ]);
-
-    const escaparCSV = (valor) => {
-      let texto = String(valor ?? "");
-
-      // Evita que Excel interprete texto como fórmulas.
-      if (/^[\s]*[=+\-@\t\r]/.test(texto)) {
-        texto = `'${texto}`;
-      }
-
-      return `"${texto.replace(/"/g, '""')}"`;
+    const escapar = (valor) => {
+      let s = String(valor ?? "");
+      if (/^\s*[=+\-@\t\r]/.test(s)) s = "'" + s;
+      return '"' + s.replace(/"/g, '""') + '"';
     };
-
-    const contenido = [
-      encabezados,
-      ...filas,
-    ].map((fila) => fila.map(escaparCSV).join(";")).join("\r\n");
-
-    const archivo = new Blob(
-      ["\uFEFF", contenido],
-      { type: "text/csv;charset=utf-8;" }
+    const csv = [columnas, ...filas]
+      .map((fila) => fila.map(escapar).join(";"))
+      .join("\r\n");
+    const url = URL.createObjectURL(
+      new Blob(["\uFEFF", csv], { type: "text/csv;charset=utf-8" }),
     );
-
-    const url = URL.createObjectURL(archivo);
-    const enlace = document.createElement("a");
-
-    enlace.href = url;
-    enlace.download = "informes-central-policia.csv";
-    document.body.appendChild(enlace);
-    enlace.click();
-    enlace.remove();
-
-    URL.revokeObjectURL(url);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "informes-central-policia.csv";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 
-  const filtros = [
-    {
-      id: "filtroTipo",
-      label: "Tipo",
-      value: tipo,
-      setter: setTipo,
-      defaultValue: "todos",
-      defaultLabel: "Todos los tipos",
-      opciones: opciones("tipo"),
-    },
-    {
-      id: "filtroPrioridad",
-      label: "Prioridad",
-      value: prioridad,
-      setter: setPrioridad,
-      defaultValue: "todas",
-      defaultLabel: "Todas",
-      opciones: opciones("prioridad"),
-    },
-    {
-      id: "filtroEstado",
-      label: "Estado",
-      value: estado,
-      setter: setEstado,
-      defaultValue: "todos",
-      defaultLabel: "Todos",
-      opciones: opciones("estado"),
-    },
-    {
-      id: "filtroResultado",
-      label: "Resultado",
-      value: resultado,
-      setter: setResultado,
-      defaultValue: "todos",
-      defaultLabel: "Todos",
-      opciones: opciones("resultado"),
-    },
-    {
-      id: "filtroPatrullero",
-      label: "Unidad",
-      value: unidad,
-      setter: setUnidad,
-      defaultValue: "todas",
-      defaultLabel: "Todas las unidades",
-      opciones: opciones("unidadNombre"),
-    },
-    {
-      id: "filtroZona",
-      label: "Zona",
-      value: zona,
-      setter: setZona,
-      defaultValue: "todas",
-      defaultLabel: "Todas las zonas",
-      opciones: opciones("zona"),
-    },
-  ];
+  // Datos del informe imprimible
+  const campos = seleccionado
+    ? [
+        ["Código de referencia", codigoInforme(seleccionado)],
+        ["Número de alerta", seleccionado.id],
+        ["Tipo de incidente", seleccionado.tipo],
+        ["Ubicación registrada", seleccionado.zona],
+        ["Fecha de alerta", fechaLegible(seleccionado.fecha)],
+        ["Prioridad", seleccionado.prioridad],
+        ["Estado de alerta", seleccionado.estado],
+        ["Unidad policial", seleccionado.unidadNombre],
+        ["Estado de asignación", seleccionado.estadoAsignacion],
+        ["Resultado registrado", seleccionado.resultado],
+        ["Asignaciones registradas", seleccionado.totalAsignaciones],
+        ["Atenciones registradas", seleccionado.totalAtenciones],
+        [
+          "Última atención",
+          seleccionado.fechaAtencion
+            ? fechaLegible(seleccionado.fechaAtencion)
+            : null,
+        ],
+        ["Informe registrado", seleccionado.conInforme ? "Sí" : "No"],
+      ]
+    : [];
 
   return (
     <>
-      <Topbar placeholder="Buscar caso, patrullero o zona..." />
-
+      <Topbar placeholder="Buscar caso, unidad o zona..." />
       <main className="main-dash reportes-page">
         <div className="container-fluid">
           <header className="reportes-header">
-            <h1 className="reportes-titulo">Reportes</h1>
-            <p>
-              Consulta, analiza y genera informes de los casos
-              gestionados por Central.
-            </p>
-
+            <div>
+              <h1 className="reportes-titulo">Reportes</h1>
+              <p>
+                Consulta, analiza y genera informes de los casos gestionados por
+                Central Policía.
+              </p>
+            </div>
             <button
               type="button"
-              className="btn btn-outline-success btn-sm"
-              onClick={actualizar}
+              className="reportes-btn reportes-btn-principal"
               disabled={cargando}
+              onClick={() => {
+                setSeleccion(null);
+                setRecarga((n) => n + 1);
+              }}
             >
-              <i className="bi bi-arrow-clockwise me-1" />
-              Actualizar
+              <i className="bi bi-arrow-clockwise" aria-hidden="true" />{" "}
+              {cargando ? "Actualizando..." : "Actualizar"}
             </button>
           </header>
-
           {error && (
-            <div className="alert alert-danger">
+            <div className="alert alert-danger" role="alert">
               No se pudieron cargar los reportes: {error}
             </div>
           )}
-
           {datos?.errores?.length > 0 && (
-            <div className="alert alert-warning">
-              Información complementaria incompleta:
-              {" "}{datos.errores.join(" | ")}
+            <div className="alert alert-warning" role="alert">
+              Información complementaria incompleta: {datos.errores.join(" | ")}
             </div>
           )}
-
           <Kpis
             grupo="reportes"
-            valores={error ? {} : kpisReportes(casos)}
+            valores={cargando || error ? {} : kpisReportes(casos)}
           />
 
-          <section className="card-panel-dash reportes-filtros">
-            <div className="reportes-filtros-titulo">
-              <div>
-                <i className="bi bi-funnel me-2" />
-                Filtros de búsqueda
-                <p>Selecciona los criterios para consultar los casos.</p>
+          {/* Barra de filtros: dos filas completas de cinco columnas */}
+          <section
+            className="card-panel-dash reportes-filtros"
+            aria-label="Filtros de reportes"
+          >
+            <div className="reportes-barra-filtros">
+              <div className="reportes-busqueda">
+                <i className="bi bi-search" aria-hidden="true" />
+                <input
+                  aria-label="Buscar casos"
+                  placeholder="Buscar caso, tipo o zona..."
+                  value={busqueda}
+                  onChange={(e) => setBusqueda(e.target.value)}
+                />
               </div>
-
+              {filtros.map((f) => (
+                <select
+                  key={f.id}
+                  className="reportes-select"
+                  aria-label={f.label}
+                  title={f.label}
+                  value={f.valor}
+                  onChange={(e) => f.setter(e.target.value)}
+                >
+                  <option value={f.base}>{f.texto}</option>
+                  {opciones(f.campo).map((v) => (
+                    <option key={v} value={v}>
+                      {mostrar(v)}
+                    </option>
+                  ))}
+                </select>
+              ))}
+              <input
+                className="reportes-fecha"
+                aria-label="Fecha desde"
+                title="Desde"
+                type="date"
+                value={desde}
+                max={hasta || undefined}
+                onChange={(e) => setDesde(e.target.value)}
+              />
+              <input
+                className="reportes-fecha"
+                aria-label="Fecha hasta"
+                title="Hasta"
+                type="date"
+                value={hasta}
+                min={desde || undefined}
+                onChange={(e) => setHasta(e.target.value)}
+              />
               <button
                 type="button"
-                className="btn reportes-btn-limpiar"
+                className="reportes-btn reportes-btn-principal reportes-limpiar"
                 onClick={limpiar}
               >
-                <i className="bi bi-arrow-counterclockwise me-1" />
+                <i
+                  className="bi bi-arrow-counterclockwise"
+                  aria-hidden="true"
+                />{" "}
                 Limpiar
               </button>
             </div>
-
-            <div className="reportes-filtros-grid">
-              {filtros.map((filtro) => (
-                <div key={filtro.id}>
-                  <label htmlFor={filtro.id}>{filtro.label}</label>
-
-                  <select
-                    id={filtro.id}
-                    className="form-select"
-                    value={filtro.value}
-                    onChange={(e) => filtro.setter(e.target.value)}
-                  >
-                    <option value={filtro.defaultValue}>
-                      {filtro.defaultLabel}
-                    </option>
-
-                    {filtro.opciones.map((opcion) => (
-                      <option key={opcion} value={opcion}>
-                        {opcion}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              ))}
-
-              <div>
-                <label htmlFor="filtroDesde">Desde</label>
-                <input
-                  id="filtroDesde"
-                  type="date"
-                  className="form-control"
-                  value={desde}
-                  onChange={(e) => setDesde(e.target.value)}
-                />
-              </div>
-
-              <div>
-                <label htmlFor="filtroHasta">Hasta</label>
-                <input
-                  id="filtroHasta"
-                  type="date"
-                  className="form-control"
-                  value={hasta}
-                  onChange={(e) => setHasta(e.target.value)}
-                />
-              </div>
-            </div>
           </section>
 
+          {/* Tabla paginada e informe institucional */}
           <div className="reportes-contenido">
             <section className="card-panel-dash reportes-tabla-panel">
               <div className="reportes-tabla-header">
                 <div>
                   <h2>Casos gestionados</h2>
                   <span>
-                    {filtrados.length} casos encontrados
+                    {cargando
+                      ? "Consultando casos..."
+                      : `${filtrados.length} casos encontrados`}
                   </span>
                 </div>
-
                 <button
                   type="button"
-                  className="btn reportes-btn-principal"
+                  className="reportes-btn reportes-btn-principal"
                   onClick={exportarCSV}
-                  disabled={cargando || !!error || filtrados.length === 0}
+                  disabled={cargando || Boolean(error) || !filtrados.length}
                 >
-                  <i className="bi bi-file-earmark-spreadsheet me-2" />
+                  <i
+                    className="bi bi-file-earmark-spreadsheet"
+                    aria-hidden="true"
+                  />{" "}
                   Exportar CSV
                 </button>
               </div>
-
               <div className="table-responsive">
                 <table className="table reportes-tabla">
                   <thead>
@@ -350,144 +429,217 @@ function Reportes() {
                       <th>Unidad</th>
                       <th>Resultado</th>
                       <th>Estado</th>
-                      <th className="text-end">Acciones</th>
+                      <th>Acciones</th>
                     </tr>
                   </thead>
-
                   <tbody>
-                    {!cargando && !error && filtrados.map((caso) => (
-                      <tr key={caso.clave}>
-                        <td>#{caso.id ?? "—"}</td>
-                        <td>{caso.tipo}</td>
-                        <td>{caso.prioridad || "—"}</td>
-                        <td>{caso.zona}</td>
-                        <td>{caso.unidadNombre}</td>
-                        <td>{caso.resultado}</td>
-                        <td>{caso.estado || "—"}</td>
-                        <td className="text-end">
-                          <button
-                            type="button"
-                            className="btn btn-sm btn-outline-secondary"
-                            onClick={() => setSeleccion(caso.clave)}
-                          >
-                            <i className="bi bi-eye me-1" />
-                            Ver
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
+                    {!cargando &&
+                      !error &&
+                      visibles.map((c) => (
+                        <tr key={c.clave}>
+                          <td className="reportes-id">#{c.id ?? "—"}</td>
+                          <td className="reportes-tipo">{mostrar(c.tipo)}</td>
+                          <td>
+                            <span
+                              className={`reportes-estado prioridad-${String(c.prioridad || "").toLowerCase()}`}
+                            >
+                              {mostrar(c.prioridad)}
+                            </span>
+                          </td>
+                          <td>{mostrar(c.zona)}</td>
+                          <td>{mostrar(c.unidadNombre)}</td>
+                          <td>{mostrar(c.resultado)}</td>
+                          <td>
+                            <span className="reportes-estado estado-alerta">
+                              {mostrar(c.estado)}
+                            </span>
+                          </td>
+                          <td>
+                            <button
+                              type="button"
+                              className="reportes-btn-ver"
+                              onClick={() => setSeleccion(c.clave)}
+                              aria-label={`Ver detalles del caso ${c.id}`}
+                            >
+                              <IconoOjo /> <span>Ver detalle</span>
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
                   </tbody>
                 </table>
               </div>
-
-              {(cargando || error || filtrados.length === 0) && (
+              {(cargando || error || !filtrados.length) && (
                 <div className="reportes-vacio">
-                  <i className="bi bi-file-earmark-x" />
+                  <i className="bi bi-file-earmark-text" aria-hidden="true" />
                   <strong>
                     {cargando
                       ? "Cargando casos..."
                       : error
-                      ? "Error al consultar los casos"
-                      : "No hay reportes para mostrar"}
+                        ? "Error al consultar los casos"
+                        : "No hay casos para mostrar"}
                   </strong>
                   <span>
                     {error
-                      ? "Comprueba la conexión con la API."
-                      : "Aquí aparecerán los casos que coincidan con los filtros."}
+                      ? "Comprueba la conexión con el backend."
+                      : "Modifica los filtros si es necesario."}
                   </span>
                 </div>
               )}
+              {!cargando && !error && filtrados.length > 0 && (
+                <nav
+                  className="reportes-paginacion"
+                  aria-label="Paginación de casos"
+                >
+                  <span>
+                    Mostrando {(paginaActual - 1) * POR_PAGINA + 1}–
+                    {Math.min(paginaActual * POR_PAGINA, filtrados.length)} de{" "}
+                    {filtrados.length} casos
+                  </span>
+                  <div className="reportes-paginacion-controles">
+                    <button
+                      type="button"
+                      disabled={paginaActual === 1}
+                      onClick={() => setPagina((p) => Math.max(1, p - 1))}
+                    >
+                      <i className="bi bi-chevron-left" aria-hidden="true" />{" "}
+                      Anterior
+                    </button>
+                    <strong>
+                      {paginaActual} / {totalPaginas}
+                    </strong>
+                    <button
+                      type="button"
+                      disabled={paginaActual === totalPaginas}
+                      onClick={() =>
+                        setPagina((p) => Math.min(totalPaginas, p + 1))
+                      }
+                    >
+                      Siguiente{" "}
+                      <i className="bi bi-chevron-right" aria-hidden="true" />
+                    </button>
+                  </div>
+                </nav>
+              )}
             </section>
 
-            <aside className="card-panel-dash reportes-informe-preview">
+            <section className="card-panel-dash reportes-informe-preview">
               <div className="reportes-tabla-header">
                 <div>
                   <h2>Vista previa del informe</h2>
-                  <span>Detalle del caso seleccionado</span>
+                  <span>Detalle institucional del caso seleccionado</span>
                 </div>
-
                 <button
                   type="button"
-                  className="btn reportes-btn-limpiar"
+                  className="reportes-btn reportes-btn-principal"
+                  disabled={!seleccionado || cargando || Boolean(error)}
                   onClick={() => window.print()}
-                  disabled={!seleccionado}
                 >
-                  <i className="bi bi-printer me-1" />
-                  Imprimir
+                  <i className="bi bi-printer" aria-hidden="true" /> Imprimir
+                  informe
                 </button>
               </div>
-
-              <div className="reportes-informe-body">
-                {!seleccionado ? (
-                  <div className="reportes-vacio">
-                    <i className="bi bi-file-earmark-text" />
-                    <strong>Selecciona un caso</strong>
+              {!seleccionado || cargando || error ? (
+                <div className="reportes-vacio">
+                  <i className="bi bi-file-earmark-text" aria-hidden="true" />
+                  <strong>Selecciona un caso</strong>
+                  <span>Su informe aparecerá aquí.</span>
+                </div>
+              ) : (
+                <article
+                  className="reporte-documento"
+                  aria-label="Informe institucional de Policía"
+                >
+                  <header className="reporte-documento-cabecera">
+                    <div className="reporte-documento-sello">
+                      <img src="/img/logopolicia.png" alt="Logo de Policía" />
+                    </div>
+                    <div>
+                      <strong>WOLERTAPP</strong>
+                      <h2>CENTRAL DE POLICÍA</h2>
+                      <p>INFORME DE ATENCIÓN DE INCIDENTE</p>
+                    </div>
+                  </header>
+                  <div className="reporte-documento-meta">
                     <span>
-                      Su información aparecerá aquí.
+                      <b>Código de referencia:</b> {codigoInforme(seleccionado)}
+                    </span>
+                    <span>
+                      <b>Fecha de emisión:</b>{" "}
+                      {new Date().toLocaleString("es-CO", {
+                        dateStyle: "short",
+                        timeStyle: "short",
+                      })}
                     </span>
                   </div>
-                ) : (
-                  <>
-                    <section className="informe-seccion">
-                      <h3 className="informe-titulo">
-                        Información general
-                      </h3>
-
-                      <div className="informe-grid">
-                        {[
-                          ["Número de caso", `#${seleccionado.id ?? "—"}`],
-                          ["Fecha y hora", fechaLegible(seleccionado.fecha)],
-                          ["Tipo de alerta", seleccionado.tipo],
-                          ["Prioridad", seleccionado.prioridad || "—"],
-                          ["Zona", seleccionado.zona],
-                          ["Unidad", seleccionado.unidadNombre],
-                          ["Estado", seleccionado.estado || "—"],
-                          ["Resultado", seleccionado.resultado],
-                        ].map(([etiqueta, valor]) => (
-                          <div className="informe-dato" key={etiqueta}>
-                            <span className="informe-dato-label">
-                              {etiqueta}
-                            </span>
-                            <strong className="informe-dato-valor">
-                              {valor}
-                            </strong>
-                          </div>
-                        ))}
-                      </div>
-                    </section>
-
-                    <section className="informe-seccion">
-                      <h3 className="informe-titulo">
-                        Descripción del caso
-                      </h3>
-                      <div className="informe-texto">
-                        {seleccionado.descripcion}
-                      </div>
-                    </section>
-
-                    <section className="informe-seccion">
-                      <h3 className="informe-titulo">
-                        Observaciones de Central
-                      </h3>
-                      <div className="informe-texto informe-central">
-                        {seleccionado.observaciones}
-                      </div>
-                    </section>
-
-                    <section className="informe-seccion">
-                      <h3 className="informe-titulo">
-                        Información de atención
-                      </h3>
-                      <div className="informe-texto">
-                        {seleccionado.conInforme
-                          ? "Existe una atención registrada para este caso."
-                          : "No se encontró una atención relacionada."}
-                      </div>
-                    </section>
-                  </>
-                )}
-              </div>
-            </aside>
+                  <div className="reporte-documento-franja">
+                    INFORME INSTITUCIONAL DE ATENCIÓN
+                  </div>
+                  <h3 className="reporte-documento-seccion">
+                    1. INFORMACIÓN GENERAL DEL CASO
+                  </h3>
+                  <table className="reporte-documento-datos">
+                    <tbody>
+                      {campos.map(([etiqueta, valor]) => (
+                        <tr key={etiqueta}>
+                          <th scope="row">{etiqueta}</th>
+                          <td>{mostrar(valor)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  <h3 className="reporte-documento-seccion">
+                    2. DESCRIPCIÓN DE LOS HECHOS
+                  </h3>
+                  <p className="reporte-documento-texto">
+                    {mostrar(seleccionado.descripcion)}
+                  </p>
+                  <h3 className="reporte-documento-seccion">
+                    3. ACTUACIONES REALIZADAS
+                  </h3>
+                  <p className="reporte-documento-texto">
+                    {mostrar(
+                      seleccionado.actuaciones ?? seleccionado.detalleAtencion,
+                    )}
+                  </p>
+                  <h3 className="reporte-documento-seccion">
+                    4. OBSERVACIONES REGISTRADAS
+                  </h3>
+                  <p className="reporte-documento-texto">
+                    {mostrar(seleccionado.observaciones)}
+                  </p>
+                  <h3 className="reporte-documento-seccion">
+                    5. RESULTADO DE LA ATENCIÓN
+                  </h3>
+                  <p className="reporte-documento-texto">
+                    Resultado registrado:{" "}
+                    <strong>{mostrar(seleccionado.resultado)}</strong>.
+                  </p>
+                  <h3 className="reporte-documento-seccion">
+                    6. RESPONSABLE DE LA ENTREGA DEL INFORME
+                  </h3>
+                  <div className="reporte-documento-responsable">
+                    <p>
+                      <b>Dependencia:</b> Central de Policía
+                    </p>
+                    <p>
+                      <b>Nombre completo:</b> __________________________
+                    </p>
+                    <p>
+                      <b>Cargo:</b> __________________________
+                    </p>
+                    <div className="reporte-documento-firma">
+                      Firma de quien entrega el informe
+                    </div>
+                  </div>
+                  <footer className="reporte-documento-pie">
+                    Generado mediante WOLERTAPP a partir de registros del
+                    sistema.
+                    <span>Documento sujeto a validación institucional.</span>
+                  </footer>
+                </article>
+              )}
+            </section>
           </div>
         </div>
       </main>

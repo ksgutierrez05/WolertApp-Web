@@ -258,5 +258,61 @@ notificaciones: {
   ],
 },
 
+policias: {
+  columnas: "col-12 col-sm-6 col-xl-4",
+  claseFila: "row g-3 mb-4",
+  items: [
+    {
+      clave: "total",
+      etiqueta: "Total de policías",
+      icono: "bi-people-fill",
+      tono: "azul",
+    },
+    {
+      clave: "activos",
+      etiqueta: "Policías activos",
+      icono: "bi-person-check-fill",
+      tono: "verde",
+    },
+    {
+      clave: "unidades",
+      etiqueta: "Unidades con policías",
+      icono: "bi-shield-check",
+      tono: "ambar",
+    },
+  ],
+},
+
+unidades: {
+  columnas: "col-6 col-xl-3",
+  claseFila: "row g-3 mb-4",
+  items: [
+    {
+      clave: "total",
+      etiqueta: "Total de unidades",
+      icono: "bi-shield-fill-check",
+      tono: "azul",
+    },
+    {
+      clave: "operativas",
+      etiqueta: "Unidades operativas",
+      icono: "bi-check-circle-fill",
+      tono: "verde",
+    },
+    {
+      clave: "activas",
+      etiqueta: "Unidades activas",
+      icono: "bi-broadcast",
+      tono: "ambar",
+    },
+    {
+      clave: "policias",
+      etiqueta: "Policías asignados",
+      icono: "bi-people-fill",
+      tono: "rojo",
+    },
+  ],
+},
+
 
 };

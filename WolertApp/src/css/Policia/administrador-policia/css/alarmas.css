@@ -1,115 +1,553 @@
-/* Piezas de Alarmas que no existen en global.css
-   (chips de filtro y tabla de alarmas).
-   Antes esta hoja duplicaba sidebar, topbar y colores propios;
-   ahora solo complementa global.css + temas.css, igual que
-   asignaciones.css y policias.css. */
 
-.chip-filtro-dash {
-  border: 1px solid var(--line);
-  background-color: #fff;
-  color: var(--muted);
-  border-radius: 100px;
-  padding: 7px 16px;
-  font-size: 12.5px;
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+/* ============================================
+   WOLERTAPP - ALARMAS ADMIN POLICÍA
+   DISEÑO COMPLETO - SOLO CONSULTA
+   ============================================ */
+
+.alarmas-vista {
+  width: 100%;
+  min-width: 0;
+  padding-bottom: 35px;
 }
 
-.chip-filtro-dash:hover {
-  background-color: var(--fog);
+.alarmas-vista *,
+.alarmas-vista *::before,
+.alarmas-vista *::after {
+  box-sizing: border-box;
 }
 
-.chip-filtro-dash.active {
-  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-2));
-  color: #fff;
-  border-color: transparent;
-}
+/* ============================================
+   ENCABEZADO
+   ============================================ */
 
-.chip-count-dash {
-  background-color: var(--fog);
-  color: var(--muted);
-  font-size: 10.5px;
-  font-weight: 700;
-  padding: 1px 7px;
-  border-radius: 100px;
-}
-
-.chip-filtro-dash.active .chip-count-dash {
-  background-color: rgba(255, 255, 255, 0.25);
-  color: #fff;
-}
-
-.tabla-alarmas-dash thead th {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--muted);
-  padding: 10px 14px;
-  border-bottom: 1px solid var(--line);
-}
-
-.tabla-alarmas-dash tbody td {
-  padding: 14px;
-  border-bottom: 1px solid var(--line);
-  font-size: 13.5px;
-}
-
-.tabla-alarmas-dash tbody tr:last-child td {
-  border-bottom: none;
-}
-
-.tabla-alarmas-dash tbody tr:hover {
-  background-color: var(--fog);
-}
-
-.nombre-alarma-dash {
-  font-weight: 700;
-  color: var(--ink);
-}
-
-.coordenadas-dash {
-  color: var(--muted);
-  font-size: 12.5px;
-}
-
-/* Estado "inactiva": ni buena ni mala, así que va en gris neutro
-   en vez de compartir color con otro estado */
-.badge-muted-dash {
-  background-color: var(--fog);
-  color: var(--muted);
-}
-
-.acciones-alarma-dash {
+.alarmas-encabezado {
   display: flex;
-  gap: 6px;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 25px;
 }
 
-.acciones-alarma-dash .btn {
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  border-radius: 8px;
+.alarmas-encabezado-texto {
+  flex: 1;
+  min-width: 230px;
+}
+
+.alarmas-vista .alarmas-encabezado h1 {
+  margin: 0 0 5px;
+  color: #172f4b;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.alarmas-vista .alarmas-encabezado p {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* BOTÓN ACTUALIZAR */
+
+.alarmas-btn-actualizar {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.15s ease, color 0.15s ease;
+  gap: 9px;
+  min-height: 42px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 100px;
+  background: linear-gradient(
+    135deg,
+    #08765a,
+    #07523f
+  );
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(8, 118, 90, .15);
+  transition:
+    transform .15s ease,
+    box-shadow .15s ease;
 }
 
-.btn-ver-dash {
-  background-color: #e8f0fe; color: #1565c0;
+.alarmas-btn-actualizar:hover:not(:disabled) {
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 7px 16px rgba(8, 118, 90, .2);
 }
-.btn-ver-dash:hover { background-color: #1565c0; color: #fff; }
 
-.btn-editar-dash {
-  background-color: #fff8e1; color: #fb8c00;
+.alarmas-btn-actualizar:disabled {
+  opacity: .6;
+  cursor: not-allowed;
 }
-.btn-editar-dash:hover { background-color: #fb8c00; color: #fff; }
 
-.btn-eliminar-dash {
-  background-color: #fff0f0; color: #e53935;
+/* ============================================
+   TARJETAS DE INDICADORES
+   ============================================ */
+
+.alarmas-kpi {
+  --kpi-color: #08765a;
+  --kpi-fondo: #e1f4ec;
+
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  height: 100%;
+  min-height: 112px;
+  padding: 18px;
+
+  background: #fff;
+  border: 1px solid #e1e8ef;
+  border-left: 4px solid var(--kpi-color);
+  border-radius: 15px;
+
+  box-shadow: 0 3px 12px rgba(24, 44, 64, .055);
+  transition:
+    transform .2s ease,
+    box-shadow .2s ease;
 }
-.btn-eliminar-dash:hover { background-color: #e53935; color: #fff; }
+
+.alarmas-kpi:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 7px 20px rgba(24, 44, 64, .09);
+}
+
+.alarmas-kpi-icono {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--kpi-fondo);
+  color: var(--kpi-color);
+  font-size: 21px;
+}
+
+.alarmas-kpi-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+}
+
+.alarmas-kpi-titulo {
+  color: #53647b;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.alarmas-kpi-valor {
+  color: #263d58;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 29px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.alarmas-kpi-flecha {
+  flex-shrink: 0;
+  color: var(--kpi-color);
+  font-size: 12px;
+  opacity: .7;
+}
+
+.alarmas-kpi.tono-verde {
+  --kpi-color: #07835b;
+  --kpi-fondo: #dff5e9;
+}
+
+.alarmas-kpi.tono-rojo {
+  --kpi-color: #dc3545;
+  --kpi-fondo: #fde7eb;
+}
+
+.alarmas-kpi.tono-ambar {
+  --kpi-color: #e68a00;
+  --kpi-fondo: #fff0d8;
+}
+
+.alarmas-kpi.tono-azul {
+  --kpi-color: #2475d5;
+  --kpi-fondo: #e2edff;
+}
+
+/* ============================================
+   FILTROS
+   ============================================ */
+
+.alarmas-filtros {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-bottom: 17px;
+}
+
+.alarmas-vista .chip-filtro-dash {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 15px;
+
+  border: 1px solid #e1e8ef;
+  border-radius: 100px;
+  background: #fff;
+  color: #53647b;
+
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background .15s ease;
+}
+
+.alarmas-vista .chip-filtro-dash:hover {
+  background: #f5faf8;
+}
+
+.alarmas-vista .chip-filtro-dash.active {
+  border-color: transparent;
+  background: linear-gradient(
+    135deg,
+    #07523f,
+    #08765a
+  );
+  color: #fff;
+}
+
+.alarmas-vista .chip-count-dash {
+  padding: 2px 7px;
+  border-radius: 100px;
+  background: #f0f3f6;
+  color: #64748b;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.alarmas-vista .chip-filtro-dash.active .chip-count-dash {
+  background: rgba(255, 255, 255, .2);
+  color: #fff;
+}
+
+/* ============================================
+   PANEL PRINCIPAL
+   ============================================ */
+
+.alarmas-vista .alarmas-panel-tabla {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  overflow: hidden;
+
+  border: 1px solid #e1e8ef;
+  border-radius: 16px;
+  background: #fff;
+
+  box-shadow: 0 4px 14px rgba(24, 44, 64, .05);
+}
+
+/* ENCABEZADO DEL PANEL */
+
+.alarmas-vista .alarmas-tabla-encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+
+  padding: 18px 22px;
+  border-bottom: 1px solid #edf0f4;
+}
+
+.alarmas-vista .alarmas-tabla-titulo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.alarmas-vista .alarmas-tabla-icono {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: #e1f4ec;
+  color: #08765a;
+  font-size: 19px;
+}
+
+.alarmas-vista .alarmas-tabla-titulo h2 {
+  margin: 0 0 4px;
+  color: #263d58;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.alarmas-vista .alarmas-tabla-titulo p {
+  margin: 0;
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.alarmas-vista .alarmas-total-registros {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 12px;
+  border-radius: 100px;
+  background: #e1f4ec;
+  color: #08765a;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* ============================================
+   TABLA
+   ============================================ */
+
+.alarmas-vista .alarmas-tabla {
+  width: 100%;
+  margin: 0;
+  border-collapse: collapse;
+  background: #fff;
+}
+
+.alarmas-vista .alarmas-tabla thead th {
+  padding: 14px 20px;
+  border-bottom: 1px solid #e1e8ef;
+  background: #f8fafb;
+
+  color: #718096;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.alarmas-vista .alarmas-tabla tbody td {
+  padding: 17px 20px;
+  border-bottom: 1px solid #edf0f4;
+  background: #fff;
+
+  color: #263d58;
+  font-size: 13px;
+  vertical-align: middle;
+}
+
+.alarmas-vista .alarmas-tabla tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.alarmas-vista .alarmas-tabla tbody tr:hover td {
+  background: #f7fbf9;
+}
+
+/* NOMBRE */
+
+.alarmas-vista .alarmas-nombre {
+  color: #172f4b;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.alarmas-vista .alarmas-codigo {
+  display: block;
+  margin-top: 4px;
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 400;
+}
+
+/* BARRIO */
+
+.alarmas-vista .alarmas-barrio {
+  color: #53647b;
+  font-size: 12.5px;
+}
+
+/* RADIO */
+
+.alarmas-vista .alarmas-radio {
+  color: #263d58;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* COORDENADAS */
+
+.alarmas-vista .alarmas-coordenadas {
+  color: #64748b;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+/* ============================================
+   ESTADOS
+   ============================================ */
+
+.alarmas-vista .alarma-estado {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  width: max-content;
+  padding: 6px 12px;
+  border-radius: 100px;
+
+  background: #eef2f5;
+  color: #53647b;
+  font-size: 10.5px;
+  font-weight: 700;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+.alarmas-vista .alarma-estado-punto {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.alarmas-vista .alarma-estado-activa {
+  background: #e1f4ec;
+  color: #08765a;
+}
+
+.alarmas-vista .alarma-estado-inactiva {
+  background: #fde7eb;
+  color: #dc3545;
+}
+
+.alarmas-vista .alarma-estado-mantenimiento {
+  background: #fff0d8;
+  color: #bd7400;
+}
+
+/* ============================================
+   TABLA VACÍA / CARGANDO
+   ============================================ */
+
+.alarmas-vista .alarmas-tabla-vacia {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 190px;
+  padding: 35px 20px;
+
+  color: #64748b;
+  text-align: center;
+  font-size: 13px;
+}
+
+.alarmas-vista .alarmas-vacio-icono {
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  margin-bottom: 4px;
+  border-radius: 16px;
+  background: #e1f4ec;
+  color: #08765a;
+  font-size: 26px;
+}
+
+.alarmas-vista .alarmas-tabla-vacia h3 {
+  margin: 0;
+  color: #263d58;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.alarmas-vista .alarmas-tabla-vacia p {
+  margin: 0;
+  color: #64748b;
+  font-size: 12px;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 900px) {
+  .alarmas-vista .alarmas-tabla {
+    min-width: 760px;
+  }
+}
+
+@media (max-width: 768px) {
+  .alarmas-kpi {
+    min-height: 100px;
+    padding: 13px;
+    gap: 10px;
+  }
+
+  .alarmas-kpi-icono {
+    width: 43px;
+    height: 43px;
+    font-size: 17px;
+  }
+
+  .alarmas-kpi-valor {
+    font-size: 24px;
+  }
+
+  .alarmas-kpi-flecha {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .alarmas-encabezado {
+    align-items: flex-start;
+  }
+
+  .alarmas-vista .alarmas-tabla-encabezado {
+    padding: 15px;
+  }
+
+  .alarmas-vista .alarmas-tabla-titulo h2 {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .alarmas-kpi {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .alarmas-kpi-titulo {
+    font-size: 11px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .alarmas-vista * {
+    transition: none;
+  }
+}
+

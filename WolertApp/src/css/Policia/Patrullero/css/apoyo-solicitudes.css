@@ -1,0 +1,195 @@
+/* =====================================
+   WOLERTAPP - SOLICITUDES DE APOYO
+   Patrullero y Central de Policía
+===================================== */
+
+.sa-box {
+  background: #ffffff;
+  border: 1px solid #dfe7e4;
+  border-radius: 14px;
+  padding: 17px;
+  margin: 16px 0;
+  color: #203b33;
+  box-shadow: 0 4px 14px #143b2b08;
+}
+
+.sa-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.sa-head strong {
+  display: block;
+  font-size: 15px;
+}
+
+.sa-head small {
+  display: block;
+  color: #75847c;
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+.sa-primary {
+  background: #004d40 !important;
+  color: white !important;
+  border: 0 !important;
+  border-radius: 9px;
+  padding: 10px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.sa-primary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Formulario del patrullero */
+
+.sa-form {
+  display: grid;
+  gap: 12px;
+  margin-top: 15px;
+}
+
+.sa-form label,
+.sa-filtros label {
+  display: grid;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.sa-form select,
+.sa-form textarea,
+.sa-filtros select {
+  border: 1px solid #d8e3dd;
+  border-radius: 9px;
+  padding: 10px;
+  font: inherit;
+  background: #ffffff;
+  color: #243b32;
+}
+
+.sa-form textarea {
+  min-height: 85px;
+  resize: vertical;
+}
+
+/* Botones */
+
+.sa-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.sa-actions button:not(.sa-primary) {
+  border: 1px solid #d9e4df;
+  border-radius: 9px;
+  background: #ffffff;
+  padding: 9px 12px;
+  color: #344a40;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+/* Mensajes */
+
+.sa-muted {
+  font-size: 12px;
+  color: #7b8c83;
+  margin: 14px 0 0;
+}
+
+.sa-error {
+  background: #fff0f0;
+  color: #a6292f;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.sa-ok {
+  background: #edf8f1;
+  color: #146a48;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+/* Filtros */
+
+.sa-filtros {
+  margin: 16px 0;
+}
+
+.sa-filtros label {
+  max-width: 220px;
+}
+
+/* Listado de solicitudes */
+
+.sa-items {
+  display: grid;
+  gap: 10px;
+}
+
+.sa-item {
+  border: 1px solid #e2ebe6;
+  border-radius: 10px;
+  padding: 13px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.sa-item strong {
+  font-size: 12px;
+}
+
+.sa-item p {
+  font-size: 12px;
+  margin: 8px 0;
+}
+
+.sa-item small {
+  font-size: 11px;
+  color: #788a7f;
+}
+
+.sa-tag {
+  display: inline-block;
+  margin-left: 9px;
+  background: #edf3ef;
+  padding: 4px 8px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 750;
+  color: #45675a;
+}
+
+@media (max-width: 650px) {
+  .sa-box {
+    padding: 13px;
+  }
+
+  .sa-head {
+    align-items: flex-start;
+  }
+
+  .sa-item {
+    flex-direction: column;
+  }
+
+  .sa-actions {
+    width: 100%;
+  }
+}

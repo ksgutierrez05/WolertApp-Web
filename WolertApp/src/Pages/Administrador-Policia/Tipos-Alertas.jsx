@@ -9,64 +9,100 @@ import {
 
 import "../../css/Policia/administrador-policia/css/tipo-alertas.css";
 
-const normalizar = valor =>
+const normalizar = (valor) =>
   String(valor ?? "").trim().toUpperCase();
+
+const TARJETAS = [
+  {
+    clave: "total",
+    titulo: "Total de tipos",
+    icono: "bi-grid",
+    tono: "azul",
+  },
+  {
+    clave: "alta",
+    titulo: "Prioridad alta",
+    icono: "bi-exclamation-triangle",
+    tono: "rojo",
+  },
+  {
+    clave: "media",
+    titulo: "Prioridad media",
+    icono: "bi-exclamation-circle",
+    tono: "ambar",
+  },
+  {
+    clave: "baja",
+    titulo: "Prioridad baja",
+    icono: "bi-check-circle",
+    tono: "verde",
+  },
+];
 
 function TiposAlertas() {
   const [tipos, setTipos] = useState([]);
   const [busqueda, setBusqueda] = useState("");
   const [filtro, setFiltro] = useState("");
+
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
   const [recarga, setRecarga] = useState(0);
 
- 
-useEffect(() => {
-  const controlador = new AbortController();
+  // ========================================
+  // CONSULTAR TIPOS DE ALERTA
+  // ========================================
 
-  listarTiposAlerta(controlador.signal)
-    .then(datos => {
-      if (controlador.signal.aborted) return;
+  useEffect(() => {
+    const controlador = new AbortController();
 
-      if (!Array.isArray(datos)) {
-        throw new Error(
-          "La API no devolvió una lista de tipos."
-        );
-      }
+    listarTiposAlerta(controlador.signal)
+      .then((datos) => {
+        if (controlador.signal.aborted) return;
 
-      setTipos(datos);
-      setError("");
-    })
-    .catch(err => {
-      if (!controlador.signal.aborted) {
+        if (!Array.isArray(datos)) {
+          throw new Error(
+            "La API no devolvió una lista de tipos de alerta."
+          );
+        }
+
+        setTipos(datos);
+        setError("");
+      })
+      .catch((err) => {
+        if (controlador.signal.aborted) return;
+
         setError(
           err.message ||
           "No se pudieron cargar los tipos de alerta."
         );
 
         setTipos([]);
-      }
-    })
-    .finally(() => {
-      if (!controlador.signal.aborted) {
-        setCargando(false);
-      }
-    });
+      })
+      .finally(() => {
+        if (!controlador.signal.aborted) {
+          setCargando(false);
+        }
+      });
 
-  return () => controlador.abort();
-}, [recarga]);
+    return () => controlador.abort();
+  }, [recarga]);
 
+  // ========================================
+  // FILTRAR TIPOS
+  // ========================================
 
   const filtrados = useMemo(() => {
     const texto = busqueda.trim().toLowerCase();
 
-    return tipos.filter(tipo => {
+    return tipos.filter((tipo) => {
       const coincideTexto = [
         tipo.idTipoAlerta,
         tipo.nombre,
         tipo.centralResponsable,
-      ].some(valor =>
-        String(valor ?? "").toLowerCase().includes(texto)
+      ].some((valor) =>
+        String(valor ?? "")
+          .toLowerCase()
+          .includes(texto)
       );
 
       const coincidePrioridad =
@@ -77,87 +113,141 @@ useEffect(() => {
     });
   }, [tipos, busqueda, filtro]);
 
-  const kpis = {
-    total: tipos.length,
+  // ========================================
+  // INDICADORES
+  // ========================================
 
-    alta: tipos.filter(
-      t => normalizar(t.prioridad) === "ALTA"
-    ).length,
+  const kpis = useMemo(
+    () => ({
+      total: tipos.length,
 
-    media: tipos.filter(
-      t => normalizar(t.prioridad) === "MEDIA"
-    ).length,
+      alta: tipos.filter(
+        (tipo) => normalizar(tipo.prioridad) === "ALTA"
+      ).length,
 
-    baja: tipos.filter(
-      t => normalizar(t.prioridad) === "BAJA"
-    ).length,
-  };
+      media: tipos.filter(
+        (tipo) => normalizar(tipo.prioridad) === "MEDIA"
+      ).length,
+
+      baja: tipos.filter(
+        (tipo) => normalizar(tipo.prioridad) === "BAJA"
+      ).length,
+    }),
+    [tipos]
+  );
+
+  // ========================================
+  // ACTUALIZAR
+  // ========================================
+
+  function actualizar() {
+    if (cargando) return;
+
+    setCargando(true);
+    setError("");
+    setRecarga((actual) => actual + 1);
+  }
+
+  // ========================================
+  // ESTILO DE PRIORIDADES
+  // ========================================
+
+  function clasePrioridad(prioridad) {
+    switch (normalizar(prioridad)) {
+      case "ALTA":
+        return "prioridad-alta";
+
+      case "MEDIA":
+        return "prioridad-media";
+
+      case "BAJA":
+        return "prioridad-baja";
+
+      default:
+        return "prioridad-desconocida";
+    }
+  }
+
+  // ========================================
+  // INTERFAZ
+  // ========================================
 
   return (
-    <>
+    <div className="tipos-alertas-page">
       <Topbar placeholder="Buscar tipo de alerta..." />
+
+      {/* ENCABEZADO */}
 
       <div className="header-vista-dash mb-4">
         <div>
           <h1>Tipos de Alertas</h1>
 
           <p>
-            Consulta las categorías de alerta,
-            su prioridad y central responsable.
+            Consulta las categorías de alerta, su prioridad
+            y central responsable.
           </p>
         </div>
 
         <button
           type="button"
-          className="btn btn-outline-primary"
+          className="btn-cv-verde"
           disabled={cargando}
-          onClick={() => {
-            setCargando(true);
-            setRecarga(n => n + 1);
-          }}
+          onClick={actualizar}
         >
-          <i className="bi bi-arrow-clockwise me-2" />
-          Actualizar
+          <i
+            className={`bi bi-arrow-clockwise ${cargando ? "icono-recargando" : ""
+              }`}
+            aria-hidden="true"
+          />
+
+          {cargando ? "Actualizando..." : "Actualizar"}
         </button>
+
       </div>
 
-      <div className="alert alert-info" role="note">
-        Este módulo es de consulta para ADMIN_POLICIA.
-        El backend reserva crear, editar y eliminar
-        para el rol ADMIN.
-      </div>
+      {/* ERRORES REALES DE LA API */}
 
       {error && (
-        <div className="alert alert-danger" role="alert">
+        <div
+          className="alert alert-danger mb-4"
+          role="alert"
+        >
+          <i
+            className="bi bi-exclamation-circle me-2"
+            aria-hidden="true"
+          />
+
           {error}
         </div>
       )}
 
+      {/* TARJETAS KPI */}
+
       <div className="row g-3 mb-4">
-        {[
-          ["Total de tipos", kpis.total, "bi-grid", "azul"],
-          ["Prioridad alta", kpis.alta, "bi-exclamation-triangle", "rojo"],
-          ["Prioridad media", kpis.media, "bi-exclamation-circle", "ambar"],
-          ["Prioridad baja", kpis.baja, "bi-check-circle", "verde"],
-        ].map(([titulo, valor, icono, tono]) => (
-          <div className="col-6 col-xl-3" key={titulo}>
+        {TARJETAS.map((tarjeta) => (
+          <div
+            className="col-6 col-xl-3"
+            key={tarjeta.clave}
+          >
             <article
-              className={`kpi-card-policial tono-${tono}`}
+              className={`kpi-card-policial tono-${tarjeta.tono}`}
             >
               <div className="kpi-card-icono">
                 <i
-                  className={`bi ${icono}`}
+                  className={`bi ${tarjeta.icono}`}
                   aria-hidden="true"
                 />
               </div>
 
               <div className="kpi-card-info">
                 <span className="kpi-card-titulo">
-                  {titulo}
+                  {tarjeta.titulo}
                 </span>
 
                 <strong className="kpi-card-valor">
-                  {cargando ? "..." : valor}
+                  {cargando
+                    ? "..."
+                    : kpis[tarjeta.clave]}
                 </strong>
               </div>
             </article>
@@ -165,100 +255,155 @@ useEffect(() => {
         ))}
       </div>
 
+      {/* FILTROS */}
+
       <div className="filtros-toolbar-dash mb-3">
-        <div className="search-dash input-group">
-          <span className="input-group-text bg-transparent border-0">
-            <i className="bi bi-search" />
-          </span>
+        <div className="tipos-buscador">
+          <i
+            className="bi bi-search"
+            aria-hidden="true"
+          />
 
           <input
-            className="form-control border-0 bg-transparent"
+            type="search"
             value={busqueda}
-            onChange={e => setBusqueda(e.target.value)}
-            placeholder="Buscar por nombre o central..."
+            onChange={(e) =>
+              setBusqueda(e.target.value)
+            }
+            placeholder="Buscar por nombre, código o central..."
+            aria-label="Buscar tipos de alerta"
           />
         </div>
 
-        <select
-          className="form-select"
-          value={filtro}
-          onChange={e => setFiltro(e.target.value)}
-          aria-label="Filtrar por prioridad"
-        >
-          <option value="">Todas las prioridades</option>
-          <option value="ALTA">Alta</option>
-          <option value="MEDIA">Media</option>
-          <option value="BAJA">Baja</option>
-        </select>
+        <div className="tipos-filtro-prioridad">
+          <i
+            className="bi bi-funnel"
+            aria-hidden="true"
+          />
+
+          <select
+            value={filtro}
+            onChange={(e) =>
+              setFiltro(e.target.value)
+            }
+            aria-label="Filtrar por prioridad"
+          >
+            <option value="">
+              Todas las prioridades
+            </option>
+
+            <option value="ALTA">
+              Prioridad alta
+            </option>
+
+            <option value="MEDIA">
+              Prioridad media
+            </option>
+
+            <option value="BAJA">
+              Prioridad baja
+            </option>
+          </select>
+        </div>
       </div>
 
-      <div className="card-panel-dash mb-4">
-        <div className="tabla-header-dash">
-          <span className="flex-grow-1">
-            Tipo de alerta
-          </span>
+      {/* TABLA */}
 
-          <span style={{ width: "150px" }}>
-            Prioridad
-          </span>
-
-          <span style={{ width: "160px" }}>
-            Central responsable
-          </span>
-        </div>
-
+      <div className="card-panel-dash mb-4 tipos-tabla-panel">
         <div className="table-responsive">
-          <table className="tabla-dash">
+          <table className="tabla-dash tabla-tipos-alertas">
+            <colgroup>
+              <col style={{ width: "45%" }} />
+              <col style={{ width: "25%" }} />
+              <col style={{ width: "30%" }} />
+            </colgroup>
+
+            <thead>
+              <tr>
+                <th scope="col">
+                  Tipo de alerta
+                </th>
+
+                <th scope="col">
+                  Prioridad
+                </th>
+
+                <th scope="col">
+                  Central responsable
+                </th>
+              </tr>
+            </thead>
+
             <tbody>
-              {filtrados.map(tipo => (
-                <tr key={tipo.idTipoAlerta}>
-                  <td>
-                    <strong className="celda-titulo-dash">
-                      {tipo.nombre || "Sin nombre"}
-                    </strong>
+              {!cargando &&
+                filtrados.map((tipo) => (
+                  <tr key={tipo.idTipoAlerta}>
+                    <td>
+                      <div className="tipo-alerta-nombre">
+                        {tipo.nombre || "Sin nombre"}
+                      </div>
 
-                    <div className="celda-sub-dash">
-                      Código: {tipo.idTipoAlerta}
-                    </div>
-                  </td>
+                      <div className="tipo-alerta-codigo">
+                        Código: {tipo.idTipoAlerta}
+                      </div>
+                    </td>
 
-                  <td>
-                    <span
-                      className={`categoria-chip-dash ${
-                        normalizar(tipo.prioridad) === "ALTA"
-                          ? "bg-danger-subtle text-danger"
-                          : normalizar(tipo.prioridad) === "MEDIA"
-                            ? "bg-warning-subtle text-warning-emphasis"
-                            : "bg-success-subtle text-success"
-                      }`}
-                    >
-                      {tipo.prioridad || "—"}
-                    </span>
-                  </td>
+                    <td>
+                      <span
+                        className={`categoria-chip-dash ${clasePrioridad(
+                          tipo.prioridad
+                        )}`}
+                      >
+                        {normalizar(tipo.prioridad) || "—"}
+                      </span>
+                    </td>
 
-                  <td>
-                    {tipo.centralResponsable || "Sin asignar"}
-                  </td>
-                </tr>
-              ))}
+                    <td>
+                      <span className="tipo-alerta-central">
+                        {normalizar(tipo.centralResponsable) ||
+                          "Sin asignar"}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>
 
         {cargando && (
           <div className="tabla-vacio-dash">
+            <i
+              className="bi bi-arrow-repeat fs-3 d-block mb-2"
+              aria-hidden="true"
+            />
+
             Cargando tipos de alerta...
           </div>
         )}
 
-        {!cargando && !error && filtrados.length === 0 && (
-          <div className="tabla-vacio-dash">
-            <i className="bi bi-inbox fs-2 d-block mb-2" />
-            No se encontraron tipos de alerta.
-          </div>
-        )}
+        {!cargando &&
+          !error &&
+          filtrados.length === 0 && (
+            <div className="tabla-vacio-dash">
+              <i
+                className="bi bi-inbox fs-2 d-block mb-2"
+                aria-hidden="true"
+              />
+
+              No se encontraron tipos de alerta.
+            </div>
+          )}
       </div>
-    </>
+
+      {/* CONTADOR DE RESULTADOS */}
+
+      {!cargando && !error && (
+        <p className="tipos-contador">
+          Mostrando {filtrados.length} de {tipos.length} tipos
+          de alerta
+        </p>
+      )}
+    </div>
   );
 }
 

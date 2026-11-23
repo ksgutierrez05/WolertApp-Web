@@ -222,3 +222,44 @@ export function resumenUnidades(unidades) {
     ).length,
   };
 }
+
+// Registrar informe policial
+export function crearAtencionCentral(datos) {
+  return consultarCentral("/api/AtencionesAlerta", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(datos),
+  });
+}
+
+// Actualizar o finalizar informe
+export function actualizarAtencionCentral(idAtencion, datos) {
+  return consultarCentral(
+    `/api/AtencionesAlerta/${encodeURIComponent(idAtencion)}`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(datos),
+    }
+  );
+}
+
+// Cerrar alerta como RESUELTA
+export function cerrarAlertaCentral(idAlerta) {
+  return consultarCentral(
+    `/api/Alertas/${encodeURIComponent(idAlerta)}/cerrar`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        estadoFinal: "RESUELTA"
+      }),
+    }
+  );
+}

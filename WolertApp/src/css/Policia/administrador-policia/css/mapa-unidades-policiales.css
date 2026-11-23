@@ -1,0 +1,724 @@
+
+/* ==================================================
+   WOLERTAPP | MAPA DE UNIDADES POLICIALES
+   CSS LIMPIO - ADMINISTRADOR POLICÍA
+================================================== */
+
+.unidad-mapa-modal {
+  --verde: #004d40;
+  --texto: #183b31;
+  --secundario: #788a80;
+  --borde: #e2eae5;
+
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  background: rgba(12, 33, 28, 0.68);
+  backdrop-filter: blur(4px);
+}
+
+.unidad-mapa-modal *,
+.unidad-mapa-modal *::before,
+.unidad-mapa-modal *::after {
+  box-sizing: border-box;
+}
+
+/* VENTANA PRINCIPAL */
+
+.unidad-mapa-ventana {
+  display: flex;
+  flex-direction: column;
+  width: min(960px, 100%);
+  height: min(630px, 95dvh);
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid var(--borde);
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 22px 60px #00000035;
+}
+
+/* ENCABEZADO */
+
+.unidad-mapa-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-shrink: 0;
+  min-height: 60px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--borde);
+  background: #fff;
+}
+
+.unidad-mapa-cabecera-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.unidad-mapa-cabecera-info > div:last-child {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+}
+
+.unidad-mapa-cabecera h2 {
+  margin: 0;
+  color: var(--texto);
+  font-size: 17px;
+  font-weight: 750;
+  line-height: 1.3;
+}
+
+.unidad-mapa-cabecera p {
+  margin: 3px 0 0;
+  color: var(--secundario);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.unidad-mapa-cerrar {
+  display: grid;
+  place-items: center;
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--borde);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--verde);
+  cursor: pointer;
+}
+
+.unidad-mapa-cerrar:hover {
+  background: #f2f6f3;
+}
+
+/* ICONOS */
+
+.unidad-mapa-modal .unidad-modal-icono {
+  display: grid;
+  place-items: center;
+  flex: 0 0 42px;
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  margin: 0;
+  padding: 4px;
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: none;
+}
+
+.unidad-mapa-modal .unidad-icono-personalizado {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+}
+
+.unidad-mapa-modal .unidad-icono-personalizado img {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+/* DISTRIBUCIÓN MAPA Y FORMULARIO */
+
+.unidad-mapa-contenido {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: #fff;
+}
+
+/* MAPA */
+
+.mapa-unidades-contenedor {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: #fff;
+}
+
+.mapa-unidades-leaflet {
+  position: absolute !important;
+  inset: 0;
+  z-index: 1;
+  width: 100% !important;
+  height: 100% !important;
+  background: #fff;
+}
+
+.mapa-unidades-contenedor .leaflet-container {
+  width: 100%;
+  height: 100%;
+  font-family: inherit;
+}
+
+/* CONTROLES LEAFLET */
+
+.mapa-unidades-contenedor .leaflet-control-zoom,
+.mapa-unidades-contenedor .leaflet-control-layers {
+  overflow: hidden;
+  border: 0;
+  border-radius: 9px;
+  box-shadow: 0 3px 12px #00000025;
+}
+
+.mapa-unidades-contenedor .leaflet-control-zoom a {
+  color: #004d40;
+}
+
+/* OCULTAR CONTADOR DE UNIDADES REGISTRADAS */
+
+.mapa-unidades-contador,
+.mapa-unidades-contador-icono {
+  display: none !important;
+}
+
+/* MOSTRAR UNIDADES */
+
+.mapa-unidades-mostrar {
+  position: absolute;
+  top: 12px;
+  left: 58px;
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  padding: 9px 11px;
+  border-radius: 9px;
+  background: #fff;
+  color: #183b31;
+  font-size: 11px;
+  font-weight: 650;
+  box-shadow: 0 3px 12px #00000020;
+  cursor: pointer;
+}
+
+.mapa-unidades-mostrar input {
+  width: 14px;
+  height: 14px;
+  margin: 0;
+  accent-color: #004d40;
+}
+
+/* LEYENDA INFERIOR */
+
+.mapa-unidades-leyenda {
+  position: absolute;
+  bottom: 13px;
+  left: 12px;
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 11px;
+  border-radius: 9px;
+  background: #fff;
+  color: #183b31;
+  font-size: 10px;
+  font-weight: 600;
+  box-shadow: 0 3px 12px #00000020;
+}
+
+.mapa-unidades-punto {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #004d40;
+}
+
+.mapa-unidades-punto.seleccionado {
+  background: #e9a500;
+}
+
+.mapa-unidades-separador {
+  width: 1px;
+  height: 12px;
+  margin: 0 3px;
+  background: #d9e2dd;
+}
+
+/* INSTRUCCIONES */
+
+.mapa-unidades-instruccion {
+  position: absolute;
+  right: 12px;
+  bottom: 13px;
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  max-width: 240px;
+  padding: 9px 11px;
+  border-radius: 9px;
+  background: #fff;
+  color: #004d40;
+  font-size: 10px;
+  font-weight: 650;
+  box-shadow: 0 3px 12px #00000020;
+}
+
+/* MARCADORES ORIGINALES CAIMAPA.PNG */
+
+.mapa-unidades-leaflet
+.leaflet-marker-icon.unidad-marcador-policia,
+.mapa-unidades-leaflet
+.leaflet-marker-icon.unidad-marcador-seleccionado {
+  border: 0;
+  background: transparent;
+  object-fit: contain;
+  image-rendering: auto;
+
+  filter:
+    drop-shadow(0 0 3px #ffffff)
+    drop-shadow(0 5px 6px #001e1980);
+}
+
+.mapa-unidades-leaflet
+.leaflet-marker-icon.unidad-marcador-policia:hover {
+  filter:
+    drop-shadow(0 0 5px #ffffff)
+    drop-shadow(0 7px 8px #001e19a0);
+  cursor: pointer;
+}
+
+.mapa-unidades-leaflet
+.leaflet-marker-icon.unidad-marcador-seleccionado {
+  filter:
+    drop-shadow(0 0 5px #ffffff)
+    drop-shadow(0 0 7px #004d40a6)
+    drop-shadow(0 7px 9px #001e198c);
+  cursor: grab;
+}
+
+.mapa-unidades-leaflet
+.leaflet-marker-icon.unidad-marcador-seleccionado:active {
+  cursor: grabbing;
+}
+
+/* POPUP DE UNIDADES */
+
+.unidad-popup-leaflet .leaflet-popup-content-wrapper {
+  padding: 0;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.unidad-popup-leaflet .leaflet-popup-content {
+  width: 215px !important;
+  margin: 0;
+}
+
+.unidad-popup {
+  background: #fff;
+}
+
+.unidad-popup-encabezado {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 12px;
+  border-bottom: 1px solid #edf1ef;
+}
+
+.unidad-popup-simbolo {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #004d40;
+  color: #fff;
+}
+
+.unidad-popup-encabezado > div:last-child {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.unidad-popup-encabezado strong {
+  color: #183b31;
+  font-size: 12px;
+}
+
+.unidad-popup-encabezado span {
+  color: #819087;
+  font-size: 10px;
+}
+
+.unidad-popup-contenido {
+  padding: 10px 12px;
+}
+
+.unidad-popup-contenido > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 5px 0;
+  font-size: 11px;
+}
+
+.unidad-popup-contenido span {
+  color: #75857c;
+}
+
+.unidad-popup-contenido strong {
+  color: #173e32;
+  font-weight: 700;
+}
+
+/* FORMULARIO */
+
+.unidad-mapa-formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  margin: 0;
+  padding: 16px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  border-left: 1px solid #e2eae5;
+  background: #fff;
+}
+
+/* DATOS DEL SISTEMA */
+
+.unidad-mapa-seccion {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  padding-bottom: 13px;
+  border-bottom: 1px solid #e2eae5;
+}
+
+.unidad-mapa-seccion .unidad-modal-icono {
+  flex-basis: 38px;
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+}
+
+.unidad-mapa-seccion > div:last-child {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
+}
+
+.unidad-mapa-seccion h3 {
+  margin: 0;
+  color: #183b31;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.unidad-mapa-seccion p {
+  margin: 0;
+  color: #788a80;
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+/* CAMPOS */
+
+.unidad-mapa-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  min-width: 0;
+}
+
+.unidad-mapa-campo > label {
+  margin: 0;
+  color: #345348;
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.unidad-mapa-campo > input,
+.unidad-mapa-campo > select {
+  width: 100%;
+  min-width: 0;
+  min-height: 39px;
+  padding: 8px 11px;
+  border: 1px solid #dce6df;
+  border-radius: 8px;
+  outline: none;
+  background: #fff;
+  color: #233e34;
+  font-family: inherit;
+  font-size: 12px;
+}
+
+.unidad-mapa-campo > input:focus,
+.unidad-mapa-campo > select:focus {
+  border-color: #004d40;
+  box-shadow: 0 0 0 3px #004d4014;
+}
+
+/* BUSCADOR DE BARRIOS */
+
+.unidad-mapa-formulario .barrio-combobox {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+}
+
+.unidad-mapa-formulario .barrio-combobox-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  height: 39px;
+  padding: 0 10px;
+  border: 1px solid #dce6df;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.unidad-mapa-formulario .barrio-combobox-control:focus-within {
+  border-color: #004d40;
+}
+
+.unidad-mapa-formulario .barrio-combobox-control input {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #233e34;
+  font-family: inherit;
+  font-size: 12px;
+}
+
+.unidad-mapa-formulario .barrio-combobox-flecha {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 25px;
+  height: 27px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #53746a;
+  cursor: pointer;
+}
+
+.unidad-mapa-formulario .barrio-combobox-lista {
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 0;
+  right: 0;
+  z-index: 1500;
+  max-height: 180px;
+  padding: 5px;
+  overflow-y: auto;
+  border: 1px solid #dce6df;
+  border-radius: 9px;
+  background: #fff;
+  box-shadow: 0 10px 25px #00000020;
+}
+
+.unidad-mapa-formulario .barrio-combobox-opcion {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #27483e;
+  font-size: 11px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.unidad-mapa-formulario .barrio-combobox-opcion:hover,
+.unidad-mapa-formulario
+.barrio-combobox-opcion[aria-selected="true"] {
+  background: #eaf4ee;
+}
+
+.unidad-mapa-formulario .barrio-combobox-vacio {
+  padding: 12px;
+  color: #7b8981;
+  font-size: 11px;
+}
+
+/* UBICACIÓN SELECCIONADA */
+
+.unidad-mapa-coordenadas {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 10px;
+  border: 1px solid #e2eae5;
+  border-radius: 9px;
+  background: #fff;
+}
+
+.unidad-mapa-coordenadas > i {
+  flex-shrink: 0;
+  color: #004d40;
+  font-size: 17px;
+}
+
+.unidad-mapa-coordenadas > div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.unidad-mapa-coordenadas strong {
+  color: #234b3d;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.unidad-mapa-coordenadas span {
+  color: #82948a;
+  font-size: 10px;
+  overflow-wrap: anywhere;
+}
+
+/* BOTONES */
+
+.unidad-mapa-botones {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 12px;
+}
+
+.unidad-mapa-botones .unidad-mapa-boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 38px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.unidad-mapa-boton.guardar {
+  border: 1px solid #004d40;
+  background: #004d40;
+  color: #fff;
+}
+
+.unidad-mapa-boton.guardar:hover:not(:disabled) {
+  background: #006453;
+}
+
+.unidad-mapa-boton.cancelar {
+  border: 1px solid #d7e3dc;
+  background: #fff;
+  color: #004d40;
+}
+
+.unidad-mapa-boton.cancelar:hover:not(:disabled) {
+  background: #f4f7f5;
+}
+
+.unidad-mapa-boton:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 800px) {
+  .unidad-mapa-modal {
+    padding: 8px;
+  }
+
+  .unidad-mapa-ventana {
+    width: 100%;
+    height: 96dvh;
+  }
+
+  .unidad-mapa-contenido {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(280px, 48%) minmax(0, 1fr);
+  }
+
+  .mapa-unidades-contenedor {
+    min-height: 280px;
+  }
+
+  .unidad-mapa-formulario {
+    border-left: 0;
+    border-top: 1px solid #e2eae5;
+  }
+
+  .mapa-unidades-instruccion {
+    display: none;
+  }
+
+  .unidad-mapa-botones {
+    margin-top: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .unidad-mapa-cabecera {
+    padding: 11px 12px;
+  }
+
+  .unidad-mapa-cabecera h2 {
+    font-size: 15px;
+  }
+
+  .unidad-mapa-formulario {
+    padding: 14px;
+  }
+
+  .mapa-unidades-leyenda {
+    bottom: 12px;
+    left: 8px;
+    padding: 7px;
+  }
+}

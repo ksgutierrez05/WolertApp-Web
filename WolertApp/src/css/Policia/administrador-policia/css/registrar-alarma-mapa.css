@@ -1,0 +1,1128 @@
+
+/* =========================================
+   WOLERTAPP
+   REGISTRO Y EDICIÓN DE ALARMAS
+   DISEÑO POR ROL
+========================================= */
+
+/* VARIABLES GENERALES */
+
+.registro-alarma-fondo,
+.alarma-confirmacion-fondo,
+.alarmas-crud {
+  --alarma-primary: var(--color-primary, #004d40);
+  --alarma-primary-2: var(
+    --color-primary-2,
+    var(--alarma-primary)
+  );
+  --alarma-borde: #e1e7e5;
+  --alarma-texto: #263e36;
+  --alarma-fondo-campo: #f7f8f7;
+
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.registro-alarma-fondo *,
+.alarma-confirmacion-fondo *,
+.alarmas-crud * {
+  box-sizing: border-box;
+}
+
+/* =========================================
+   BOTONES GENERALES
+========================================= */
+
+.alarmas-acciones,
+.alarmas-acciones-tabla {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.alarma-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+
+  min-height: 42px;
+  padding: 10px 16px;
+
+  border: 1px solid transparent;
+  border-radius: 9px;
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.4;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.alarma-btn-principal {
+  background: var(--alarma-primary);
+  border-color: var(--alarma-primary);
+  color: #ffffff;
+
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.alarma-btn-principal:hover:not(:disabled) {
+  background: var(--alarma-primary-2);
+  border-color: var(--alarma-primary-2);
+  color: #ffffff;
+
+  transform: translateY(-1px);
+
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.16);
+}
+
+.alarma-btn-secundario {
+  background: #ffffff;
+  border-color: var(--alarma-primary);
+  color: var(--alarma-primary);
+}
+
+.alarma-btn-secundario:hover:not(:disabled) {
+  background: var(--alarma-primary);
+  color: #ffffff;
+}
+
+.alarma-btn-peligro {
+  background: #b42318;
+  border-color: #b42318;
+  color: #ffffff;
+}
+
+.alarma-btn-peligro:hover:not(:disabled) {
+  background: #912018;
+  border-color: #912018;
+}
+
+.alarma-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.alarma-btn:focus-visible,
+.alarma-accion:focus-visible {
+  outline: 3px solid color-mix(
+    in srgb,
+    var(--alarma-primary) 30%,
+    transparent
+  );
+  outline-offset: 2px;
+}
+
+/* =========================================
+   BOTONES EDITAR Y ELIMINAR
+========================================= */
+
+.alarma-accion {
+  display: grid;
+  place-items: center;
+
+  width: 37px;
+  height: 37px;
+
+  padding: 0;
+  border-radius: 9px;
+
+  font-family: inherit;
+  font-size: 15px;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.alarma-accion.editar {
+  background: var(--alarma-primary);
+  border: 1px solid var(--alarma-primary);
+  color: #ffffff;
+}
+
+.alarma-accion.eliminar {
+  background: #ffffff;
+  border: 1px solid var(--alarma-primary);
+  color: var(--alarma-primary);
+}
+
+.alarma-accion:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+
+.alarma-accion:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* =========================================
+   FONDO DEL MODAL
+========================================= */
+
+.registro-alarma-fondo {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+
+  display: grid;
+  place-items: center;
+
+  padding: 18px;
+
+  background: rgba(12, 30, 27, 0.75);
+  backdrop-filter: blur(4px);
+}
+
+/* =========================================
+   VENTANA PRINCIPAL
+========================================= */
+
+.registro-alarma-modal {
+  display: flex;
+  flex-direction: column;
+
+  width: min(1160px, 100%);
+  max-height: 94vh;
+
+  min-width: 0;
+  overflow: hidden;
+
+  border-radius: 16px;
+  background: #ffffff;
+
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.21);
+}
+
+/* =========================================
+   ENCABEZADO PRINCIPAL
+========================================= */
+
+.registro-alarma-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+
+  gap: 12px;
+  padding: 15px 20px;
+
+  border-bottom: 1px solid var(--alarma-borde);
+  background: #ffffff;
+}
+
+.registro-alarma-titulo {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+}
+
+.registro-alarma-titulo-icono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  width: 44px;
+  height: 44px;
+  padding: 5px;
+
+  border-radius: 11px;
+
+  background: color-mix(
+    in srgb,
+    var(--alarma-primary) 10%,
+    white
+  );
+}
+
+.registro-alarma-titulo-icono img {
+  display: block;
+
+  width: 34px;
+  height: 34px;
+
+  object-fit: contain;
+  filter: none;
+  opacity: 1;
+  image-rendering: auto;
+}
+
+.registro-alarma-cabecera h2 {
+  margin: 0;
+
+  color: var(--alarma-primary);
+
+  font-size: 19px;
+  font-weight: 750;
+  line-height: 1.3;
+}
+
+.registro-alarma-cabecera p {
+  margin: 4px 0 0;
+
+  color: #728078;
+
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.registro-alarma-cerrar {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+
+  width: 35px;
+  height: 35px;
+
+  padding: 0;
+  border: none;
+  border-radius: 9px;
+
+  background: #f0f3f2;
+  color: var(--alarma-primary);
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.registro-alarma-cerrar:hover:not(:disabled) {
+  background: var(--alarma-primary);
+  color: #ffffff;
+}
+
+/* =========================================
+   CONTENIDO DEL MODAL
+========================================= */
+
+.registro-alarma-contenido {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 330px;
+
+  min-height: 0;
+  height: 600px;
+  max-height: calc(94vh - 75px);
+
+  overflow: hidden;
+}
+
+/* =========================================
+   MAPA
+========================================= */
+
+.registro-alarma-mapa {
+  position: relative;
+
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+
+  overflow: hidden;
+  background: #edf2ef;
+}
+
+.registro-alarma-mapa .leaflet-container {
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.registro-alarma-mapa .leaflet-control-layers {
+  border: none;
+  border-radius: 9px;
+
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
+}
+
+.registro-alarma-mapa .leaflet-control-zoom {
+  border-radius: 9px;
+  overflow: hidden;
+}
+
+.registro-alarma-mapa .leaflet-control-zoom a {
+  color: var(--alarma-primary);
+}
+
+.registro-alarma-mapa .leaflet-marker-icon {
+  filter: none;
+  opacity: 1;
+  image-rendering: auto;
+}
+
+.registro-alarma-mapa .leaflet-popup-content-wrapper {
+  border-radius: 11px;
+  font-family: inherit;
+}
+
+.registro-alarma-mapa .leaflet-popup-content strong {
+  color: var(--alarma-primary);
+}
+
+.registro-alarma-sin-mapa {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 12px;
+  min-height: 100%;
+  padding: 24px;
+
+  color: #a32626;
+  font-size: 12px;
+  text-align: center;
+}
+
+/* =========================================
+   LEYENDA DEL MAPA
+========================================= */
+
+.registro-alarma-leyenda {
+  position: absolute;
+  bottom: 13px;
+  left: 12px;
+  z-index: 500;
+
+  display: flex;
+  flex-wrap: wrap;
+  gap: 11px;
+
+  max-width: calc(100% - 24px);
+  padding: 10px 12px;
+
+  border-radius: 9px;
+
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.13);
+
+  font-size: 10px;
+}
+
+.registro-alarma-leyenda span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.leyenda-punto {
+  display: inline-block;
+  flex-shrink: 0;
+
+  width: 9px;
+  height: 9px;
+
+  border-radius: 50%;
+}
+
+.leyenda-punto.activa {
+  background: #16a34a;
+}
+
+.leyenda-punto.inactiva {
+  background: #94a3b8;
+}
+
+.leyenda-punto.mantenimiento {
+  background: #eab308;
+}
+
+.leyenda-punto.nueva {
+  background: var(--alarma-primary);
+}
+
+/* =========================================
+   FORMULARIO LATERAL
+========================================= */
+
+.registro-alarma-form {
+  display: flex;
+  flex-direction: column;
+
+  gap: 15px;
+  min-width: 0;
+  min-height: 0;
+
+  padding: 19px;
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  background: #ffffff;
+  border-left: 1px solid var(--alarma-borde);
+
+  scrollbar-width: thin;
+  scrollbar-color: #c5ceca transparent;
+}
+
+.registro-alarma-form::-webkit-scrollbar {
+  width: 6px;
+}
+
+.registro-alarma-form::-webkit-scrollbar-thumb {
+  background: #c5ceca;
+  border-radius: 10px;
+}
+
+/* =========================================
+   DATOS DEL SISTEMA
+   IMAGEN PERSONALIZADA
+========================================= */
+
+.registro-alarma-form-titulo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding-bottom: 14px;
+
+  border-bottom: 1px solid var(--alarma-borde);
+}
+
+/* FONDO SÓLIDO DEL COLOR DEL ROL */
+
+.registro-alarma-form-icono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  width: 46px;
+  height: 46px;
+  padding: 7px;
+
+  border-radius: 11px;
+
+  background-color: var(--alarma-primary);
+  border: 1px solid var(--alarma-primary);
+
+  overflow: hidden;
+
+  box-shadow: 0 3px 9px rgba(0, 0, 0, 0.12);
+}
+
+/* IMAGEN SIN EFECTOS QUE PRODUZCAN DESENFOQUE */
+
+.registro-alarma-imagen-personalizada {
+  display: block;
+
+  width: 32px;
+  height: 32px;
+
+  max-width: 100%;
+  max-height: 100%;
+
+  object-fit: contain;
+  object-position: center;
+
+  filter: none !important;
+  backdrop-filter: none !important;
+
+  opacity: 1;
+  transform: none;
+  box-shadow: none;
+
+  image-rendering: auto;
+}
+
+/* TEXTO DEL ENCABEZADO */
+
+.registro-alarma-form-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  gap: 4px;
+  min-width: 0;
+}
+
+.registro-alarma-form-info h3 {
+  margin: 0;
+
+  color: var(--alarma-primary);
+
+  font-size: 14px;
+  font-weight: 750;
+  line-height: 1.3;
+}
+
+.registro-alarma-form-info p {
+  margin: 0;
+
+  color: #74847c;
+
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+/* =========================================
+   CAMPOS DEL FORMULARIO
+========================================= */
+
+.registro-alarma-form label,
+.registro-alarma-campo-barrio {
+  display: flex;
+  flex-direction: column;
+
+  gap: 7px;
+
+  color: #344840;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.registro-alarma-form input:not([type="range"]),
+.registro-alarma-form select {
+  width: 100%;
+  height: 41px;
+  min-width: 0;
+
+  padding: 0 12px;
+
+  border: 1px solid #e0e6e2;
+  border-radius: 10px;
+
+  outline: none;
+
+  background: var(--alarma-fondo-campo);
+  color: #253c34;
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 400;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.registro-alarma-form input:focus,
+.registro-alarma-form select:focus {
+  border-color: var(--alarma-primary);
+
+  box-shadow: 0 0 0 3px color-mix(
+    in srgb,
+    var(--alarma-primary) 10%,
+    transparent
+  );
+}
+
+.registro-alarma-form input::placeholder {
+  color: #929e98;
+}
+
+.registro-alarma-form select:disabled,
+.registro-alarma-form input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* =========================================
+   BUSCADOR DE BARRIOS
+========================================= */
+
+.registro-alarma-campo-barrio {
+  position: relative;
+  min-width: 0;
+}
+
+.registro-alarma-barrio-contenedor {
+  position: relative;
+  width: 100%;
+}
+
+.registro-alarma-barrio-input {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+  padding: 0 11px;
+
+  border: 1px solid #e0e6e2;
+  border-radius: 10px;
+
+  background: var(--alarma-fondo-campo);
+}
+
+.registro-alarma-barrio-input:focus-within {
+  border-color: var(--alarma-primary);
+}
+
+.registro-alarma-barrio-input > i {
+  color: var(--alarma-primary);
+}
+
+.registro-alarma-form .registro-alarma-barrio-input input {
+  flex: 1;
+  min-width: 0;
+
+  padding: 0 !important;
+
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+.registro-alarma-barrio-limpiar {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+
+  width: 25px;
+  height: 25px;
+
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+
+  background: transparent;
+  color: #748078;
+
+  cursor: pointer;
+}
+
+.registro-alarma-barrio-limpiar:hover {
+  background: #e8eeea;
+}
+
+.registro-alarma-barrio-lista {
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 0;
+  right: 0;
+
+  z-index: 3000;
+
+  max-height: 155px;
+  overflow-y: auto;
+
+  padding: 5px;
+
+  border: 1px solid var(--alarma-borde);
+  border-radius: 10px;
+
+  background: #ffffff;
+
+  box-shadow: 0 7px 22px rgba(0, 0, 0, 0.13);
+}
+
+.registro-alarma-barrio-opcion {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  width: 100%;
+  min-height: 34px;
+
+  padding: 8px 10px;
+
+  border: none;
+  border-radius: 7px;
+
+  background: transparent;
+  color: #344840;
+
+  text-align: left;
+  font-family: inherit;
+  font-size: 11px;
+
+  cursor: pointer;
+}
+
+.registro-alarma-barrio-opcion:hover {
+  background: color-mix(
+    in srgb,
+    var(--alarma-primary) 8%,
+    white
+  );
+}
+
+.registro-alarma-barrio-opcion.seleccionado {
+  background: var(--alarma-primary);
+  color: #ffffff;
+}
+
+.registro-alarma-barrio-vacio {
+  padding: 12px;
+
+  color: #738078;
+  font-size: 11px;
+}
+
+.registro-alarma-barrio-lista::-webkit-scrollbar {
+  width: 5px;
+}
+
+.registro-alarma-barrio-lista::-webkit-scrollbar-thumb {
+  background: #bfcac4;
+  border-radius: 10px;
+}
+
+/* =========================================
+   RADIO DE COBERTURA
+========================================= */
+
+.registro-alarma-radio-label > span {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 8px;
+}
+
+.registro-alarma-radio-label strong {
+  color: var(--alarma-primary);
+  white-space: nowrap;
+}
+
+.registro-alarma-form input[type="range"] {
+  width: 100%;
+  margin: 4px 0;
+
+  accent-color: var(--alarma-primary);
+
+  cursor: pointer;
+}
+
+.registro-alarma-radio-limites {
+  display: flex;
+  justify-content: space-between;
+
+  color: #75857d;
+
+  font-size: 10px;
+  font-weight: 400;
+}
+
+/* =========================================
+   UBICACIÓN SELECCIONADA
+========================================= */
+
+.registro-alarma-coordenadas {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 12px;
+
+  border: 1px solid color-mix(
+    in srgb,
+    var(--alarma-primary) 15%,
+    white
+  );
+
+  border-radius: 10px;
+
+  background: color-mix(
+    in srgb,
+    var(--alarma-primary) 6%,
+    white
+  );
+
+  color: var(--alarma-primary);
+}
+
+.registro-alarma-coordenadas > i {
+  flex-shrink: 0;
+  font-size: 18px;
+}
+
+.registro-alarma-coordenadas div {
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
+  min-width: 0;
+}
+
+.registro-alarma-coordenadas strong {
+  font-size: 11px;
+}
+
+.registro-alarma-coordenadas span {
+  font-size: 11px;
+  font-weight: 400;
+  overflow-wrap: anywhere;
+}
+
+/* =========================================
+   MENSAJES DE ERROR
+========================================= */
+
+.registro-alarma-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  margin: 0;
+  padding: 10px;
+
+  border-radius: 8px;
+
+  background: #fff0ef;
+  color: #b42318;
+
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+/* =========================================
+   BOTONES DEL FORMULARIO
+========================================= */
+
+.registro-alarma-botones {
+  display: flex;
+  flex-direction: column;
+
+  gap: 9px;
+
+  margin-top: auto;
+  padding-top: 7px;
+}
+
+.registro-alarma-botones .alarma-btn {
+  width: 100%;
+}
+
+/* =========================================
+   PAGINACIÓN
+========================================= */
+
+.alarmas-paginacion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+
+  gap: 12px;
+  padding: 14px 20px;
+
+  border-top: 1px solid var(--alarma-borde);
+
+  font-size: 12px;
+}
+
+.alarmas-paginacion > div {
+  display: flex;
+  gap: 8px;
+}
+
+.alarmas-paginacion button {
+  display: grid;
+  place-items: center;
+
+  width: 34px;
+  height: 34px;
+
+  border: 1px solid var(--alarma-primary);
+  border-radius: 8px;
+
+  background: #ffffff;
+  color: var(--alarma-primary);
+
+  cursor: pointer;
+}
+
+.alarmas-paginacion button:hover:not(:disabled) {
+  background: var(--alarma-primary);
+  color: #ffffff;
+}
+
+.alarmas-paginacion button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* =========================================
+   CONFIRMACIÓN DE ELIMINACIÓN
+========================================= */
+
+.alarma-confirmacion-fondo {
+  position: fixed;
+  inset: 0;
+  z-index: 2200;
+
+  display: grid;
+  place-items: center;
+
+  padding: 15px;
+
+  background: rgba(12, 30, 27, 0.75);
+  backdrop-filter: blur(3px);
+}
+
+.alarma-confirmacion {
+  width: min(420px, 100%);
+  padding: 27px;
+
+  border-radius: 16px;
+
+  background: #ffffff;
+  text-align: center;
+
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+}
+
+.alarma-confirmacion-icono {
+  display: grid;
+  place-items: center;
+
+  width: 55px;
+  height: 55px;
+
+  margin: 0 auto 15px;
+
+  border-radius: 13px;
+
+  background: #fff0ef;
+  color: #b42318;
+
+  font-size: 23px;
+}
+
+.alarma-confirmacion h3 {
+  margin: 0 0 10px;
+
+  color: var(--alarma-primary);
+  font-size: 19px;
+  font-weight: 750;
+}
+
+.alarma-confirmacion p {
+  margin: 0;
+
+  color: #64746d;
+
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.alarma-confirmacion-botones {
+  display: flex;
+  gap: 10px;
+
+  margin-top: 20px;
+}
+
+.alarma-confirmacion-botones .alarma-btn {
+  flex: 1;
+}
+
+/* =========================================
+   RESPONSIVE - TABLET
+========================================= */
+
+@media (max-width: 850px) {
+  .registro-alarma-contenido {
+    grid-template-columns: 1fr;
+
+    height: auto;
+    max-height: calc(94vh - 75px);
+
+    overflow-y: auto;
+  }
+
+  .registro-alarma-mapa {
+    height: 370px;
+    min-height: 370px;
+  }
+
+  .registro-alarma-form {
+    overflow: visible;
+    border-left: none;
+    border-top: 1px solid var(--alarma-borde);
+  }
+}
+
+/* =========================================
+   RESPONSIVE - MÓVIL
+========================================= */
+
+@media (max-width: 520px) {
+  .registro-alarma-fondo {
+    padding: 8px;
+  }
+
+  .registro-alarma-modal {
+    max-height: 96vh;
+    border-radius: 12px;
+  }
+
+  .registro-alarma-cabecera {
+    padding: 12px;
+  }
+
+  .registro-alarma-cabecera h2 {
+    font-size: 17px;
+  }
+
+  .registro-alarma-cabecera p {
+    font-size: 10px;
+  }
+
+  .registro-alarma-contenido {
+    max-height: calc(96vh - 70px);
+  }
+
+  .registro-alarma-mapa {
+    height: 310px;
+    min-height: 310px;
+  }
+
+  .registro-alarma-form {
+    padding: 15px;
+  }
+
+  .registro-alarma-form-icono {
+    width: 42px;
+    height: 42px;
+    padding: 6px;
+  }
+
+  .registro-alarma-imagen-personalizada {
+    width: 30px;
+    height: 30px;
+  }
+
+  .registro-alarma-leyenda {
+    gap: 7px;
+    font-size: 9px;
+  }
+
+  .alarma-confirmacion {
+    padding: 20px;
+  }
+}
+
+/* =========================================
+   ACCESIBILIDAD
+========================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .registro-alarma-fondo *,
+  .alarma-confirmacion-fondo *,
+  .alarmas-crud * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
