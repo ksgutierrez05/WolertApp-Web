@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import PageHeader from '../../Components/Patrullero/Pageheader';
 import usePatrullero from '../../Utils/usePatrullero';
 
-import '../../css/Policia/Patrullero/css/configuracion.css';
+import '../../css/Policia/Patrullero/css/Configuracion.css';
 
 export default function Configuracion() {
   const navigate = useNavigate();
