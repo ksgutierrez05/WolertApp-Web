@@ -62,7 +62,11 @@ const normalizar = (texto) =>
     .toLowerCase();
 
 const prioridadOrden = { ALTA: 0, MEDIA: 1, BAJA: 2 };
-const colorPrioridad = { ALTA: '#d92d20', MEDIA: '#c17b16', BAJA: '#168a4f' };
+function colorUnicoTipo(tipo) {
+  const id = Number(tipo?.tipoAlertaId ?? tipo?.TipoAlertaId ?? tipo?.id);
+  const valor = Number.isFinite(id) ? id : Array.from(nombreDe(tipo)).reduce((suma, letra) => suma + letra.charCodeAt(0), 0);
+  return `hsl(${(valor * 137.508) % 360} 76% 44%)`;
+}
 
 const prioridadDe = (tipo) =>
   String(tipo?.prioridad ?? tipo?.Prioridad ?? 'SIN PRIORIDAD').toUpperCase();
@@ -318,7 +322,7 @@ export default function ReportarEmergencia({ onClose }) {
                       {tiposVisibles.map((t) => {
                         const prioridad = prioridadDe(t);
                         const central = centralDe(t);
-                        const color = colorPrioridad[prioridad] || '#53647b';
+                        const color = colorUnicoTipo(t);
 
                         return (
                           <button
@@ -408,7 +412,7 @@ export default function ReportarEmergencia({ onClose }) {
 
               <aside className="re-panel">
                 <div className="re-tipo-actual">
-                  <span className="re-tipo-icono" style={{ background: colorPrioridad[prioridadDe(tipo)] || '#53647b' }}><i className={`bi ${iconoDe(tipo)}`} /></span>
+                  <span className="re-tipo-icono" style={{ '--re-tipo-color': colorUnicoTipo(tipo) }}><i className={`bi ${iconoDe(tipo)}`} /></span>
                   <div className="re-tipo-actual-datos">
                     <strong>{nombreDe(tipo)}</strong>
                     <span>Referencia de tipo #{tipo.tipoAlertaId}</span>

@@ -174,49 +174,6 @@ export default function Reportes() {
     timeStyle: "short",
   });
 
-  const exportar = () => {
-    if (tipo === "actividad") {
-      descargarCSV("actividad", [
-        ["Indicador", "Registros"],
-        ["Alertas", alertas.length],
-        ["Prioridad alta", alertas.filter((a) => norm(a.prioridad) === "ALTA").length],
-        ...estados.map(([nombre, total]) => [`Estado: ${nombre}`, total]),
-        ...prioridades.map(([nombre, total]) => [`Prioridad: ${nombre}`, total]),
-        ...tiposAlerta.map(([nombre, total]) => [`Tipo: ${nombre}`, total]),
-      ]);
-    } else if (tipo === "atencion") {
-      descargarCSV("atencion", [
-        ["Indicador", "Registros"],
-        ["Atenciones en el periodo", atenciones.length],
-        ["Asignaciones en el periodo", asignaciones.length],
-        ["Alertas relacionadas", alertas.length],
-        [
-          "Atenciones por alerta",
-          alertas.length ? (atenciones.length / alertas.length).toFixed(2) : 0,
-        ],
-        [
-          "Asignaciones por alerta",
-          alertas.length ? (asignaciones.length / alertas.length).toFixed(2) : 0,
-        ],
-      ]);
-    } else {
-      descargarCSV("capacidad-operativa", [
-        ["Recurso", "Estado", "Cantidad"],
-        ...agrupar(datos.policias || [], (x) => x.estado).map(([estado, cantidad]) => [
-          "Personal policial",
-          estado,
-          cantidad,
-        ]),
-        ...agrupar(datos.unidades || [], (x) => x.estado).map(([estado, cantidad]) => [
-          "Unidades",
-          estado,
-          cantidad,
-        ]),
-        ["Alarmas registradas", "Total", (datos.alarmas || []).length],
-      ]);
-    }
-  };
-
   const pol = datos.policias || [];
   const unidades = datos.unidades || [];
   const alarmas = datos.alarmas || [];
@@ -288,9 +245,6 @@ export default function Reportes() {
             </h2>
             <p>{reporteActivo.description}. Datos consolidados para el periodo seleccionado.</p>
           </div>
-          <button type="button" className="admin-reports__export" onClick={exportar}>
-            <i className="bi bi-download" /> Exportar informe
-          </button>
         </div>
 
         {cargando ? (

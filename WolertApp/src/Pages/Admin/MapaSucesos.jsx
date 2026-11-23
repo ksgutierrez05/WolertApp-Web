@@ -32,14 +32,26 @@ function buscarCampo(obj, coincide, profundidad = 0) {
   return null;
 }
 
-function crearIcono(tipo, color) {
-  return L.divIcon({
-    className: 'mapa-sucesos-marker-wrap',
-    html: `<span class="mapa-sucesos-marker mapa-sucesos-marker--${tipo}" style="--marker-color:${color};--pulse-color:${color}"><i class="bi ${tipo === 'alerta' ? 'bi-exclamation-lg' : 'bi-bell-fill'}"></i></span>`,
-    iconSize: [34, 40],
-    iconAnchor: [17, 36],
-    popupAnchor: [0, -34],
-  });
+function colorUnicoAlerta(id) {
+  const numero = Number(id);
+  const valor = Number.isFinite(numero) ? numero : Array.from(String(id)).reduce((suma, letra) => suma + letra.charCodeAt(0), 0);
+  return `hsl(${(valor * 137.508) % 360} 76% 44%)`;
+}
+
+const cacheIconosAlerta = {};
+function crearIconoAlerta(id) {
+  const color = colorUnicoAlerta(id);
+  const clave = String(id);
+  if (!cacheIconosAlerta[clave]) {
+    cacheIconosAlerta[clave] = L.divIcon({
+      className: 'mapa-sucesos-marker-wrap',
+      html: `<span class="mapa-sucesos-pin-alerta" style="--pulse-color:${color}"><span class="mapa-sucesos-pin-pulso"></span><svg width="38" height="48" viewBox="0 0 38 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M19 1C9.1 1 1 8.8 1 18.4 1 30.2 19 47 19 47s18-16.8 18-28.6C37 8.8 28.9 1 19 1Z" fill="${color}" stroke="#fff" stroke-width="2"/><circle cx="19" cy="18" r="6" fill="#fff"/></svg></span>`,
+      iconSize: [38, 48],
+      iconAnchor: [19, 47],
+      popupAnchor: [0, -44],
+    });
+  }
+  return cacheIconosAlerta[clave];
 }
 
 function crearIconoImagen(tipo, ruta, color, dimensiones = [48, 52]) {
@@ -53,7 +65,6 @@ function crearIconoImagen(tipo, ruta, color, dimensiones = [48, 52]) {
 }
 
 const iconos = {
-  alerta: crearIcono('alerta', '#d92d20'),
   alarma: crearIconoImagen('alarma', '/img/Logo_alarma.png', '#2457d6'),
   policia: crearIconoImagen('policia', '/img/Logo_alerta_policia.png', '#154d8c', [48, 60]),
 };
@@ -78,12 +89,12 @@ function tieneCoordenadas(punto) {
     && Math.abs(punto.lat) <= 90 && Math.abs(punto.lng) <= 180;
 }
 
-function usuarioAlarma(alarma, usuarios) {
-  const username = leer(alarma, 'username', 'userName', 'usuarioUsername', 'usernameUsuario', 'userNameUsuario', 'usernameCreador', 'userNameCreador', 'creadorUsername', 'creadorUserName', 'creadoPorUsername', 'reportanteUsername', 'nombreUsuarioCreador', 'authorUsername', 'createdByUsername')
-    ?? buscarCampo(alarma, (clave) => clave === 'username');
+function usuarioDeRegistro(registro, usuarios) {
+  const username = leer(registro, 'username', 'userName', 'usuarioUsername', 'usernameUsuario', 'userNameUsuario', 'usernameCreador', 'userNameCreador', 'creadorUsername', 'creadorUserName', 'creadoPorUsername', 'reportanteUsername', 'nombreUsuarioCreador', 'authorUsername', 'createdByUsername')
+    ?? buscarCampo(registro, (clave) => clave === 'username');
   if (username) return username;
 
-  const usuario = leer(alarma, 'usuario', 'usuarioCreador', 'creadorUsuario', 'usuarioRegistro', 'creador', 'creadoPor', 'reportadoPor', 'createdBy', 'creator', 'author', 'user');
+  const usuario = leer(registro, 'usuario', 'usuarioCreador', 'creadorUsuario', 'usuarioRegistro', 'usuarioReportante', 'reportadoPorUsuario', 'reportante', 'creador', 'creadoPor', 'reportadoPor', 'createdBy', 'creator', 'author', 'autor', 'user');
   if (usuario && typeof usuario === 'object') {
     const nombreUsuario = leer(usuario, 'username', 'nombreUsuario', 'userName');
     if (nombreUsuario) return nombreUsuario;
@@ -93,15 +104,25 @@ function usuarioAlarma(alarma, usuarios) {
     if (partes.length) return partes.join(' ');
   }
 
-  const idUsuario = leer(alarma, 'idUsuarioCreador', 'usuarioCreadorId', 'idUsuario', 'usuarioId', 'idUsuarioAlarma', 'creadoPorId', 'idCreadoPor', 'creadoPorUsuarioId', 'idCreador', 'creadorId', 'idCreadorUsuario', 'idUsuarioReportante', 'reportadoPorId', 'idUsuarioCreacion', 'usuarioCreacionId', 'idUsuarioRegistro', 'usuarioRegistroId', 'createdById', 'creatorId', 'authorId', 'idAutor', 'autorId')
+  const idUsuario = leer(registro, 'idUsuarioCreador', 'usuarioCreadorId', 'idUsuario', 'usuarioId', 'idUsuarioAlerta', 'idUsuarioAlarma', 'creadoPorId', 'idCreadoPor', 'creadoPorUsuarioId', 'idCreador', 'creadorId', 'idCreadorUsuario', 'idUsuarioReportante', 'reportadoPorId', 'idUsuarioCreacion', 'usuarioCreacionId', 'idUsuarioRegistro', 'usuarioRegistroId', 'createdById', 'creatorId', 'authorId', 'idAutor', 'autorId')
     ?? (usuario && typeof usuario === 'object' ? leer(usuario, 'idUsuario', 'usuarioId', 'id') : null)
-    ?? buscarCampo(alarma, (clave) => (clave.includes('usuario') || clave.includes('user')) && (clave.startsWith('id') || clave.endsWith('id')))
+    ?? buscarCampo(registro, (clave) => (clave.includes('usuario') || clave.includes('user')) && (clave.startsWith('id') || clave.endsWith('id')))
     ?? (typeof usuario === 'number' || (typeof usuario === 'string' && /^\d+$/.test(usuario)) ? usuario : null);
   const registroUsuario = idUsuario && usuarios.find((u) => String(leer(u, 'idUsuario', 'id')) === String(idUsuario));
   const usernameRelacionado = leer(registroUsuario, 'username', 'userName');
   if (usernameRelacionado) return usernameRelacionado;
   if (usuario && typeof usuario === 'string' && !/^\d+$/.test(usuario)) return usuario;
-  return idUsuario ? `Usuario #${idUsuario}` : 'Usuario no informado';
+  return 'Usuario no informado';
+}
+
+function alertaDeAlarma(alarma) {
+  const alerta = leer(alarma, 'alerta', 'alertaRelacionada', 'nombreAlerta', 'alertaNombre', 'tipoAlerta', 'tipoAlertaNombre', 'tituloAlerta');
+  if (alerta && typeof alerta === 'object') {
+    return leer(alerta, 'nombre', 'titulo', 'tipo', 'descripcion', 'idAlerta', 'id') || null;
+  }
+  if (alerta) return alerta;
+  const idAlerta = leer(alarma, 'idAlerta', 'alertaId', 'alertaRelacionadaId');
+  return idAlerta != null ? `Alerta #${idAlerta}` : null;
 }
 
 function generadoPorPolicia(registro) {
@@ -159,6 +180,7 @@ export default function MapaSucesos() {
         tipo: 'alerta', id: leer(a, 'idAlerta', 'id') ?? '—', titulo: leer(a, 'tipo') || 'Alerta reportada',
         estado: leer(a, 'estado') || 'Sin estado', prioridad: leer(a, 'prioridad'),
         esPolicia: generadoPorPolicia(a),
+        reportante: usuarioDeRegistro(a, usuarios),
         fecha: leer(a, 'fecha', 'fechaCreacion'),
         lat: leer(a, 'latitud'), lng: leer(a, 'longitud'), descripcion: leer(a, 'descripcion'),
       })),
@@ -166,7 +188,7 @@ export default function MapaSucesos() {
         tipo: 'alarma', id: leer(a, 'idAlarma', 'id'), titulo: leer(a, 'nombre') || 'Alarma comunitaria',
         estado: leer(a, 'estado') || 'Sin estado', prioridad: null,
         esPolicia: generadoPorPolicia(a),
-        reportante: usuarioAlarma(a, usuarios),
+        alertaRelacionada: alertaDeAlarma(a),
         fecha: leer(a, 'fechaCreacion', 'fecha'),
         lat: leer(a, 'latitud'), lng: leer(a, 'longitud'), descripcion: leer(a, 'descripcion'),
       })),
@@ -250,14 +272,15 @@ export default function MapaSucesos() {
             />
             <AjustarMapa puntos={puntos} />
             {puntos.map((p, idx) => (
-              <Marker key={`${p.tipo}-${p.id}-${idx}`} position={p.posicion} icon={p.esPolicia ? iconos.policia : iconos[p.tipo]}>
+              <Marker key={`${p.tipo}-${p.id}-${idx}`} position={p.posicion} icon={p.esPolicia ? iconos.policia : p.tipo === 'alerta' ? crearIconoAlerta(p.id) : iconos[p.tipo]}>
                 <Popup>
                   <div className="admin-mapa-sucesos__popup">
                     <span className={`admin-mapa-sucesos__tag admin-mapa-sucesos__tag--${p.tipo}`}>{p.tipo === 'alerta' ? 'Alerta' : 'Alarma'} #{p.id}</span>
                     {p.esPolicia && <span className="admin-mapa-sucesos__policia-tag"><i className="bi bi-shield-fill-check" /> Reporte policial</span>}
                     <strong>{p.titulo}</strong>
                     <span>Estado: {p.estado}{p.prioridad ? ` · Prioridad ${p.prioridad}` : ''}</span>
-                    {p.tipo === 'alarma' && <span>Creada por: {p.reportante}</span>}
+                    {p.tipo === 'alerta' && <span>Reportada por: {p.reportante}</span>}
+                    {p.tipo === 'alarma' && p.alertaRelacionada && <span>Alerta: {p.alertaRelacionada}</span>}
                     {p.fecha && <span>{fechaCorta(p.fecha)}</span>}
                     {p.descripcion && <p>{p.descripcion}</p>}
                   </div>
@@ -291,7 +314,8 @@ export default function MapaSucesos() {
                   <div className="admin-mapa-sucesos__item-info">
                     <div className="admin-mapa-sucesos__item-title">{item.titulo} <small>#{item.id}</small></div>
                     <span>{item.tipo === 'alerta' ? 'Alerta' : 'Alarma'} · {item.estado}</span>
-                    {item.tipo === 'alarma' && <span>Creada por: {item.reportante}</span>}
+                    {item.tipo === 'alerta' && <span>Reportada por: {item.reportante}</span>}
+                    {item.tipo === 'alarma' && item.alertaRelacionada && <span>Alerta: {item.alertaRelacionada}</span>}
                     {item.fecha && <span>{fechaCorta(item.fecha)}</span>}
                     {!tieneCoordenadas(item) && <span className="admin-mapa-sucesos__no-coords"><i className="bi bi-geo-alt" /> Sin coordenadas</span>}
                   </div>
