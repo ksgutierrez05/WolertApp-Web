@@ -13,3 +13,10 @@ dist/
 
 # Cache generado por PowerShell
 /Microsoft/
+.env.local
+
+transito-respaldo-temporal/
+
+.env.local
+
+transito-respaldo-temporal/

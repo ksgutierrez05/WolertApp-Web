@@ -1,4 +1,12 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  useMapEvents,
+  useMap,
+} from "react-leaflet";
+import L from "leaflet";
 import Layout from "../../Components/transito/Layout";
 import KpiCard from "../../Components/transito/KpiCard";
 import {
@@ -8,8 +16,12 @@ import {
   actualizarSemaforo,
   eliminarSemaforo,
 } from "../../Services/semaforosDirectorService";
+import "leaflet/dist/leaflet.css";
 import "../../css/transito/director-transito/panel-semaforos.css";
+import "../../css/transito/director-transito/mapas-transito.css";
+import "../../css/transito/director-transito/registro-semaforo-mapa.css";
 
+const CENTRO_VALLEDUPAR = [10.4769, -73.2509];
 const POR_PAGINA = 5;
 
 const FORMULARIO_VACIO = {
@@ -22,6 +34,56 @@ const FORMULARIO_VACIO = {
   longitud: "",
   observacion: "",
 };
+
+const PILLS_ESTADO = [
+  ["", "Todas", "pill-todas-dash"],
+  ["FUNCIONANDO", "Funcionando", "pill-funcionando-dash"],
+  ["DANADO", "Dañado", "pill-danado-dash"],
+  ["MANTENIMIENTO", "En mantenimiento", "pill-mantenimiento-dash"],
+];
+
+const iconoSemaforo = L.divIcon({
+  className: "registro-sem-icono",
+  html: '<span class="registro-sem-pin"><i class="bi bi-stoplights-fill"></i></span>',
+  iconSize: [44, 50],
+  iconAnchor: [22, 47],
+});
+
+function SelectorPunto({ onSeleccionar }) {
+  useMapEvents({
+    click(e) {
+      onSeleccionar({
+        latitud: e.latlng.lat.toFixed(6),
+        longitud: e.latlng.lng.toFixed(6),
+      });
+    },
+  });
+  return null;
+}
+
+// Recalcula el tamaño del mapa tras la animación de apertura del modal
+function AjustarTamano() {
+  const mapa = useMap();
+  useEffect(() => {
+    const t = setTimeout(() => mapa.invalidateSize(), 250);
+    return () => clearTimeout(t);
+  }, [mapa]);
+  return null;
+}
+
+// Solo mueve el mapa si el punto queda fuera de la vista actual
+function CentrarPunto({ posicion }) {
+  const mapa = useMap();
+  const lat = posicion?.[0];
+  const lng = posicion?.[1];
+  useEffect(() => {
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+    if (!mapa.getBounds().contains([lat, lng])) {
+      mapa.flyTo([lat, lng], Math.max(mapa.getZoom(), 15), { duration: 0.7 });
+    }
+  }, [mapa, lat, lng]);
+  return null;
+}
 
 function normalizar(valor) {
   return String(valor ?? "")
@@ -57,6 +119,13 @@ function etiquetaEstado(estado) {
   }
 }
 
+function etiquetaTipo(tipo) {
+  const t = normalizar(tipo);
+  if (t === "VEHICULAR") return "Vehicular";
+  if (t === "PEATONAL") return "Peatonal";
+  return tipo || "—";
+}
+
 export default function Semaforos() {
   const [semaforos, setSemaforos] = useState([]);
   const [barrios, setBarrios] = useState([]);
@@ -71,6 +140,7 @@ export default function Semaforos() {
   const [editandoId, setEditandoId] = useState(null);
   const [formulario, setFormulario] = useState({ ...FORMULARIO_VACIO });
   const [modalAbierto, setModalAbierto] = useState(false);
+  const [mapaVisible, setMapaVisible] = useState(true);
   const [confirmarEliminar, setConfirmarEliminar] = useState(null);
 
   useEffect(() => {
@@ -82,42 +152,17 @@ export default function Semaforos() {
     return () => clearTimeout(temporizador);
   }, [error, aviso]);
 
-  async function cargarDatos() {
-    setCargando(true);
-    setError("");
-    const resultados = await Promise.allSettled([
-      listarSemaforos(),
-      listarBarrios(),
-    ]);
-    const [resultadoSemaforos, resultadoBarrios] = resultados;
-    const errores = [];
-    if (resultadoSemaforos.status === "fulfilled")
-      setSemaforos(resultadoSemaforos.value);
-    else
-      errores.push(
-        resultadoSemaforos.reason?.message ||
-          "No se pudieron cargar los semáforos.",
-      );
-    if (resultadoBarrios.status === "fulfilled")
-      setBarrios(resultadoBarrios.value);
-    else
-      errores.push(
-        resultadoBarrios.reason?.message ||
-          "No se pudieron cargar los barrios.",
-      );
-    if (errores.length) setError(errores.join(" | "));
-    setCargando(false);
-  }
-
   useEffect(() => {
-    let activo = true;
-    async function cargarInicial() {
-      const resultados = await Promise.allSettled([
-        listarSemaforos(),
-        listarBarrios(),
-      ]);
-      if (!activo) return;
-      const [resultadoSemaforos, resultadoBarrios] = resultados;
+    if (!modalAbierto) return;
+    function alPresionar(e) {
+      if (e.key === "Escape" && !guardando) setModalAbierto(false);
+    }
+    window.addEventListener("keydown", alPresionar);
+    return () => window.removeEventListener("keydown", alPresionar);
+  }, [modalAbierto, guardando]);
+
+  const aplicarResultados = useCallback(
+    ([resultadoSemaforos, resultadoBarrios]) => {
       const errores = [];
       if (resultadoSemaforos.status === "fulfilled")
         setSemaforos(resultadoSemaforos.value);
@@ -134,36 +179,63 @@ export default function Semaforos() {
             "No se pudieron cargar los barrios.",
         );
       if (errores.length > 0) setError(errores.join(" | "));
-      setCargando(false);
-    }
-    cargarInicial();
+    },
+    [],
+  );
+
+  async function cargarDatos() {
+    setCargando(true);
+    setError("");
+    const resultados = await Promise.allSettled([
+      listarSemaforos(),
+      listarBarrios(),
+    ]);
+    aplicarResultados(resultados);
+    setCargando(false);
+  }
+
+  useEffect(() => {
+    let activo = true;
+    Promise.allSettled([listarSemaforos(), listarBarrios()]).then(
+      (resultados) => {
+        if (!activo) return;
+        aplicarResultados(resultados);
+        setCargando(false);
+      },
+    );
     return () => {
       activo = false;
     };
-  }, []);
+  }, [aplicarResultados]);
+
+  // Excluye registros marcados como ELIMINADO por el backend
+  const lista = useMemo(
+    () => semaforos.filter((s) => estadoSemaforo(s.estado) !== "ELIMINADO"),
+    [semaforos],
+  );
 
   const estadisticas = useMemo(
     () => ({
-      total: semaforos.length,
-      funcionando: semaforos.filter(
+      total: lista.length,
+      funcionando: lista.filter(
         (s) => estadoSemaforo(s.estado) === "FUNCIONANDO",
       ).length,
-      danados: semaforos.filter((s) => estadoSemaforo(s.estado) === "DANADO")
+      danados: lista.filter((s) => estadoSemaforo(s.estado) === "DANADO")
         .length,
-      mantenimiento: semaforos.filter(
+      mantenimiento: lista.filter(
         (s) => estadoSemaforo(s.estado) === "MANTENIMIENTO",
       ).length,
-      vehiculares: semaforos.filter((s) => normalizar(s.tipo) === "VEHICULAR")
+      vehiculares: lista.filter((s) => normalizar(s.tipo) === "VEHICULAR")
         .length,
-      peatonales: semaforos.filter((s) => normalizar(s.tipo) === "PEATONAL")
+      peatonales: lista.filter((s) => normalizar(s.tipo) === "PEATONAL")
         .length,
     }),
-    [semaforos],
+    [lista],
   );
 
   const filtrados = useMemo(() => {
     const texto = normalizar(busqueda);
-    return semaforos.filter((semaforo) => {
+    return lista.filter((semaforo) => {
       const contenido = normalizar(
         [
           semaforo.codigo,
@@ -180,7 +252,7 @@ export default function Semaforos() {
         filtroTipo === "TODOS" || normalizar(semaforo.tipo) === filtroTipo;
       return coincideBusqueda && coincideEstado && coincideTipo;
     });
-  }, [semaforos, busqueda, filtroEstado, filtroTipo]);
+  }, [lista, busqueda, filtroEstado, filtroTipo]);
 
   const totalPaginas = Math.max(1, Math.ceil(filtrados.length / POR_PAGINA));
   const paginaActual = Math.min(pagina, totalPaginas);
@@ -188,6 +260,26 @@ export default function Semaforos() {
     (paginaActual - 1) * POR_PAGINA,
     paginaActual * POR_PAGINA,
   );
+
+  const latMapa = Number(formulario.latitud);
+  const lngMapa = Number(formulario.longitud);
+  const posicionMapa =
+    formulario.latitud !== "" &&
+    formulario.longitud !== "" &&
+    Number.isFinite(latMapa) &&
+    Number.isFinite(lngMapa) &&
+    Math.abs(latMapa) <= 90 &&
+    Math.abs(lngMapa) <= 180
+      ? [latMapa, lngMapa]
+      : null;
+
+  function seleccionarUbicacion({ latitud, longitud }) {
+    setFormulario((anterior) => ({
+      ...anterior,
+      latitud: String(latitud),
+      longitud: String(longitud),
+    }));
+  }
 
   function limpiarFiltros() {
     setBusqueda("");
@@ -205,6 +297,7 @@ export default function Semaforos() {
     setFormulario({ ...FORMULARIO_VACIO });
     setError("");
     setAviso("");
+    setMapaVisible(true);
     setModalAbierto(true);
   }
 
@@ -222,6 +315,7 @@ export default function Semaforos() {
     });
     setError("");
     setAviso("");
+    setMapaVisible(true);
     setModalAbierto(true);
   }
 
@@ -292,6 +386,9 @@ export default function Semaforos() {
     }
   }
 
+  // Con el modal abierto el error se muestra dentro de él, no en el toast
+  const mostrarToast = Boolean(aviso) || (Boolean(error) && !modalAbierto);
+
   return (
     <Layout
       titulo="Semáforos"
@@ -319,12 +416,14 @@ export default function Semaforos() {
             </button>
           </div>
         </div>
+
         {cargando && (
           <div className="alert alert-info" role="status">
             <i className="bi bi-arrow-repeat me-2" />
             Cargando semáforos...
           </div>
         )}
+
         <div className="row g-3 mt-4 mb-4">
           <KpiCard
             color="blue"
@@ -351,6 +450,7 @@ export default function Semaforos() {
             icono="bi-tools"
           />
         </div>
+
         <div className="table-card-dash">
           <div className="filtros-fila-dash mb-3">
             <div className="input-group search-dash filtros-busqueda-dash">
@@ -369,18 +469,9 @@ export default function Semaforos() {
               />
             </div>
             <div className="d-flex flex-wrap gap-2">
-              {[
-                ["", "Todas", "pill-todas-dash"],
-                ["FUNCIONANDO", "Funcionando", "pill-funcionando-dash"],
-                ["DANADO", "Dañado", "pill-danado-dash"],
-                [
-                  "MANTENIMIENTO",
-                  "En mantenimiento",
-                  "pill-mantenimiento-dash",
-                ],
-              ].map(([valor, texto, clase]) => (
+              {PILLS_ESTADO.map(([valor, texto, clase]) => (
                 <button
-                  key={valor}
+                  key={valor || "todas"}
                   type="button"
                   aria-pressed={filtroEstado === valor}
                   className={`pill-filtro-dash ${clase} ${filtroEstado === valor ? "pill-activa-dash" : ""}`}
@@ -402,6 +493,7 @@ export default function Semaforos() {
               Limpiar
             </button>
           </div>
+
           <div className="d-flex gap-2 tabs-dash mb-3">
             {[
               ["TODOS", "Todas", estadisticas.total],
@@ -421,6 +513,7 @@ export default function Semaforos() {
               </button>
             ))}
           </div>
+
           <div className="table-responsive">
             <table className="table align-middle mb-0 sem-tabla">
               <thead>
@@ -462,11 +555,7 @@ export default function Semaforos() {
                     </td>
                     <td>
                       <span className="sem-pill sem-pill-tipo">
-                        {normalizar(semaforo.tipo) === "VEHICULAR"
-                          ? "Vehicular"
-                          : normalizar(semaforo.tipo) === "PEATONAL"
-                            ? "Peatonal"
-                            : semaforo.tipo || "—"}
+                        {etiquetaTipo(semaforo.tipo)}
                       </span>
                     </td>
                     <td>
@@ -508,12 +597,14 @@ export default function Semaforos() {
               </tbody>
             </table>
           </div>
-          {visibles.length === 0 && (
+
+          {!cargando && visibles.length === 0 && (
             <div className="text-center text-muted py-4">
-              <i className="bi bi-traffic-light fs-3 d-block mb-2" />
+              <i className="bi bi-stoplights fs-3 d-block mb-2" />
               No hay semáforos para mostrar.
             </div>
           )}
+
           <div className="d-flex justify-content-between align-items-center pt-3 paginacion-dash">
             <span className="text-muted small">
               Mostrando {visibles.length} de {filtrados.length} semáforos
@@ -522,8 +613,9 @@ export default function Semaforos() {
               <button
                 type="button"
                 className="page-btn-dash"
+                aria-label="Página anterior"
                 disabled={paginaActual === 1}
-                onClick={() => setPagina((p) => Math.max(1, p - 1))}
+                onClick={() => setPagina(Math.max(1, paginaActual - 1))}
               >
                 <i className="bi bi-chevron-left" />
               </button>
@@ -542,28 +634,45 @@ export default function Semaforos() {
               <button
                 type="button"
                 className="page-btn-dash"
+                aria-label="Página siguiente"
                 disabled={paginaActual === totalPaginas}
-                onClick={() => setPagina((p) => Math.min(totalPaginas, p + 1))}
+                onClick={() =>
+                  setPagina(Math.min(totalPaginas, paginaActual + 1))
+                }
               >
                 <i className="bi bi-chevron-right" />
               </button>
             </div>
           </div>
         </div>
+
         {modalAbierto && (
           <div
-            className="modal fade show modal-dash"
+            className="modal fade show modal-dash registro-sem-overlay"
             id="modalSemaforo"
             tabIndex={-1}
             role="dialog"
             aria-modal="true"
             aria-labelledby="tituloModalSemaforo"
-            style={{ display: "block", backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+            style={{ display: "block" }}
           >
-            <div className="modal-dialog modal-dialog-centered">
-              <div className="modal-content">
+            <div className="modal-dialog modal-dialog-centered registro-sem-dialog">
+              <div className="modal-content registro-sem-contenido">
                 <form onSubmit={guardarSemaforo}>
-                  <div className="modal-header">
+                  <div className="modal-header registro-sem-cabecera">
+                    <div className="registro-sem-marca">
+                      <img
+                        src="/img/secretaria%20transito.png"
+                        alt="Secretaría de Tránsito"
+                        onError={(e) => {
+                          e.currentTarget.style.display = "none";
+                        }}
+                      />
+                      <div>
+                        <strong>WolertApp · Tránsito</strong>
+                        <small>Gestión de semáforos de Valledupar</small>
+                      </div>
+                    </div>
                     <h5 className="modal-title" id="tituloModalSemaforo">
                       {editandoId !== null
                         ? "Editar semáforo"
@@ -577,171 +686,278 @@ export default function Semaforos() {
                       onClick={cerrarModal}
                     />
                   </div>
-                  <div className="modal-body">
-                    <div className="mb-3">
-                      <label htmlFor="inputCodigo" className="form-label-dash">
-                        Código
-                      </label>
-                      <input
-                        id="inputCodigo"
-                        type="text"
-                        className="form-control form-control-dash"
-                        placeholder="Ej: SEM-004"
-                        maxLength={30}
-                        required
-                        value={formulario.codigo}
-                        onChange={(e) => cambiarCampo("codigo", e.target.value)}
-                      />
-                    </div>
-                    <div className="mb-3">
-                      <label
-                        htmlFor="inputUbicacion"
-                        className="form-label-dash"
-                      >
-                        Ubicación
-                      </label>
-                      <input
-                        id="inputUbicacion"
-                        type="text"
-                        className="form-control form-control-dash"
-                        placeholder="Ej: Cra 19 con Calle 16"
-                        maxLength={150}
-                        value={formulario.direccion}
-                        onChange={(e) =>
-                          cambiarCampo("direccion", e.target.value)
-                        }
-                      />
-                    </div>
-                    <div className="mb-3">
-                      <label htmlFor="inputBarrio" className="form-label-dash">
-                        Barrio
-                      </label>
-                      <select
-                        id="inputBarrio"
-                        className="form-select form-control-dash"
-                        required
-                        value={formulario.idBarrio}
-                        onChange={(e) =>
-                          cambiarCampo("idBarrio", e.target.value)
-                        }
-                      >
-                        <option value="">Selecciona un barrio</option>
-                        {barrios.map((barrio) => (
-                          <option key={barrio.idBarrio} value={barrio.idBarrio}>
-                            {barrio.nombre}
-                          </option>
-                        ))}
-                      </select>
-                      {barrios.length === 0 && (
-                        <small className="text-muted">
-                          No hay barrios disponibles. Comprueba la conexión con
-                          la API.
-                        </small>
+
+                  <div className="modal-body registro-sem-cuerpo">
+                    <div className="registro-sem-mapa-col">
+                      <div className="registro-sem-mapa-barra">
+                        <div>
+                          <strong>
+                            <i className="bi bi-geo-alt-fill me-2" />
+                            Ubicación del semáforo
+                          </strong>
+                          <small>
+                            Haz clic en el mapa para marcar el punto exacto
+                          </small>
+                        </div>
+                        <button
+                          type="button"
+                          className="registro-sem-mapa-toggle"
+                          onClick={() => setMapaVisible((valor) => !valor)}
+                        >
+                          {mapaVisible ? "Ocultar mapa" : "Mostrar mapa"}
+                        </button>
+                      </div>
+                      {mapaVisible && (
+                        <div className="registro-sem-mapa-marco">
+                          <MapContainer
+                            center={posicionMapa || CENTRO_VALLEDUPAR}
+                            zoom={14}
+                            scrollWheelZoom={true}
+                            className="registro-sem-leaflet"
+                          >
+                            <TileLayer
+                              attribution="&copy; OpenStreetMap contributors"
+                              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                            />
+                            <AjustarTamano />
+                            <SelectorPunto
+                              onSeleccionar={seleccionarUbicacion}
+                            />
+                            {posicionMapa && (
+                              <>
+                                <CentrarPunto posicion={posicionMapa} />
+                                <Marker
+                                  position={posicionMapa}
+                                  icon={iconoSemaforo}
+                                />
+                              </>
+                            )}
+                          </MapContainer>
+                        </div>
                       )}
+                      <div className="registro-sem-ubicacion">
+                        <i className="bi bi-pin-map-fill" />
+                        <div>
+                          <small>Ubicación seleccionada</small>
+                          <strong>
+                            {posicionMapa
+                              ? `${latMapa.toFixed(6)}, ${lngMapa.toFixed(6)}`
+                              : "Selecciona un punto en el mapa"}
+                          </strong>
+                        </div>
+                      </div>
                     </div>
-                    <div className="row g-3">
-                      <div className="col-md-6">
-                        <label htmlFor="inputTipo" className="form-label-dash">
-                          Tipo
-                        </label>
-                        <select
-                          id="inputTipo"
-                          className="form-select form-control-dash"
-                          value={formulario.tipo}
-                          onChange={(e) => cambiarCampo("tipo", e.target.value)}
-                        >
-                          <option value="VEHICULAR">Vehicular</option>
-                          <option value="PEATONAL">Peatonal</option>
-                        </select>
+
+                    <div className="registro-sem-form-col">
+                      <div className="registro-sem-form-titulo">
+                        <span className="registro-sem-form-icon">
+                          <i className="bi bi-stoplights-fill" />
+                        </span>
+                        <div>
+                          <strong>
+                            {editandoId !== null
+                              ? "Editar semáforo"
+                              : "Registrar semáforo"}
+                          </strong>
+                          <small>
+                            Completa los datos y selecciona su ubicación
+                          </small>
+                        </div>
                       </div>
-                      <div className="col-md-6">
+
+                      {error && (
+                        <div className="alert alert-danger py-2" role="alert">
+                          {error}
+                        </div>
+                      )}
+
+                      <div className="mb-3">
                         <label
-                          htmlFor="inputEstado"
+                          htmlFor="inputCodigo"
                           className="form-label-dash"
                         >
-                          Estado
-                        </label>
-                        <select
-                          id="inputEstado"
-                          className="form-select form-control-dash"
-                          value={formulario.estado}
-                          onChange={(e) =>
-                            cambiarCampo("estado", e.target.value)
-                          }
-                        >
-                          <option value="FUNCIONANDO">Funcionando</option>
-                          <option value="DANADO">Dañado</option>
-                          <option value="MANTENIMIENTO">
-                            En mantenimiento
-                          </option>
-                        </select>
-                      </div>
-                      <div className="col-md-6">
-                        <label
-                          htmlFor="inputLatitud"
-                          className="form-label-dash"
-                        >
-                          Latitud
+                          Código
                         </label>
                         <input
-                          id="inputLatitud"
-                          type="number"
-                          step="any"
-                          min="-90"
-                          max="90"
+                          id="inputCodigo"
+                          type="text"
                           className="form-control form-control-dash"
-                          placeholder="Ej: 10.4631"
+                          placeholder="Ej: SEM-004"
+                          maxLength={30}
                           required
-                          value={formulario.latitud}
+                          value={formulario.codigo}
                           onChange={(e) =>
-                            cambiarCampo("latitud", e.target.value)
+                            cambiarCampo("codigo", e.target.value)
                           }
                         />
                       </div>
-                      <div className="col-md-6">
+
+                      <div className="mb-3">
                         <label
-                          htmlFor="inputLongitud"
+                          htmlFor="inputUbicacion"
                           className="form-label-dash"
                         >
-                          Longitud
+                          Ubicación
                         </label>
                         <input
-                          id="inputLongitud"
-                          type="number"
-                          step="any"
-                          min="-180"
-                          max="180"
+                          id="inputUbicacion"
+                          type="text"
                           className="form-control form-control-dash"
-                          placeholder="Ej: -73.2532"
-                          required
-                          value={formulario.longitud}
+                          placeholder="Ej: Cra 19 con Calle 16"
+                          maxLength={150}
+                          value={formulario.direccion}
                           onChange={(e) =>
-                            cambiarCampo("longitud", e.target.value)
+                            cambiarCampo("direccion", e.target.value)
                           }
                         />
                       </div>
-                    </div>
-                    <div className="mb-1 mt-3">
-                      <label
-                        htmlFor="inputObservacion"
-                        className="form-label-dash"
-                      >
-                        Observación
-                      </label>
-                      <textarea
-                        id="inputObservacion"
-                        className="form-control form-control-dash"
-                        rows={3}
-                        maxLength={200}
-                        placeholder="Observaciones sobre el semáforo..."
-                        value={formulario.observacion}
-                        onChange={(e) =>
-                          cambiarCampo("observacion", e.target.value)
-                        }
-                      />
+
+                      <div className="mb-3">
+                        <label
+                          htmlFor="inputBarrio"
+                          className="form-label-dash"
+                        >
+                          Barrio
+                        </label>
+                        <select
+                          id="inputBarrio"
+                          className="form-select form-control-dash"
+                          required
+                          value={formulario.idBarrio}
+                          onChange={(e) =>
+                            cambiarCampo("idBarrio", e.target.value)
+                          }
+                        >
+                          <option value="">Selecciona un barrio</option>
+                          {barrios.map((barrio) => (
+                            <option
+                              key={barrio.idBarrio}
+                              value={barrio.idBarrio}
+                            >
+                              {barrio.nombre}
+                            </option>
+                          ))}
+                        </select>
+                        {barrios.length === 0 && (
+                          <small className="text-muted">
+                            No hay barrios disponibles. Comprueba la conexión
+                            con la API.
+                          </small>
+                        )}
+                      </div>
+
+                      <div className="row g-3">
+                        <div className="col-md-6">
+                          <label
+                            htmlFor="inputTipo"
+                            className="form-label-dash"
+                          >
+                            Tipo
+                          </label>
+                          <select
+                            id="inputTipo"
+                            className="form-select form-control-dash"
+                            value={formulario.tipo}
+                            onChange={(e) =>
+                              cambiarCampo("tipo", e.target.value)
+                            }
+                          >
+                            <option value="VEHICULAR">Vehicular</option>
+                            <option value="PEATONAL">Peatonal</option>
+                          </select>
+                        </div>
+                        <div className="col-md-6">
+                          <label
+                            htmlFor="inputEstado"
+                            className="form-label-dash"
+                          >
+                            Estado
+                          </label>
+                          <select
+                            id="inputEstado"
+                            className="form-select form-control-dash"
+                            value={formulario.estado}
+                            onChange={(e) =>
+                              cambiarCampo("estado", e.target.value)
+                            }
+                          >
+                            <option value="FUNCIONANDO">Funcionando</option>
+                            <option value="DANADO">Dañado</option>
+                            <option value="MANTENIMIENTO">
+                              En mantenimiento
+                            </option>
+                            <option value="INACTIVO">Inactivo</option>
+                          </select>
+                        </div>
+                        <div className="col-md-6">
+                          <label
+                            htmlFor="inputLatitud"
+                            className="form-label-dash"
+                          >
+                            Latitud
+                          </label>
+                          <input
+                            id="inputLatitud"
+                            type="number"
+                            step="any"
+                            min="-90"
+                            max="90"
+                            className="form-control form-control-dash"
+                            placeholder="Ej: 10.4631"
+                            required
+                            value={formulario.latitud}
+                            onChange={(e) =>
+                              cambiarCampo("latitud", e.target.value)
+                            }
+                          />
+                        </div>
+                        <div className="col-md-6">
+                          <label
+                            htmlFor="inputLongitud"
+                            className="form-label-dash"
+                          >
+                            Longitud
+                          </label>
+                          <input
+                            id="inputLongitud"
+                            type="number"
+                            step="any"
+                            min="-180"
+                            max="180"
+                            className="form-control form-control-dash"
+                            placeholder="Ej: -73.2532"
+                            required
+                            value={formulario.longitud}
+                            onChange={(e) =>
+                              cambiarCampo("longitud", e.target.value)
+                            }
+                          />
+                        </div>
+                      </div>
+
+                      <div className="mb-1 mt-3">
+                        <label
+                          htmlFor="inputObservacion"
+                          className="form-label-dash"
+                        >
+                          Observación
+                        </label>
+                        <textarea
+                          id="inputObservacion"
+                          className="form-control form-control-dash"
+                          rows={3}
+                          maxLength={200}
+                          placeholder="Observaciones sobre el semáforo..."
+                          value={formulario.observacion}
+                          onChange={(e) =>
+                            cambiarCampo("observacion", e.target.value)
+                          }
+                        />
+                      </div>
                     </div>
                   </div>
-                  <div className="modal-footer">
+
+                  <div className="modal-footer registro-sem-pie">
                     <button
                       type="button"
                       className="btn btn-light"
@@ -767,7 +983,8 @@ export default function Semaforos() {
             </div>
           </div>
         )}
-        {(error || aviso) && (
+
+        {mostrarToast && (
           <div
             className={`sem-toast ${error ? "sem-toast-error" : "sem-toast-exito"}`}
             role={error ? "alert" : "status"}
@@ -788,6 +1005,7 @@ export default function Semaforos() {
             </button>
           </div>
         )}
+
         {confirmarEliminar && (
           <div
             className="sem-confirmar-fondo"

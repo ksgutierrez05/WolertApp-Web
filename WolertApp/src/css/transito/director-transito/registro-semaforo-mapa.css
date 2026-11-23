@@ -1,0 +1,238 @@
+/* Modal de registro: estilos aislados para no alterar otras pantallas */
+.registro-sem-overlay {
+  position: fixed !important;
+  inset: 0;
+  z-index: 2000;
+  overflow-y: auto;
+  background: rgba(17, 35, 58, 0.48) !important;
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+  padding: 20px;
+}
+.registro-sem-dialog {
+  width: min(1320px, 96vw);
+  max-width: none;
+  margin: 0 auto;
+  min-height: calc(100vh - 40px);
+  display: flex;
+  align-items: center;
+}
+.registro-sem-contenido {
+  border: 0;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 28px 85px rgba(12, 30, 55, 0.28);
+  background: #fff;
+}
+.registro-sem-cabecera {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 15px 24px;
+  background: #fff;
+  border-bottom: 1px solid #e5edf7;
+}
+.registro-sem-marca {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-right: auto;
+}
+.registro-sem-marca img {
+  width: 45px;
+  height: 45px;
+  object-fit: contain;
+  border-radius: 10px;
+}
+.registro-sem-marca strong {
+  display: block;
+  color: #2d609c;
+  font-size: 16px;
+}
+.registro-sem-marca small {
+  display: block;
+  color: #7b8a9d;
+  font-size: 12px;
+}
+.registro-sem-cabecera .modal-title {
+  font-size: 16px;
+  color: #1d3551;
+  margin-right: 12px;
+}
+.registro-sem-cuerpo {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(350px, 1fr);
+  padding: 0;
+  max-height: min(76vh, 760px);
+  overflow: hidden;
+}
+.registro-sem-mapa-col {
+  display: flex;
+  flex-direction: column;
+  min-height: 490px;
+  background: #f1f6fc;
+}
+.registro-sem-mapa-barra {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 15px 18px;
+  background: #f6f9fe;
+}
+.registro-sem-mapa-barra strong {
+  display: block;
+  color: #2d609c;
+  font-size: 14px;
+}
+.registro-sem-mapa-barra small {
+  display: block;
+  color: #7b8a9d;
+  font-size: 12px;
+  margin-top: 3px;
+}
+.registro-sem-mapa-toggle {
+  background: #e4eefb;
+  color: #2d609c;
+  border: 0;
+  border-radius: 20px;
+  padding: 8px 12px;
+  font-weight: 600;
+  font-size: 12px;
+}
+.registro-sem-mapa-marco {
+  flex: 1;
+  min-height: 360px;
+  position: relative;
+}
+.registro-sem-leaflet {
+  width: 100%;
+  height: 100%;
+  min-height: 360px;
+  z-index: 0;
+}
+.registro-sem-ubicacion {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 16px;
+  padding: 12px 15px;
+  border: 1px solid #cbdcf4;
+  background: #eaf2ff;
+  border-radius: 13px;
+  color: #2d609c;
+}
+.registro-sem-ubicacion i {
+  font-size: 19px;
+}
+.registro-sem-ubicacion small {
+  display: block;
+  color: #657c9b;
+  font-size: 12px;
+}
+.registro-sem-ubicacion strong {
+  display: block;
+  color: #1e3f66;
+  font-size: 14px;
+}
+.registro-sem-form-col {
+  overflow-y: auto;
+  padding: 18px 24px 22px;
+  background: white;
+  border-left: 1px solid #e5edf7;
+}
+.registro-sem-form-titulo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.registro-sem-form-titulo strong {
+  display: block;
+  color: #1d3551;
+  font-size: 18px;
+}
+.registro-sem-form-titulo small {
+  display: block;
+  color: #7b8a9d;
+  font-size: 12px;
+}
+.registro-sem-form-icon {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  background: linear-gradient(135deg, #517aac, #2d609c);
+  border-radius: 12px;
+  color: white;
+  font-size: 22px;
+}
+.registro-sem-form-col .form-label-dash {
+  color: #30445b;
+  font-weight: 650;
+}
+.registro-sem-form-col .form-control-dash {
+  border-radius: 12px;
+  background: #f7f9fc;
+  border: 1px solid #e5ebf3;
+  min-height: 43px;
+}
+.registro-sem-form-col .form-control-dash:focus {
+  background: #fff;
+  border-color: #517aac;
+  box-shadow: 0 0 0 3px rgba(81, 122, 172, 0.13);
+}
+.registro-sem-pie {
+  padding: 13px 24px;
+  background: #fff;
+  border-top: 1px solid #e5edf7;
+}
+.registro-sem-pie .btn-primario-dash {
+  background: #2d609c;
+  color: white;
+  border-radius: 10px;
+}
+.registro-sem-pin {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 13px 13px 13px 3px;
+  transform: rotate(-45deg);
+  background: #2d609c;
+  color: #fff;
+  border: 3px solid white;
+  box-shadow: 0 5px 16px rgba(20, 48, 80, 0.28);
+}
+.registro-sem-pin i {
+  transform: rotate(45deg);
+  font-size: 20px;
+}
+@media (max-width: 900px) {
+  .registro-sem-overlay {
+    padding: 10px;
+  }
+  .registro-sem-dialog {
+    width: 100%;
+    min-height: calc(100vh - 20px);
+  }
+  .registro-sem-cuerpo {
+    grid-template-columns: 1fr;
+    max-height: 75vh;
+    overflow-y: auto;
+  }
+  .registro-sem-mapa-col {
+    min-height: 350px;
+  }
+  .registro-sem-mapa-marco,
+  .registro-sem-leaflet {
+    min-height: 280px;
+  }
+  .registro-sem-form-col {
+    overflow: visible;
+    border-left: 0;
+  }
+  .registro-sem-cabecera {
+    flex-wrap: wrap;
+  }
+}
