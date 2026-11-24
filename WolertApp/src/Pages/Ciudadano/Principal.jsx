@@ -3,7 +3,7 @@ import '../../css/global.css';
 import '../../css/temas.css';
 import '../../css/ciudadano/pagina-principal.css';
 import { Link, useNavigate } from 'react-router-dom';
-import { logOut, obtenerUsuarioPorId } from '../../Services/UsuariosAPI.js';
+import { logOut, obtenerUsuarioPorId, listarVecinos } from '../../Services/UsuariosAPI.js';
 import { listarAlertas, listarMisAlertas } from '../../Services/AlertasAPI.js';
 import { ListarBarrios } from '../../Services/BarriosApi.js';
 import { destinoNotificacion, listarMisNotificaciones } from '../../Services/NotificacionesAPI';
@@ -61,6 +61,8 @@ export default function Principal() {
   const [buscar, setBuscar] = useState('');
   const [usuario, setUsuario] = useState(null);
   const [misAlertas, setMisAlertas] = useState(hayUsuarioEnSesion ? null : []);
+  const [vecinosActivos, setVecinosActivos] = useState(hayUsuarioEnSesion ? null : []);
+  const [errorVecinos, setErrorVecinos] = useState(false);
   const [alertasComunidad, setAlertasComunidad] = useState(hayUsuarioEnSesion ? null : []);
   const [barrios, setBarrios] = useState([]);
   const [errorMisAlertas, setErrorMisAlertas] = useState(
@@ -111,6 +113,42 @@ export default function Principal() {
       .catch(() => { if (activo) setBarrios([]); });
 
     return () => { activo = false; };
+  }, []);
+
+  useEffect(() => {
+    let activo = true;
+    let cargandoVecinos = false;
+    const idUsuario = localStorage.getItem('idUsuario');
+
+    if (!idUsuario) {
+      setVecinosActivos([]);
+      return () => { activo = false; };
+    }
+
+    const cargarVecinos = async () => {
+      if (cargandoVecinos) return;
+      cargandoVecinos = true;
+      try {
+        const datos = await listarVecinos();
+        if (activo) {
+          setVecinosActivos(Array.isArray(datos) ? datos : []);
+          setErrorVecinos(false);
+        }
+      } catch {
+        if (activo) setErrorVecinos(true);
+      } finally {
+        cargandoVecinos = false;
+      }
+    };
+
+    cargarVecinos();
+    const intervalo = window.setInterval(cargarVecinos, 60000);
+    window.addEventListener('focus', cargarVecinos);
+    return () => {
+      activo = false;
+      window.clearInterval(intervalo);
+      window.removeEventListener('focus', cargarVecinos);
+    };
   }, []);
 
   useEffect(() => {
@@ -197,6 +235,7 @@ export default function Principal() {
       ['resuelta', 'resuelto', 'cerrada', 'cerrado', 'finalizada', 'finalizado', 'atendida']
         .includes(normalizar(estadoAlertaDe(alerta))),
   ).length;
+  const vecinosConectadosTotal = vecinosActivos?.length ?? 0;
   const idBarrioUsuario =
     idBarrioPerfil ??
     barrioIdDe(
@@ -413,8 +452,13 @@ export default function Principal() {
         <div className="col-6 col-lg-3">
           <div className="kpi-dash kpi-blue-dash">
             <i className="bi bi-people kpi-icon-dash"></i>
-            <div className="kpi-num-dash">6</div>
-            <div className="kpi-label-dash">Vecinos conectados</div>
+            <div
+              className="kpi-num-dash"
+              title={errorVecinos ? 'No se pudo consultar la lista de vecinos.' : 'Ciudadanos activos registrados en tu barrio.'}
+            >
+              {vecinosActivos === null ? '…' : errorVecinos ? '—' : vecinosConectadosTotal}
+            </div>
+            <div className="kpi-label-dash">Vecinos activos del barrio</div>
           </div>
         </div>
         <div className="col-6 col-lg-3">
