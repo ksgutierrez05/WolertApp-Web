@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 
+import MapaTransito from "../central-transito/MapaTransito";
 import Panel from "../central-transito/PanelPrincipal";
 import Casos from "../central-transito/Casos";
 import Agentes from "../central-transito/Agentes";
@@ -12,6 +13,7 @@ export default function Central() {
   return (
     <Routes>
       <Route index element={<Navigate to="panel" replace />} />
+      <Route path="mapa" element={<MapaTransito />} />
       <Route path="panel" element={<Panel />} />
       <Route path="asignar" element={<Casos />} />
       <Route path="atencion" element={<AtencionTransito />} />
