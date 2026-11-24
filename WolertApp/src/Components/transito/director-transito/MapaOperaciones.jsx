@@ -10,12 +10,12 @@ import {
 import "../../../css/transito/director-transito/mapas-transito.css";
 const CENTRO = [10.4769, -73.2509];
 const capasDef = [
-  { id: "semaforos", titulo: "Semáforos", icono: "🚦", color: "#3673b1" },
-  { id: "grupos", titulo: "Unidades de tránsito", icono: "🚙", color: "#2678d0" },
+  { id: "semaforos", titulo: "Semáforos", icono: "bi-stoplights-fill", color: "#517aac" },
+  { id: "grupos", titulo: "Unidades de tránsito", icono: "bi-car-front-fill", color: "#27917b" },
   {
     id: "alertas",
     titulo: "Alertas relacionadas",
-    icono: "⚠️",
+    icono: "bi-exclamation-triangle-fill",
     color: "#d94b53",
   },
 ];
@@ -24,7 +24,7 @@ const iconos = Object.fromEntries(
     c.id,
     L.divIcon({
       className: "sem-marker",
-      html: `<div class="sem-pin" style="--pin-color:${c.color}">${c.icono}</div>`,
+      html: `<div class="sem-pin" style="--pin-color:${c.color}"><i class="bi ${c.icono}"></i></div>`,
       iconSize: [40, 47],
       iconAnchor: [20, 45],
     }),
@@ -80,6 +80,16 @@ export default function MapaOperaciones({ compacto = false }) {
   const [buscar, setBuscar] = useState("");
   const [posicion, setPosicion] = useState(null);
   const [recarga, setRecarga] = useState(0);
+
+  useEffect(() => {
+    const intervalo = setInterval(() => {
+      if (!document.hidden) {
+        setRecarga((valor) => valor + 1);
+      }
+    }, 5000);
+
+    return () => clearInterval(intervalo);
+  }, []);
 useEffect(() => {
   let activo = true;
 
@@ -147,18 +157,36 @@ useEffect(() => {
         <header className="sem-ops-head">
           <div>
             <h1>Mapa de operaciones</h1>
-            <p>Tránsito · Semáforos, grupos y alertas relacionadas</p>
+            <p>Consulta y seguimiento de las operaciones de tránsito</p>
           </div>
-          <button
-            type="button"
-            className="sem-ops-update"
-            disabled={cargando}
-            onClick={() => { setCargando(true); setRecarga((v) => v + 1); }}
-          >
-            <i className="bi bi-arrow-clockwise" />{" "}
-            {cargando ? "Actualizando..." : "Actualizar mapa"}
-          </button>
+          <div className="sem-ops-live">
+  <span className="sem-ops-live-dot" />
+  {cargando ? "Conectando..." : errores.length ? "Conexion parcial" : "Actualizacion automatica"}
+</div>
         </header>
+
+        {!compacto && (
+          <div className="sem-ops-summary">
+            {capasDef.map((c) => (
+              <div
+                className="sem-ops-stat"
+                key={c.id}
+                style={{ "--layer-color": c.color }}
+              >
+                <div className="sem-ops-stat-icon">
+                  <i className={`bi ${c.icono}`} />
+                </div>
+                <div className="sem-ops-stat-info">
+                  <span>{c.titulo}</span>
+                  <strong>
+                    {cargando ? "..." : datos[c.id].filter((p) => coords(p)).length}
+                  </strong>
+                  <small>Ubicaciones registradas</small>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
         {errores.length > 0 && (
           <p className="sem-ops-error" role="alert">
             No se pudieron cargar algunas capas: {errores.join(" · ")}
@@ -190,7 +218,7 @@ useEffect(() => {
             <div className="sem-ops-leyenda">
               {capasDef.map((c) => (
                 <span key={c.id}>
-                  {c.icono} {c.titulo}
+                  <i className={`bi ${c.icono}`} style={{ color: c.color }} /> {c.titulo}
                 </span>
               ))}
             </div>
@@ -214,9 +242,10 @@ useEffect(() => {
                 placeholder="Buscar en el mapa..."
               />
             </label>
-            <div className="sem-ops-toggles">
+            <div className="sem-ops-section-label">Capas del mapa</div>
+<div className="sem-ops-toggles">
               {capasDef.map((c) => (
-                <label key={c.id}>
+                <label key={c.id} style={{ "--layer-color": c.color }}>
                   <input
                     type="checkbox"
                     checked={visibles[c.id]}
@@ -224,13 +253,14 @@ useEffect(() => {
                       setVisibles((v) => ({ ...v, [c.id]: e.target.checked }))
                     }
                   />
-                  {c.titulo}
+                  <i className={`bi ${c.icono}`} /> {c.titulo}
                 </label>
               ))}
             </div>
-            <div className="sem-ops-filters">
+            <div className="sem-ops-section-label">Filtrar por estado</div>
+<div className="sem-ops-filters">
               {capasDef.map((c) => (
-                <label key={c.id}>
+                <label key={c.id} style={{ "--layer-color": c.color }}>
                   Estado de {c.titulo.toLowerCase()}
                   <select
                     value={filtros[c.id]}
@@ -260,7 +290,7 @@ useEffect(() => {
               {capasDef.map((c) => (
                 <section key={c.id}>
                   <h3>
-                    {c.icono} {c.titulo} (
+                    <i className={`bi ${c.icono}`} style={{ color: c.color }} /> {c.titulo} (
                     {elementos.filter((p) => p._tipo === c.id).length})
                   </h3>
                   {elementos.filter((p) => p._tipo === c.id).length === 0 ? (

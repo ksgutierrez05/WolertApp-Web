@@ -1,0 +1,290 @@
+/* WOLERTAPP - DETALLE DE CASOS DE TRANSITO */
+
+.caso-detalle-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(24, 52, 79, .42);
+    backdrop-filter: blur(3px);
+    font-family: Inter, sans-serif;
+}
+
+.caso-detalle-dialog {
+    display: flex;
+    flex-direction: column;
+    width: min(760px, 100%);
+    max-height: 92vh;
+    background: #fff;
+    border: 1px solid #e1e8f0;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 65px rgba(24, 52, 79, .18);
+}
+
+/* Cabecera */
+
+.caso-detalle-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 24px;
+    border-bottom: 1px solid #e6edf4;
+    flex-shrink: 0;
+}
+
+.caso-detalle-header-icon {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    flex-shrink: 0;
+    background: #e8f0fa;
+    border-radius: 16px;
+    color: #517aac;
+    font-size: 25px;
+}
+
+.caso-detalle-header-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.caso-detalle-eyebrow {
+    color: #517aac;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.4px;
+    margin-bottom: 5px;
+}
+
+.caso-detalle-header h2 {
+    font-family: "Space Grotesk", Inter, sans-serif;
+    font-size: 24px;
+    font-weight: 750;
+    letter-spacing: -.7px;
+    color: #183b64;
+    margin: 0 0 5px;
+}
+
+.caso-detalle-header p {
+    color: #78899e;
+    font-size: 12px;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.caso-detalle-close {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+    align-self: flex-start;
+    border: 0;
+    border-radius: 9px;
+    background: #f2f5f9;
+    color: #71849a;
+    cursor: pointer;
+}
+
+.caso-detalle-close:hover {
+    background: #e5edf6;
+    color: #2d609c;
+}
+
+/* Contenido */
+
+.caso-detalle-body {
+    min-height: 0;
+    overflow-y: auto;
+    padding: 22px 24px;
+    scrollbar-width: thin;
+    scrollbar-color: #cddae8 transparent;
+}
+
+.caso-detalle-resumen {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding-bottom: 20px;
+}
+
+.caso-detalle-section {
+    margin-bottom: 22px;
+}
+
+.caso-detalle-section:last-child {
+    margin-bottom: 0;
+}
+
+.caso-detalle-section + .caso-detalle-section {
+    border-top: 1px solid #e6edf4;
+    padding-top: 22px;
+}
+
+.caso-detalle-section h3 {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    color: #183b64;
+    font-size: 15px;
+    font-weight: 750;
+    margin: 0 0 15px;
+}
+
+.caso-detalle-section h3 i {
+    color: #517aac;
+    font-size: 18px;
+}
+
+/* Campos de informacion */
+
+.caso-detalle-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.caso-detalle-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    min-width: 0;
+    padding: 15px;
+    border: 1px solid #e3eaf2;
+    border-radius: 12px;
+    background: #f7f9fc;
+}
+
+.caso-detalle-field.completo {
+    grid-column: 1 / -1;
+}
+
+.caso-detalle-field small {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    color: #78899e;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.caso-detalle-field small i {
+    color: #517aac;
+    font-size: 14px;
+}
+
+.caso-detalle-field strong {
+    color: #294969;
+    font-size: 13px;
+    font-weight: 650;
+    overflow-wrap: anywhere;
+}
+
+.caso-detalle-field p {
+    color: #435b75;
+    font-size: 13px;
+    line-height: 1.7;
+    margin: 0;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+/* Caso sin atencion */
+
+.caso-detalle-vacio {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 18px;
+    border: 1px dashed #cbdced;
+    border-radius: 12px;
+    background: #f5f8fc;
+}
+
+.caso-detalle-vacio > i {
+    color: #517aac;
+    font-size: 26px;
+}
+
+.caso-detalle-vacio strong {
+    font-size: 13px;
+    color: #294969;
+}
+
+.caso-detalle-vacio p {
+    margin: 5px 0 0;
+    font-size: 12px;
+    color: #78899e;
+}
+
+/* Pie de ventana */
+
+.caso-detalle-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 24px;
+    border-top: 1px solid #e6edf4;
+    background: #fff;
+    flex-shrink: 0;
+}
+
+.caso-detalle-footer > span {
+    font-size: 11px;
+    color: #78899e;
+}
+
+.caso-detalle-footer button {
+    border: 0;
+    border-radius: 10px;
+    padding: 12px 20px;
+    background: #517aac;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .2s;
+}
+
+.caso-detalle-footer button:hover {
+    background: #2d609c;
+}
+
+/* Responsive */
+
+@media (max-width: 600px) {
+    .caso-detalle-overlay {
+        padding: 10px;
+    }
+
+    .caso-detalle-header,
+    .caso-detalle-body,
+    .caso-detalle-footer {
+        padding: 16px;
+    }
+
+    .caso-detalle-header h2 {
+        font-size: 19px;
+    }
+
+    .caso-detalle-header-icon {
+        width: 42px;
+        height: 42px;
+        font-size: 20px;
+    }
+
+    .caso-detalle-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .caso-detalle-dialog {
+        border-radius: 15px;
+    }
+}

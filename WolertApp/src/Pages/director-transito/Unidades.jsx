@@ -1,3 +1,4 @@
+import SelectorUbicacionUnidad from "../../Components/transito/director-transito/SelectorUbicacionUnidad";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import Layout from "../../Components/transito/Layout";
@@ -115,6 +116,7 @@ export default function Unidades() {
   const [filtro, setFiltro] = useState("TODAS");
   const [pagina, setPagina] = useState(1);
   const [mostrarModal, setMostrarModal] = useState(false);
+  const [mostrarMapa, setMostrarMapa] = useState(false);
   const [editando, setEditando] = useState(null);
   const [formulario, setFormulario] = useState({ ...VACIO });
   const [detalle, setDetalle] = useState(null);
@@ -187,12 +189,14 @@ export default function Unidades() {
   const visibles = filtradas.slice((actual - 1) * 5, actual * 5);
 
   function nuevo() {
+    setMostrarMapa(false);
     setEditando(null);
     setFormulario({ ...VACIO });
     setMostrarModal(true);
   }
 
   function editar(u) {
+    setMostrarMapa(false);
     setEditando(u.idUnidadTransito);
     setFormulario({
       nombre: u.nombre ?? "",
@@ -543,6 +547,25 @@ export default function Unidades() {
                           ))}
                         </select>
                       </div>
+                      <div className="ut-form-field full">
+                        <div className="ut-ubicacion-barra">
+                          <div>
+                            <strong>Ubicación de la unidad</strong>
+                            <small>Selecciona el punto en el mapa</small>
+                          </div>
+
+                          <button
+                            type="button"
+                            className="ut-abrir-mapa"
+                            disabled={guardando}
+                            onClick={() => setMostrarMapa(true)}
+                          >
+                            <i className="bi bi-map me-2" />
+                            Abrir mapa
+                          </button>
+                        </div>
+                      </div>
+
                       <div className="ut-form-field">
                         <label htmlFor="ut-lat">
                           Latitud <span>*</span>
@@ -604,6 +627,22 @@ export default function Unidades() {
               </form>
             </div>
           )}
+          {mostrarModal && mostrarMapa && (
+            <SelectorUbicacionUnidad
+              latitud={formulario.latitud}
+              longitud={formulario.longitud}
+              cerrar={() => setMostrarMapa(false)}
+              confirmar={(latitud, longitud) => {
+                setFormulario((f) => ({
+                  ...f,
+                  latitud,
+                  longitud,
+                }));
+                setMostrarMapa(false);
+              }}
+            />
+          )}
+
           {(detalle || cargandoDetalle) && (
             <div
               className="modal fade show ut-modal-backdrop"

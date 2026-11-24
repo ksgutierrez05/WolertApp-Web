@@ -1,3 +1,4 @@
+import "../../css/transito/director-transito/detalle-casos.css";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { listarTiposAlertaCentral, normalizarCentral } from "../../Services/centralTransitoService";
@@ -470,109 +471,258 @@ export default function Casos() {
       </div>
       {detalle && (
         <div
-          className="modal fade show"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="tituloDetalleCaso"
-          style={{ display: "block", backgroundColor: "rgba(0,0,0,.5)" }}
+          className="caso-detalle-overlay"
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget) setDetalle(null);
+          }}
         >
-          <div className="modal-dialog modal-dialog-centered">
-            <div className="modal-content modal-dash">
-              <div className="modal-header">
-                <h5 id="tituloDetalleCaso" className="modal-title">
+          <div
+            className="caso-detalle-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="tituloDetalleCaso"
+          >
+            <header className="caso-detalle-header">
+              <span className="caso-detalle-header-icon">
+                <i className="bi bi-clipboard-data-fill" />
+              </span>
+
+              <div className="caso-detalle-header-info">
+                <div className="caso-detalle-eyebrow">
+                  DIRECCIÓN DE TRÁNSITO
+                </div>
+
+                <h2 id="tituloDetalleCaso">
                   Detalle del caso #{detalle.identificador ?? "—"}
-                </h5>
-                <button type="button" className="btn-close" aria-label="Cerrar" onClick={() => setDetalle(null)} />
+                </h2>
+
+                <p>
+                  Consulta la información y atención del incidente.
+                </p>
               </div>
-              <div className="modal-body">
-                <p>
-                  <b>Tipo:</b> {textoVisible(detalle.tipoVisual)}
-                </p>
-                <p>
-                  <b>Reportante:</b> {detalle.reportante}
-                </p>
-                <p>
-                  <b>Barrio:</b> {detalle.barrio}
-                </p>
-                <p>
-                  <b>Estado:</b> {textoVisible(detalle.estadoVisual)}
-                </p>
-                <p>
-                  <b>Fecha:</b> {fechaTransito(detalle.fechaVisual)}
-                </p>
-                <p>
-                  <b>Descripción:</b> {detalle.descripcion ?? "No disponible"}
-                </p>
-                                <hr />
-                <h6 className="fw-bold mb-3">
+
+              <button
+                type="button"
+                className="caso-detalle-close"
+                aria-label="Cerrar detalle"
+                onClick={() => setDetalle(null)}
+              >
+                <i className="bi bi-x-lg" />
+              </button>
+            </header>
+
+            <div className="caso-detalle-body">
+
+              <div className="caso-detalle-resumen">
+                <span
+                  className={`badge-dash casos-pill ${claseTipoCaso(detalle.tipoVisual)}`}
+                  style={SIN_MAYUSCULAS}
+                >
+                  {textoVisible(detalle.tipoVisual)}
+                </span>
+
+                <span
+                  className={`badge-dash casos-pill ${claseEstadoCaso(detalle.estadoVisual)}`}
+                  style={SIN_MAYUSCULAS}
+                >
+                  {textoVisible(detalle.estadoVisual)}
+                </span>
+              </div>
+
+              <section className="caso-detalle-section">
+
+                <h3>
+                  <i className="bi bi-file-earmark-text" />
+                  Información del caso
+                </h3>
+
+                <div className="caso-detalle-grid">
+
+                  <div className="caso-detalle-field">
+                    <small>
+                      <i className="bi bi-person" />
+                      Reportado por
+                    </small>
+                    <strong>{detalle.reportante}</strong>
+                  </div>
+
+                  <div className="caso-detalle-field">
+                    <small>
+                      <i className="bi bi-geo-alt" />
+                      Barrio
+                    </small>
+                    <strong>{detalle.barrio}</strong>
+                  </div>
+
+                  <div className="caso-detalle-field">
+                    <small>
+                      <i className="bi bi-calendar-event" />
+                      Fecha del reporte
+                    </small>
+                    <strong>
+                      {fechaTransito(detalle.fechaVisual)}
+                    </strong>
+                  </div>
+
+                  <div className="caso-detalle-field">
+                    <small>
+                      <i className="bi bi-exclamation-circle" />
+                      Tipo de incidente
+                    </small>
+                    <strong>
+                      {textoVisible(detalle.tipoVisual)}
+                    </strong>
+                  </div>
+
+                  <div className="caso-detalle-field completo">
+                    <small>
+                      <i className="bi bi-card-text" />
+                      Descripción del incidente
+                    </small>
+                    <p>
+                      {detalle.descripcion || "No disponible"}
+                    </p>
+                  </div>
+
+                </div>
+              </section>
+
+              <section className="caso-detalle-section">
+
+                <h3>
+                  <i className="bi bi-shield-check" />
                   Información de la atención
-                </h6>
+                </h3>
 
                 {detalle.atencion ? (
-                  <>
-                    <p>
-                      <b>Agente que atendió:</b>{" "}
-                      {agentes.find(
-                        (a) => String(a.idUsuario) === String(detalle.atencion.idAgenteTransito)
-                      )?.nombreUsuario ||
-                        (detalle.atencion.idAgenteTransito != null
-                          ? `Agente #${detalle.atencion.idAgenteTransito}`
-                          : "No registrado")}
-                    </p>
+                  <div className="caso-detalle-grid">
 
-                    <p>
-                      <b>Unidad de tránsito:</b>{" "}
-                      {unidades.find(
-                        (u) => String(u.idUnidadTransito) === String(detalle.atencion.idUnidadTransito)
-                      )?.nombre ||
-                        (detalle.atencion.idUnidadTransito != null
-                          ? `Unidad #${detalle.atencion.idUnidadTransito}`
-                          : "No registrada")}
-                    </p>
+                    <div className="caso-detalle-field">
+                      <small>
+                        <i className="bi bi-person-check" />
+                        Agente que atendió
+                      </small>
 
-                    <p>
-                      <b>Registrado por:</b>{" "}
-                      {usuarios.find(u =>
-                        detalle.atencion.usuarioRegistra != null &&
-                        (
-                          String(u.idUsuario) === String(detalle.atencion.usuarioRegistra) ||
-                          normalizar(u.username) === normalizar(detalle.atencion.usuarioRegistra)
-                        )
-                      )?.nombreCompleto || detalle.atencion.usuarioRegistra || "No registrado"}
-                    </p>
+                      <strong>
+                        {agentes.find(
+                          (a) => String(a.idUsuario) === String(detalle.atencion.idAgenteTransito)
+                        )?.nombreUsuario ||
+                          (detalle.atencion.idAgenteTransito != null
+                            ? `Agente #${detalle.atencion.idAgenteTransito}`
+                            : "No registrado")}
+                      </strong>
+                    </div>
 
-                    <p>
-                      <b>Fecha de atención:</b>{" "}
-                      {fechaTransito(detalle.atencion.fechaAtencion)}
-                    </p>
+                    <div className="caso-detalle-field">
+                      <small>
+                        <i className="bi bi-car-front" />
+                        Unidad de tránsito
+                      </small>
 
-                    <p>
-                      <b>Estado final:</b>{" "}
-                      {textoVisible(detalle.atencion.estadoFinal)}
-                    </p>
+                      <strong>
+                        {unidades.find(
+                          (u) => String(u.idUnidadTransito) === String(detalle.atencion.idUnidadTransito)
+                        )?.nombre ||
+                          (detalle.atencion.idUnidadTransito != null
+                            ? `Unidad #${detalle.atencion.idUnidadTransito}`
+                            : "No registrada")}
+                      </strong>
+                    </div>
 
-                    <p>
-                      <b>Informe de atención:</b>{" "}
-                      {detalle.atencion.descripcion || "Sin informe"}
-                    </p>
+                    <div className="caso-detalle-field">
+                      <small>
+                        <i className="bi bi-headset" />
+                        Registrado por
+                      </small>
 
-                    <p>
-                      <b>Observaciones:</b>{" "}
-                      {detalle.atencion.observacion || "Sin observaciones"}
-                    </p>
-                  </>
+                      <strong>
+                        {usuarios.find(u =>
+                          detalle.atencion.usuarioRegistra != null &&
+                          (
+                            String(u.idUsuario) === String(detalle.atencion.usuarioRegistra) ||
+                            normalizar(u.username) === normalizar(detalle.atencion.usuarioRegistra)
+                          )
+                        )?.nombreCompleto || detalle.atencion.usuarioRegistra || "No registrado"}
+                      </strong>
+                    </div>
+
+                    <div className="caso-detalle-field">
+                      <small>
+                        <i className="bi bi-calendar-check" />
+                        Fecha de atención
+                      </small>
+
+                      <strong>
+                        {fechaTransito(detalle.atencion.fechaAtencion)}
+                      </strong>
+                    </div>
+
+                    <div className="caso-detalle-field completo">
+                      <small>
+                        <i className="bi bi-check2-circle" />
+                        Estado final
+                      </small>
+
+                      <div>
+                        <span
+                          className={`badge-dash casos-pill ${claseEstadoCaso(detalle.atencion.estadoFinal)}`}
+                          style={SIN_MAYUSCULAS}
+                        >
+                          {textoVisible(detalle.atencion.estadoFinal)}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="caso-detalle-field completo">
+                      <small>
+                        <i className="bi bi-file-earmark-text" />
+                        Informe de atención
+                      </small>
+                      <p>
+                        {detalle.atencion.descripcion || "Sin informe"}
+                      </p>
+                    </div>
+
+                    <div className="caso-detalle-field completo">
+                      <small>
+                        <i className="bi bi-chat-left-text" />
+                        Observaciones
+                      </small>
+                      <p>
+                        {detalle.atencion.observacion || "Sin observaciones"}
+                      </p>
+                    </div>
+
+                  </div>
                 ) : (
-                  <p className="text-muted">
-                    Este caso aún no tiene una atención registrada.
-                  </p>
+                  <div className="caso-detalle-vacio">
+                    <i className="bi bi-clock-history" />
+
+                    <div>
+                      <strong>Atención pendiente</strong>
+                      <p>
+                        Este caso aún no tiene una atención registrada.
+                      </p>
+                    </div>
+                  </div>
                 )}
-              </div>
-              <div className="modal-footer">
-                <button type="button" className="btn btn-light" onClick={() => setDetalle(null)}>
-                  Cerrar
-                </button>
-              </div>
+
+              </section>
             </div>
+
+            <footer className="caso-detalle-footer">
+              <span>
+                <i className="bi bi-shield-check me-2" />
+                Gestión de casos
+              </span>
+
+              <button
+                type="button"
+                onClick={() => setDetalle(null)}
+              >
+                Cerrar detalle
+              </button>
+            </footer>
           </div>
         </div>
       )}
