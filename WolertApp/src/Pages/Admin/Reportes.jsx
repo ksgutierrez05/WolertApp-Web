@@ -83,6 +83,30 @@ function agrupar(items, campo, sinDato = "Categoría no informada") {
   return [...cuenta.entries()].sort((a, b) => b[1] - a[1]);
 }
 
+function rangoDePolicia(policia) {
+  return leer(policia, "rango", "Rango", "grado", "Grado") || "Rango no informado";
+}
+
+function personalPorUnidad(unidades, policias) {
+  const unidadesConPersonal = new Set();
+  const nombresConPersonal = new Set();
+
+  policias.forEach((policia) => {
+    const id = leer(policia, "idUnidad", "IdUnidad", "unidadId", "UnidadId");
+    const nombre = leer(policia, "nombreUnidad", "NombreUnidad", "unidadNombre", "UnidadNombre");
+    if (id != null) unidadesConPersonal.add(String(id));
+    if (nombre) nombresConPersonal.add(norm(nombre));
+  });
+
+  return agrupar(unidades, (unidad) => {
+    const id = leer(unidad, "idUnidad", "IdUnidad", "unidadId", "UnidadId", "id", "Id");
+    const nombre = leer(unidad, "nombreUnidad", "NombreUnidad", "unidadNombre", "UnidadNombre", "nombre", "Nombre");
+    const tienePersonal = (id != null && unidadesConPersonal.has(String(id))) ||
+      (nombre && nombresConPersonal.has(norm(nombre)));
+    return tienePersonal ? "Con personal asignado" : "Sin personal asignado";
+  });
+}
+
 function estadoDeAtencion(item) {
   return etiquetaEstado(leer(item,
     "estadoAtencion", "EstadoAtencion", "estadoFinalAtencion", "EstadoFinalAtencion",
@@ -472,15 +496,15 @@ export default function Reportes() {
                 </div>
                 <div className="admin-reports__grid admin-reports__grid--two">
                   <Distribucion
-                    titulo="Estado del personal"
-                    detalle="Disponibilidad del recurso policial"
-                    filas={agrupar(pol, (x) => x.estado)}
+                    titulo="Personal por rango"
+                    detalle="Cómo se compone el equipo policial registrado"
+                    filas={agrupar(pol, rangoDePolicia, "Rango no informado")}
                     total={pol.length}
                   />
                   <Distribucion
-                    titulo="Estado de las unidades"
-                    detalle="Disponibilidad de unidades operativas"
-                    filas={agrupar(unidades, (x) => x.estado)}
+                    titulo="Personal asignado a unidades"
+                    detalle="Unidades con policías vinculados y unidades sin personal registrado"
+                    filas={personalPorUnidad(unidades, pol)}
                     total={unidades.length}
                   />
                 </div>
