@@ -1,6 +1,10 @@
 
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Layout from "../../../Components/transito/Layout";
+import ConfiguracionCuenta from "../../../Components/transito/ConfiguracionCuenta";
+import { cambiarPassword, logOut } from "../../../Services/UsuariosAPI";
+import { obtenerSesionTransito } from "../../../Services/transitoApi";
 
 const CLAVE_CONFIGURACION = "wolert_director_transito_config";
 
@@ -35,11 +39,16 @@ function leerConfiguracion() {
 }
 
 export default function Configuracion() {
-  const [tab, setTab] = useState("general");
+  const navigate = useNavigate();
+  const idUsuario = obtenerSesionTransito().idUsuario;
   const [configuracion, setConfiguracion] = useState(
     leerConfiguracion
   );
   const [mensaje, setMensaje] = useState("");
+  const [password, setPassword] = useState({ actual: "", nueva: "", confirmar: "" });
+  const [mensajeSeguridad, setMensajeSeguridad] = useState("");
+  const [errorSeguridad, setErrorSeguridad] = useState("");
+  const [guardandoPassword, setGuardandoPassword] = useState(false);
 
   useEffect(() => {
     document.body.classList.toggle(
@@ -78,12 +87,31 @@ export default function Configuracion() {
     }
   }
 
-  const pestañas = [
-    { id: "general", nombre: "General" },
-    { id: "notificaciones", nombre: "Notificaciones" },
-    { id: "seguridad", nombre: "Seguridad" },
-    { id: "apariencia", nombre: "Apariencia" },
-  ];
+  async function guardarPassword(event) {
+    event.preventDefault();
+    setErrorSeguridad("");
+    setMensajeSeguridad("");
+    if (!idUsuario) return setErrorSeguridad("No encontramos el identificador de tu cuenta.");
+    if (!password.actual || !password.nueva || !password.confirmar) return setErrorSeguridad("Completa los tres campos.");
+    if (password.nueva.length < 8) return setErrorSeguridad("La nueva contraseña debe tener al menos 8 caracteres.");
+    if (password.nueva !== password.confirmar) return setErrorSeguridad("La confirmación no coincide.");
+    if (password.actual === password.nueva) return setErrorSeguridad("La nueva contraseña debe ser distinta a la actual.");
+    try {
+      setGuardandoPassword(true);
+      await cambiarPassword(idUsuario, password.actual, password.nueva);
+      setPassword({ actual: "", nueva: "", confirmar: "" });
+      setMensajeSeguridad("Contraseña actualizada correctamente.");
+    } catch (error) {
+      setErrorSeguridad(error.message || "No se pudo actualizar la contraseña.");
+    } finally { setGuardandoPassword(false); }
+  }
+
+  function cerrarSesion() {
+    if (!window.confirm("¿Seguro que quieres cerrar sesión?")) return;
+    document.body.classList.remove("tema-oscuro");
+    logOut();
+    navigate("/login", { replace: true });
+  }
 
   return (
     <Layout
@@ -115,6 +143,8 @@ export default function Configuracion() {
         </button>
       </div>
 
+      <ConfiguracionCuenta />
+
       {mensaje && (
         <div
           className={`alert ${
@@ -129,22 +159,7 @@ export default function Configuracion() {
       )}
 
       <div className="table-card-dash mb-4">
-        <div className="d-flex gap-2 tabs-dash mb-4 flex-wrap">
-          {pestañas.map((pestaña) => (
-            <button
-              key={pestaña.id}
-              type="button"
-              className={`tab-dash ${
-                tab === pestaña.id ? "active-dash" : ""
-              }`}
-              onClick={() => setTab(pestaña.id)}
-            >
-              {pestaña.nombre}
-            </button>
-          ))}
-        </div>
-
-        {tab === "general" && (
+        {(
           <div className="row g-4">
             <div className="col-md-6">
               <label
@@ -239,7 +254,7 @@ export default function Configuracion() {
           </div>
         )}
 
-        {tab === "notificaciones" && (
+        {(
           <div>
             <h2 className="subsection-title-dash mb-3">
               Notificaciones
@@ -343,73 +358,65 @@ export default function Configuracion() {
           </div>
         )}
 
-        {tab === "seguridad" && (
+        {(
           <div>
             <h2 className="subsection-title-dash mb-3">
               Seguridad
             </h2>
 
-            <div className="alert alert-warning small">
-              El cambio de contraseña y la verificación
-              en dos pasos estarán disponibles cuando
-              se conecten los endpoints de seguridad.
-            </div>
-
-            <div className="row g-4">
+            <form onSubmit={guardarPassword}>
+              {errorSeguridad && <div className="alert alert-danger" role="alert">{errorSeguridad}</div>}
+              {mensajeSeguridad && <div className="alert alert-success" role="status">{mensajeSeguridad}</div>}
+              <div className="row g-4">
               <div className="col-md-6">
-                <label className="form-label-dash">
+                <label htmlFor="passwordActualDirector" className="form-label-dash">
                   Contraseña actual
                 </label>
-
                 <input
+                  id="passwordActualDirector"
                   type="password"
                   className="form-control input-dash"
-                  placeholder="••••••••"
                   autoComplete="current-password"
-                  disabled
+                  value={password.actual}
+                  onChange={(e) => setPassword({ ...password, actual: e.target.value })}
                 />
               </div>
 
               <div className="col-md-6">
-                <label className="form-label-dash">
+                <label htmlFor="passwordNuevaDirector" className="form-label-dash">
                   Nueva contraseña
                 </label>
-
                 <input
+                  id="passwordNuevaDirector"
                   type="password"
                   className="form-control input-dash"
-                  placeholder="••••••••"
                   autoComplete="new-password"
-                  disabled
+                  minLength={8}
+                  value={password.nueva}
+                  onChange={(e) => setPassword({ ...password, nueva: e.target.value })}
                 />
               </div>
-            </div>
-
-            <div className="setting-row-dash border-0 mt-4 pt-0">
-              <div>
-                <p className="setting-name-dash">
-                  Verificación en dos pasos
-                </p>
-
-                <p className="setting-desc-dash mb-0">
-                  Solicita un código adicional
-                  al iniciar sesión.
-                </p>
+              <div className="col-md-6">
+                <label htmlFor="passwordConfirmarDirector" className="form-label-dash">Confirmar nueva contraseña</label>
+                <input id="passwordConfirmarDirector" type="password" className="form-control input-dash" autoComplete="new-password" minLength={8} value={password.confirmar} onChange={(e) => setPassword({ ...password, confirmar: e.target.value })} />
               </div>
-
-              <div className="form-check form-switch">
-                <input
-                  type="checkbox"
-                  className="form-check-input switch-dash"
-                  disabled
-                  aria-label="Verificación en dos pasos"
-                />
               </div>
+              <button type="submit" className="btn btn-primary rounded-pill fw-bold btn-nuevo-dash mt-3" disabled={guardandoPassword}>
+                {guardandoPassword ? "Actualizando..." : "Actualizar contraseña"}
+              </button>
+            </form>
+            <div className="setting-row-dash border-0 mt-4">
+              <div><p className="setting-name-dash">Verificación en dos pasos</p><p className="setting-desc-dash mb-0">Esta función requiere soporte de autenticación de dos factores en el servidor.</p></div>
+              <span className="badge text-bg-secondary">No disponible</span>
             </div>
+            <div className="setting-row-dash border-0">
+              <div><p className="setting-name-dash">Sesión</p><p className="setting-desc-dash mb-0">Cierra tu acceso en este dispositivo.</p></div>
+              <button type="button" className="btn-secundario-dash" onClick={cerrarSesion}>Cerrar sesión</button>
+              </div>
           </div>
         )}
 
-        {tab === "apariencia" && (
+        {(
           <div>
             <h2 className="subsection-title-dash mb-3">
               Apariencia

@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "../../../Components/transito/Layout";
+import ConfiguracionCuenta from "../../../Components/transito/ConfiguracionCuenta";
 
 import {
   obtenerPerfilAgente,
@@ -11,6 +12,13 @@ import {
 import {
   obtenerSesionTransito,
 } from "../../../Services/transitoApi";
+import { cambiarPassword, logOut } from "../../../Services/UsuariosAPI";
+
+const PREFERENCIAS_BASE = { avisosCasos: true, avisosCriticos: true, modoCompacto: false };
+function leerPreferencias(idUsuario) {
+  try { return { ...PREFERENCIAS_BASE, ...JSON.parse(localStorage.getItem(`wolert:preferencias-agente:${idUsuario || "sin-usuario"}`) || "{}") }; }
+  catch { return { ...PREFERENCIAS_BASE }; }
+}
 
 function Fila({ titulo, texto, children }) {
   return (
@@ -37,6 +45,27 @@ export default function Configuracion() {
   const [unidad, setUnidad] = useState(null);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
+  const sesion = obtenerSesionTransito();
+  const [preferencias, setPreferencias] = useState(() => leerPreferencias(sesion.idUsuario));
+  const [avisoPreferencias, setAvisoPreferencias] = useState("");
+  const [password, setPassword] = useState({ actual: "", nueva: "", confirmar: "" });
+  const [errorPassword, setErrorPassword] = useState("");
+  const [avisoPassword, setAvisoPassword] = useState("");
+  const [guardandoPassword, setGuardandoPassword] = useState(false);
+
+  useEffect(() => {
+    document.body.classList.toggle("modo-compacto", preferencias.modoCompacto);
+    return () => document.body.classList.remove("modo-compacto");
+  }, [preferencias.modoCompacto]);
+
+  function cambiarPreferencia(campo, valor) {
+    const siguiente = { ...preferencias, [campo]: valor };
+    try {
+      localStorage.setItem(`wolert:preferencias-agente:${sesion.idUsuario || "sin-usuario"}`, JSON.stringify(siguiente));
+      setPreferencias(siguiente);
+      setAvisoPreferencias("Preferencia guardada en este dispositivo.");
+    } catch { setAvisoPreferencias("No se pudo guardar la preferencia."); }
+  }
 
   useEffect(() => {
     let activo = true;
@@ -87,7 +116,6 @@ export default function Configuracion() {
     };
   }, []);
 
-  const sesion = obtenerSesionTransito();
   const usuario = sesion.usuario || {};
 
   const nombre =
@@ -179,29 +207,28 @@ export default function Configuracion() {
 
     if (!confirmar) return;
 
-    const claves = [
-      "token",
-      "accessToken",
-      "authToken",
-      "jwt",
-      "usuario",
-      "user",
-      "usuarioActual",
-      "currentUser",
-    ];
-
-    for (const almacenamiento of [
-      sessionStorage,
-      localStorage,
-    ]) {
-      claves.forEach((clave) =>
-        almacenamiento.removeItem(clave)
-      );
-    }
+    document.body.classList.remove("modo-compacto");
+    logOut();
+    [sessionStorage, localStorage].forEach((storage) => ["accessToken", "authToken", "jwt", "usuario", "user", "usuarioActual", "currentUser"].forEach((key) => storage.removeItem(key)));
 
     navigate("/login", {
       replace: true,
     });
+  }
+
+  async function guardarPassword(event) {
+    event.preventDefault(); setErrorPassword(""); setAvisoPassword("");
+    if (!sesion.idUsuario) return setErrorPassword("No encontramos el identificador de tu cuenta.");
+    if (!password.actual || !password.nueva || !password.confirmar) return setErrorPassword("Completa los tres campos.");
+    if (password.nueva.length < 8) return setErrorPassword("La nueva contraseña debe tener al menos 8 caracteres.");
+    if (password.nueva !== password.confirmar) return setErrorPassword("La confirmación no coincide.");
+    if (password.nueva === password.actual) return setErrorPassword("La nueva contraseña debe ser distinta a la actual.");
+    try {
+      setGuardandoPassword(true);
+      await cambiarPassword(sesion.idUsuario, password.actual, password.nueva);
+      setPassword({ actual: "", nueva: "", confirmar: "" }); setAvisoPassword("Contraseña actualizada correctamente.");
+    } catch (err) { setErrorPassword(err.message || "No se pudo cambiar la contraseña."); }
+    finally { setGuardandoPassword(false); }
   }
 
   return (
@@ -224,17 +251,7 @@ export default function Configuracion() {
         </p>
       </div>
 
-      {cargando && (
-        <div className="alert alert-info" role="status">
-          Cargando perfil...
-        </div>
-      )}
-
-      {error && (
-        <div className="alert alert-danger" role="alert">
-          {error}
-        </div>
-      )}
+      <ConfiguracionCuenta />
 
       <div className="perfil-hero-dash mb-4">
         <div className="perfil-hero-top-dash">
@@ -277,6 +294,33 @@ export default function Configuracion() {
             actualización al administrador de Tránsito.
           </p>
         </div>
+      </div>
+
+      <div className="panel-card-dash mb-3">
+        <h2 className="panel-title-dash">Preferencias</h2>
+        {avisoPreferencias && <div className="alert alert-success py-2" role="status">{avisoPreferencias}</div>}
+        {[
+          ["avisosCasos", "Avisos de casos asignados", "Preferencia para los avisos de casos nuevos."],
+          ["avisosCriticos", "Avisos de prioridad crítica", "Preferencia para las alertas de casos críticos."],
+          ["modoCompacto", "Modo compacto", "Reduce los espacios para mostrar más contenido."],
+        ].map(([key, titulo, texto]) => (
+          <Fila key={key} titulo={titulo} texto={texto}>
+            <div className="form-check form-switch"><input className="form-check-input" type="checkbox" role="switch" aria-label={titulo} checked={preferencias[key]} onChange={(event) => cambiarPreferencia(key, event.target.checked)} /></div>
+          </Fila>
+        ))}
+        <p className="text-muted small mt-3 mb-0">Se guardan en este navegador; la entrega de notificaciones depende del sistema.</p>
+      </div>
+
+      <div className="panel-card-dash mb-3">
+        <h2 className="panel-title-dash">Seguridad</h2>
+        {errorPassword && <div className="alert alert-danger" role="alert">{errorPassword}</div>}
+        {avisoPassword && <div className="alert alert-success" role="status">{avisoPassword}</div>}
+        <form onSubmit={guardarPassword} className="row g-3">
+          {[["actual", "Contraseña actual", "current-password"], ["nueva", "Nueva contraseña", "new-password"], ["confirmar", "Confirmar nueva contraseña", "new-password"]].map(([key, label, autocomplete]) => (
+            <div className="col-md-4" key={key}><label className="config-field-label-dash" htmlFor={`passwordAgente-${key}`}>{label}</label><input id={`passwordAgente-${key}`} className="form-control" type="password" autoComplete={autocomplete} minLength={key === "actual" ? undefined : 8} value={password[key]} onChange={(event) => setPassword({ ...password, [key]: event.target.value })} /></div>
+          ))}
+          <div className="col-12"><button type="submit" className="btn-secundario-dash" disabled={guardandoPassword}>{guardandoPassword ? "Actualizando..." : "Actualizar contraseña"}</button></div>
+        </form>
       </div>
 
       <div className="panel-card-dash mb-3">

@@ -2,6 +2,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "../../Components/transito/Layout";
+import ConfiguracionCuenta from "../../Components/transito/ConfiguracionCuenta";
+import ConfiguracionContrasena from "../../Components/transito/ConfiguracionContrasena";
+import "../../css/admin/configuracion.css";
 
 import {
   obtenerPerfilAgente,
@@ -213,7 +216,10 @@ export default function Configuracion() {
         placeholder: "Buscar...",
       }}
     >
-      <div className="mb-4">
+      <div className="admin-config-page transito-config-page">
+      <header className="admin-config-hero mb-4">
+        <div>
+        <span><i className="bi bi-sliders me-1" /> CUENTA Y PREFERENCIAS</span>
         <h1 className="section-title-dash">
           Configuración
         </h1>
@@ -222,7 +228,12 @@ export default function Configuracion() {
           Tu perfil y la información registrada
           en el sistema de Tránsito.
         </p>
-      </div>
+        </div>
+        <div className="admin-config-hero__badge"><i className="bi bi-shield-check" /> Ajustes de tu cuenta</div>
+      </header>
+
+      <ConfiguracionCuenta />
+      <ConfiguracionContrasena />
 
       {cargando && (
         <div className="alert alert-info" role="status">
@@ -255,7 +266,7 @@ export default function Configuracion() {
 
         <div className="perfil-hero-body-dash">
           <div className="perfil-hero-datos-dash">
-            {datos.map((dato) => (
+            {datos.filter((dato) => ["Grupo", "Zona", "Placa", "Rango", "Estado"].includes(dato.label)).map((dato) => (
               <div
                 key={dato.label}
                 className="perfil-hero-dato-dash"
@@ -279,7 +290,7 @@ export default function Configuracion() {
         </div>
       </div>
 
-      <div className="panel-card-dash mb-3">
+      <div className="panel-card-dash card-panel-dash mb-3">
         <h2 className="panel-title-dash">
           Información de la cuenta
         </h2>
@@ -303,7 +314,7 @@ export default function Configuracion() {
         </Fila>
       </div>
 
-      <div className="panel-card-dash">
+      <div className="panel-card-dash card-panel-dash">
         <h2 className="panel-title-dash">
           Cuenta
         </h2>
@@ -321,6 +332,7 @@ export default function Configuracion() {
             Cerrar sesión
           </button>
         </Fila>
+      </div>
       </div>
     </Layout>
   );

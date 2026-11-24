@@ -1,6 +1,9 @@
 
 import { useEffect, useState } from "react";
 import Layout from "../../Components/transito/Layout";
+import ConfiguracionCuenta from "../../Components/transito/ConfiguracionCuenta";
+import ConfiguracionContrasena from "../../Components/transito/ConfiguracionContrasena";
+import "../../css/admin/configuracion.css";
 
 const CLAVE_CONFIGURACION = "wolert_director_transito_config";
 
@@ -93,8 +96,10 @@ export default function Configuracion() {
         placeholder: "Buscar por caso, barrio o agente...",
       }}
     >
-      <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+      <div className="admin-config-page transito-config-page">
+      <div className="admin-config-hero">
         <div>
+          <span><i className="bi bi-sliders me-1" /> CUENTA Y PREFERENCIAS</span>
           <h1 className="section-title-dash">
             Configuración
           </h1>
@@ -107,7 +112,7 @@ export default function Configuracion() {
 
         <button
           type="button"
-          className="btn btn-primary rounded-pill fw-bold btn-nuevo-dash"
+          className="btn btn-cv-azul"
           onClick={guardarCambios}
         >
           <i className="bi bi-check-lg me-2" />
@@ -128,7 +133,9 @@ export default function Configuracion() {
         </div>
       )}
 
-      <div className="table-card-dash mb-4">
+      <ConfiguracionCuenta />
+
+      <div className="card-panel-dash transito-config-panel mb-4">
         <div className="d-flex gap-2 tabs-dash mb-4 flex-wrap">
           {pestañas.map((pestaña) => (
             <button
@@ -345,70 +352,10 @@ export default function Configuracion() {
 
         {tab === "seguridad" && (
           <div>
-            <h2 className="subsection-title-dash mb-3">
-              Seguridad
-            </h2>
-
-            <div className="alert alert-warning small">
-              El cambio de contraseña y la verificación
-              en dos pasos estarán disponibles cuando
-              se conecten los endpoints de seguridad.
-            </div>
-
-            <div className="row g-4">
-              <div className="col-md-6">
-                <label className="form-label-dash">
-                  Contraseña actual
-                </label>
-
-                <input
-                  type="password"
-                  className="form-control input-dash"
-                  placeholder="••••••••"
-                  autoComplete="current-password"
-                  disabled
-                />
-              </div>
-
-              <div className="col-md-6">
-                <label className="form-label-dash">
-                  Nueva contraseña
-                </label>
-
-                <input
-                  type="password"
-                  className="form-control input-dash"
-                  placeholder="••••••••"
-                  autoComplete="new-password"
-                  disabled
-                />
-              </div>
-            </div>
-
-            <div className="setting-row-dash border-0 mt-4 pt-0">
-              <div>
-                <p className="setting-name-dash">
-                  Verificación en dos pasos
-                </p>
-
-                <p className="setting-desc-dash mb-0">
-                  Solicita un código adicional
-                  al iniciar sesión.
-                </p>
-              </div>
-
-              <div className="form-check form-switch">
-                <input
-                  type="checkbox"
-                  className="form-check-input switch-dash"
-                  disabled
-                  aria-label="Verificación en dos pasos"
-                />
-              </div>
-            </div>
+            <h2 className="subsection-title-dash mb-3">Seguridad</h2>
+            <ConfiguracionContrasena embedded />
           </div>
         )}
-
         {tab === "apariencia" && (
           <div>
             <h2 className="subsection-title-dash mb-3">
@@ -444,6 +391,7 @@ export default function Configuracion() {
             </div>
           </div>
         )}
+      </div>
       </div>
     </Layout>
   );
