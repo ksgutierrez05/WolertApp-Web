@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+import MapaOperaciones from "../../Components/transito/director-transito/MapaOperaciones";
 import { useEffect, useMemo, useState } from "react";
 import Layout from "../../Components/transito/Layout";
 import KpiCard from "../../Components/transito/KpiCard";
@@ -351,54 +353,15 @@ const accidentesPorComuna = useMemo(() => {
 
       <div className="sec-head-pd">
         <h2 className="titulos">
-          Mapa de tránsito
+          Mapa de operaciones
         </h2>
+        <Link to="/transito/director/mapa" className="btn btn-outline-primary btn-sm">
+          <i className="bi bi-arrows-fullscreen me-2" /> Ver mapa completo
+        </Link>
       </div>
 
       <div className="panel-pd mb-4">
-        <div className="mapa-canvas-pd">
-          <svg
-            className="base-pd"
-            viewBox="0 0 600 320"
-            preserveAspectRatio="none"
-            role="img"
-            aria-label="Mapa decorativo sin posiciones reales"
-          >
-            <rect width="600" height="320" fill="#eef2e6" />
-            <ellipse
-              cx="470" cy="70" rx="110" ry="80"
-              fill="#dcead2"
-            />
-            <ellipse
-              cx="90" cy="240" rx="100" ry="90"
-              fill="#dcead2"
-            />
-            <path
-              d="M560,0 C500,60 520,140 470,200 C430,250 460,300 420,320 L600,320 L600,0 Z"
-              fill="#cfe6f0"
-            />
-            <g stroke="#d7d2c2" strokeWidth="6">
-              <line x1="0" y1="80" x2="600" y2="80" />
-              <line x1="0" y1="170" x2="600" y2="170" />
-              <line x1="0" y1="250" x2="600" y2="250" />
-              <line x1="120" y1="0" x2="120" y2="320" />
-              <line x1="260" y1="0" x2="260" y2="320" />
-              <line x1="400" y1="0" x2="400" y2="320" />
-            </g>
-            <line
-              x1="0" y1="130" x2="600" y2="200"
-              stroke="#e7c98a" strokeWidth="9"
-            />
-          </svg>
-        </div>
-
-        <div className="map-legend-pd">
-          <b>Mapa ilustrativo</b>
-          <p className="text-muted small mb-0">
-            Las ubicaciones en tiempo real se mostrarán
-            cuando la API proporcione coordenadas.
-          </p>
-        </div>
+        <MapaOperaciones compacto />
       </div>
 
       <div className="sec-head-pd">

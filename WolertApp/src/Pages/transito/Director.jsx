@@ -8,6 +8,7 @@ import Reportes from "../director-transito/Reportes";
 import Catalogo from "../director-transito/Catalogo";
 import Configuracion from "../director-transito/Configuracion";
 import Unidades from "../director-transito/Unidades";
+import MapaTransito from "../director-transito/MapaTransito";
 
 export default function Director() {
   return (
@@ -18,6 +19,7 @@ export default function Director() {
       <Route path="agentes" element={<Agentes />} />
       <Route path="unidades" element={<Unidades />} />
       <Route path="semaforos" element={<Semaforos />} />
+      <Route path="mapa" element={<MapaTransito />} />
       <Route path="reportes" element={<Reportes />} />
       <Route path="catalogo" element={<Catalogo />} />
       <Route path="configuracion" element={<Configuracion />} />

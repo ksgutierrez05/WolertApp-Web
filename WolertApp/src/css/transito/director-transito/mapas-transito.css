@@ -301,3 +301,12 @@
     min-height: 260px;
   }
 }
+
+/* Vista compacta del panel principal */
+.sem-ops-compacto .sem-ops-head { display: none; }
+.sem-ops-compacto .sem-ops-layout { grid-template-columns: minmax(0, 1fr); border: 0; }
+.sem-ops-compacto .sem-ops-leaflet { height: 360px; min-height: 360px; }
+.sem-ops-compacto .sem-ops-leyenda { bottom: 25px; right: 15px; width: fit-content; max-width: calc(100% - 30px); pointer-events: none; }
+@media (max-width: 768px) {
+  .sem-ops-compacto .sem-ops-leaflet { height: 300px; min-height: 300px; }
+}

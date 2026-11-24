@@ -103,15 +103,15 @@ export default function Sidebar({ activo }) {
           <span className="lbl-dash">Semáforos</span>
         </Link>
 
-        <a
-          href="#"
+        <Link
+          to="/transito/director/mapa"
           className={activo === "mapa" ? "active" : ""}
         >
           <span className="ic-dash">
             <i className="bi bi-geo-alt" />
           </span>
-          <span className="lbl-dash">Mapa</span>
-        </a>
+          <span className="lbl-dash">Mapa de operaciones</span>
+        </Link>
       </nav>
 
       <p className="glabel-dash">Gestión</p>
