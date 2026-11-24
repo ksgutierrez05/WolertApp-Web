@@ -6,6 +6,7 @@ import {
   obtenerAtencionesAgente,
   fechaAtencion,
 } from "../../Services/agenteTransitoService";
+import "../../css/transito/central-transito/panel-atencion-transito.css";
 
 const POR_PAGINA = 5;
 
@@ -88,16 +89,13 @@ export default function Historial() {
         placeholder: "Buscar por caso...",
       }}
     >
-      <div className="mb-4">
-        <h1 className="section-title-dash">
-          Historial
-        </h1>
-
-        <p className="section-text-dash mb-0">
-          Atenciones registradas a tu nombre
-          en el sistema de Tránsito.
-        </p>
-      </div>
+      <header className="st-header mb-4">
+  <div>
+    <span className="st-eyebrow">AGENTE DE TRÁNSITO</span>
+    <h1>Historial de atenciones</h1>
+    <p>Consulta las atenciones registradas durante tu servicio.</p>
+  </div>
+</header>
 
       {cargando && (
         <div className="alert alert-info" role="status">

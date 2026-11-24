@@ -677,3 +677,348 @@
 .ag .estado-desconocido-ag::before {
   background-color: #8a94a6;
 }
+
+/* ==========================================================
+   WOLERTAPP | UNIFICACIÓN VISUAL DEL PANEL DEL AGENTE
+   ========================================================== */
+
+.ag .sec-head-ag {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 30px;
+    margin-bottom: 16px;
+}
+
+/* Títulos de las secciones */
+
+.ag .sec-head-ag h2,
+.ag .titulos-ag {
+    font-family: "Space Grotesk", "Inter", sans-serif;
+    font-size: 21px;
+    font-weight: 800;
+    color: #173f65;
+    line-height: 1.3;
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
+/* Enlaces Ver todos y Ver grupo */
+
+.ag .see-all-dash {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: var(--color-primary, #517aac);
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: color .2s ease;
+}
+
+.ag .see-all-dash:hover {
+    color: var(--color-primary-2, #2d609c);
+}
+
+/* Contenedores principales */
+
+.ag .panel-ag,
+.ag .grupo-ag {
+    background: #ffffff;
+    border: 1px solid #e5ebf3;
+    border-radius: 16px;
+    box-shadow: 0 4px 18px rgba(35, 62, 99, .045);
+    overflow: hidden;
+}
+
+/* Tablas */
+
+.ag .tabla-ag {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: "Inter", sans-serif;
+}
+
+.ag .tabla-ag thead {
+    background: #f6f8fc;
+}
+
+.ag .tabla-ag th {
+    padding: 16px 20px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #718198;
+    border-bottom: 1px solid #e9eef5;
+    white-space: nowrap;
+}
+
+.ag .tabla-ag td {
+    padding: 17px 20px;
+    font-size: 13px;
+    color: #34465f;
+    border-bottom: 1px solid #edf1f6;
+    vertical-align: middle;
+}
+
+.ag .tabla-ag tbody tr {
+    transition: background-color .15s ease;
+}
+
+.ag .tabla-ag tbody tr:hover {
+    background: #f8fafd;
+}
+
+.ag .tabla-ag tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.ag .tabla-ag td:first-child {
+    color: #2d609c;
+    font-weight: 700;
+}
+
+/* Buscador */
+
+.ag .buscador-panel-ag {
+    padding: 17px 20px;
+    border-bottom: 1px solid #edf1f6;
+}
+
+.ag .buscador-contenedor-ag {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #f7f9fc;
+    border: 1px solid #e5ebf3;
+    border-radius: 10px;
+    padding: 0 14px;
+}
+
+.ag .buscador-contenedor-ag i {
+    font-size: 14px;
+    color: #8290a3;
+}
+
+.ag .buscador-contenedor-ag input {
+    width: 100%;
+    min-width: 0;
+    background: transparent;
+    border: none;
+    outline: none;
+    padding: 11px 0;
+    font-family: "Inter", sans-serif;
+    font-size: 12px;
+    color: #34465f;
+}
+
+.ag .buscador-contenedor-ag:focus-within {
+    border-color: #9db8d8;
+}
+
+/* Estados de las atenciones */
+
+.ag .tabla-ag .estado-badge-ag {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    min-width: 0;
+    height: auto;
+    padding: 6px 11px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.ag .tabla-ag .estado-badge-ag::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.ag .tabla-ag .estado-resuelto-ag {
+    background: #e7f6ed;
+    color: #28865a;
+}
+
+.ag .tabla-ag .estado-pendiente-ag {
+    background: #fff3df;
+    color: #b98027;
+}
+
+.ag .tabla-ag .estado-en_camino-ag {
+    background: #e8f0fc;
+    color: #4879bd;
+}
+
+.ag .tabla-ag .estado-en_sitio-ag {
+    background: #f0eafd;
+    color: #7655b5;
+}
+
+.ag .tabla-ag .estado-desconocido-ag {
+    background: #edf0f4;
+    color: #6d7887;
+}
+
+/* Filtros del historial */
+
+.ag .tabs-ag {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.ag .tab-ag {
+    padding: 9px 15px;
+    border: 1px solid #e5ebf3;
+    background: #ffffff;
+    border-radius: 10px;
+    color: #718198;
+    font-size: 12px;
+    font-weight: 700;
+    box-shadow: none;
+    transition: all .15s ease;
+}
+
+.ag .tab-ag:hover {
+    background: #f1f6fc;
+    color: #2d609c;
+}
+
+.ag .tab-ag.active-ag {
+    background: #e8f0fa;
+    border-color: #d4e2f4;
+    color: #2d609c;
+}
+
+/* Integrantes del grupo */
+
+.ag .grupo-ag {
+    padding: 0 18px;
+}
+
+.ag .companero-row-ag {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 17px 5px;
+    border-bottom: 1px solid #edf1f6;
+}
+
+.ag .companero-row-ag:last-child {
+    border-bottom: none;
+}
+
+.ag .companero-info-ag {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    min-width: 0;
+}
+
+.ag .companero-avatar-ag {
+    width: 43px;
+    height: 43px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e7effa;
+    color: #517aac;
+    border-radius: 13px;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.ag .nombre-ag {
+    color: #203c5d;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.ag .companero-sub-ag {
+    color: #8794a6;
+    font-size: 11px;
+    margin-top: 4px;
+}
+
+.ag .estado-mini-ag {
+    padding: 6px 11px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.ag .estado-verde-ag {
+    background: #e7f6ed;
+    color: #28865a;
+}
+
+.ag .estado-gris-ag {
+    background: #edf0f4;
+    color: #6d7887;
+}
+
+/* Mapa */
+
+.ag .mapa-canvas-ag {
+    background: #f3f7fc;
+}
+
+.ag .map-legend-ag {
+    padding: 17px 20px;
+    background: #ffffff;
+    border-top: 1px solid #edf1f6;
+}
+
+/* Paginación y pie de tabla */
+
+.ag .paginacion-ag {
+    padding: 14px 19px;
+    border-top: 1px solid #edf1f6;
+    background: #fbfcff;
+    color: #8290a3;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* Mensajes sin registros */
+
+.ag .mensaje-vacio-ag {
+    padding: 30px 16px;
+    text-align: center;
+    color: #8794a6;
+    font-size: 13px;
+    margin: 0;
+}
+
+/* Adaptación a dispositivos móviles */
+
+@media (max-width: 768px) {
+    .ag .sec-head-ag h2,
+    .ag .titulos-ag {
+        font-size: 18px;
+    }
+
+    .ag .tabla-ag th,
+    .ag .tabla-ag td {
+        padding: 13px 12px;
+    }
+
+    .ag .companero-row-ag {
+        flex-wrap: wrap;
+    }
+
+    .ag .buscador-panel-ag {
+        padding: 13px;
+    }
+}
