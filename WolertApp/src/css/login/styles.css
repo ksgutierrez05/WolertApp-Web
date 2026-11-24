@@ -685,6 +685,7 @@ body.modo-registro .auth-container .btn-volver {
     .auth-container .panel-deslizante {
         position: relative;
         inset: auto;
+        order: -1;
         width: 100%;
         height: auto;
         min-height: 0;
@@ -728,6 +729,7 @@ body.modo-registro .auth-container .btn-volver {
     .auth-container .form-box {
         position: relative;
         inset: auto;
+        order: 0;
         width: 100%;
         height: auto;
         min-height: 0;
@@ -918,5 +920,58 @@ body.modo-registro .auth-container .btn-volver {
         width: 100%;
         padding: 24px 18px;
         border-radius: 20px;
+    }
+}
+
+@media (max-width: 700px) {
+    .auth-container {
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+    .auth-container .panel-deslizante {
+        padding-top: calc(48px + env(safe-area-inset-top));
+        box-shadow: 0 12px 28px rgb(8 26 50 / 13%);
+    }
+    .auth-container .form-login .input {
+        font-size: 16px;
+    }
+    .auth-container .form-registro {
+        padding-right: 16px;
+        padding-left: 16px;
+    }
+    .auth-container .form-registro form {
+        padding-right: 18px;
+        padding-left: 18px;
+    }
+}
+
+@media (max-width: 380px) {
+    .auth-container .form-login {
+        padding-right: 16px;
+        padding-left: 16px;
+    }
+    .auth-container .form-login form {
+        padding-right: 18px;
+        padding-left: 18px;
+    }
+    .auth-container .form-registro form {
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+    .auth-container .form-registro .grid-2 {
+        gap: 0;
+    }
+}
+
+@media (max-width: 700px) and (max-height: 700px) {
+    .auth-container .panel-deslizante {
+        padding-top: calc(42px + env(safe-area-inset-top));
+        padding-bottom: 16px;
+    }
+    .auth-container .panel-deslizante .login-logo {
+        width: 62px;
+        height: 62px;
+    }
+    .auth-container .form-box {
+        padding-top: 22px;
     }
 }

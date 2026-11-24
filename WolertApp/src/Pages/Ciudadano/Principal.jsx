@@ -30,6 +30,13 @@ const barrioIdDe = (item) => {
 };
 const barrioNombreDe = (item) => item?.barrioNombre ?? item?.BarrioNombre ?? item?.barrio?.nombre ?? item?.Barrio?.Nombre ?? '';
 const nombreBarrioCatalogo = (item) => item?.nombre ?? item?.Nombre ?? barrioNombreDe(item) ?? '';
+const nombreVecinoDe = (item) => {
+  const nombre = item?.nombre ?? item?.Nombre ?? item?.nombreCompleto ?? item?.NombreCompleto ??
+    [item?.primerNombre ?? item?.PrimerNombre, item?.primerApellido ?? item?.PrimerApellido]
+      .filter(Boolean)
+      .join(' ');
+  return String(nombre ?? '').trim() || 'Vecino';
+};
 const tipoAlertaDe = (item) => item?.tipo ?? item?.tipoAlertaNombre ?? item?.tipoAlerta?.nombre ?? item?.tipoNombre ?? 'Alerta';
 const fechaAlertaDe = (item) => item?.fechaCreacion ?? item?.fecha ?? item?.fechaAlerta ?? item?.createdAt ?? item?.CreatedAt;
 const formatearFechaAlerta = (valor) => {
@@ -563,38 +570,31 @@ export default function Principal() {
       </div>
       {/* MIS VECINOS */}
       <div className="sec-head-usu">
-        <h2 className="titulos-usu">Mis vecinos</h2>
-        <a className="see-all-dash" href="#">Ver todos <i className="bi bi-chevron-right"></i></a>
+        <h2 className="titulos-usu">Vecinos activos</h2>
+        <Link className="see-all-dash" to="/ciudadano/vecinos">Ver todos <i className="bi bi-chevron-right"></i></Link>
       </div>
-      <div className="vecinos-usu mb-4">
-        <div className="vecino-row-usu">
-          <div className="vecino-info-usu">
-            <span className="nombre-usu">Laura Peña</span>
-            <span className="distancia-usu"><i className="bi bi-geo-alt"></i> 80 m</span>
+      <div className="vecinos-usu mb-4" aria-live="polite">
+        {vecinosActivos === null && !errorVecinos && (
+          <div className="vecino-row-usu text-muted">Cargando vecinos de tu barrio...</div>
+        )}
+        {errorVecinos && (
+          <div className="vecino-row-usu text-muted">No se pudo cargar la lista de vecinos.</div>
+        )}
+        {!errorVecinos && vecinosActivos?.length === 0 && (
+          <div className="vecino-row-usu text-muted">Aún no hay vecinos activos registrados en tu barrio.</div>
+        )}
+        {!errorVecinos && vecinosActivos?.slice(0, 4).map((vecino, index) => (
+          <div
+            className="vecino-row-usu"
+            key={vecino.idUsuario ?? vecino.IdUsuario ?? `${nombreVecinoDe(vecino)}-${index}`}
+          >
+            <div className="vecino-info-usu">
+              <span className="nombre-usu">{nombreVecinoDe(vecino)}</span>
+              <span className="distancia-usu"><i className="bi bi-geo-alt"></i> Tu barrio</span>
+            </div>
+            <span className="estado-mini-usu estado-verde-usu">Activo</span>
           </div>
-          <span className="estado-mini-usu estado-verde-usu">Conectada</span>
-        </div>
-        <div className="vecino-row-usu">
-          <div className="vecino-info-usu">
-            <span className="nombre-usu">Diego Torres</span>
-            <span className="distancia-usu"><i className="bi bi-geo-alt"></i> 140 m</span>
-          </div>
-          <span className="estado-mini-usu estado-verde-usu">Conectado</span>
-        </div>
-        <div className="vecino-row-usu">
-          <div className="vecino-info-usu">
-            <span className="nombre-usu">Ravi Kumar</span>
-            <span className="distancia-usu"><i className="bi bi-geo-alt"></i> 210 m</span>
-          </div>
-          <span className="estado-mini-usu estado-gris-usu">Sin conexión</span>
-        </div>
-        <div className="vecino-row-usu">
-          <div className="vecino-info-usu">
-            <span className="nombre-usu">Marta Correa</span>
-            <span className="distancia-usu"><i className="bi bi-geo-alt"></i> 260 m</span>
-          </div>
-          <span className="estado-mini-usu estado-verde-usu">Conectada</span>
-        </div>
+        ))}
       </div>
 
       {/* ÚLTIMAS ALERTAS */}

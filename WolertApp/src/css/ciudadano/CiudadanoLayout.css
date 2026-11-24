@@ -34,6 +34,8 @@
   .ciudadano-shell .admin-layout__sidebar-slot.collapsed,
   .ciudadano-shell .admin-layout__sidebar-slot.mobile-open {
     width: 0;
+    position: static;
+    z-index: auto;
   }
 
   .ciudadano-shell .admin-layout__sidebar-slot .admin-layout__sidebar,
@@ -45,6 +47,7 @@
     width: min(300px, calc(100vw - 56px));
     height: 100dvh;
     z-index: 302;
+    pointer-events: none;
     overflow-y: auto;
     background: #fff;
     box-shadow: 14px 0 36px rgba(14, 47, 87, .2);
@@ -52,9 +55,14 @@
     transition: transform .24s ease;
   }
 
+  .ciudadano-shell .admin-layout__sidebar-slot:not(.mobile-open) .admin-layout__sidebar {
+    transform: translateX(-105%);
+  }
+
   .ciudadano-shell .admin-layout__sidebar-slot.mobile-open .admin-layout__sidebar {
     width: min(300px, calc(100vw - 56px));
     transform: translateX(0);
+    pointer-events: auto;
   }
 
   .ciudadano-shell .admin-layout__sidebar.collapsed:not(.peek) .sidebar__brand {
@@ -118,6 +126,11 @@
     display: block;
     border: 0;
     background: rgba(16, 38, 65, .45);
+  }
+
+  .ciudadano-shell .admin-layout__sidebar-slot.mobile-open,
+  .ciudadano-shell .admin-layout__sidebar-slot.mobile-open .admin-layout__sidebar {
+    z-index: 302;
   }
 }
 
