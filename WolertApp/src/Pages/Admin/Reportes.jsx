@@ -14,8 +14,43 @@ const FECHAS = [
 ];
 const fechaDe = (item) => FECHAS.map((key) => item?.[key]).find(Boolean) ?? null;
 const norm = (value) => String(value ?? "").trim().toLocaleUpperCase("es-CO");
+const leer = (item, ...keys) => {
+  for (const key of keys) {
+    const value = item?.[key];
+    if (value !== undefined && value !== null && String(value).trim() !== "") return value;
+  }
+  return null;
+};
+const idAlertaDe = (item) => leer(item, "idAlerta", "IdAlerta", "alertaId", "AlertaId") ??
+  leer(item?.alerta ?? item?.Alerta, "idAlerta", "IdAlerta", "id", "Id");
+const etiquetaEstado = (value) => {
+  const estado = norm(value).replace(/[\s-]+/g, "_");
+  const nombres = {
+    ACTIVO: "Pendiente de atención",
+    ACTIVA: "Pendiente de atención",
+    RECIBIDA: "Recibida",
+    PENDIENTE: "Pendiente",
+    SIN_ASIGNAR: "Sin asignar",
+    ASIGNADA: "Asignada",
+    UNIDAD_ASIGNADA: "Unidad asignada",
+    EN_ATENCION: "En atención",
+    EN_PROCESO: "En proceso",
+    EN_CAMINO: "En camino",
+    EN_EL_SITIO: "En el sitio",
+    ATENDIDA: "Atendida",
+    FINALIZADA: "Finalizada",
+    FINALIZADO: "Finalizada",
+    CERRADA: "Cerrada",
+    CERRADO: "Cerrada",
+    RESUELTA: "Resuelta",
+    RESUELTO: "Resuelta",
+    CANCELADA: "Cancelada",
+    CANCELADO: "Cancelada",
+  };
+  return nombres[estado] ?? (estado ? estado.replaceAll("_", " ").toLocaleLowerCase("es-CO").replace(/^\p{L}/u, (letra) => letra.toLocaleUpperCase("es-CO")) : null);
+};
 const esCerrado = (value) =>
-  ["RESUELTA", "CERRADA", "ATENDIDA", "FINALIZADA", "COMPLETADA"].includes(norm(value));
+  ["RESUELTA", "RESUELTO", "CERRADA", "CERRADO", "ATENDIDA", "ATENDIDO", "FINALIZADA", "FINALIZADO", "COMPLETADA", "COMPLETADO"].includes(norm(value));
 const formato = (value) => new Intl.NumberFormat("es-CO").format(value || 0);
 
 const REPORTES = [
@@ -39,13 +74,72 @@ const REPORTES = [
   },
 ];
 
-function agrupar(items, campo) {
+function agrupar(items, campo, sinDato = "Categoría no informada") {
   const cuenta = new Map();
   items.forEach((item) => {
-    const nombre = String(campo(item) || "Sin dato").trim();
+    const nombre = String(campo(item) || sinDato).trim();
     cuenta.set(nombre, (cuenta.get(nombre) || 0) + 1);
   });
   return [...cuenta.entries()].sort((a, b) => b[1] - a[1]);
+}
+
+function estadoDeAtencion(item) {
+  return etiquetaEstado(leer(item,
+    "estadoAtencion", "EstadoAtencion", "estadoFinalAtencion", "EstadoFinalAtencion",
+    "estadoFinal", "EstadoFinal", "estado", "Estado"
+  )) ?? "Atención registrada · estado no informado";
+}
+
+function estadoDeAsignacion(item) {
+  return etiquetaEstado(leer(item,
+    "estadoAsignacion", "EstadoAsignacion", "estado", "Estado", "estadoActual", "EstadoActual"
+  )) ?? "Asignación registrada · estado no informado";
+}
+
+function tipoDeAlerta(item) {
+  const tipo = leer(item, "tipo", "Tipo", "tipoAlerta", "TipoAlerta", "nombreTipoAlerta", "NombreTipoAlerta", "tipoAlertaNombre", "TipoAlertaNombre", "categoria", "Categoria");
+  return tipo && typeof tipo === "object"
+    ? leer(tipo, "nombre", "Nombre", "descripcion", "Descripcion", "tipo", "Tipo")
+    : tipo;
+}
+
+function prioridadDeAlerta(item) {
+  const prioridad = leer(item, "prioridad", "Prioridad", "nivelPrioridad", "NivelPrioridad", "prioridadNombre", "PrioridadNombre");
+  return prioridad && typeof prioridad === "object"
+    ? leer(prioridad, "nombre", "Nombre", "nivel", "Nivel", "descripcion", "Descripcion")
+    : prioridad;
+}
+
+function estadoActividad(alerta, atenciones, asignaciones) {
+  const id = idAlertaDe(alerta);
+  const atencion = id == null ? null : atenciones.find((item) => String(idAlertaDe(item)) === String(id));
+  const asignacion = id == null ? null : asignaciones.find((item) => String(idAlertaDe(item)) === String(id));
+  const estadoAlerta = leer(alerta, "estadoAlerta", "EstadoAlerta", "estado", "Estado", "estadoActual", "EstadoActual");
+  const estadoAtencion = atencion ? leer(atencion,
+    "estadoAtencion", "EstadoAtencion", "estadoFinalAtencion", "EstadoFinalAtencion", "estadoFinal", "EstadoFinal", "estado", "Estado"
+  ) : null;
+  const estadoAsignacion = asignacion ? leer(asignacion,
+    "estadoAsignacion", "EstadoAsignacion", "estado", "Estado", "estadoActual", "EstadoActual"
+  ) : null;
+
+  if ([estadoAlerta, estadoAtencion, estadoAsignacion].some((estado) => ["CANCELADA", "CANCELADO"].includes(norm(estado)))) return "Cancelada";
+  if ([estadoAtencion, estadoAsignacion, estadoAlerta].some(esCerrado)) return "Atendida o cerrada";
+  if (atencion) {
+    if (estadoAtencion && !["ACTIVO", "ACTIVA", "PENDIENTE", "RECIBIDA"].includes(norm(estadoAtencion))) {
+      return etiquetaEstado(estadoAtencion) ?? "En atención";
+    }
+    return "Atención iniciada";
+  }
+  if (asignacion) {
+    if (estadoAsignacion && !["ACTIVO", "ACTIVA", "PENDIENTE", "RECIBIDA"].includes(norm(estadoAsignacion))) {
+      return etiquetaEstado(estadoAsignacion) ?? "Asignada";
+    }
+    return "Asignada";
+  }
+  if (estadoAlerta && !["ACTIVO", "ACTIVA", "PENDIENTE", "RECIBIDA"].includes(norm(estadoAlerta))) {
+    return etiquetaEstado(estadoAlerta);
+  }
+  return "Pendiente de atención";
 }
 
 function descargarCSV(nombre, filas) {
@@ -163,12 +257,14 @@ export default function Reportes() {
   const alertas = useMemo(() => (datos.alertas || []).filter(dentroPeriodo), [datos.alertas, desde]);
   const atenciones = useMemo(() => (datos.atenciones || []).filter(dentroPeriodo), [datos.atenciones, desde]);
   const asignaciones = useMemo(() => (datos.asignaciones || []).filter(dentroPeriodo), [datos.asignaciones, desde]);
-  const prioridades = useMemo(() => agrupar(alertas, (item) => item.prioridad), [alertas]);
-  const estados = useMemo(() => agrupar(alertas, (item) => item.estado), [alertas]);
-  const tiposAlerta = useMemo(
-    () => agrupar(alertas, (item) => item.tipo ?? item.tipoAlerta ?? item.nombreTipoAlerta),
-    [alertas]
+  const atencionesRelacionadas = datos.atenciones || [];
+  const asignacionesRelacionadas = datos.asignaciones || [];
+  const prioridades = useMemo(() => agrupar(alertas, prioridadDeAlerta, "Prioridad no informada"), [alertas]);
+  const estados = useMemo(
+    () => agrupar(alertas, (item) => estadoActividad(item, atencionesRelacionadas, asignacionesRelacionadas)),
+    [alertas, atencionesRelacionadas, asignacionesRelacionadas]
   );
+  const tiposAlerta = useMemo(() => agrupar(alertas, tipoDeAlerta, "Tipo de alerta no informado"), [alertas]);
   const actualizacion = new Date().toLocaleString("es-CO", {
     dateStyle: "medium",
     timeStyle: "short",
@@ -179,7 +275,7 @@ export default function Reportes() {
   const alarmas = datos.alarmas || [];
   const personalDisponible = pol.filter((x) => ["ACTIVO", "DISPONIBLE"].includes(norm(x.estado))).length;
   const unidadesDisponibles = unidades.filter((x) => ["ACTIVO", "DISPONIBLE"].includes(norm(x.estado))).length;
-  const resueltas = alertas.filter((x) => esCerrado(x.estado)).length;
+  const resueltas = alertas.filter((x) => ["Atendida o cerrada", "Cancelada"].includes(estadoActividad(x, atencionesRelacionadas, asignacionesRelacionadas))).length;
 
   return (
     <main className="admin-reports">
@@ -273,7 +369,7 @@ export default function Reportes() {
                   <Indicador
                     icon="bi-exclamation-octagon-fill"
                     label="Prioridad alta"
-                    value={formato(alertas.filter((a) => norm(a.prioridad) === "ALTA").length)}
+                    value={formato(alertas.filter((a) => norm(prioridadDeAlerta(a)) === "ALTA").length)}
                     detail="Requieren atención prioritaria"
                     tone="red"
                   />
@@ -336,13 +432,13 @@ export default function Reportes() {
                   <Distribucion
                     titulo="Atenciones por estado"
                     detalle="Distribución de las intervenciones registradas"
-                    filas={agrupar(atenciones, (x) => x.estado)}
+                    filas={agrupar(atenciones, estadoDeAtencion, "Atención registrada · estado no informado")}
                     total={atenciones.length}
                   />
                   <Distribucion
                     titulo="Asignaciones por estado"
                     detalle="Distribución de los despachos registrados"
-                    filas={agrupar(asignaciones, (x) => x.estado)}
+                    filas={agrupar(asignaciones, estadoDeAsignacion, "Asignación registrada · estado no informado")}
                     total={asignaciones.length}
                   />
                 </div>
