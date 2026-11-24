@@ -25,6 +25,12 @@ const MENU = [
         icon: 'bi-people'
       },
       {
+        id: 'mapa',
+        label: 'Mapa de operaciones',
+        href: `${BASE}/mapa`,
+        icon: 'bi-map'
+      },
+      {
         id: 'historial',
         label: 'Historial',
         href: `${BASE}/historial`,

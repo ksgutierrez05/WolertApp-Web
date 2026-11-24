@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+import MapaOperaciones from "../../Components/transito/director-transito/MapaOperaciones";
 
 import { useEffect, useMemo, useState } from "react";
 import Layout from "../../Components/transito/Layout";
@@ -5,7 +7,7 @@ import KpiCard from "../../Components/transito/KpiCard";
 import "../../css/transito/agente-transito/panel-principal.css";
 
 import {
-  obtenerResumenAgente,
+  obtenerCasosAgente,
   obtenerGrupoAgente,
   obtenerPerfilAgente,
   fechaAtencion,
@@ -19,7 +21,7 @@ const esFinalizada = (a) =>
     .includes(normalizar(a.estadoFinal ?? a.estado));
 
 const esEnProceso = (a) =>
-  ["EN_PROCESO", "RECIBIDO", "EN_CAMINO", "EN_EL_SITIO"]
+  ["ASIGNADA", "EN_ATENCION", "EN_PROCESO", "RECIBIDO", "EN_CAMINO", "EN_EL_SITIO"]
     .includes(normalizar(a.estadoFinal ?? a.estado));
 
 const claseEstado = (a) => {
@@ -31,10 +33,10 @@ const claseEstado = (a) => {
 
   if (e === "EN_CAMINO") return "estado-en_camino-ag";
 
-  if (["EN_EL_SITIO", "EN_SITIO"].includes(e))
+  if (["EN_ATENCION", "EN_EL_SITIO", "EN_SITIO"].includes(e))
     return "estado-en_sitio-ag";
 
-  if (["RECIBIDO", "PENDIENTE", "EN_PROCESO"].includes(e))
+  if (["ASIGNADA", "RECIBIDO", "PENDIENTE", "EN_PROCESO"].includes(e))
     return "estado-pendiente-ag";
 
   return "estado-desconocido-ag";
@@ -45,10 +47,13 @@ const estadoTexto = (a) => {
     a.estadoEtapa ?? a.etapa ?? a.estadoFinal ?? a.estado
   );
 
-  if (esFinalizada(a)) return "Finalizada";
+  if (esFinalizada(a)) return "Atendido";
+  if (estado === "ASIGNADA") return "Recibido";
+  if (estado === "EN_ATENCION") return "En el sitio";
+  if (estado === "CANCELADA") return "Cancelado";
   if (estado === "RECIBIDO") return "Recibido";
   if (estado === "EN_CAMINO") return "En camino";
-  if (["EN_EL_SITIO", "EN_SITIO"].includes(estado)) return "En el sitio";
+  if (["EN_ATENCION", "EN_EL_SITIO", "EN_SITIO"].includes(estado)) return "En el sitio";
   if (estado === "EN_PROCESO") return "En proceso";
 
   return estado ? estado.replaceAll("_", " ") : "Sin estado";
@@ -84,14 +89,27 @@ export default function PanelPrincipal() {
     let montado = true;
 
     Promise.allSettled([
-      obtenerResumenAgente(),
+      obtenerCasosAgente(),
       obtenerGrupoAgente(),
       obtenerPerfilAgente(),
     ])
       .then(([rResumen, rGrupo, rPerfil]) => {
         if (!montado) return;
 
-        if (rResumen.status === "fulfilled") setResumen(rResumen.value);
+        if (rResumen.status === "fulfilled") {
+          const casos = Array.isArray(rResumen.value)
+            ? rResumen.value
+            : [];
+
+          setResumen({
+            atenciones: casos.map((caso) => ({
+              ...caso,
+              estadoFinal: caso.estadoAsignacion,
+              estadoEtapa: caso.estadoAsignacion,
+              fechaAtencion: caso.fechaCaso,
+            })),
+          });
+        }
         if (rGrupo.status === "fulfilled") setGrupo(rGrupo.value);
         if (rPerfil.status === "fulfilled") setPerfil(rPerfil.value);
 
@@ -154,6 +172,9 @@ export default function PanelPrincipal() {
 
   const coincide = (a) =>
     [
+      a.idAsignacion,
+      a.tipoCaso,
+      a.barrio,
       a.idAtencionTransito,
       a.idAlerta,
       a.descripcion,
@@ -293,7 +314,7 @@ export default function PanelPrincipal() {
             <table className="tabla-ag">
               <thead>
                 <tr>
-                  <th>Atención</th>
+                  <th>Asignación</th>
                   <th>Alerta</th>
                   <th>Fecha</th>
                   <th>Estado</th>
@@ -303,11 +324,18 @@ export default function PanelPrincipal() {
               <tbody>
                 {visibles.map((a, i) => (
                   <tr
-                    key={a.idAtencionTransito ?? i}
+                    key={a.idAsignacion ?? i}
                     className="caso-row-ag"
                   >
-                    <td>#{a.idAtencionTransito ?? "—"}</td>
-                    <td>#{a.idAlerta ?? "—"}</td>
+                    <td>#{a.idAsignacion ?? "—"}</td>
+                    <td>
+  <div className="fw-semibold">
+    #{a.idAlerta ?? "—"} - {a.tipoCaso || "Alerta"}
+  </div>
+  <small className="text-muted">
+    {a.barrio || "Sin ubicación"}
+  </small>
+</td>
                     <td>{fechaAtencion(a.fechaAtencion)}</td>
 
                     <td>
@@ -336,60 +364,17 @@ export default function PanelPrincipal() {
       </section>
 
       <div className="sec-head-ag">
-        <h2 className="titulos-ag">Mapa en tiempo real</h2>
+        <h2 className="titulos-ag">Mapa de operaciones</h2>
+        <Link
+          to="/transito/agente/mapa"
+          className="see-all-dash"
+        >
+          Ver mapa completo <i className="bi bi-chevron-right" />
+        </Link>
       </div>
 
       <div className="panel-ag mb-4">
-        <div
-          className="mapa-canvas-ag d-flex align-items-center justify-content-center text-center p-4"
-          style={{
-            minHeight: 220,
-            background: "#f3f7fc",
-          }}
-        >
-          <div>
-            <div
-              className="d-flex align-items-center justify-content-center mx-auto mb-3 rounded-4"
-              style={{
-                width: 58,
-                height: 58,
-                background: "#e3edf9",
-                color: "var(--color-primary)",
-              }}
-            >
-              <i className="bi bi-geo-alt fs-3" />
-            </div>
-
-            <h6
-              className="fw-bold mb-2"
-              style={{ color: "#173f65" }}
-            >
-              Ubicación de mis casos
-            </h6>
-
-            <p
-              className="mb-0 text-muted small"
-              style={{ maxWidth: 360 }}
-            >
-              Las ubicaciones aparecerán cuando la API
-              proporcione coordenadas de los casos.
-            </p>
-          </div>
-        </div>
-
-        <div className="map-legend-ag">
-          <div className="d-flex align-items-center gap-2">
-            <i
-              className="bi bi-geo-alt-fill"
-              style={{ color: "var(--color-primary)" }}
-            />
-            <b className="mb-0">Mis casos</b>
-          </div>
-
-          <p className="text-muted small mb-0 mt-1">
-            No se muestran marcadores ficticios.
-          </p>
-        </div>
+        <MapaOperaciones compacto />
       </div>
 
       <div className="sec-head-ag">
@@ -505,7 +490,7 @@ export default function PanelPrincipal() {
           <table className="tabla-ag">
             <thead>
               <tr>
-                <th>Atención</th>
+                <th>Asignación</th>
                 <th>Alerta</th>
                 <th>Fecha</th>
                 <th>Estado</th>
@@ -516,11 +501,18 @@ export default function PanelPrincipal() {
             <tbody>
               {historial.map((a, i) => (
                 <tr
-                  key={a.idAtencionTransito ?? i}
+                  key={a.idAsignacion ?? i}
                   className="caso-row-ag"
                 >
-                  <td>#{a.idAtencionTransito ?? "—"}</td>
-                  <td>#{a.idAlerta ?? "—"}</td>
+                  <td>#{a.idAsignacion ?? "—"}</td>
+                  <td>
+  <div className="fw-semibold">
+    #{a.idAlerta ?? "—"} - {a.tipoCaso || "Alerta"}
+  </div>
+  <small className="text-muted">
+    {a.barrio || "Sin ubicación"}
+  </small>
+</td>
                   <td>{fechaAtencion(a.fechaAtencion)}</td>
 
                   <td>

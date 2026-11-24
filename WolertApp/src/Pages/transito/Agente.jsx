@@ -1,3 +1,4 @@
+import MapaTransito from "../agentes-transito/MapaTransito";
 
 import { Routes, Route, Navigate } from 'react-router-dom';
 
@@ -11,6 +12,7 @@ export default function Agente() {
     <Routes>
       <Route index element={<Navigate to="panel" replace />} />
       <Route path="panel" element={<Panel />} />
+      <Route path="mapa" element={<MapaTransito />} />
       <Route path="grupo" element={<Grupo />} />
       <Route path="historial" element={<Historial />} />
       <Route path="configuracion" element={<Configuracion />} />
