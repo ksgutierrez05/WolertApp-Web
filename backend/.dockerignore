@@ -1,0 +1,14 @@
+﻿bin/
+obj/
+.vs/
+.git/
+*.user
+appsettings.Development.json
+.env
+.env.*
+*.pfx
+*.key
+*.pem
+*.sso
+*.p12
+Wallet*/
