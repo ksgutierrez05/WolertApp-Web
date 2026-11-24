@@ -1,6 +1,9 @@
 
 import { useEffect, useState } from "react";
 import Layout from "../../Components/transito/Layout";
+import ConfiguracionCuenta from "../../Components/transito/ConfiguracionCuenta";
+import ConfiguracionContrasena from "../../Components/transito/ConfiguracionContrasena";
+import "../../css/admin/configuracion.css";
 
 const CLAVE = "wolert_central_transito_config";
 
@@ -93,16 +96,24 @@ export default function Configuracion() {
         placeholder: "Buscar por caso, barrio o agente...",
       }}
     >
-      <div className="mb-4">
-        <h1 className="section-title-dash">
-          Configuración
-        </h1>
+      <div className="admin-config-page transito-config-page">
+      <header className="admin-config-hero">
+        <div>
+          <span className="st-eyebrow">
+            CENTRAL DE TRÁNSITO
+          </span>
 
-        <p className="section-text-dash mb-0">
-          Preferencias de notificaciones y del turno
-          de despacho.
-        </p>
-      </div>
+          <h1>Configuración</h1>
+
+          <p>
+            Preferencias de notificaciones y del turno
+            de despacho.
+          </p>
+        </div>
+        <div className="admin-config-hero__badge"><i className="bi bi-shield-check" /> Ajustes de tu cuenta</div>
+      </header>
+
+      <ConfiguracionCuenta />
 
       {mensaje && (
         <div
@@ -117,7 +128,7 @@ export default function Configuracion() {
         </div>
       )}
 
-      <div className="panel-card-dash mb-3">
+      <div className="panel-card-dash card-panel-dash mb-3">
         <h2 className="panel-title-dash">
           Notificaciones
         </h2>
@@ -171,7 +182,7 @@ export default function Configuracion() {
         </p>
       </div>
 
-      <div className="panel-card-dash mb-3">
+      <div className="panel-card-dash card-panel-dash mb-3">
         <h2 className="panel-title-dash">
           Turno de despacho
         </h2>
@@ -265,40 +276,19 @@ export default function Configuracion() {
         </p>
       </div>
 
-      <div className="panel-card-dash mb-3">
-        <h2 className="panel-title-dash">
-          Cuenta
-        </h2>
+      <ConfiguracionContrasena />
 
-        <Fila
-          titulo="Contraseña"
-          texto="El cambio de contraseña requiere el endpoint de seguridad de tu API."
-        >
-          <button
-            type="button"
-            className="btn-secundario-dash"
-            disabled
-            title="Pendiente de integrar con el backend"
-          >
-            Cambiar contraseña
-          </button>
-        </Fila>
-
+      <div className="panel-card-dash card-panel-dash mb-3">
+        <h2 className="panel-title-dash">Cuenta</h2>
         <Fila
           titulo="Sesiones activas"
           texto="Cierra el acceso desde otros dispositivos conectados a tu cuenta."
         >
-          <button
-            type="button"
-            className="btn-secundario-dash"
-            disabled
-            title="Pendiente de integrar con el backend"
-          >
+          <button type="button" className="btn-secundario-dash" disabled title="Pendiente de integrar con el backend">
             Cerrar otras sesiones
           </button>
         </Fila>
       </div>
-
       <div className="d-flex justify-content-end mt-3">
         <button
           type="button"
@@ -308,6 +298,7 @@ export default function Configuracion() {
           <i className="bi bi-check2-circle me-2" />
           Guardar preferencias
         </button>
+      </div>
       </div>
     </Layout>
   );

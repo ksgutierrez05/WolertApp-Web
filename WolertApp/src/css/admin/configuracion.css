@@ -414,6 +414,176 @@ body.modo-compacto .admin-layout__main .table th {
     padding-bottom: 9px;
 }
 
+/* Reutiliza el lenguaje visual de Admin en los ajustes de TrÃ¡nsito. */
+.transito-config-page {
+    max-width: 1320px;
+    padding: 6px 16px 28px;
+}
+
+.transito-config-page .admin-config-hero {
+    min-height: 126px;
+}
+
+.transito-config-page .card-panel-dash {
+    height: auto;
+}
+
+.transito-config-page .transito-config-panel {
+    padding: 20px 22px;
+}
+
+.transito-config-page .panel-title-dash {
+    margin: 0 0 14px;
+    color: #263850;
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.transito-config-page .info-card-header-dash .panel-title-dash {
+    margin-bottom: 3px;
+}
+
+.transito-config-page .transito-config-perfil {
+    margin-bottom: 18px;
+}
+
+.transito-config-page .transito-config-perfil > .info-card-header-dash {
+    padding: 18px 21px;
+}
+
+.transito-config-page .transito-config-perfil > .d-flex {
+    align-items: center !important;
+    margin: 0 !important;
+    padding: 18px 21px;
+    border-bottom: 1px solid #edf1f5;
+}
+
+.transito-config-page .transito-config-perfil .panel-title-dash {
+    margin: 0 0 4px;
+    color: #263850;
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.transito-config-page .transito-config-perfil .config-text-dash {
+    color: #8794a6;
+    font-size: 11px;
+}
+
+.transito-config-page .transito-config-perfil > .info-card-header-dash .panel-title-dash {
+    margin-bottom: 4px;
+}
+
+.transito-config-page .transito-config-perfil form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 12px;
+    padding: 14px 18px 4px;
+}
+
+.transito-config-page .transito-config-perfil form > .row {
+    display: contents;
+}
+
+.transito-config-page .transito-config-perfil form .col-md-6 {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    justify-content: center;
+    gap: 7px;
+    min-height: 73px;
+    margin-bottom: 9px;
+    padding: 11px 12px;
+    border: 1px solid #e9eef4;
+    border-radius: 10px;
+    background: #fbfcfe;
+}
+
+.transito-config-page .transito-config-perfil .config-field-label-dash {
+    margin: 0;
+    color: #75849a;
+    font-size: 10px;
+    font-weight: 750;
+}
+
+.transito-config-page .transito-config-perfil .form-control {
+    min-height: 38px;
+    padding: 8px 10px;
+    font-size: 12px;
+}
+
+.transito-config-page .transito-config-perfil .form-control:disabled {
+    border-color: transparent;
+    background: transparent;
+    color: #293d57;
+    font-size: 12px;
+    font-weight: 650;
+    opacity: 1;
+}
+
+.transito-config-page .transito-config-perfil .btn-secundario-dash,
+.transito-config-page .transito-config-perfil .btn-asignar-dash {
+    min-height: 36px;
+    border-radius: 9px;
+    font-size: 12px;
+    font-weight: 750;
+}
+
+.transito-config-page .transito-config-panel .tabs-dash {
+    padding-bottom: 14px;
+    border-bottom: 1px solid #edf1f5;
+}
+
+.transito-config-page .transito-config-panel .tab-dash {
+    border: 1px solid #e3eaf2;
+    background: #f5f8fc;
+}
+
+.transito-config-page .transito-config-panel .tab-dash.active-dash {
+    border-color: #315f9b;
+    background: #315f9b;
+    color: #fff;
+}
+
+.transito-config-page .perfil-hero-dash {
+    overflow: hidden;
+    border: 1px solid #e4eaf1;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 5px 20px rgba(23, 40, 63, .045);
+}
+
+.transito-config-page .perfil-hero-top-dash {
+    background: #f1f6fc;
+    color: #17283f;
+}
+
+.transito-config-page .perfil-hero-avatar-dash {
+    border-color: #cbd9eb;
+    background: #e3edf9;
+    color: #315f9b;
+}
+
+.transito-config-page .perfil-hero-eyebrow-dash {
+    color: #4169ab;
+}
+
+.transito-config-page .perfil-hero-nombre-dash {
+    color: #17283f;
+}
+
+.transito-config-page .perfil-hero-dato-dash {
+    border: 1px solid #e9eef4;
+    background: #fbfcfe;
+}
+
+.transito-config-page .panel-card-dash {
+    border: 1px solid #e4eaf1;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 5px 20px rgba(23, 40, 63, .045);
+}
+
 @media (max-width: 700px) {
     .admin-config-hero {
         align-items: flex-start;
@@ -435,6 +605,12 @@ body.modo-compacto .admin-layout__main .table th {
         max-width: none;
         width: 100%;
         text-align: left;
+    }
+}
+
+@media (max-width: 700px) {
+    .transito-config-page .transito-config-perfil form {
+        grid-template-columns: minmax(0, 1fr);
     }
 }
 
