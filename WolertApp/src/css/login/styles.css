@@ -576,6 +576,42 @@ body.modo-registro .auth-container .btn-volver {
     cursor: pointer;
 }
 
+.auth-container .form-login .divisor {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    margin: 22px 0 8px;
+    color: #8a93a2;
+    font-size: 12px;
+}
+.auth-container .form-login .divisor::before,
+.auth-container .form-login .divisor::after {
+    content: '';
+    height: 1px;
+    flex: 1;
+    background: #e7eaf0;
+}
+.auth-container .form-login .google-caption {
+    width: 100%;
+    margin: 0 0 12px;
+    color: #748096;
+    font-size: 12px;
+    line-height: 1.45;
+    text-align: center;
+}
+.auth-container .form-login .google-wrapper {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    min-height: 44px;
+}
+.auth-container .form-login .google-wrapper > div,
+.auth-container .form-login .google-wrapper iframe {
+    width: min(100%, 320px) !important;
+    max-width: 100%;
+}
+
 /* Corrección puntual del Login: distribución, contraste y espaciado.
    Solo aplica al Login, sin afectar los paneles de ningún rol. */
 .auth-container .btn-volver {
@@ -626,6 +662,261 @@ body.modo-registro .auth-container .btn-volver {
     color: #172235;
 }
 @media (max-width: 700px) {
-    .auth-container .panel-deslizante { padding: 24px 18px; }
-    .auth-container .btn-volver { top: 12px; left: 12px; }
+    .auth-container {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        min-height: 100svh;
+        height: auto;
+        overflow-x: hidden;
+        overflow-y: auto;
+        background: #f5f7fb;
+    }
+
+    .auth-container .btn-volver {
+        position: absolute;
+        top: 14px;
+        left: 14px;
+        color: #172b47;
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+
+    .auth-container .panel-deslizante {
+        position: relative;
+        inset: auto;
+        width: 100%;
+        height: auto;
+        min-height: 0;
+        flex: 0 0 auto;
+        padding: 48px 20px 22px;
+        border-radius: 0 0 28px 28px;
+        transform: none;
+        gap: 0;
+    }
+
+    .auth-container .panel-deslizante .login-logo {
+        width: 76px;
+        height: 76px;
+        margin: 0 0 5px;
+    }
+
+    .auth-container .panel-deslizante h1 {
+        margin: 0 0 4px;
+        font-size: 27px;
+    }
+
+    .auth-container .panel-deslizante > p {
+        margin: 0;
+        font-size: 13px;
+    }
+
+    .auth-container .panel-deslizante .login-tagline {
+        display: none;
+    }
+
+    .auth-container .btn-registrarse {
+        width: auto;
+        min-width: 154px;
+        min-height: 40px;
+        height: auto;
+        margin-top: 14px;
+        padding: 0 18px;
+        font-size: 12px;
+    }
+
+    .auth-container .form-box {
+        position: relative;
+        inset: auto;
+        width: 100%;
+        height: auto;
+        min-height: 0;
+        flex: 1 0 auto;
+        padding: 30px 24px 40px;
+        background: #f5f7fb;
+        transform: none;
+        opacity: 1;
+        overflow: visible;
+    }
+
+    .auth-container .form-login {
+        z-index: 2;
+        display: flex;
+    }
+
+    .auth-container .form-login form {
+        max-width: 380px;
+        padding: 26px 22px 24px;
+        border: 1px solid #e7ebf2;
+        border-radius: 24px;
+        background: #fff;
+        box-shadow: 0 12px 34px rgb(24 43 72 / 8%);
+    }
+
+    .auth-container .form-login h2 {
+        margin-bottom: 24px;
+        font-size: 29px;
+    }
+
+    .auth-container .form-login .input-wrapper {
+        margin-bottom: 14px;
+    }
+
+    .auth-container .form-login .input-wrapper input {
+        height: 50px;
+    }
+
+    .auth-container .form-login .btn-primary {
+        width: 100%;
+        height: 48px;
+        margin-top: 4px;
+        border-radius: 14px;
+        font-size: 13px;
+    }
+
+    .auth-container .form-login .divisor {
+        width: 100%;
+        margin: 20px 0 14px;
+        color: #748096;
+        font-size: 12px;
+    }
+
+    .auth-container .form-login .google-wrapper {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        min-height: 44px;
+    }
+
+    .auth-container .form-login .google-wrapper > div,
+    .auth-container .form-login .google-wrapper iframe {
+        width: min(100%, 320px) !important;
+        max-width: 100%;
+    }
+
+    .auth-container .form-registro {
+        display: none;
+        z-index: 1;
+        width: 100%;
+        max-height: none;
+        padding: 28px 22px 40px;
+        border-radius: 0;
+        background: #f5f7fb;
+    }
+
+    .auth-container.active .panel-deslizante {
+        transform: none;
+        border-radius: 0 0 28px 28px;
+    }
+
+    .auth-container.active .form-login {
+        display: none;
+        transform: none;
+        opacity: 1;
+        pointer-events: none;
+    }
+
+    .auth-container.active .form-registro {
+        display: block;
+        transform: none;
+        opacity: 1;
+        pointer-events: auto;
+    }
+}
+
+/* Registro: tarjeta y campos con jerarquía clara en escritorio y móvil. */
+.auth-container .form-registro {
+    background: #f5f7fb;
+}
+.auth-container .form-registro form {
+    width: min(100%, 560px);
+    padding: clamp(22px, 3vw, 34px);
+    border: 1px solid #e7ebf2;
+    border-radius: 22px;
+    background: #fff;
+    box-shadow: 0 12px 34px rgb(24 43 72 / 8%);
+}
+.auth-container .form-registro h2 {
+    margin-bottom: 7px;
+    font-size: clamp(27px, 2.2vw, 32px);
+}
+.auth-container .form-registro .form-subtitle {
+    max-width: 390px;
+    margin: 0 auto 22px;
+    color: #68758a;
+}
+.auth-container .form-registro .seccion-titulo {
+    margin: 20px 0 12px;
+    color: #31558b;
+    font-size: 10px;
+    font-weight: 750;
+}
+.auth-container .form-registro .grid-2 {
+    gap: 12px;
+    margin-bottom: 12px;
+}
+.auth-container .form-registro .input-gris {
+    min-height: 48px;
+    margin-bottom: 12px;
+    border-radius: 12px;
+    background: #f7f9fc;
+}
+.auth-container .form-registro .grid-2 .input-gris {
+    margin-bottom: 0;
+}
+.auth-container .form-registro .btn-login {
+    width: 100%;
+    min-height: 50px;
+    margin-top: 8px;
+    border-radius: 14px;
+}
+.auth-container .form-registro .divisor {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #8a93a2;
+    font-size: 12px;
+}
+.auth-container .form-registro .divisor::before,
+.auth-container .form-registro .divisor::after {
+    content: '';
+    height: 1px;
+    flex: 1;
+    background: #e7eaf0;
+}
+.auth-container .form-registro .google-registro-ayuda {
+    max-width: 430px;
+    margin: 0 auto 14px;
+    padding: 11px 14px;
+    border: 1px solid #e5ebf4;
+    border-radius: 12px;
+    background: #f7f9fc;
+    color: #65738a;
+}
+.auth-container .form-registro .google-wrapper {
+    min-height: 44px;
+}
+.auth-container .form-registro .google-wrapper > div,
+.auth-container .form-registro .google-wrapper iframe,
+.auth-container .form-registro .btn-google-deshabilitado {
+    width: min(100%, 320px) !important;
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+}
+.auth-container .form-registro .btn-google-deshabilitado {
+    min-height: 48px;
+    border-radius: 999px;
+    background: #f8fafc;
+}
+
+@media (max-width: 700px) {
+    .auth-container .form-registro {
+        padding: 28px 22px 40px;
+    }
+    .auth-container .form-registro form {
+        width: 100%;
+        padding: 24px 18px;
+        border-radius: 20px;
+    }
 }

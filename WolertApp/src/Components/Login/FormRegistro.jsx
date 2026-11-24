@@ -45,11 +45,46 @@ function FormRegistro({ onRegistroSuccess }) {
 
     function handleChange(event) {
         const { name, value } = event.target
-        setFormData((actual) => ({ ...actual, [name]: value }))
+        const valorLimpio = ['cedula', 'telefono'].includes(name)
+            ? value.replace(/\D/g, '')
+            : value
+        setFormData((actual) => ({ ...actual, [name]: valorLimpio }))
+    }
+
+    function validarCamposNumericos() {
+        if (!/^\d{6,10}$/.test(formData.cedula)) {
+            setError('La cédula debe tener entre 6 y 10 números.')
+            return false
+        }
+        if (formData.telefono && !/^\d+$/.test(formData.telefono)) {
+            setError('El teléfono debe contener solo números.')
+            return false
+        }
+        return true
+    }
+
+    function validarCorreo() {
+        const correo = formData.correo.trim()
+        const formatoCorreo = /^[^\s@]+@[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)+$/i
+        const parteLocal = correo.split('@')[0] || ''
+
+        if (
+            correo.length > 254 ||
+            parteLocal.length > 64 ||
+            correo.includes('..') ||
+            !formatoCorreo.test(correo)
+        ) {
+            setError('Escribe un correo con formato válido, por ejemplo nombre@dominio.com.')
+            return false
+        }
+
+        return true
     }
 
     async function handleRegistroClasico(event) {
         event.preventDefault()
+        if (!validarCamposNumericos()) return
+        if (!validarCorreo()) return
 
         try {
             setCargando(true)
@@ -61,7 +96,7 @@ function FormRegistro({ onRegistroSuccess }) {
                 segundoNombre: formData.segundoNombre.trim() || null,
                 primerApellido: formData.primerApellido.trim(),
                 segundoApellido: formData.segundoApellido.trim() || null,
-                correo: formData.correo.trim(),
+                correo: formData.correo.trim().toLowerCase(),
                 telefono: formData.telefono.trim(),
                 barrioId: Number(formData.barrioId),
                 calle: formData.calle.trim() || null,
@@ -84,6 +119,8 @@ function FormRegistro({ onRegistroSuccess }) {
     }
 
     async function handleGoogleSuccess(respuesta) {
+        if (!validarCamposNumericos()) return
+
         if (!respuesta.credential) {
             setError('Google no devolvió una credencial válida.')
             return
@@ -167,6 +204,11 @@ function FormRegistro({ onRegistroSuccess }) {
                     type="text"
                     placeholder="Cédula"
                     className="input-gris"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    minLength={6}
+                    maxLength={10}
+                    title="Ingresa entre 6 y 10 números."
                     name="cedula"
                     value={formData.cedula}
                     onChange={handleChange}
@@ -187,6 +229,8 @@ function FormRegistro({ onRegistroSuccess }) {
                     type="tel"
                     placeholder="Teléfono"
                     className="input-gris"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
                     name="telefono"
                     value={formData.telefono}
                     onChange={handleChange}
@@ -318,6 +362,8 @@ function FormRegistro({ onRegistroSuccess }) {
                             theme="outline"
                             size="large"
                             shape="pill"
+                            width="320"
+                            logo_alignment="center"
                             locale="es"
                         />
                     ) : (

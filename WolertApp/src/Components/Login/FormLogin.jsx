@@ -61,7 +61,6 @@ function FormLogin({ onLoginSuccess, aviso }) {
                         placeholder="Usuario"
                         aria-label="Usuario"
                         autoComplete="username"
-                        autoFocus
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                     />
@@ -96,12 +95,17 @@ function FormLogin({ onLoginSuccess, aviso }) {
 
                 <div className="divisor"><span>o</span></div>
 
+                <p className="google-caption">Continúa de forma segura con tu cuenta de Google</p>
                 <div className="google-wrapper">
                     <GoogleLogin
                         onSuccess={handleGoogle}
                         onError={() => setError('Falló el inicio de sesión con Google')}
                         text="continue_with"
+                        theme="outline"
                         shape="pill"
+                        size="large"
+                        width="320"
+                        logo_alignment="center"
                         locale="es"
                     />
                 </div>
