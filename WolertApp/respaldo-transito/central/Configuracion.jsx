@@ -1,6 +1,10 @@
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Layout from "../../../Components/transito/Layout";
+import ConfiguracionCuenta from "../../../Components/transito/ConfiguracionCuenta";
+import { cambiarPassword, logOut } from "../../../Services/UsuariosAPI";
+import { obtenerSesionTransito } from "../../../Services/transitoApi";
 
 const CLAVE = "wolert_central_transito_config";
 
@@ -49,15 +53,15 @@ function Fila({ titulo, texto, children }) {
 }
 
 export default function Configuracion() {
+  const navigate = useNavigate();
+  const sesion = obtenerSesionTransito();
   const [configuracion, setConfiguracion] =
     useState(leerConfiguracion);
   const [mensaje, setMensaje] = useState("");
-
-  useEffect(() => {
-    if (!mensaje) return;
-
-    // El mensaje se conserva hasta el siguiente cambio.
-  }, [mensaje]);
+  const [password, setPassword] = useState({ actual: "", nueva: "", confirmar: "" });
+  const [errorPassword, setErrorPassword] = useState("");
+  const [avisoPassword, setAvisoPassword] = useState("");
+  const [guardandoPassword, setGuardandoPassword] = useState(false);
 
   function actualizar(campo, valor) {
     setConfiguracion((anterior) => ({
@@ -84,6 +88,28 @@ export default function Configuracion() {
     }
   }
 
+  async function guardarPassword(event) {
+    event.preventDefault(); setErrorPassword(""); setAvisoPassword("");
+    if (!sesion.idUsuario) return setErrorPassword("No encontramos el identificador de tu cuenta.");
+    if (!password.actual || !password.nueva || !password.confirmar) return setErrorPassword("Completa los tres campos.");
+    if (password.nueva.length < 8) return setErrorPassword("La nueva contraseña debe tener al menos 8 caracteres.");
+    if (password.nueva !== password.confirmar) return setErrorPassword("La confirmación no coincide.");
+    if (password.actual === password.nueva) return setErrorPassword("La nueva contraseña debe ser distinta a la actual.");
+    try {
+      setGuardandoPassword(true);
+      await cambiarPassword(sesion.idUsuario, password.actual, password.nueva);
+      setPassword({ actual: "", nueva: "", confirmar: "" }); setAvisoPassword("Contraseña actualizada correctamente.");
+    } catch (error) { setErrorPassword(error.message || "No se pudo actualizar la contraseña."); }
+    finally { setGuardandoPassword(false); }
+  }
+
+  function cerrarSesion() {
+    if (!window.confirm("¿Seguro que quieres cerrar sesión?")) return;
+    logOut();
+    [sessionStorage, localStorage].forEach((storage) => ["accessToken", "authToken", "jwt", "usuario", "user", "usuarioActual", "currentUser"].forEach((key) => storage.removeItem(key)));
+    navigate("/login", { replace: true });
+  }
+
   return (
     <Layout
       rol="central"
@@ -103,6 +129,8 @@ export default function Configuracion() {
           de despacho.
         </p>
       </div>
+
+      <ConfiguracionCuenta />
 
       {mensaje && (
         <div
@@ -270,32 +298,17 @@ export default function Configuracion() {
           Cuenta
         </h2>
 
-        <Fila
-          titulo="Contraseña"
-          texto="El cambio de contraseña requiere el endpoint de seguridad de tu API."
-        >
-          <button
-            type="button"
-            className="btn-secundario-dash"
-            disabled
-            title="Pendiente de integrar con el backend"
-          >
-            Cambiar contraseña
-          </button>
-        </Fila>
-
-        <Fila
-          titulo="Sesiones activas"
-          texto="Cierra el acceso desde otros dispositivos conectados a tu cuenta."
-        >
-          <button
-            type="button"
-            className="btn-secundario-dash"
-            disabled
-            title="Pendiente de integrar con el backend"
-          >
-            Cerrar otras sesiones
-          </button>
+        <p className="config-text-dash mb-3">Actualiza la contraseña de tu cuenta.</p>
+        {errorPassword && <div className="alert alert-danger" role="alert">{errorPassword}</div>}
+        {avisoPassword && <div className="alert alert-success" role="status">{avisoPassword}</div>}
+        <form onSubmit={guardarPassword} className="row g-3">
+          {[["actual", "Contraseña actual", "current-password"], ["nueva", "Nueva contraseña", "new-password"], ["confirmar", "Confirmar nueva contraseña", "new-password"]].map(([key, label, autocomplete]) => (
+            <div className="col-md-4" key={key}><label className="config-field-label-dash" htmlFor={`passwordCentral-${key}`}>{label}</label><input id={`passwordCentral-${key}`} className="form-control" type="password" autoComplete={autocomplete} minLength={key === "actual" ? undefined : 8} value={password[key]} onChange={(event) => setPassword({ ...password, [key]: event.target.value })} /></div>
+          ))}
+          <div className="col-12"><button type="submit" className="btn-secundario-dash" disabled={guardandoPassword}>{guardandoPassword ? "Actualizando..." : "Actualizar contraseña"}</button></div>
+        </form>
+        <Fila titulo="Sesiones activas" texto="Cierra la sesión de Central en este dispositivo.">
+          <button type="button" className="btn-secundario-dash" onClick={cerrarSesion}>Cerrar sesión</button>
         </Fila>
       </div>
 

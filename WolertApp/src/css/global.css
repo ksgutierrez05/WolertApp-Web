@@ -1004,3 +1004,203 @@ body:has(.sidebar-dash:hover) #wrapperDash {
   margin-left: 12px;
   opacity: 1;
 }
+
+/* Menú de cuenta compartido por los paneles de Tránsito. */
+.transito-cuenta {
+  position: relative;
+}
+
+.transito-cuenta__boton {
+  font: inherit;
+  cursor: pointer;
+}
+
+.transito-cuenta__boton:focus-visible {
+  outline: 3px solid #8bb8ff;
+  outline-offset: 3px;
+}
+
+.transito-cuenta__menu {
+  position: absolute;
+  z-index: 1100;
+  top: calc(100% + 10px);
+  right: 0;
+  width: min(280px, calc(100vw - 32px));
+  overflow: hidden;
+  padding: 8px;
+  border: 1px solid #e5eaf2;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 16px 42px rgba(18, 37, 63, .18);
+}
+
+.transito-cuenta__encabezado {
+  display: grid;
+  gap: 3px;
+  padding: 12px 12px 14px;
+  border-bottom: 1px solid #edf0f5;
+}
+
+.transito-cuenta__encabezado strong {
+  overflow: hidden;
+  color: #17243b;
+  font-size: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.transito-cuenta__encabezado span {
+  color: #718096;
+  font-size: 12px;
+}
+
+.transito-cuenta__menu button {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 11px;
+  padding: 11px 12px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: #26364f;
+  font: inherit;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.transito-cuenta__menu button:hover,
+.transito-cuenta__menu button:focus-visible {
+  background: #f2f6fc;
+  outline: none;
+}
+
+.transito-cuenta__menu button i {
+  width: 18px;
+  color: #3e5b83;
+  font-size: 16px;
+}
+
+.transito-cuenta__menu button.transito-cuenta__salir {
+  color: #b42318;
+}
+
+.transito-cuenta__menu button.transito-cuenta__salir i {
+  color: #b42318;
+}
+
+.transito-notificaciones {
+  position: relative;
+}
+
+.transito-notificaciones__badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  display: grid;
+  min-width: 19px;
+  height: 19px;
+  place-items: center;
+  padding: 0 5px;
+  border: 2px solid #fff;
+  border-radius: 999px;
+  background: #d92d20;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.transito-notificaciones__menu {
+  position: absolute;
+  z-index: 1100;
+  top: calc(100% + 10px);
+  right: 0;
+  width: min(360px, calc(100vw - 32px));
+  overflow: hidden;
+  border: 1px solid #e5eaf2;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 16px 42px rgba(18, 37, 63, .18);
+}
+
+.transito-notificaciones__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid #edf0f5;
+  color: #17243b;
+}
+
+.transito-notificaciones__header strong {
+  font-size: 14px;
+}
+
+.transito-notificaciones__header span {
+  color: #718096;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.transito-notificaciones__lista {
+  max-height: min(420px, calc(100vh - 180px));
+  overflow-y: auto;
+  padding: 6px;
+}
+
+.transito-notificaciones__item {
+  display: flex;
+  width: 100%;
+  align-items: flex-start;
+  gap: 11px;
+  padding: 11px 10px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: #3e4c62;
+  text-align: left;
+  cursor: pointer;
+}
+
+.transito-notificaciones__item:hover,
+.transito-notificaciones__item:focus-visible {
+  background: #f2f6fc;
+  outline: none;
+}
+
+.transito-notificaciones__item.is-no-leida {
+  background: #f6f9ff;
+}
+
+.transito-notificaciones__item > i {
+  margin-top: 2px;
+  color: #315f9b;
+}
+
+.transito-notificaciones__item > span {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.transito-notificaciones__item strong {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.transito-notificaciones__item small {
+  color: #8491a4;
+  font-size: 11px;
+}
+
+.transito-notificaciones__estado {
+  margin: 0;
+  padding: 20px 14px;
+  color: #718096;
+  font-size: 13px;
+  text-align: center;
+}
