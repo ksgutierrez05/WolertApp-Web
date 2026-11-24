@@ -136,7 +136,7 @@ export default function Dashboard() {
                 </div>
                 <h3 className="section-title-dash">Alertas recientes</h3>
               </div>
-              <Link to="/admin/alertas" className="see-all-dash">Ver todas <i className="bi bi-chevron-right" /></Link>
+              <Link to="/admin/alertas" className="see-all-dash">Ver todas </Link>
             </div>
             {alertas === null && <div className="info-sub-dash border-top pt-2">Cargando alertas...</div>}
             {alertas !== null && alertasRecientes.length === 0 && (

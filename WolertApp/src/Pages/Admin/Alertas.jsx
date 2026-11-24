@@ -53,8 +53,29 @@ export default function Alertas() {
   };
 
   useEffect(() => {
-    cargarAlertas();
-  }, []);
+  let activo = true;
+
+  listarAlertas()
+    .then((datos) => {
+      if (activo) {
+        setAlertas(datos);
+      }
+    })
+    .catch((err) => {
+      if (activo) {
+        setErrorLista(mensajeAmigable(err));
+      }
+    })
+    .finally(() => {
+      if (activo) {
+        setCargando(false);
+      }
+    });
+
+  return () => {
+    activo = false;
+  };
+}, []);
 
   const filtrados = useMemo(() => alertas.filter((a) => {
     const texto = buscar.trim().toLowerCase();
