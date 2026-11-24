@@ -1,385 +1,77 @@
-@scope (.dt) {
-.sec-head-pd {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 14px;
+.director-panel {
+  --director-border: #e5ebf2;
+  --director-text: #173f65;
+  --director-muted: #748196;
+  font-family: "Inter", sans-serif;
+  min-width: 0;
 }
- 
-.sec-head-pd h2 {
-  font-size: 16px;
-  margin: 0;
-}
- 
-/* [02] Panel base ------------------------------------------------ */
-.panel-pd {
-  position: relative;
-  background-color: #ffffff;
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  overflow: hidden;
-  box-shadow: var(--shadow-sm);
-}
-
- 
-#tituloSinAsignar {
-  font-family: 'Inter', sans-serif;
-  font-weight: 700;
-  font-size: 18px;
-  color: #182339;
-  margin-bottom: 4px;
-}
-
-.titulos-dir {
-  font-family: 'Inter', sans-serif;
-  font-weight: 700;
-  font-size: 19px;
-  color: #182339;
-  margin-bottom: 4px;
-}
-/* [03] Tabla genérica ---------------------------------------------- */
-.tabla-pd {
-  width: 100%;
-  border-collapse: collapse;
-}
- 
-.tabla-pd th {
-  text-align: left;
-  font-size: 11px;
-  color: var(--muted);
-  font-weight: 600;
-  padding: 14px 20px;
-  border-bottom: 1px solid var(--line);
-}
- 
-.tabla-pd td {
-  padding: 13px 20px;
-  border-bottom: 1px solid var(--fog);
-  font-size: 13px;
-  vertical-align: middle;
-}
- 
-.tabla-pd tbody tr:last-child td {
-  border-bottom: none;
-}
- 
-.tabla-pd tbody tr.d-none {
-  display: none;
-}
- 
-/* [04] Botón "Asignar agente" ---------------------------------------- */
-.assign-btn-pd {
-  background-color: var(--color-primary);
-  color: #ffffff;
-  border: none;
-  font-size: 12px;
-  font-weight: 700;
-  padding: 9px 16px;
-  border-radius: 100px;
-  white-space: nowrap;
-  transition: background-color 0.15s ease;
-}
- 
-.assign-btn-pd:hover {
-  background-color: var(--color-primary-2);
-}
- 
-.tabla-pd tr.asignado-pd {
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
- 
-/* [05] Paginación --------------------------------------------------- */
-.paginacion-pd {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 20px;
-  border-top: 1px solid var(--line);
-  font-size: 12px;
-  color: var(--muted);
-}
- 
-.paginacion-pd .paginas-pd {
-  display: flex;
-  gap: 6px;
-}
- 
-.paginacion-pd .paginas-pd button {
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
-  border: 1px solid var(--line);
-  background-color: #ffffff;
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 700;
-  transition: box-shadow 0.15s ease;
-}
- 
-.paginacion-pd .paginas-pd button:hover {
-  box-shadow: var(--shadow-xs);
-}
- 
-.paginacion-pd .paginas-pd button.active-pd {
-  background-color: var(--color-primary);
-  border-color: var(--color-primary);
-  color: #ffffff;
-}
- 
-/* [06] Mapa de tránsito ------------------------------------------ */
-.mapa-canvas-pd {
-  position: relative;
-  height: 320px;
-  overflow: hidden;
-  background-color: #eef2e6;
-}
- 
-.mapa-canvas-pd svg.base-pd {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
- 
-.map-pin-pd {
-  position: absolute;
-  transform: translate(-50%, -100%);
-}
- 
-.map-pin-pd .dot-pd {
-  position: absolute;
-  top: -2px;
-  right: -3px;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  border: 2px solid #fff;
-}
- 
-.dot-pd.amber { background-color: var(--color-amber); }
-.dot-pd.red { background-color: var(--color-danger); }
-.dot-pd.blue { background-color: var(--color-blue); }
-.dot-pd.green { background-color: var(--color-green); }
-.dot-pd.purple { background-color: #7c4fc9; }
-.dot-pd.gray { background-color: #8a94a6; }
- 
-.map-legend-pd {
-  position: absolute;
-  left: 16px;
-  top: 16px;
-  max-width: 190px;
-  background-color: rgba(255, 255, 255, 0.96);
-  border-radius: 14px;
-  padding: 14px 18px;
-  box-shadow: var(--shadow-sm);
-}
- 
-.map-legend-pd b {
-  display: block;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--ink);
-  margin-bottom: 10px;
-}
- 
-.map-legend-pd ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
- 
-.map-legend-pd li {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  font-size: 11.5px;
-  font-weight: 600;
-  color: var(--ink);
-}
- 
-.map-legend-pd .sw-pd {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
- 
-.map-cta-pd {
-  position: absolute;
-  right: 16px;
-  bottom: 16px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background-color: var(--color-primary);
-  color: #ffffff;
-  font-size: 12.5px;
-  font-weight: 700;
-  padding: 11px 18px;
-  border-radius: 100px;
-  box-shadow: 0 8px 18px -8px rgba(10, 47, 92, 0.55);
-}
- 
-.map-cta-pd:hover {
-  background-color: var(--color-primary-2);
-  color: #ffffff;
-}
- 
-/* [07] Accidentes por comuna --------------------------------------- */
-.comunas-pd {
-  background-color: #ffffff;
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  padding: 18px 20px;
-  box-shadow: var(--shadow-sm);
-}
- 
-.comuna-row-pd {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 9px 0;
-}
- 
-.comuna-row-pd .nombre-pd {
-  width: 160px;
-  flex-shrink: 0;
-  font-size: 12.5px;
-  font-weight: 600;
-}
- 
-.comuna-row-pd .pista-pd {
-  flex: 1;
-  height: 8px;
-  border-radius: 6px;
-  background-color: var(--fog);
-  overflow: hidden;
-}
- 
-.comuna-row-pd .pista-pd span {
-  display: block;
-  height: 100%;
-  border-radius: 6px;
-  background: linear-gradient(90deg, #dd4048, var(--color-danger));
-}
- 
-.comuna-row-pd .valor-pd {
-  width: 30px;
-  flex-shrink: 0;
-  text-align: right;
-  font-size: 12.5px;
-  font-weight: 700;
-  color: var(--muted);
-}
- 
-/* [08] Tabs de filtro ------------------------------------------------ */
-.tabs-pd {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 14px;
-}
- 
-.tab-pd {
-  font-size: 12px;
-  font-weight: 700;
-  padding: 8px 15px;
-  border-radius: 100px;
-  border: 1px solid var(--line);
-  background-color: #ffffff;
-  color: var(--muted);
-  box-shadow: var(--shadow-xs);
-  transition: box-shadow 0.15s ease;
-}
- 
-.tab-pd:hover {
-  box-shadow: var(--shadow-sm);
-}
- 
-.tab-pd.active-pd {
-  background-color: var(--color-primary);
-  color: #ffffff;
-  border-color: var(--color-primary);
-}
- 
-@media (max-width: 768px) {
-  .comuna-row-pd .nombre-pd {
-    width: 110px;
-  }
- 
-  .tabla-pd th,
-  .tabla-pd td {
-    padding: 12px 14px;
-  }
-}
-
-.kpi-dash .kpi-label-dash {
-  color: var(--muted);
-  font-size: 12.5px;
-  font-weight: 600;
-  margin-top: 7px;
-}
- /* ---------- Hero con imagen de fondo ---------- */
-.hero-dash.hero-img-dash {
-  background-color: var(--color-primary);
+.director-panel .hero-dash.hero-img-dash {
   min-height: 270px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
   padding: 36px 44px;
-  background-image:
-    linear-gradient(
-      90deg,
-      var(--color-primary) 0%,
-      var(--color-primary) 45%,
-      color-mix(in srgb, var(--color-primary) 60%, transparent) 62%,
-      color-mix(in srgb, var(--color-primary) 15%, transparent) 80%,
-      transparent 92%
-    ),
-    url("/img/Maria Mulata.jpg");
-    
-  background-position: center, right 12%;
-  background-size: cover, cover;
-  background-repeat: no-repeat;
+  border-radius: 22px;
+  background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-primary) 35%, color-mix(in srgb, var(--color-primary) 60%, transparent) 62%, transparent 100%), url('/img/Maria Mulata.jpg') right 12% / cover no-repeat;
 }
-
-.eyebrow-img-dash {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  color: #9fd0ff;
-  margin-bottom: 14px;
-}
-
-.eyebrow-img-dash i {
-  font-size: 13px;
-}
-
-.hero-img-dash .hero-title-dash {
-  font-size: 40px;
-  line-height: 1.12;
-  max-width: 620px;
-  margin: 0 0 10px;
-  letter-spacing: -0.02em;
-}
-
-.hero-img-dash .hero-text-dash {
-  font-size: 14px;
-  color: #e3ebf7;
-  max-width: 520px;
-  margin: 0;
-}
-
+.director-panel .hero-title-dash {font-family: "Space Grotesk", "Inter", sans-serif; font-size: 40px; line-height: 1.15; color: white; font-weight: 700;}
+.director-panel .hero-text-dash {color: #e7eff9; max-width: 480px; font-size: 14px;}
+.director-panel .eyebrow-img-dash {color: #dcecff; font-size: 11px; font-weight: 700; letter-spacing: 1.4px; margin-bottom: 14px;}
+.director-panel .hero-cta-dash {color: var(--director-text); font-size: 12px; padding: 11px 20px;}
+.director-panel .kpi-dash {border: 1px solid var(--director-border); border-radius: 18px; box-shadow: 0 3px 12px #173f6509;}
+.director-panel .sec-head-pd {display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; margin: 28px 0 16px;}
+.director-panel .sec-head-pd h2 {font-family: "Space Grotesk", "Inter", sans-serif; color: var(--director-text); font-size: 21px; font-weight: 800; margin: 0; padding: 0; border: 0;}
+.director-panel .contador-director {background: #edf3fa; color: #2d609c; padding: 8px 14px; border-radius: 9px; font-size: 12px; font-weight: 600;}
+.director-panel .panel-pd, .director-panel .comunas-pd {position: relative; background: white; border: 1px solid var(--director-border); border-radius: 18px; overflow: hidden; box-shadow: 0 3px 14px #173f6509;}
+.director-panel .tabla-pd {width: 100%; border-collapse: collapse; text-align: left;}
+.director-panel .tabla-pd th {background: #f5f8fc; color: #65758b; font-size: 11px; font-weight: 700; text-transform: uppercase; padding: 16px 20px; border-bottom: 1px solid var(--director-border); white-space: nowrap;}
+.director-panel .tabla-pd td {padding: 16px 20px; border-bottom: 1px solid #edf1f6; color: #405169; font-size: 13px; vertical-align: middle;}
+.director-panel .tabla-pd tbody tr:hover {background: #f8faff;}
+.director-panel .tabla-pd tbody tr:last-child td {border-bottom: 0;}
+.director-panel .info-title-dash {color: #24364e; font-weight: 700; font-size: 13px; margin-bottom: 4px;}
+.director-panel .info-sub-dash {color: var(--director-muted); font-size: 11.5px;}
+.director-panel .badge-dash {display: inline-flex; align-items: center; padding: 7px 11px; border-radius: 8px; font-size: 11px; font-weight: 700; white-space: nowrap;}
+.director-panel .tipo-rojo {background: #fee2e2; color: #b91c1c;}
+.director-panel .tipo-amarillo {background: #fff0d5; color: #a16207;}
+.director-panel .tipo-azul {background: #dbeafe; color: #2563eb;}
+.director-panel .tipo-morado {background: #f3e8ff; color: #7e22ce;}
+.director-panel .tipo-naranja {background: #ffedd5; color: #c2410c;}
+.director-panel .tipo-verde {background: #dcfce7; color: #15803d;}
+.director-panel .wait-dash {color: #64748b; font-size: 12px; white-space: nowrap;}
+.director-panel .link-btn-dash {color: var(--color-primary-2); font-weight: 700; font-size: 12px; white-space: nowrap;}
+.director-panel .link-btn-dash:hover {text-decoration: underline;}
+.director-panel .mapa-canvas-pd {position: relative; height: 340px; overflow: hidden; background: #eef2e6;}
+.director-panel .mapa-canvas-pd svg {position: absolute; inset: 0; width: 100%; height: 100%;}
+.director-panel .map-legend-pd {position: absolute; top: 20px; left: 20px; max-width: 240px; padding: 16px 20px; background: #fffffffa; border: 1px solid var(--director-border); border-radius: 14px; box-shadow: 0 6px 20px #173f6514;}
+.director-panel .map-legend-pd b {display: block; color: var(--director-text); font-size: 13px; margin-bottom: 8px;}
+.director-panel .comunas-pd {padding: 22px 26px;}
+.director-panel .comuna-row-pd {display: flex; align-items: center; gap: 20px; padding: 15px 0; border-bottom: 1px solid #f0f3f7;}
+.director-panel .comuna-row-pd:last-child {border-bottom: 0;}
+.director-panel .nombre-pd {width: 150px; flex-shrink: 0; color: #405169; font-size: 13px; font-weight: 600;}
+.director-panel .pista-pd {flex: 1; height: 11px; background: #edf2f8; border-radius: 20px; overflow: hidden;}
+.director-panel .pista-pd span {display: block; height: 100%; background: linear-gradient(90deg,#8db4df,#517aac); border-radius: 20px;}
+.director-panel .valor-pd {width: 32px; text-align: right; color: var(--director-text); font-weight: 700; font-size: 13px;}
+.director-panel .tabs-pd {display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px;}
+.director-panel .tab-pd {background: white; border: 1px solid var(--director-border); border-radius: 9px; color: #65758b; padding: 10px 16px; font-size: 12px; font-weight: 600;}
+.director-panel .tab-pd:hover, .director-panel .tab-pd.active-pd {background: #e8f0fa; border-color: #c9dbef; color: #2d609c;}
+.director-panel .paginacion-pd {padding: 17px 20px; border-top: 1px solid var(--director-border); color: var(--director-muted); background: #fcfdff; font-size: 12px;}
+.director-panel .modal-dash {border: 0; border-radius: 20px; overflow: hidden;}
+.director-panel .modal-header {background: #f4f7fb; padding: 22px 26px;}
+.director-panel .modal-title {font-family: "Space Grotesk", sans-serif; color: var(--director-text); font-weight: 700;}
+.director-panel .modal-body {padding: 24px 26px; color: #52647b; font-size: 13px; line-height: 1.8;}
 @media (max-width: 768px) {
-  .hero-dash.hero-img-dash { padding: 26px 22px; min-height: 230px; }
-  .hero-img-dash .hero-title-dash { font-size: 28px; }
+  .director-panel .hero-dash.hero-img-dash {padding: 28px 24px; min-height: 250px;}
+  .director-panel .hero-title-dash {font-size: 30px;}
+  .director-panel .tabla-pd {min-width: 620px;}
+  .director-panel .tabla-pd th, .director-panel .tabla-pd td {padding: 13px 15px;}
+  .director-panel .nombre-pd {width: 100px;}
+  .director-panel .comuna-row-pd {gap: 12px;}
+  .director-panel .comunas-pd {padding: 16px;}
+  .director-panel .mapa-canvas-pd {height: 290px;}
 }
+.director-panel .kpi-dash .kpi-label-dash {
+  color: inherit !important;
+  font-size: 12.5px;
+  font-weight: 600;
 }

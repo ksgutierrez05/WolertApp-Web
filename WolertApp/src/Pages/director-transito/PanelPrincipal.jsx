@@ -1,7 +1,7 @@
-
 import { useEffect, useMemo, useState } from "react";
 import Layout from "../../Components/transito/Layout";
 import KpiCard from "../../Components/transito/KpiCard";
+import "../../css/transito/director-transito/panel-principal.css";
 import {
   listarAgentesDirector,
   listarAtencionesDirector,
@@ -19,6 +19,20 @@ import {
   esAccidente,
   idAlerta,
 } from "../../Services/directorTransitoService";
+
+function claseTipo(caso) {
+  const tipo = String(tipoCaso(caso) ?? "").normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  if (/accidente|siniestro|choque|colision/.test(tipo)) return "tipo-rojo";
+  if (/congestion|trafico|tranc[oó]n/.test(tipo)) return "tipo-amarillo";
+  if (/semaforo|senal/.test(tipo)) return "tipo-azul";
+  if (/infraccion|estacionamiento/.test(tipo)) return "tipo-morado";
+  if (/obstruccion|bloqueo|via cerrada/.test(tipo)) return "tipo-naranja";
+  if (/vehiculo|averia/.test(tipo)) return "tipo-verde";
+  const colores = ["tipo-azul", "tipo-morado", "tipo-verde", "tipo-naranja", "tipo-amarillo"];
+  const indice = [...tipo].reduce((total, letra) => total + letra.charCodeAt(0), 0);
+  return colores[indice % colores.length];
+}
 
 export default function PanelPrincipal() {
   const [agentes, setAgentes] = useState([]);
@@ -111,23 +125,6 @@ export default function PanelPrincipal() {
     );
   }, [alertas, atenciones, alertasDisponibles]);
 
-  const sinAsignar = useMemo(() => {
-    if (!alertasDisponibles) return [];
-
-    const idsAsignados = new Set(
-      atenciones
-        .map((a) => a.idAlerta)
-        .filter((id) => id != null)
-        .map(String)
-    );
-
-    return alertas.filter(
-      (alerta) =>
-        !idsAsignados.has(String(idAlerta(alerta))) &&
-        !estadoFinalizado(estadoCaso(alerta))
-    );
-  }, [alertas, atenciones, alertasDisponibles]);
-
   const tipos = useMemo(() => {
     return [...new Set(
       ultimos.map((caso) => normalizar(tipoCaso(caso)))
@@ -203,6 +200,7 @@ const accidentesPorComuna = useMemo(() => {
         placeholder: "Buscar por caso, barrio o agente...",
       }}
     >
+      <div className="director-panel">
       <div className="hero-dash hero-img-dash mb-4">
         <div className="eyebrow-dash eyebrow-img-dash">
           <i className="bi bi-shield-check me-2" />
@@ -221,11 +219,11 @@ const accidentesPorComuna = useMemo(() => {
         </p>
 
         <a
-          href="#casosSinAsignar"
+          href="#casosTransito"
           className="btn btn-light rounded-pill fw-bold mt-3 hero-cta-dash"
         >
           <span className="dot-danger-dash" />
-          {" "}Ver casos sin asignar
+          {" "}Ver casos de tránsito
         </a>
       </div>
 
@@ -272,33 +270,34 @@ const accidentesPorComuna = useMemo(() => {
         />
       </div>
 
-      <section id="casosSinAsignar">
+      <section id="casosTransito">
         <div className="sec-head-pd">
-          <h2>Casos sin asignar</h2>
-          <span className="text-muted small">
-            {sinAsignar.length} pendientes
+          <h2>Casos de tránsito</h2>
+          <span className="contador-director">
+            {ultimos.length} registros
           </span>
         </div>
 
         <div className="panel-pd mb-4">
           <div className="table-responsive">
-            <table className="tabla-pd" id="tablaSinAsignar">
+            <table className="tabla-pd" id="tablaCasos">
               <thead>
                 <tr>
                   <th>Tipo</th>
                   <th>Ubicación / reportante</th>
                   <th>Fecha de reporte</th>
+                  <th>Estado</th>
                   <th className="text-end">Acción</th>
                 </tr>
               </thead>
               <tbody>
-                {sinAsignar.map((caso, indice) => (
+                {ultimos.slice(0, 10).map((caso, indice) => (
                   <tr
                     key={idAlerta(caso) ?? indice}
-                    className="unassigned-row-pd"
+                    
                   >
                     <td>
-                      <span className="badge-dash badge-amber-dash">
+                      <span className={`badge-dash tipo-director ${claseTipo(caso)}`}>
                         {tipoCaso(caso)}
                       </span>
                     </td>
@@ -311,7 +310,7 @@ const accidentesPorComuna = useMemo(() => {
                       </div>
                       <div className="info-sub-dash">
                         Reportado por{" "}
-                        {caso.nombreReportante ||
+                        {caso.reportadoPor || caso.nombreReportante ||
                           caso.nombreUsuario ||
                           "No registrado"}
                       </div>
@@ -321,14 +320,14 @@ const accidentesPorComuna = useMemo(() => {
                         {fechaTransito(fechaCaso(caso))}
                       </span>
                     </td>
+                    <td>
+                      <span className={`badge-dash ${badgeEstadoCaso(estadoCaso(caso))}`}>
+                        {estadoCaso(caso)}
+                      </span>
+                    </td>
                     <td className="text-end">
-                      <button
-                        type="button"
-                        className="assign-btn-pd"
-                        title="Asignación pendiente de conexión con API"
-                        disabled
-                      >
-                        Asignar agente
+                      <button type="button" className="link-btn-dash border-0 bg-transparent" onClick={() => setDetalle(caso)}>
+                        Ver detalle
                       </button>
                     </td>
                   </tr>
@@ -337,13 +336,16 @@ const accidentesPorComuna = useMemo(() => {
             </table>
           </div>
 
-          {sinAsignar.length === 0 && (
+          {ultimos.length === 0 && (
             <p className="text-center text-muted py-4 mb-0">
               {alertasDisponibles
-                ? "No hay casos sin asignar."
-                : "No se pudo consultar la asignación de alertas."}
+                ? "No hay casos registrados."
+                : "No hay casos disponibles para mostrar."}
             </p>
           )}
+          <div className="paginacion-pd">
+            Mostrando {Math.min(10, ultimos.length)} de {ultimos.length} registros
+          </div>
         </div>
       </section>
 
@@ -403,7 +405,7 @@ const accidentesPorComuna = useMemo(() => {
         <h2 className="titulos">
           Accidentes por comuna
         </h2>
-        <span className="text-muted small">
+        <span className="contador-director">
           Últimos 30 días
         </span>
       </div>
@@ -444,7 +446,7 @@ const accidentesPorComuna = useMemo(() => {
         <h2 className="titulos">
           Últimos casos de tránsito
         </h2>
-        <span className="text-muted small">
+        <span className="contador-director">
           {ultimos.length} registros
         </span>
       </div>
@@ -491,7 +493,7 @@ const accidentesPorComuna = useMemo(() => {
               </tr>
             </thead>
             <tbody>
-              {ultimosFiltrados.slice(0, 5).map(
+              {ultimosFiltrados.slice(0, 10).map(
                 (caso, indice) => (
                   <tr
                     key={
@@ -502,7 +504,7 @@ const accidentesPorComuna = useMemo(() => {
                   >
                     <td>
                       <div className="info-title-dash">
-                        {caso.nombreReportante ||
+                        {caso.reportadoPor || caso.nombreReportante ||
                           caso.nombreUsuario ||
                           "No registrado"}
                       </div>
@@ -511,7 +513,7 @@ const accidentesPorComuna = useMemo(() => {
                       </div>
                     </td>
                     <td>
-                      <span className="badge-dash badge-amber-dash">
+                      <span className={`badge-dash tipo-director ${claseTipo(caso)}`}>
                         {tipoCaso(caso)}
                       </span>
                     </td>
@@ -553,7 +555,7 @@ const accidentesPorComuna = useMemo(() => {
 
         <div className="paginacion-pd">
           <span>
-            Mostrando {Math.min(5, ultimosFiltrados.length)}
+            Mostrando {Math.min(10, ultimosFiltrados.length)}
             {" "}de {ultimosFiltrados.length} registros
           </span>
         </div>
@@ -611,6 +613,7 @@ const accidentesPorComuna = useMemo(() => {
           </div>
         </div>
       )}
+      </div>
     </Layout>
   );
 }

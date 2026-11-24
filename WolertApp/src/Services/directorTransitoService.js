@@ -84,8 +84,36 @@ export async function listarAtencionesDirector() {
 }
 // Verificar en Swagger que este controlador exista.
 export async function listarAlertasDirector() {
-  const respuesta = await consultarTransito(RUTAS.alertas);
-  return listaApi(respuesta);
+  const [respuesta, respuestaTipos] = await Promise.all([
+    consultarTransito(RUTAS.alertas),
+    consultarTransito("/api/TiposAlerta"),
+  ]);
+
+  const alertas = listaApi(respuesta);
+  const tipos = listaApi(respuestaTipos);
+
+  const tiposTransito = tipos.filter(tipo =>
+    normalizar(
+      tipo.centralResponsable ?? tipo.central_responsable
+    ) === "TRANSITO"
+  );
+
+  return alertas.filter(alerta => {
+    const nombre = normalizar(tipoCaso(alerta));
+    const idTipo = alerta.idTipoAlerta ?? alerta.tipoAlertaId;
+
+    return tiposTransito.some(tipo => {
+      const id = tipo.idTipoAlerta ?? tipo.id;
+
+      return (
+        (idTipo != null && id != null &&
+          String(idTipo) === String(id)) ||
+        nombre === normalizar(
+          tipo.nombre ?? tipo.nombreTipoAlerta ?? tipo.tipo
+        )
+      );
+    });
+  });
 }
 export async function listarBarriosDirector() {
   const respuesta = await consultarTransito(RUTAS.barrios);
@@ -106,7 +134,7 @@ export function tipoCaso(caso) {
   return caso?.tipoAlerta || caso?.nombreTipoAlerta || caso?.tipoCaso || caso?.tipo || "Sin tipo";
 }
 export function fechaCaso(caso) {
-  return caso?.fechaReporte || caso?.fechaCreacion || caso?.fechaAlerta || caso?.fechaAtencion || caso?.createdAt || null;
+  return caso?.fecha || caso?.fechaReporte || caso?.fechaCreacion || caso?.fechaAlerta || caso?.fechaAtencion || caso?.createdAt || null;
 }
 export function esAccidente(caso) {
   const tipo = normalizar(tipoCaso(caso));

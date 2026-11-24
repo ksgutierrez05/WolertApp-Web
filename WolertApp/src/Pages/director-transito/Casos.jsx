@@ -1,11 +1,14 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
+import { listarTiposAlertaCentral, normalizarCentral } from "../../Services/centralTransitoService";
 import Layout from "../../Components/transito/Layout";
 import KpiCard from "../../Components/transito/KpiCard";
 import {
   listarAtencionesDirector,
   listarAlertasDirector,
   listarAgentesDirector,
+  listarUnidadesDirector,
+  listarUsuariosTransito,
   idAtencion,
   idAlerta,
   nombreAgente,
@@ -56,6 +59,9 @@ function claseEstadoCaso(estado) {
 }
 
 function textoVisible(valor) {
+  if (normalizarCentral(valor).replace(/_/g, " ") === "SEMAFORO DANADO") {
+    return "Semáforo dañado";
+  }
   const texto = String(valor ?? "").replace(/_/g, " ").replace(/\s+/g, " ").trim().toLocaleLowerCase("es");
   return texto.replace(/(^|\s)(\p{L})/gu, (coincidencia, espacio, letra) => espacio + letra.toLocaleUpperCase("es"));
 }
@@ -76,7 +82,7 @@ function prepararCasos(alertas, atenciones) {
         estadoVisual: estadoCaso(atencion ?? alerta),
         fechaVisual: fechaCaso(alerta) ?? fechaCaso(atencion),
         reportante:
-          alerta.nombreReportante ||
+          alerta.reportadoPor || alerta.nombreReportante ||
           alerta.nombreUsuario ||
           alerta.reportanteNombre ||
           alerta.usuario?.nombre ||
@@ -87,11 +93,12 @@ function prepararCasos(alertas, atenciones) {
   }
   return atenciones.map((atencion) => ({
     ...atencion,
+    atencion,
     identificador: idAtencion(atencion),
     tipoVisual: tipoCaso(atencion),
     estadoVisual: estadoCaso(atencion),
     fechaVisual: fechaCaso(atencion),
-    reportante: atencion.nombreReportante || "No disponible",
+    reportante: atencion.reportadoPor || atencion.nombreReportante || "No disponible",
     barrio: atencion.nombreBarrio || atencion.barrioNombre || "No disponible",
   }));
 }
@@ -162,6 +169,8 @@ function AvisosCasos({ avisos, cerrar }) {
 export default function Casos() {
   const [casos, setCasos] = useState([]);
   const [agentes, setAgentes] = useState([]);
+  const [unidades, setUnidades] = useState([]);
+  const [usuarios, setUsuarios] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [avisos, setAvisos] = useState([]);
   const [busqueda, setBusqueda] = useState("");
@@ -181,16 +190,34 @@ export default function Casos() {
   useEffect(() => {
     let activo = true;
     async function cargar() {
-      const [rAtenciones, rAlertas, rAgentes] = await Promise.allSettled([
+      const [rAtenciones, rAlertas, rAgentes, rUnidades, rTipos, rUsuarios] = await Promise.allSettled([
         listarAtencionesDirector(),
         listarAlertasDirector(),
         listarAgentesDirector(),
+        listarUnidadesDirector(),
+        listarTiposAlertaCentral(),
+        listarUsuariosTransito(),
       ]);
       if (!activo) return;
       const atenciones = rAtenciones.status === "fulfilled" ? rAtenciones.value : [];
       const alertas = rAlertas.status === "fulfilled" ? rAlertas.value : [];
-      setCasos(prepararCasos(alertas, atenciones));
+      const tipos = rTipos.status === "fulfilled" ? rTipos.value : [];
+
+      const tiposTransito = new Set(
+        tipos
+          .filter(t => normalizarCentral(t.centralResponsable ?? t.central_responsable) === "TRANSITO")
+          .map(t => normalizarCentral(t.nombre ?? t.nombreTipoAlerta ?? t.tipo))
+          .filter(Boolean)
+      );
+
+      const alertasTransito = alertas.filter(alerta =>
+        tiposTransito.has(normalizarCentral(tipoCaso(alerta)))
+      );
+
+      setCasos(prepararCasos(alertasTransito, atenciones));
       if (rAgentes.status === "fulfilled") setAgentes(rAgentes.value);
+      if (rUnidades.status === "fulfilled") setUnidades(rUnidades.value);
+      if (rUsuarios.status === "fulfilled") setUsuarios(rUsuarios.value);
       const errores = [];
       if (rAtenciones.status === "rejected")
         errores.push(rAtenciones.reason?.message || "No se pudieron consultar las atenciones.");
@@ -476,15 +503,69 @@ export default function Casos() {
                 <p>
                   <b>Descripción:</b> {detalle.descripcion ?? "No disponible"}
                 </p>
-                <p>
-                  <b>Agente asignado:</b>{" "}
-                  {nombreAgente(
-                    agentes.find(
-                      (a) =>
-                        String(a.idAgenteTransito ?? a.idUsuario) === String(detalle.atencion?.idAgenteTransito),
-                    ) ?? {},
-                  )}
-                </p>
+                                <hr />
+                <h6 className="fw-bold mb-3">
+                  Información de la atención
+                </h6>
+
+                {detalle.atencion ? (
+                  <>
+                    <p>
+                      <b>Agente que atendió:</b>{" "}
+                      {agentes.find(
+                        (a) => String(a.idUsuario) === String(detalle.atencion.idAgenteTransito)
+                      )?.nombreUsuario ||
+                        (detalle.atencion.idAgenteTransito != null
+                          ? `Agente #${detalle.atencion.idAgenteTransito}`
+                          : "No registrado")}
+                    </p>
+
+                    <p>
+                      <b>Unidad de tránsito:</b>{" "}
+                      {unidades.find(
+                        (u) => String(u.idUnidadTransito) === String(detalle.atencion.idUnidadTransito)
+                      )?.nombre ||
+                        (detalle.atencion.idUnidadTransito != null
+                          ? `Unidad #${detalle.atencion.idUnidadTransito}`
+                          : "No registrada")}
+                    </p>
+
+                    <p>
+                      <b>Registrado por:</b>{" "}
+                      {usuarios.find(u =>
+                        detalle.atencion.usuarioRegistra != null &&
+                        (
+                          String(u.idUsuario) === String(detalle.atencion.usuarioRegistra) ||
+                          normalizar(u.username) === normalizar(detalle.atencion.usuarioRegistra)
+                        )
+                      )?.nombreCompleto || detalle.atencion.usuarioRegistra || "No registrado"}
+                    </p>
+
+                    <p>
+                      <b>Fecha de atención:</b>{" "}
+                      {fechaTransito(detalle.atencion.fechaAtencion)}
+                    </p>
+
+                    <p>
+                      <b>Estado final:</b>{" "}
+                      {textoVisible(detalle.atencion.estadoFinal)}
+                    </p>
+
+                    <p>
+                      <b>Informe de atención:</b>{" "}
+                      {detalle.atencion.descripcion || "Sin informe"}
+                    </p>
+
+                    <p>
+                      <b>Observaciones:</b>{" "}
+                      {detalle.atencion.observacion || "Sin observaciones"}
+                    </p>
+                  </>
+                ) : (
+                  <p className="text-muted">
+                    Este caso aún no tiene una atención registrada.
+                  </p>
+                )}
               </div>
               <div className="modal-footer">
                 <button type="button" className="btn btn-light" onClick={() => setDetalle(null)}>
