@@ -44,7 +44,8 @@ builder.Services.AddCors(options =>
             }
 
             if (uri.Scheme == Uri.UriSchemeHttps &&
-                uri.Host == "wolertappweb-p0qfcvpm9-hello-8233-7e9f.vercel.app")
+                (uri.Host == "wolertappweb.vercel.app" ||
+                 uri.Host == "wolertappweb-p0qfcvpm9-hello-8233-7e9f.vercel.app"))
             {
                 return true;
             }

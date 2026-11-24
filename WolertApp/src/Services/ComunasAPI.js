@@ -1,4 +1,4 @@
-const API = 'http://localhost:5039';
+const API = import.meta.env.VITE_API_URL || 'http://localhost:5039';
 
 export async function ListarComunas(){
     const respuesta = await fetch(`${API}/api/comunas`);
