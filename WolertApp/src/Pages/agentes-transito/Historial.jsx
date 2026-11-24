@@ -1,4 +1,3 @@
-
 import { useEffect, useMemo, useState } from "react";
 import Layout from "../../Components/transito/Layout";
 
@@ -39,11 +38,7 @@ export default function Historial() {
 
   const filas = useMemo(() => {
     return casos
-      .filter(
-        (caso) =>
-          filtro === "todas" ||
-          caso.estadoFinal === filtro
-      )
+      .filter((caso) => filtro === "todas" || caso.estadoFinal === filtro)
       .filter((caso) => {
         const texto = [
           caso.idAtencionTransito,
@@ -54,26 +49,17 @@ export default function Historial() {
           .join(" ")
           .toLowerCase();
 
-        return texto.includes(
-          busqueda.trim().toLowerCase()
-        );
+        return texto.includes(busqueda.trim().toLowerCase());
       })
       .sort(
         (a, b) =>
-          new Date(b.fechaAtencion || 0) -
-          new Date(a.fechaAtencion || 0)
+          new Date(b.fechaAtencion || 0) - new Date(a.fechaAtencion || 0),
       );
   }, [casos, filtro, busqueda]);
 
-  const totalPaginas = Math.max(
-    1,
-    Math.ceil(filas.length / POR_PAGINA)
-  );
+  const totalPaginas = Math.max(1, Math.ceil(filas.length / POR_PAGINA));
 
-  const visibles = filas.slice(
-    (pagina - 1) * POR_PAGINA,
-    pagina * POR_PAGINA
-  );
+  const visibles = filas.slice((pagina - 1) * POR_PAGINA, pagina * POR_PAGINA);
 
   function cambiarFiltro(nuevoFiltro) {
     setFiltro(nuevoFiltro);
@@ -90,12 +76,12 @@ export default function Historial() {
       }}
     >
       <header className="st-header mb-4">
-  <div>
-    <span className="st-eyebrow">AGENTE DE TRÁNSITO</span>
-    <h1>Historial de atenciones</h1>
-    <p>Consulta las atenciones registradas durante tu servicio.</p>
-  </div>
-</header>
+        <div>
+          <span className="st-eyebrow">AGENTE DE TRÁNSITO</span>
+          <h1>Historial de atenciones</h1>
+          <p>Consulta las atenciones registradas durante tu servicio.</p>
+        </div>
+      </header>
 
       {cargando && (
         <div className="alert alert-info" role="status">
@@ -119,18 +105,13 @@ export default function Historial() {
             const cantidad =
               id === "todas"
                 ? casos.length
-                : casos.filter(
-                    (caso) =>
-                      caso.estadoFinal === id
-                  ).length;
+                : casos.filter((caso) => caso.estadoFinal === id).length;
 
             return (
               <button
                 key={id}
                 type="button"
-                className={`tab-dash ${
-                  filtro === id ? "active-dash" : ""
-                }`}
+                className={`tab-dash ${filtro === id ? "active-dash" : ""}`}
                 onClick={() => cambiarFiltro(id)}
               >
                 {texto} ({cantidad})
@@ -166,47 +147,30 @@ export default function Historial() {
 
             <tbody>
               {visibles.map((caso, indice) => (
-                <tr
-                  key={
-                    caso.idAtencionTransito ?? indice
-                  }
-                >
+                <tr key={caso.idAtencionTransito ?? indice}>
                   <td className="text-muted small">
-                    {fechaAtencion(
-                      caso.fechaAtencion
-                    )}
+                    {fechaAtencion(caso.fechaAtencion)}
                   </td>
 
-                  <td>
-                    #{caso.idAtencionTransito}
-                  </td>
+                  <td>#{caso.idAtencionTransito}</td>
 
-                  <td>
-                    #{caso.idAlerta ?? "—"}
-                  </td>
+                  <td>#{caso.idAlerta ?? "—"}</td>
 
-                  <td>
-                    {caso.descripcion ||
-                      "Sin descripción"}
-                  </td>
+                  <td>{caso.descripcion || "Sin descripción"}</td>
 
                   <td>
                     <span
                       className={`badge-estado-dash ${
-                        caso.estadoFinal ===
-                        "FINALIZADA"
+                        caso.estadoFinal === "FINALIZADA"
                           ? "estado-resuelta-dash"
                           : "estado-atencion-dash"
                       }`}
                     >
-                      {caso.estadoFinal ===
-                      "FINALIZADA"
+                      {caso.estadoFinal === "FINALIZADA"
                         ? "Finalizada"
-                        : caso.estadoFinal ===
-                          "EN_PROCESO"
-                        ? "En proceso"
-                        : caso.estadoFinal ||
-                          "Sin estado"}
+                        : caso.estadoFinal === "EN_PROCESO"
+                          ? "En proceso"
+                          : caso.estadoFinal || "Sin estado"}
                     </span>
                   </td>
                 </tr>
@@ -223,16 +187,10 @@ export default function Historial() {
 
         <div className="d-flex justify-content-between align-items-center pt-3 paginacion-dash">
           <span className="text-muted small">
-            Mostrando{" "}
-            {filas.length === 0
-              ? 0
-              : (pagina - 1) * POR_PAGINA + 1}
+            Mostrando {filas.length === 0 ? 0 : (pagina - 1) * POR_PAGINA + 1}
             {"–"}
-            {Math.min(
-              pagina * POR_PAGINA,
-              filas.length
-            )}{" "}
-            de {filas.length} atenciones
+            {Math.min(pagina * POR_PAGINA, filas.length)} de {filas.length}{" "}
+            atenciones
           </span>
 
           <div className="d-flex gap-1">
@@ -240,42 +198,31 @@ export default function Historial() {
               type="button"
               className="page-btn-dash"
               disabled={pagina === 1}
-              onClick={() =>
-                setPagina((p) => p - 1)
-              }
+              onClick={() => setPagina((p) => p - 1)}
             >
               <i className="bi bi-chevron-left" />
             </button>
 
-            {Array.from(
-              { length: totalPaginas },
-              (_, i) => i + 1
-            ).map((numero) => (
-              <button
-                key={numero}
-                type="button"
-                className={`page-btn-dash ${
-                  pagina === numero
-                    ? "active-dash"
-                    : ""
-                }`}
-                onClick={() =>
-                  setPagina(numero)
-                }
-              >
-                {numero}
-              </button>
-            ))}
+            {Array.from({ length: totalPaginas }, (_, i) => i + 1).map(
+              (numero) => (
+                <button
+                  key={numero}
+                  type="button"
+                  className={`page-btn-dash ${
+                    pagina === numero ? "active-dash" : ""
+                  }`}
+                  onClick={() => setPagina(numero)}
+                >
+                  {numero}
+                </button>
+              ),
+            )}
 
             <button
               type="button"
               className="page-btn-dash"
-              disabled={
-                pagina === totalPaginas
-              }
-              onClick={() =>
-                setPagina((p) => p + 1)
-              }
+              disabled={pagina === totalPaginas}
+              onClick={() => setPagina((p) => p + 1)}
             >
               <i className="bi bi-chevron-right" />
             </button>
