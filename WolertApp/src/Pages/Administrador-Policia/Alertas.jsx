@@ -194,11 +194,7 @@ function Alertas() {
     setPagina(1);
   }
 
-  function actualizar() {
-    if (cargando) return;
-    setCargando(true);
-    setRecarga((n) => n + 1);
-  }
+  
 
   return (
     <>
@@ -216,19 +212,6 @@ function Alertas() {
             </p>
           </div>
 
-          <button
-            type="button"
-            className="alertas-btn-actualizar"
-            disabled={cargando}
-            onClick={actualizar}
-          >
-            <i
-              className={`bi bi-arrow-clockwise ${
-                cargando ? "alertas-girando" : ""
-              }`}
-            />
-            {cargando ? "Actualizando..." : "Actualizar"}
-          </button>
         </div>
 
         {error && (
@@ -244,7 +227,8 @@ function Alertas() {
           cargando={cargando}
         />
 
-        <section className="alertas-filtros">
+        <section className="alertas-tabla-panel">
+          <div className="alertas-filtros">
           <div className="alertas-buscador">
             <i className="bi bi-search" aria-hidden="true" />
             <input
@@ -257,19 +241,7 @@ function Alertas() {
               placeholder="Buscar por ciudadano, barrio, tipo o número..."
               aria-label="Buscar alertas"
             />
-            {busqueda && (
-              <button
-                type="button"
-                className="alertas-limpiar-busqueda"
-                onClick={() => {
-                  setBusqueda("");
-                  setPagina(1);
-                }}
-                aria-label="Limpiar búsqueda"
-              >
-                <i className="bi bi-x-lg" />
-              </button>
-            )}
+
           </div>
 
           <div className="alertas-chips">
@@ -298,26 +270,6 @@ function Alertas() {
               </button>
             ))}
           </div>
-        </section>
-
-        <section className="alertas-tabla-panel">
-          <div className="alertas-tabla-cabecera">
-            <div className="alertas-tabla-titulo">
-              <span className="alertas-tabla-icono">
-                <i className="bi bi-list-ul" />
-              </span>
-              <div>
-                <h2>Alertas registradas</h2>
-                <p>
-                  Consulta y seguimiento de reportes ciudadanos.
-                </p>
-              </div>
-            </div>
-
-            <span className="alertas-total-registros">
-              {filtradas.length}{" "}
-              {filtradas.length === 1 ? "registro" : "registros"}
-            </span>
           </div>
 
           <div className="table-responsive alertas-tabla-scroll">
@@ -406,7 +358,7 @@ function Alertas() {
                           onClick={() => setSeleccionada(alerta)}
                           aria-label={`Ver alerta ${alerta.idAlerta}`}
                         >
-                          <i className="bi bi-eye" />
+                          <i className="bi bi-file-earmark-text" />
                           Ver
                         </button>
                       </td>

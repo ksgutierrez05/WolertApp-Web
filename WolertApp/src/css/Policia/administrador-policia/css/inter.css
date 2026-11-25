@@ -1,0 +1,66 @@
+/* =====================================================
+   WOLERTAPP · TIPOGRAFÍA INTER
+   Importar DESPUÉS de los demás CSS de Administrador Policía
+   (historial, notificaciones, policías, alarmas, unidades,
+   mapa de unidades y tipos de alertas)
+   ===================================================== */
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+
+/* ---------- Raíz de cada módulo y de sus modales ---------- */
+.historial-page,
+.notificaciones-page,
+.tipos-alertas-page,
+.unidades-policia-page,
+.unidad-detalle-fondo,
+.unidad-mapa-modal,
+.registro-alarma-fondo,
+.alarma-confirmacion-fondo,
+.alarmas-crud,
+.header-vista-dash,
+.policias-botones-cabecera,
+.panel-filtros-policias,
+.policias-tabla-panel,
+.modal-policias,
+.kpi-card-policial {
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+/* ---------- Reglas que usaban Space Grotesk ---------- */
+body .historial-page .historial-encabezado h1,
+body .historial-page .kpi-card-valor,
+body .notificaciones-header h1,
+body .notificaciones-resumen-tarjeta strong,
+body .tipos-alertas-page .header-vista-dash h1,
+body .tipos-alertas-page .kpi-card-valor {
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+/* ---------- Controles que no heredan la fuente ---------- */
+.historial-page button,
+.historial-page input,
+.historial-page select,
+.notificaciones-page button,
+.notificaciones-page input,
+.notificaciones-page select,
+.tipos-alertas-page button,
+.tipos-alertas-page input,
+.tipos-alertas-page select,
+.unidades-policia-page button,
+.unidades-policia-page input,
+.unidades-policia-page select,
+.unidad-detalle-fondo button,
+.unidad-mapa-modal button,
+.unidad-mapa-modal input,
+.unidad-mapa-modal select,
+.registro-alarma-fondo button,
+.registro-alarma-fondo input,
+.registro-alarma-fondo select,
+.alarmas-crud button,
+.modal-policias button,
+.modal-policias input,
+.modal-policias select,
+.panel-filtros-policias input,
+.panel-filtros-policias select {
+    font-family: inherit;
+}

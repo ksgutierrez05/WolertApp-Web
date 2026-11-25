@@ -1,5 +1,4 @@
-
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import Topbar from "../../Components/Administrador-policia/Topbar";
 
@@ -39,6 +38,26 @@ const TARJETAS = [
   },
 ];
 
+const OPCIONES_PRIORIDAD = [
+  { valor: "", etiqueta: "Todas las prioridades" },
+  { valor: "ALTA", etiqueta: "Prioridad alta" },
+  { valor: "MEDIA", etiqueta: "Prioridad media" },
+  { valor: "BAJA", etiqueta: "Prioridad baja" },
+];
+
+function iconoTipo(nombre) {
+  const t = String(nombre ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
+  if (/ACCIDENTE|TRANSITO/.test(t)) return ['bi-car-front-fill', 'ambar'];
+  if (/ROBO|HURTO|ASALTO|HOMICIDIO|VIOLENCIA|RINA/.test(t)) return ['bi-shield-exclamation', 'rojo'];
+  if (/MEDIC|SALUD/.test(t)) return ['bi-heart-pulse-fill', 'verde'];
+  if (/INCENDIO/.test(t)) return ['bi-fire', 'naranja'];
+  if (/SOSPECHOS/.test(t)) return ['bi-person-bounding-box', 'morado'];
+  if (/TERREMOTO|SISMO/.test(t)) return ['bi-activity', 'morado'];
+  if (/INUNDACION/.test(t)) return ['bi-water', 'azul'];
+  if (/GENERAL/.test(t)) return ['bi-bell-fill', 'azul'];
+  return ['bi-question-circle', 'gris'];
+}
+
 function TiposAlertas() {
   const [tipos, setTipos] = useState([]);
   const [busqueda, setBusqueda] = useState("");
@@ -47,6 +66,32 @@ function TiposAlertas() {
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
   const [recarga, setRecarga] = useState(0);
+
+  // Desplegable de prioridad
+  const [menuAbierto, setMenuAbierto] = useState(false);
+  const filtroRef = useRef(null);
+
+  useEffect(() => {
+    if (!menuAbierto) return;
+
+    const cerrarAlClickFuera = (e) => {
+      if (filtroRef.current && !filtroRef.current.contains(e.target)) {
+        setMenuAbierto(false);
+      }
+    };
+
+    const cerrarConEscape = (e) => {
+      if (e.key === "Escape") setMenuAbierto(false);
+    };
+
+    document.addEventListener("mousedown", cerrarAlClickFuera);
+    document.addEventListener("keydown", cerrarConEscape);
+
+    return () => {
+      document.removeEventListener("mousedown", cerrarAlClickFuera);
+      document.removeEventListener("keydown", cerrarConEscape);
+    };
+  }, [menuAbierto]);
 
   // ========================================
   // CONSULTAR TIPOS DE ALERTA
@@ -136,17 +181,6 @@ function TiposAlertas() {
     [tipos]
   );
 
-  // ========================================
-  // ACTUALIZAR
-  // ========================================
-
-  function actualizar() {
-    if (cargando) return;
-
-    setCargando(true);
-    setError("");
-    setRecarga((actual) => actual + 1);
-  }
 
   // ========================================
   // ESTILO DE PRIORIDADES
@@ -188,20 +222,7 @@ function TiposAlertas() {
           </p>
         </div>
 
-        <button
-          type="button"
-          className="btn-cv-verde"
-          disabled={cargando}
-          onClick={actualizar}
-        >
-          <i
-            className={`bi bi-arrow-clockwise ${cargando ? "icono-recargando" : ""
-              }`}
-            aria-hidden="true"
-          />
-
-          {cargando ? "Actualizando..." : "Actualizar"}
-        </button>
+       
 
       </div>
 
@@ -275,35 +296,110 @@ function TiposAlertas() {
           />
         </div>
 
-        <div className="tipos-filtro-prioridad">
-          <i
-            className="bi bi-funnel"
-            aria-hidden="true"
-          />
-
-          <select
-            value={filtro}
-            onChange={(e) =>
-              setFiltro(e.target.value)
-            }
+        <div
+          ref={filtroRef}
+          className={`tipos-filtro-prioridad ${filtro ? "activo" : ""} ${menuAbierto ? "abierto" : ""}`}
+        >
+          <button
+            type="button"
+            className="filtro-boton"
+            onClick={() => setMenuAbierto((v) => !v)}
+            aria-haspopup="listbox"
+            aria-expanded={menuAbierto}
             aria-label="Filtrar por prioridad"
           >
-            <option value="">
-              Todas las prioridades
-            </option>
+            <i
+              className={`bi ${filtro ? "bi-funnel-fill" : "bi-funnel"}`}
+              aria-hidden="true"
+            />
 
-            <option value="ALTA">
-              Prioridad alta
-            </option>
+            {filtro && (
+              <span
+                className={`filtro-punto punto-${filtro.toLowerCase()}`}
+                aria-hidden="true"
+              />
+            )}
 
-            <option value="MEDIA">
-              Prioridad media
-            </option>
+            <span
+              className={`filtro-texto ${filtro ? "" : "sin-valor"}`}
+            >
+              {filtro
+                ? OPCIONES_PRIORIDAD.find((o) => o.valor === filtro)?.etiqueta
+                : "Filtrar por prioridad"}
+            </span>
 
-            <option value="BAJA">
-              Prioridad baja
-            </option>
-          </select>
+            <i
+              className="bi bi-chevron-down filtro-flecha"
+              aria-hidden="true"
+            />
+          </button>
+
+          {filtro && (
+            <button
+              type="button"
+              className="filtro-limpiar"
+              onClick={() => {
+                setFiltro("");
+                setMenuAbierto(false);
+              }}
+              aria-label="Quitar filtro de prioridad"
+              title="Quitar filtro"
+            >
+              <i className="bi bi-x-lg" aria-hidden="true" />
+            </button>
+          )}
+
+          {menuAbierto && (
+            <ul
+              className="filtro-menu"
+              role="listbox"
+              aria-label="Prioridades"
+            >
+              {OPCIONES_PRIORIDAD.map((opcion) => {
+                const seleccionada = filtro === opcion.valor;
+                const cantidad = opcion.valor
+                  ? kpis[opcion.valor.toLowerCase()]
+                  : kpis.total;
+
+                return (
+                  <li key={opcion.valor || "todas"} role="presentation">
+                    <button
+                      type="button"
+                      role="option"
+                      aria-selected={seleccionada}
+                      className={`filtro-opcion ${seleccionada ? "seleccionada" : ""}`}
+                      onClick={() => {
+                        setFiltro(opcion.valor);
+                        setMenuAbierto(false);
+                      }}
+                    >
+                      <span
+                        className={`filtro-punto ${
+                          opcion.valor
+                            ? `punto-${opcion.valor.toLowerCase()}`
+                            : "punto-todas"
+                        }`}
+                        aria-hidden="true"
+                      />
+
+                      <span className="filtro-opcion-texto">
+                        {opcion.etiqueta}
+                      </span>
+
+                      <span className="filtro-opcion-cantidad">
+                        {cargando ? "" : cantidad}
+                      </span>
+
+                      <i
+                        className={`bi bi-check-lg filtro-check ${seleccionada ? "visible" : ""}`}
+                        aria-hidden="true"
+                      />
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
         </div>
       </div>
 
@@ -339,12 +435,14 @@ function TiposAlertas() {
                 filtrados.map((tipo) => (
                   <tr key={tipo.idTipoAlerta}>
                     <td>
-                      <div className="tipo-alerta-nombre">
-                        {tipo.nombre || "Sin nombre"}
-                      </div>
-
-                      <div className="tipo-alerta-codigo">
-                        Código: {tipo.idTipoAlerta}
+                      <div className="tipo-alerta-identidad">
+                        <span className={`tipo-alerta-icono tipo-icono-${iconoTipo(tipo.nombre)[1]}`}>
+                          <i className={`bi ${iconoTipo(tipo.nombre)[0]}`} aria-hidden="true" />
+                        </span>
+                        <div className="tipo-alerta-texto">
+                          <div className="tipo-alerta-nombre">{String(tipo.nombre || "Sin nombre").replace(/_/g, " ")}</div>
+                          <div className="tipo-alerta-codigo">Código: {tipo.idTipoAlerta}</div>
+                        </div>
                       </div>
                     </td>
 

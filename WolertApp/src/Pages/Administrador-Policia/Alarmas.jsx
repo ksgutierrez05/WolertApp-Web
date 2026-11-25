@@ -228,15 +228,7 @@ export default function Alarmas() {
               Agregar alarma
             </button>
 
-            <button
-              type="button"
-              className="alarma-btn alarma-btn-secundario"
-              onClick={actualizar}
-              disabled={cargando}
-            >
-              <i className="bi bi-arrow-clockwise" />
-              {cargando ? "Actualizando..." : "Actualizar"}
-            </button>
+           
           </div>
         </div>
 
@@ -275,11 +267,17 @@ export default function Alarmas() {
           ))}
         </div>
 
-        <div className="alarmas-filtros">
+        <section className="alarmas-panel-tabla">
+          <div className="alarmas-filtros">
+            <div className="alarmas-buscador">
+              <i className="bi bi-search" aria-hidden="true" />
+              <input type="search" aria-label="Buscar alarmas" placeholder="Buscar por nombre o barrio..." value={busqueda} onChange={(e) => { setBusqueda(e.target.value); setPagina(1); }} />
+            </div>
           {filtros.map((item) => (
             <button
               key={item.clave}
               type="button"
+              aria-pressed={filtro === item.clave}
               className={`chip-filtro-dash ${
                 filtro === item.clave ? "active" : ""
               }`}
@@ -295,25 +293,6 @@ export default function Alarmas() {
             </button>
           ))}
         </div>
-
-        <section className="alarmas-panel-tabla">
-          <div className="alarmas-tabla-encabezado">
-            <div className="alarmas-tabla-titulo">
-              <span className="alarmas-tabla-icono">
-                <i className="bi bi-broadcast-pin" />
-              </span>
-              <div>
-                <h2>Alarmas registradas</h2>
-                <p>
-                  Consulta, modifica o elimina alarmas.
-                </p>
-              </div>
-            </div>
-
-            <span className="alarmas-total-registros">
-              {filtradas.length} registros
-            </span>
-          </div>
 
           <div className="table-responsive">
             <table className="alarmas-tabla">
@@ -340,12 +319,22 @@ export default function Alarmas() {
                   return (
                     <tr key={idAlarma(a)}>
                       <td>
-                        <div className="alarmas-nombre">
-                          {nombreAlarma(a)}
+                        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                          <span aria-hidden="true" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 40, height: 40, flexShrink: 0, borderRadius: "50%", background: "#e0f2e9", color: "#078568", fontSize: 18 }}>
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M7 18v-6a5 5 0 0 1 10 0v6M5 18h14v3H5z" />
+                              <path d="M12 2v2M4 5l2 2M20 5l-2 2M2 12h2M20 12h2M10 12v3" />
+                            </svg>
+                          </span>
+                          <div>
+                            <div className="alarmas-nombre">
+                              {nombreAlarma(a)}
+                            </div>
+                            <span className="alarmas-codigo">
+                              Código: {idAlarma(a)}
+                            </span>
+                          </div>
                         </div>
-                        <span className="alarmas-codigo">
-                          Código: {idAlarma(a)}
-                        </span>
                       </td>
 
                       <td>

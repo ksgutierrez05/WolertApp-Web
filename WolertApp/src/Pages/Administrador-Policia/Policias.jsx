@@ -1,6 +1,6 @@
-
 import { useEffect, useMemo, useRef, useState } from "react";
 import Topbar from "../../Components/Administrador-policia/Topbar";
+import SelectBonito from "../../Components/Administrador-policia/SelectBonito";
 import {
   listarPolicias,
   actualizarPolicia,
@@ -74,9 +74,7 @@ const requeridoExcel = [
 const texto = (valor) => String(valor ?? "").trim();
 
 function validarFila(fila) {
-  const faltantes = requeridoExcel.filter(
-    (campo) => !texto(fila[campo])
-  );
+  const faltantes = requeridoExcel.filter((campo) => !texto(fila[campo]));
 
   if (faltantes.length) {
     return `Faltan: ${faltantes.join(", ")}`;
@@ -94,18 +92,13 @@ function validarFila(fila) {
     return "Rango supera 25 caracteres";
   }
 
-  if (
-    !["ACTIVO", "INACTIVO"].includes(
-      texto(fila.estado || "ACTIVO").toUpperCase()
-    )
-  ) {
+  if (!["ACTIVO", "INACTIVO"].includes(texto(fila.estado || "ACTIVO").toUpperCase())) {
     return "Estado inválido";
   }
 
   if (
     texto(fila.idUnidad) &&
-    (!Number.isInteger(Number(fila.idUnidad)) ||
-      Number(fila.idUnidad) <= 0)
+    (!Number.isInteger(Number(fila.idUnidad)) || Number(fila.idUnidad) <= 0)
   ) {
     return "ID de unidad inválido";
   }
@@ -167,9 +160,7 @@ export default function Policias() {
     const datos = await apiAdminPolicia("/api/Unidades");
 
     if (!Array.isArray(datos)) {
-      throw new Error(
-        "La API no devolvió una lista de unidades."
-      );
+      throw new Error("La API no devolvió una lista de unidades.");
     }
 
     setUnidadesOpciones(datos);
@@ -245,18 +236,12 @@ export default function Policias() {
       placa: texto(formulario.placa),
       rango: texto(formulario.rango) || null,
       estado: formulario.estado,
-      idUnidad:
-        formulario.idUnidad === ""
-          ? null
-          : Number(formulario.idUnidad),
+      idUnidad: formulario.idUnidad === "" ? null : Number(formulario.idUnidad),
     };
 
     try {
       if (modal === "editar") {
-        await actualizarPolicia(
-          formulario.idUsuario,
-          datos
-        );
+        await actualizarPolicia(formulario.idUsuario, datos);
       } else {
         await registrarNuevoPolicia({
           ...formulario,
@@ -277,9 +262,7 @@ export default function Policias() {
 
   async function borrar(policia) {
     const confirmar = window.confirm(
-      `¿Eliminar el registro policial de ${
-        policia.nombreUsuario || policia.placa
-      }?`
+      `¿Eliminar el registro policial de ${policia.nombreUsuario || policia.placa}?`
     );
 
     if (!confirmar) return;
@@ -310,10 +293,7 @@ export default function Policias() {
     policias
       .filter((p) => p.idUnidad != null)
       .forEach((p) => {
-        mapa.set(
-          String(p.idUnidad),
-          p.nombreUnidad
-        );
+        mapa.set(String(p.idUnidad), p.nombreUnidad);
       });
 
     return [...mapa.entries()];
@@ -323,34 +303,20 @@ export default function Policias() {
     const termino = busqueda.toLowerCase().trim();
 
     return policias.filter((p) => {
-      const coincideBusqueda = [
-        p.nombreUsuario,
-        p.cedula,
-        p.placa,
-        p.rango,
-      ].some((valor) =>
-        texto(valor).toLowerCase().includes(termino)
+      const coincideBusqueda = [p.nombreUsuario, p.cedula, p.placa, p.rango].some(
+        (valor) => texto(valor).toLowerCase().includes(termino)
       );
 
-      const coincideEstado =
-        !estado ||
-        texto(p.estado).toUpperCase() === estado;
+      const coincideEstado = !estado || texto(p.estado).toUpperCase() === estado;
 
-      const coincideUnidad =
-        !unidad ||
-        String(p.idUnidad) === unidad;
+      const coincideUnidad = !unidad || String(p.idUnidad) === unidad;
 
-      return (
-        coincideBusqueda &&
-        coincideEstado &&
-        coincideUnidad
-      );
+      return coincideBusqueda && coincideEstado && coincideUnidad;
     });
   }, [policias, busqueda, estado, unidad]);
 
   const activos = policias.filter(
-    (p) =>
-      texto(p.estado).toUpperCase() === "ACTIVO"
+    (p) => texto(p.estado).toUpperCase() === "ACTIVO"
   ).length;
 
   const tarjetas = [
@@ -373,6 +339,49 @@ export default function Policias() {
       tono: "ambar",
     },
   ];
+
+  // Opciones para los desplegables bonitos
+  const opcionesEstadoFiltro = useMemo(() => {
+    const valores = [
+      ...new Set(
+        policias.map((p) => texto(p.estado).toUpperCase()).filter(Boolean)
+      ),
+    ];
+
+    return [
+      { valor: "", etiqueta: "Todos los estados", cantidad: policias.length },
+      ...valores.map((v) => ({
+        valor: v,
+        etiqueta: v,
+        punto: v === "ACTIVO" ? "verde" : "gris",
+        cantidad: policias.filter((p) => texto(p.estado).toUpperCase() === v)
+          .length,
+      })),
+    ];
+  }, [policias]);
+
+  const opcionesUnidadFiltro = useMemo(
+    () => [
+      { valor: "", etiqueta: "Todas las unidades", cantidad: policias.length },
+      ...unidades.map(([id, nombre]) => ({
+        valor: id,
+        etiqueta: nombre || `Unidad ${id}`,
+        cantidad: policias.filter((p) => String(p.idUnidad) === id).length,
+      })),
+    ],
+    [unidades, policias]
+  );
+
+  const opcionesUnidadForm = useMemo(
+    () => [
+      { valor: "", etiqueta: "Sin unidad" },
+      ...unidadesOpciones.map((u) => ({
+        valor: String(u.idUnidad),
+        etiqueta: u.nombre || `Unidad ${u.idUnidad}`,
+      })),
+    ],
+    [unidadesOpciones]
+  );
 
   // =========================================
   // LEER ARCHIVO EXCEL
@@ -406,24 +415,17 @@ export default function Policias() {
       });
 
       if (matriz.length < 2) {
-        throw new Error(
-          "El Excel no contiene registros."
-        );
+        throw new Error("El Excel no contiene registros.");
       }
 
       const campos = matriz[0].map(
-        (columna) =>
-          alias[normalizarCabecera(columna)] || null
+        (columna) => alias[normalizarCabecera(columna)] || null
       );
 
-      const faltan = requeridoExcel.filter(
-        (campo) => !campos.includes(campo)
-      );
+      const faltan = requeridoExcel.filter((campo) => !campos.includes(campo));
 
       if (faltan.length) {
-        throw new Error(
-          `Faltan columnas: ${faltan.join(", ")}`
-        );
+        throw new Error(`Faltan columnas: ${faltan.join(", ")}`);
       }
 
       const registros = matriz
@@ -437,9 +439,7 @@ export default function Policias() {
             }
           });
 
-          fila.estado = texto(
-            fila.estado || "ACTIVO"
-          ).toUpperCase();
+          fila.estado = texto(fila.estado || "ACTIVO").toUpperCase();
 
           return {
             ...fila,
@@ -447,16 +447,10 @@ export default function Policias() {
             error: validarFila(fila),
           };
         })
-        .filter((fila) =>
-          columnasExcel.some((campo) =>
-            texto(fila[campo])
-          )
-        );
+        .filter((fila) => columnasExcel.some((campo) => texto(fila[campo])));
 
       if (!registros.length) {
-        throw new Error(
-          "No hay filas para importar."
-        );
+        throw new Error("No hay filas para importar.");
       }
 
       const cedulas = new Set();
@@ -473,14 +467,10 @@ export default function Policias() {
         ];
 
         for (const [campo, conjunto] of controles) {
-          const valor = texto(
-            fila[campo]
-          ).toLowerCase();
+          const valor = texto(fila[campo]).toLowerCase();
 
           if (valor && conjunto.has(valor)) {
-            errorFila =
-              errorFila ||
-              `Valor repetido en el Excel: ${campo}`;
+            errorFila = errorFila || `Valor repetido en el Excel: ${campo}`;
           }
 
           conjunto.add(valor);
@@ -495,9 +485,7 @@ export default function Policias() {
       setFilasExcel(revisados);
       setModal("excel");
     } catch (e) {
-      setError(
-        `No se pudo leer el Excel: ${e.message}`
-      );
+      setError(`No se pudo leer el Excel: ${e.message}`);
     } finally {
       evento.target.value = "";
     }
@@ -510,12 +498,9 @@ export default function Policias() {
   function descargarPlantilla() {
     const encabezado = columnasExcel.join(",");
 
-    const blob = new Blob(
-      ["\uFEFF" + encabezado + "\n"],
-      {
-        type: "text/csv;charset=utf-8",
-      }
-    );
+    const blob = new Blob(["\uFEFF" + encabezado + "\n"], {
+      type: "text/csv;charset=utf-8",
+    });
 
     const url = URL.createObjectURL(blob);
 
@@ -534,9 +519,7 @@ export default function Policias() {
   async function importarExcel() {
     if (guardando) return;
 
-    const validas = filasExcel.filter(
-      (fila) => !fila.error
-    );
+    const validas = filasExcel.filter((fila) => !fila.error);
 
     if (!validas.length) return;
 
@@ -549,9 +532,7 @@ export default function Policias() {
       try {
         await registrarNuevoPolicia({
           ...fila,
-          idUnidad: texto(fila.idUnidad)
-            ? Number(fila.idUnidad)
-            : null,
+          idUnidad: texto(fila.idUnidad) ? Number(fila.idUnidad) : null,
         });
 
         salida.push({
@@ -581,9 +562,7 @@ export default function Policias() {
     setMensaje(
       `Importación terminada: ${
         salida.filter((r) => r.estado === "OK").length
-      } correctos, ${
-        salida.filter((r) => r.estado === "ERROR").length
-      } fallidos.`
+      } correctos, ${salida.filter((r) => r.estado === "ERROR").length} fallidos.`
     );
   }
 
@@ -605,9 +584,7 @@ export default function Policias() {
       <div className="header-vista-dash mb-4">
         <div>
           <h1>Policías</h1>
-          <p>
-            Administra el personal policial y sus unidades.
-          </p>
+          <p>Administra el personal policial y sus unidades.</p>
         </div>
 
         <div className="policias-botones-cabecera">
@@ -628,11 +605,7 @@ export default function Policias() {
             Importar Excel
           </button>
 
-          <button
-            type="button"
-            className="btn-cv-verde"
-            onClick={abrirCrear}
-          >
+          <button type="button" className="btn-cv-verde" onClick={abrirCrear}>
             <i className="bi bi-plus-lg" />
             Nuevo policía
           </button>
@@ -655,21 +628,14 @@ export default function Policias() {
 
       <div className="row g-3 mb-4">
         {tarjetas.map((tarjeta) => (
-          <div
-            className="col-12 col-sm-6 col-xl-4"
-            key={tarjeta.titulo}
-          >
-            <article
-              className={`kpi-card-policial tono-${tarjeta.tono}`}
-            >
+          <div className="col-12 col-sm-6 col-xl-4" key={tarjeta.titulo}>
+            <article className={`kpi-card-policial tono-${tarjeta.tono}`}>
               <div className="kpi-card-icono">
                 <i className={`bi ${tarjeta.icono}`} />
               </div>
 
               <div className="kpi-card-info">
-                <span className="kpi-card-titulo">
-                  {tarjeta.titulo}
-                </span>
+                <span className="kpi-card-titulo">{tarjeta.titulo}</span>
 
                 <strong className="kpi-card-valor">
                   {cargando ? "..." : tarjeta.valor}
@@ -700,9 +666,7 @@ export default function Policias() {
 
         <div className="panel-filtros-body">
           <div className="buscador-unidades">
-            <label htmlFor="buscarPolicia">
-              Buscar policía
-            </label>
+            <label htmlFor="buscarPolicia">Buscar policía</label>
 
             <div className="buscador-unidades-input">
               <i className="bi bi-search" />
@@ -711,70 +675,40 @@ export default function Policias() {
                 id="buscarPolicia"
                 placeholder="Nombre, cédula o placa..."
                 value={busqueda}
-                onChange={(e) =>
-                  setBusqueda(e.target.value)
-                }
+                onChange={(e) => setBusqueda(e.target.value)}
               />
             </div>
           </div>
 
           <div className="filtros-unidades-selects">
             <div className="filtro-unidad-card">
-              <label htmlFor="filtroEstado">
-                Estado
-              </label>
+              <label htmlFor="filtroEstado">Estado</label>
 
-              <select
+              <SelectBonito
                 id="filtroEstado"
-                className="form-select"
-                value={estado}
-                onChange={(e) =>
-                  setEstado(e.target.value)
-                }
-              >
-                <option value="">
-                  Todos los estados
-                </option>
-
-                {[
-                  ...new Set(
-                    policias
-                      .map((p) =>
-                        texto(p.estado).toUpperCase()
-                      )
-                      .filter(Boolean)
-                  ),
-                ].map((valor) => (
-                  <option key={valor} value={valor}>
-                    {valor}
-                  </option>
-                ))}
-              </select>
+                valor={estado}
+                onChange={setEstado}
+                icono="bi-activity"
+                placeholder="Todos los estados"
+                ariaLabel="Filtrar por estado"
+                limpiable
+                opciones={opcionesEstadoFiltro}
+              />
             </div>
 
             <div className="filtro-unidad-card">
-              <label htmlFor="filtroUnidad">
-                Unidad
-              </label>
+              <label htmlFor="filtroUnidad">Unidad</label>
 
-              <select
+              <SelectBonito
                 id="filtroUnidad"
-                className="form-select"
-                value={unidad}
-                onChange={(e) =>
-                  setUnidad(e.target.value)
-                }
-              >
-                <option value="">
-                  Todas las unidades
-                </option>
-
-                {unidades.map(([id, nombre]) => (
-                  <option key={id} value={id}>
-                    {nombre || `Unidad ${id}`}
-                  </option>
-                ))}
-              </select>
+                valor={unidad}
+                onChange={setUnidad}
+                icono="bi-shield-check"
+                placeholder="Todas las unidades"
+                ariaLabel="Filtrar por unidad"
+                limpiable
+                opciones={opcionesUnidadFiltro}
+              />
             </div>
           </div>
         </div>
@@ -814,22 +748,18 @@ export default function Policias() {
                         className="avatar-sm-dash"
                         style={{ background: "#087b58" }}
                       >
-                        {texto(
-                          policia.nombreUsuario || "P"
-                        )
+                        {texto(policia.nombreUsuario || "P")
                           .charAt(0)
                           .toUpperCase()}
                       </div>
 
                       <div>
                         <div className="celda-titulo-dash">
-                          {policia.nombreUsuario ||
-                            "Sin nombre"}
+                          {policia.nombreUsuario || "Sin nombre"}
                         </div>
 
                         <div className="celda-sub-dash">
-                          {policia.cedula ||
-                            "Sin cédula"}
+                          {policia.cedula || "Sin cédula"}
                         </div>
                       </div>
                     </div>
@@ -838,17 +768,12 @@ export default function Policias() {
                   <td>{policia.placa || "—"}</td>
                   <td>{policia.rango || "—"}</td>
 
-                  <td>
-                    {policia.nombreUnidad ||
-                      "Sin unidad"}
-                  </td>
+                  <td>{policia.nombreUnidad || "Sin unidad"}</td>
 
                   <td>
                     <span
                       className={
-                        texto(
-                          policia.estado
-                        ).toUpperCase() === "ACTIVO"
+                        texto(policia.estado).toUpperCase() === "ACTIVO"
                           ? "badge bg-success"
                           : "badge bg-secondary"
                       }
@@ -863,9 +788,7 @@ export default function Policias() {
                         type="button"
                         className="btn-icono-dash editar-dash"
                         aria-label="Editar"
-                        onClick={() =>
-                          abrirEditar(policia)
-                        }
+                        onClick={() => abrirEditar(policia)}
                       >
                         <i className="bi bi-pencil-square" />
                       </button>
@@ -888,9 +811,7 @@ export default function Policias() {
         </div>
 
         {!cargando && filtrados.length === 0 && (
-          <div className="tabla-vacio-dash">
-            No se encontraron policías.
-          </div>
+          <div className="tabla-vacio-dash">No se encontraron policías.</div>
         )}
       </div>
 
@@ -944,15 +865,11 @@ export default function Policias() {
                 <>
                   <div className="modal-body-dash">
                     <p className="policias-ayuda">
-                      La primera hoja debe tener las columnas:
-                      {" "}
-                      {columnasExcel.join(", ")}.
-                      {" "}
-                      La columna <strong>idUnidad</strong>
-                      {" "}
-                      es opcional y debe contener el ID
-                      numérico de la unidad.
-                      Los registros con errores no se enviarán.
+                      La primera hoja debe tener las columnas:{" "}
+                      {columnasExcel.join(", ")}. La columna{" "}
+                      <strong>idUnidad</strong> es opcional y debe contener el ID
+                      numérico de la unidad. Los registros con errores no se
+                      enviarán.
                     </p>
 
                     <button
@@ -982,17 +899,13 @@ export default function Policias() {
                               <td>{fila.numero}</td>
                               <td>{fila.cedula}</td>
                               <td>
-                                {fila.primerNombre}
-                                {" "}
-                                {fila.primerApellido}
+                                {fila.primerNombre} {fila.primerApellido}
                               </td>
                               <td>{fila.placa}</td>
 
                               <td
                                 className={
-                                  fila.error
-                                    ? "text-danger"
-                                    : "text-success"
+                                  fila.error ? "text-danger" : "text-success"
                                 }
                               >
                                 {fila.error || "Lista"}
@@ -1004,29 +917,22 @@ export default function Policias() {
                     </div>
 
                     {resultadosExcel.length > 0 && (
-                      <div
-                        className="mt-3"
-                        aria-live="polite"
-                      >
+                      <div className="mt-3" aria-live="polite">
                         <strong>Resultados</strong>
 
                         <div className="policias-resultados">
-                          {resultadosExcel.map(
-                            (resultado) => (
-                              <p
-                                key={resultado.numero}
-                                className={
-                                  resultado.estado === "OK"
-                                    ? "text-success"
-                                    : "text-danger"
-                                }
-                              >
-                                Fila {resultado.numero}:
-                                {" "}
-                                {resultado.detalle}
-                              </p>
-                            )
-                          )}
+                          {resultadosExcel.map((resultado) => (
+                            <p
+                              key={resultado.numero}
+                              className={
+                                resultado.estado === "OK"
+                                  ? "text-success"
+                                  : "text-danger"
+                              }
+                            >
+                              Fila {resultado.numero}: {resultado.detalle}
+                            </p>
+                          ))}
                         </div>
                       </div>
                     )}
@@ -1048,22 +954,16 @@ export default function Policias() {
                       onClick={importarExcel}
                       disabled={
                         guardando ||
-                        !filasExcel.some(
-                          (fila) => !fila.error
-                        ) ||
+                        !filasExcel.some((fila) => !fila.error) ||
                         resultadosExcel.length > 0
                       }
                     >
                       {guardando
                         ? `Procesando ${resultadosExcel.length}/${
-                            filasExcel.filter(
-                              (fila) => !fila.error
-                            ).length
+                            filasExcel.filter((fila) => !fila.error).length
                           }`
                         : `Importar ${
-                            filasExcel.filter(
-                              (fila) => !fila.error
-                            ).length
+                            filasExcel.filter((fila) => !fila.error).length
                           } registros válidos`}
                     </button>
                   </div>
@@ -1071,11 +971,7 @@ export default function Policias() {
               ) : (
                 <form onSubmit={guardar}>
                   <div className="modal-body-dash">
-                    {error && (
-                      <div className="alert alert-danger">
-                        {error}
-                      </div>
-                    )}
+                    {error && <div className="alert alert-danger">{error}</div>}
 
                     {modal === "crear" && (
                       <div className="form-seccion-policias">
@@ -1083,7 +979,10 @@ export default function Policias() {
                           <i className="bi bi-person-plus" />
                           <div>
                             <h3>Crear cuenta policial</h3>
-                            <p>El usuario se creará automáticamente con el rol POLICIA.</p>
+                            <p>
+                              El usuario se creará automáticamente con el rol
+                              POLICIA.
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -1092,92 +991,50 @@ export default function Policias() {
                     {/* DATOS DE ACCESO */}
 
                     {modal === "crear" && (
-                        <div className="form-seccion-policias">
-                          <div className="form-seccion-titulo">
-                            <i className="bi bi-person-vcard" />
+                      <div className="form-seccion-policias">
+                        <div className="form-seccion-titulo">
+                          <i className="bi bi-person-vcard" />
 
-                            <div>
-                              <h3>Datos de acceso</h3>
-                            </div>
-                          </div>
-
-                          <div className="row g-3">
-                            {[
-                              [
-                                "cedula",
-                                "Cédula",
-                                "text",
-                              ],
-                              [
-                                "primerNombre",
-                                "Primer nombre",
-                                "text",
-                              ],
-                              [
-                                "primerApellido",
-                                "Primer apellido",
-                                "text",
-                              ],
-                              [
-                                "correo",
-                                "Correo electrónico",
-                                "email",
-                              ],
-                              [
-                                "username",
-                                "Usuario",
-                                "text",
-                              ],
-                              [
-                                "password",
-                                "Contraseña inicial",
-                                "password",
-                              ],
-                            ].map(
-                              ([campo, etiqueta, tipo]) => (
-                                <div
-                                  className="col-12 col-md-6"
-                                  key={campo}
-                                >
-                                  <div className="form-field-dash">
-                                    <label
-                                      htmlFor={`pol-${campo}`}
-                                    >
-                                      {etiqueta} *
-                                    </label>
-
-                                    <input
-                                      id={`pol-${campo}`}
-                                      className="form-control"
-                                      type={tipo}
-                                      required
-                                      maxLength={
-                                        campo === "cedula"
-                                          ? 20
-                                          : undefined
-                                      }
-                                      autoComplete={
-                                        campo === "password"
-                                          ? "new-password"
-                                          : "off"
-                                      }
-                                      value={
-                                        formulario[campo]
-                                      }
-                                      onChange={(e) =>
-                                        cambiar(
-                                          campo,
-                                          e.target.value
-                                        )
-                                      }
-                                    />
-                                  </div>
-                                </div>
-                              )
-                            )}
+                          <div>
+                            <h3>Datos de acceso</h3>
                           </div>
                         </div>
-                                             )}
+
+                        <div className="row g-3">
+                          {[
+                            ["cedula", "Cédula", "text"],
+                            ["primerNombre", "Primer nombre", "text"],
+                            ["primerApellido", "Primer apellido", "text"],
+                            ["correo", "Correo electrónico", "email"],
+                            ["username", "Usuario", "text"],
+                            ["password", "Contraseña inicial", "password"],
+                          ].map(([campo, etiqueta, tipo]) => (
+                            <div className="col-12 col-md-6" key={campo}>
+                              <div className="form-field-dash">
+                                <label htmlFor={`pol-${campo}`}>
+                                  {etiqueta} *
+                                </label>
+
+                                <input
+                                  id={`pol-${campo}`}
+                                  className="form-control"
+                                  type={tipo}
+                                  required
+                                  maxLength={campo === "cedula" ? 20 : undefined}
+                                  autoComplete={
+                                    campo === "password" ? "new-password" : "off"
+                                  }
+                                  value={formulario[campo]}
+                                  onChange={(e) =>
+                                    cambiar(campo, e.target.value)
+                                  }
+                                />
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
 
                     {/* INFORMACIÓN POLICIAL */}
 
@@ -1186,131 +1043,74 @@ export default function Policias() {
                         <i className="bi bi-shield-check" />
 
                         <div>
-                          <h3>
-                            Información policial
-                          </h3>
-                          <p>
-                            Identificación institucional y asignación
-                          </p>
+                          <h3>Información policial</h3>
+                          <p>Identificación institucional y asignación</p>
                         </div>
                       </div>
 
                       <div className="row g-3">
                         <div className="col-12 col-md-6">
                           <div className="form-field-dash">
-                            <label htmlFor="pol-placa">
-                              Placa *
-                            </label>
+                            <label htmlFor="pol-placa">Placa *</label>
 
                             <input
                               id="pol-placa"
                               className="form-control"
                               maxLength={10}
                               required
-                              value={
-                                formulario.placa
-                              }
-                              onChange={(e) =>
-                                cambiar(
-                                  "placa",
-                                  e.target.value
-                                )
-                              }
+                              value={formulario.placa}
+                              onChange={(e) => cambiar("placa", e.target.value)}
                             />
                           </div>
                         </div>
 
                         <div className="col-12 col-md-6">
                           <div className="form-field-dash">
-                            <label htmlFor="pol-rango">
-                              Rango
-                            </label>
+                            <label htmlFor="pol-rango">Rango</label>
 
                             <input
                               id="pol-rango"
                               className="form-control"
                               maxLength={25}
-                              value={
-                                formulario.rango
-                              }
-                              onChange={(e) =>
-                                cambiar(
-                                  "rango",
-                                  e.target.value
-                                )
-                              }
+                              value={formulario.rango}
+                              onChange={(e) => cambiar("rango", e.target.value)}
                             />
                           </div>
                         </div>
 
                         <div className="col-12 col-md-6">
                           <div className="form-field-dash">
-                            <label htmlFor="pol-unidad">
-                              Unidad policial
-                            </label>
+                            <label htmlFor="pol-unidad">Unidad policial</label>
 
-                            <select
+                            <SelectBonito
                               id="pol-unidad"
-                              className="form-select"
-                              value={
-                                formulario.idUnidad
-                              }
-                              onChange={(e) =>
-                                cambiar(
-                                  "idUnidad",
-                                  e.target.value
-                                )
-                              }
-                            >
-                              <option value="">
-                                Sin unidad
-                              </option>
-
-                              {unidadesOpciones.map(
-                                (unidad) => (
-                                  <option
-                                    key={
-                                      unidad.idUnidad
-                                    }
-                                    value={
-                                      unidad.idUnidad
-                                    }
-                                  >
-                                    {unidad.nombre ||
-                                      `Unidad ${unidad.idUnidad}`}
-                                  </option>
-                                )
-                              )}
-                            </select>
+                              variante="campo"
+                              icono="bi-shield-check"
+                              valor={String(formulario.idUnidad ?? "")}
+                              onChange={(v) => cambiar("idUnidad", v)}
+                              placeholder="Sin unidad"
+                              ariaLabel="Unidad policial"
+                              opciones={opcionesUnidadForm}
+                            />
                           </div>
                         </div>
 
                         <div className="col-12 col-md-6">
                           <div className="form-field-dash">
-                            <label htmlFor="pol-estado">
-                              Estado
-                            </label>
+                            <label htmlFor="pol-estado">Estado</label>
 
-                            <select
+                            <SelectBonito
                               id="pol-estado"
-                              className="form-select"
-                              value={
-                                formulario.estado
-                              }
-                              onChange={(e) =>
-                                cambiar(
-                                  "estado",
-                                  e.target.value
-                                )
-                              }
-                            >
-                              <option value="ACTIVO">
-                                Activo
-                              </option>
-                              <option value="INACTIVO">
-                                Inactivo
-                              </option>
-                            </select>
+                              variante="campo"
+                              icono="bi-activity"
+                              valor={formulario.estado}
+                              onChange={(v) => cambiar("estado", v || "ACTIVO")}
+                              ariaLabel="Estado del policía"
+                              opciones={[
+                                { valor: "ACTIVO", etiqueta: "Activo", punto: "verde" },
+                                { valor: "INACTIVO", etiqueta: "Inactivo", punto: "gris" },
+                              ]}
+                            />
                           </div>
                         </div>
                       </div>

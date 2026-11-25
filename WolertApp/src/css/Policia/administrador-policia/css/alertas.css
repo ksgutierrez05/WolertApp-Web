@@ -1,17 +1,15 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
 
 /* ============================================
    WOLERTAPP - ALERTAS ADMINISTRADOR POLICÍA
    Estilos exclusivos de este módulo
    ============================================ */
-
 .alertas-admin-vista {
   width: 100%;
   min-width: 0;
   padding-bottom: 28px;
 }
-
 /* ENCABEZADO */
-
 .alertas-encabezado {
   display: flex;
   justify-content: space-between;
@@ -19,19 +17,16 @@
   flex-wrap: wrap;
   gap: 16px;
 }
-
 .alertas-encabezado h1 {
   color: var(--ink, #20354b);
   font-size: 25px;
   font-weight: 750;
 }
-
 .alertas-encabezado p {
   margin-top: 5px !important;
   font-size: 13px;
   color: var(--muted, #64748b);
 }
-
 .alertas-btn-actualizar {
   display: inline-flex;
   align-items: center;
@@ -50,35 +45,32 @@
   font-size: 12.5px;
   font-weight: 700;
   cursor: pointer;
-  transition: transform .2s, box-shadow .2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
 }
-
 .alertas-btn-actualizar:hover:not(:disabled) {
   color: #fff;
   transform: translateY(-1px);
-  box-shadow: 0 5px 14px rgba(0, 73, 55, .2);
+  box-shadow: 0 5px 14px rgba(0, 73, 55, 0.2);
 }
-
 .alertas-btn-actualizar:disabled {
-  opacity: .65;
+  opacity: 0.65;
   cursor: wait;
 }
-
 .alertas-girando {
   display: inline-block;
   animation: alertas-rotar 1s linear infinite;
 }
-
 @keyframes alertas-rotar {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
-
 /* FILTROS */
-
 .alertas-filtros {
   margin: 20px 0 15px;
 }
-
 .alertas-buscador {
   display: flex;
   align-items: center;
@@ -88,19 +80,18 @@
   border: 1px solid #dce5eb;
   border-radius: 12px;
   background: #fff;
-  transition: border-color .2s, box-shadow .2s;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
 }
-
 .alertas-buscador:focus-within {
   border-color: #08765a;
-  box-shadow: 0 0 0 3px rgba(8, 118, 90, .1);
+  box-shadow: 0 0 0 3px rgba(8, 118, 90, 0.1);
 }
-
 .alertas-buscador > i {
   color: #08765a;
   font-size: 16px;
 }
-
 .alertas-buscador input {
   flex: 1;
   width: 100%;
@@ -111,25 +102,21 @@
   color: #263d58;
   font-size: 13px;
 }
-
 .alertas-buscador input::placeholder {
   color: #94a3b8;
 }
-
 .alertas-limpiar-busqueda {
   border: none;
   background: transparent;
   color: #94a3b8;
   cursor: pointer;
 }
-
 .alertas-chips {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   margin-top: 13px;
 }
-
 .alertas-chip {
   display: inline-flex;
   align-items: center;
@@ -144,15 +131,13 @@
   font-size: 11.5px;
   font-weight: 650;
   cursor: pointer;
-  transition: all .15s ease;
+  transition: all 0.15s ease;
 }
-
 .alertas-chip:hover {
   border-color: #a9d5c6;
   background: #f0f8f4;
   color: #08765a;
 }
-
 .alertas-chip > span {
   padding: 2px 7px;
   border-radius: 20px;
@@ -160,20 +145,16 @@
   color: #607087;
   font-size: 10px;
 }
-
 .alertas-chip.activo {
   border-color: transparent;
   background: #064b3e;
   color: #fff;
 }
-
 .alertas-chip.activo > span {
-  background: rgba(255,255,255,.18);
+  background: rgba(255, 255, 255, 0.18);
   color: #fff;
 }
-
 /* PANEL DE TABLA */
-
 .alertas-tabla-panel {
   width: 100%;
   min-width: 0;
@@ -181,9 +162,8 @@
   border: 1px solid #e1e8ef;
   border-radius: 17px;
   background: #fff;
-  box-shadow: 0 4px 16px rgba(24, 44, 64, .045);
+  box-shadow: 0 4px 16px rgba(24, 44, 64, 0.045);
 }
-
 .alertas-tabla-cabecera {
   display: flex;
   align-items: center;
@@ -193,14 +173,12 @@
   padding: 18px 20px;
   border-bottom: 1px solid #e9edf2;
 }
-
 .alertas-tabla-titulo {
   display: flex;
   align-items: center;
   gap: 12px;
   min-width: 0;
 }
-
 .alertas-tabla-icono {
   display: grid;
   place-items: center;
@@ -212,20 +190,17 @@
   color: #08765a;
   font-size: 17px;
 }
-
 .alertas-tabla-titulo h2 {
   margin: 0;
   color: #1e354b;
   font-size: 15px;
   font-weight: 750;
 }
-
 .alertas-tabla-titulo p {
   margin: 4px 0 0;
   color: #8491a3;
   font-size: 11.5px;
 }
-
 .alertas-total-registros {
   padding: 7px 12px;
   border: 1px solid #dceee5;
@@ -236,14 +211,11 @@
   font-weight: 700;
   white-space: nowrap;
 }
-
 /* TABLA */
-
 .alertas-admin-vista .alertas-tabla-scroll {
   width: 100%;
   overflow-x: auto;
 }
-
 .alertas-admin-vista .tabla-alertas-dash {
   width: 100%;
   min-width: 1080px;
@@ -251,11 +223,9 @@
   border-collapse: collapse;
   table-layout: auto;
 }
-
 .alertas-admin-vista .tabla-alertas-dash thead {
   background: #f7faf9;
 }
-
 .alertas-admin-vista .tabla-alertas-dash thead th {
   padding: 15px 12px;
   border-bottom: 1px solid #e4ebe8;
@@ -263,35 +233,29 @@
   font-size: 10px;
   font-weight: 750;
   text-transform: uppercase;
-  letter-spacing: .055em;
+  letter-spacing: 0.055em;
   text-align: left;
   white-space: nowrap;
   vertical-align: middle;
 }
-
 .alertas-admin-vista .tabla-alertas-dash thead th:first-child,
 .alertas-admin-vista .tabla-alertas-dash tbody td:first-child {
   padding-left: 20px;
 }
-
 .alertas-admin-vista .tabla-alertas-dash thead th:last-child,
 .alertas-admin-vista .tabla-alertas-dash tbody td:last-child {
   padding-right: 20px;
 }
-
 .alertas-admin-vista .tabla-alertas-dash tbody tr {
   border-bottom: 1px solid #edf0f3;
-  transition: background .15s ease;
+  transition: background 0.15s ease;
 }
-
 .alertas-admin-vista .tabla-alertas-dash tbody tr:last-child {
   border-bottom: none;
 }
-
 .alertas-admin-vista .tabla-alertas-dash tbody tr:hover {
   background: #f5faf7;
 }
-
 .alertas-admin-vista .tabla-alertas-dash tbody td {
   padding: 15px 12px;
   color: #34465d;
@@ -299,7 +263,6 @@
   vertical-align: middle;
   line-height: 1.45;
 }
-
 .alertas-numero {
   display: inline-flex;
   padding: 5px 9px;
@@ -310,16 +273,13 @@
   font-weight: 750;
   white-space: nowrap;
 }
-
 /* CIUDADANO */
-
 .alertas-ciudadano {
   display: flex;
   align-items: center;
   gap: 10px;
   min-width: 160px;
 }
-
 .alertas-avatar {
   display: grid;
   place-items: center;
@@ -332,14 +292,12 @@
   font-size: 11px;
   font-weight: 800;
 }
-
 .alertas-ciudadano-datos {
   display: flex;
   flex-direction: column;
   gap: 3px;
   min-width: 0;
 }
-
 .alertas-ciudadano-datos strong {
   color: #20374b;
   font-size: 11.5px;
@@ -347,14 +305,11 @@
   line-height: 1.3;
   overflow-wrap: anywhere;
 }
-
 .alertas-ciudadano-datos small {
   color: #91a0af;
   font-size: 10px;
 }
-
 /* TIPO */
-
 .alertas-tipo {
   display: inline-flex;
   align-items: center;
@@ -370,15 +325,12 @@
   line-height: 1.35;
   overflow-wrap: anywhere;
 }
-
 .alertas-tipo i {
   flex-shrink: 0;
   color: #68809a;
   font-size: 13px;
 }
-
 /* PRIORIDADES */
-
 .alertas-prioridad {
   display: inline-flex;
   align-items: center;
@@ -389,36 +341,29 @@
   font-weight: 750;
   white-space: nowrap;
 }
-
 .alertas-prioridad-punto {
   width: 6px;
   height: 6px;
   border-radius: 50%;
   background: currentColor;
 }
-
 .alertas-prioridad.alta {
   background: #fde9ed;
   color: #ce304c;
 }
-
 .alertas-prioridad.media {
   background: #fff2da;
   color: #ad6b00;
 }
-
 .alertas-prioridad.baja {
   background: #e2f5e9;
   color: #08765a;
 }
-
 .alertas-prioridad.neutra {
   background: #eef2f6;
   color: #64748b;
 }
-
 /* BARRIO */
-
 .alertas-barrio {
   display: flex;
   align-items: flex-start;
@@ -428,18 +373,14 @@
   color: #56687d;
   font-size: 11.5px;
 }
-
 .alertas-barrio i {
   color: #08765a;
   font-size: 12px;
 }
-
 .alertas-barrio span {
   overflow-wrap: anywhere;
 }
-
 /* ESTADOS */
-
 .alertas-estado {
   display: inline-flex;
   align-items: center;
@@ -448,43 +389,35 @@
   border-radius: 7px;
   font-size: 9.5px;
   font-weight: 800;
-  letter-spacing: .015em;
+  letter-spacing: 0.015em;
   text-align: center;
   white-space: nowrap;
 }
-
 .alertas-estado.pendiente {
   background: #fff2d9;
   color: #a66a00;
 }
-
 .alertas-estado.asignada {
   background: #f0ebff;
   color: #7150c9;
 }
-
 .alertas-estado.atencion {
   background: #e4f0ff;
   color: #246cbe;
 }
-
 .alertas-estado.resuelta {
   background: #dff5e9;
   color: #08765a;
 }
-
 .alertas-estado.cancelada {
   background: #fde8eb;
   color: #c43a4a;
 }
-
 .alertas-estado.neutro {
   background: #eef2f6;
   color: #64748b;
 }
-
 /* FECHA */
-
 .alertas-fecha {
   display: inline-block;
   max-width: 135px;
@@ -492,13 +425,10 @@
   font-size: 11px;
   line-height: 1.5;
 }
-
 /* ACCIONES */
-
 .alertas-admin-vista .alertas-col-acciones {
   text-align: right;
 }
-
 .alertas-btn-ver {
   display: inline-flex;
   align-items: center;
@@ -514,21 +444,17 @@
   font-weight: 750;
   cursor: pointer;
   white-space: nowrap;
-  transition: all .15s ease;
+  transition: all 0.15s ease;
 }
-
 .alertas-btn-ver:hover {
   border-color: #08765a;
   background: #08765a;
   color: #fff;
 }
-
 .alertas-btn-ver i {
   font-size: 13px;
 }
-
 /* ESTADO VACÍO */
-
 .alertas-tabla-vacia {
   display: flex;
   flex-direction: column;
@@ -538,24 +464,19 @@
   padding: 50px 20px;
   text-align: center;
 }
-
 .alertas-tabla-vacia > i {
   color: #a0b7b0;
   font-size: 32px;
 }
-
 .alertas-tabla-vacia strong {
   color: #2d4657;
   font-size: 14px;
 }
-
 .alertas-tabla-vacia span {
   color: #8291a2;
   font-size: 12px;
 }
-
 /* PAGINACIÓN */
-
 .alertas-paginacion {
   display: flex;
   align-items: center;
@@ -565,18 +486,15 @@
   padding: 15px 20px;
   border-top: 1px solid #edf0f3;
 }
-
 .alertas-paginacion-info {
   color: #8291a2;
   font-size: 11.5px;
 }
-
 .alertas-paginacion-controles {
   display: flex;
   align-items: center;
   gap: 9px;
 }
-
 .alertas-paginacion-controles button {
   display: inline-flex;
   align-items: center;
@@ -591,18 +509,15 @@
   font-weight: 650;
   cursor: pointer;
 }
-
 .alertas-paginacion-controles button:hover:not(:disabled) {
   border-color: #b7dccc;
   background: #edf8f2;
   color: #08765a;
 }
-
 .alertas-paginacion-controles button:disabled {
-  opacity: .4;
+  opacity: 0.4;
   cursor: not-allowed;
 }
-
 .alertas-pagina-actual {
   min-width: 45px;
   text-align: center;
@@ -610,26 +525,22 @@
   font-size: 11px;
   font-weight: 750;
 }
-
 /* MODAL DE DETALLES */
-
 .alertas-modal-fondo {
   position: fixed;
   inset: 0;
   z-index: 1060;
   overflow-y: auto;
   padding: 15px;
-  background: rgba(15, 35, 45, .58);
+  background: rgba(15, 35, 45, 0.58);
 }
-
 .alertas-modal-fondo .modal-alerta-dash {
   overflow: hidden;
   border: none;
   border-radius: 18px;
   background: #fff;
-  box-shadow: 0 22px 60px rgba(0,0,0,.2);
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.2);
 }
-
 .alertas-modal-fondo .modal-header {
   display: flex;
   align-items: flex-start;
@@ -637,31 +548,26 @@
   border-bottom: 1px solid #e7edf1;
   background: #f8fbf9;
 }
-
 .alertas-modal-fondo .modal-title {
   margin: 0;
   color: #193d36;
   font-size: 18px;
   font-weight: 750;
 }
-
 .alertas-modal-fondo .modal-subtitulo-dash {
   margin: 5px 0 0;
   color: #8492a0;
   font-size: 12px;
 }
-
 .alertas-modal-fondo .modal-body {
   padding: 24px 25px;
 }
-
 .alertas-modal-fondo .detalle-principal-dash {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
   margin-bottom: 20px;
 }
-
 .alertas-modal-fondo .detalle-principal-dash > div {
   display: flex;
   flex-direction: column;
@@ -673,21 +579,18 @@
   border-radius: 12px;
   background: #fafcfb;
 }
-
 .alertas-modal-fondo .detalle-principal-dash small,
 .alertas-modal-fondo .detalle-descripcion-dash small {
   color: #8492a0;
   font-size: 10px;
   font-weight: 750;
-  letter-spacing: .04em;
+  letter-spacing: 0.04em;
 }
-
 .alertas-modal-fondo .detalle-grid-dash {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
 }
-
 .alertas-modal-fondo .detalle-item-dash {
   display: flex;
   align-items: flex-start;
@@ -697,19 +600,16 @@
   border-radius: 11px;
   background: #f5f8fa;
 }
-
 .alertas-modal-fondo .detalle-item-dash > i {
   color: #08765a;
   font-size: 17px;
 }
-
 .alertas-modal-fondo .detalle-item-dash small {
   display: block;
   margin-bottom: 4px;
   color: #8291a2;
   font-size: 10px;
 }
-
 .alertas-modal-fondo .detalle-item-dash strong {
   display: block;
   color: #2a4055;
@@ -717,11 +617,9 @@
   font-weight: 700;
   overflow-wrap: anywhere;
 }
-
 .alertas-modal-fondo .detalle-descripcion-dash {
   margin-top: 20px;
 }
-
 .alertas-modal-fondo .detalle-descripcion-dash p {
   margin: 8px 0 0;
   padding: 15px;
@@ -732,12 +630,10 @@
   line-height: 1.7;
   overflow-wrap: anywhere;
 }
-
 .alertas-modal-fondo .modal-footer {
   padding: 16px 25px;
   border-top: 1px solid #e7edf1;
 }
-
 .alertas-modal-fondo .btn-cerrar-detalle-dash {
   padding: 10px 20px;
   border: none;
@@ -748,66 +644,141 @@
   font-weight: 750;
   cursor: pointer;
 }
-
 .alertas-modal-fondo .btn-cerrar-detalle-dash:hover {
   background: #065c46;
 }
-
 /* RESPONSIVE */
-
 @media (max-width: 768px) {
   .alertas-tabla-cabecera {
     padding: 15px;
   }
-
   .alertas-paginacion {
     padding: 15px;
   }
-
   .alertas-modal-fondo .detalle-principal-dash {
     grid-template-columns: 1fr;
   }
-
   .alertas-modal-fondo .detalle-grid-dash {
     grid-template-columns: 1fr;
   }
 }
-
 @media (max-width: 576px) {
   .alertas-encabezado {
     align-items: flex-start;
   }
-
   .alertas-encabezado h1 {
     font-size: 22px;
   }
-
   .alertas-btn-actualizar {
     min-height: 36px;
   }
-
   .alertas-tabla-titulo p {
     font-size: 10.5px;
   }
-
   .alertas-paginacion {
     justify-content: center;
   }
-
   .alertas-paginacion-info {
     width: 100%;
     text-align: center;
   }
-
   .alertas-modal-fondo .modal-body {
     padding: 16px;
   }
 }
-
 @media (prefers-reduced-motion: reduce) {
   .alertas-admin-vista *,
   .alertas-modal-fondo * {
     animation: none !important;
     transition: none !important;
   }
+}
+/* Filtros integrados, mismo estilo de Alarmas */
+.alertas-admin-vista .alertas-tabla-panel {
+  padding: 20px;
+}
+.alertas-admin-vista .alertas-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 12px;
+  padding: 0 0 16px;
+  border-bottom: 1px solid #e8eeeb;
+}
+.alertas-admin-vista .alertas-buscador {
+  flex: 1 1 260px;
+  max-width: 340px;
+  min-width: 0;
+  border-radius: 9px;
+}
+.alertas-admin-vista .alertas-chips {
+  flex: 1 1 420px;
+  margin: 0;
+}
+.alertas-admin-vista .tabla-alertas-dash thead th {
+  background: #fff;
+}
+@media (max-width: 600px) {
+  .alertas-admin-vista .alertas-tabla-panel {
+    padding: 12px;
+  }
+  .alertas-admin-vista .alertas-buscador {
+    max-width: none;
+    flex-basis: 100%;
+  }
+  .alertas-admin-vista .alertas-chips {
+    flex-basis: 100%;
+  }
+}
+
+/* Tipografía uniforme; se preservan las fuentes de iconos. */
+.alertas-admin-vista,
+.alertas-modal-fondo,
+.alertas-admin-vista
+  :is(
+    h1,
+    h2,
+    h3,
+    h4,
+    p,
+    span,
+    strong,
+    small,
+    label,
+    button,
+    input,
+    select,
+    textarea,
+    table,
+    th,
+    td,
+    a,
+    time
+  ),
+.alertas-modal-fondo
+  :is(
+    h1,
+    h2,
+    h3,
+    h4,
+    p,
+    span,
+    strong,
+    small,
+    label,
+    button,
+    input,
+    select,
+    textarea,
+    table,
+    th,
+    td,
+    a,
+    time
+  ) {
+  font-family: "Inter", sans-serif !important;
+}
+.alertas-btn-actualizar {
+  display: none !important;
 }
