@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import Layout from "../../Components/transito/Layout";
 import KpiCard from "../../Components/transito/KpiCard";
 import {
+  listarOcupacionCentral,
   listarAlertasCentral,
   listarAtencionesCentral,
   listarUnidadesCentral,
@@ -23,6 +24,7 @@ import {
   normalizarCentral,
 } from "../../Services/centralTransitoService";
 export default function Casos() {
+  const [ocupacion, setOcupacion] = useState(null);
   const [alertas, setAlertas] = useState([]);
   const [atenciones, setAtenciones] = useState([]);
   const [unidades, setUnidades] = useState([]);
@@ -50,9 +52,11 @@ export default function Casos() {
         listarUnidadesCentral(),
         listarAgentesCentral(),
         listarTiposAlertaCentral(),
+        listarOcupacionCentral(),
       ]);
       if (!activo) return;
-      const [al, t, u, a, tipos] = resultados;
+      const [al, t, u, a, tipos, oc] = resultados;
+      setOcupacion(oc.status === "fulfilled" ? oc.value : null);
       const mensajes = [];
       if (al.status === "fulfilled") {
         setAlertas(al.value);
@@ -84,7 +88,9 @@ export default function Casos() {
       setCargando(false);
     }
     cargar();
+    const intervalo = setInterval(() => { if (!document.hidden) cargar(); }, 15000);
     return () => {
+      clearInterval(intervalo);
       activo = false;
     };
   }, []);
@@ -97,9 +103,9 @@ export default function Casos() {
       prepararGruposCentral(
         unidades,
         agentes,
-        atenciones
+        atenciones, ocupacion
       ),
-    [unidades, agentes, atenciones]
+    [unidades, agentes, atenciones, ocupacion]
   );
   const casosFiltrados = casos.filter((item) => {
     if (filtroEstado !== "TODOS" && estadoAlertaCentral(item) !== filtroEstado) return false;
@@ -207,8 +213,10 @@ export default function Casos() {
         listarUnidadesCentral(),
         listarAgentesCentral(),
         listarTiposAlertaCentral(),
+        listarOcupacionCentral(),
       ]);
-      const [al, at, un, ag, tipos] = resultados;
+      const [al, at, un, ag, tipos, oc] = resultados;
+      setOcupacion(oc.status === "fulfilled" ? oc.value : null);
       if (al.status === "fulfilled") {
         setAlertas(al.value);
       }

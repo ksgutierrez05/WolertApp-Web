@@ -1,0 +1,604 @@
+/* =====================================================
+   WOLERTAPP - AGENTE DE TRANSITO
+   Adaptacion exclusiva para dispositivos moviles
+   ===================================================== */
+
+@media (max-width: 768px) {
+
+    /* CONTENEDOR GENERAL */
+
+    #wrapperDash.ag {
+        display: block !important;
+        width: 100%;
+        min-width: 0;
+        min-height: 100dvh;
+        background: #f5f7fb;
+    }
+
+    #wrapperDash.ag > .main-dash {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        margin-left: 0 !important;
+        padding-left: 0 !important;
+        padding-bottom: calc(90px + env(safe-area-inset-bottom));
+    }
+
+    #wrapperDash.ag > .main-dash > .container-fluid {
+        width: 100%;
+        max-width: 100%;
+        padding: 16px 14px !important;
+    }
+
+    /* =================================================
+       SIDEBAR INFERIOR
+       ================================================= */
+
+    #wrapperDash.ag #sidebarDash {
+        position: fixed !important;
+        inset: auto 0 0 0 !important;
+
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: none !important;
+
+        height: auto !important;
+        min-height: 0 !important;
+
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: stretch;
+        justify-content: space-between;
+
+        gap: 0;
+        padding: 8px 6px calc(8px + env(safe-area-inset-bottom)) !important;
+
+        background: #ffffff !important;
+        border: none !important;
+        border-top: 1px solid #e0e7f0 !important;
+        border-radius: 20px 20px 0 0;
+
+        box-shadow: 0 -5px 25px rgba(35, 62, 99, .09);
+
+        overflow: visible !important;
+        transform: none !important;
+        z-index: 1030;
+    }
+
+    /* Ocultar elementos exclusivos del escritorio */
+
+    #wrapperDash.ag #sidebarDash .brand-dash,
+    #wrapperDash.ag #sidebarDash .glabel-dash,
+    #wrapperDash.ag #sidebarDash .flex-grow-1,
+    #wrapperDash.ag #sidebarDash .logout-dash {
+        display: none !important;
+    }
+
+    /* Distribuir las cinco opciones */
+
+    #wrapperDash.ag #sidebarDash > div:not(.brand-dash):not(.flex-grow-1),
+    #wrapperDash.ag #sidebarDash .menu-dash {
+        display: contents !important;
+    }
+
+    #wrapperDash.ag #sidebarDash .menu-dash > a {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center;
+        justify-content: center;
+
+        flex: 1 1 0;
+        min-width: 0;
+        min-height: 54px;
+
+        gap: 5px;
+        margin: 0 2px !important;
+        padding: 7px 2px !important;
+
+        color: #8290a3 !important;
+        background: transparent !important;
+        border: none !important;
+        border-radius: 12px;
+
+        text-align: center;
+        text-decoration: none;
+    }
+
+    #wrapperDash.ag #sidebarDash .menu-dash > a::before,
+    #wrapperDash.ag #sidebarDash .menu-dash > a::after {
+        display: none !important;
+    }
+
+    /* Iconos */
+
+    #wrapperDash.ag #sidebarDash .ic-dash {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+
+        width: 30px !important;
+        height: 27px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+
+        background: transparent !important;
+        color: inherit !important;
+        font-size: 20px;
+    }
+
+    #wrapperDash.ag #sidebarDash .ic-dash i {
+        font-size: 21px !important;
+        color: inherit !important;
+    }
+
+    /* Etiquetas */
+
+    #wrapperDash.ag #sidebarDash .lbl-dash {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+
+        position: static !important;
+        width: auto !important;
+        margin: 0 !important;
+
+        font-family: "Inter", sans-serif;
+        font-size: 10px !important;
+        font-weight: 600;
+        line-height: 1.2;
+        white-space: nowrap;
+        color: inherit !important;
+    }
+
+    /* Acortar nombres largos solamente en movil */
+
+    #wrapperDash.ag #sidebarDash a[href$="/mapa"] .lbl-dash,
+    #wrapperDash.ag #sidebarDash a[href$="/configuracion"] .lbl-dash {
+        font-size: 0 !important;
+    }
+
+    #wrapperDash.ag #sidebarDash a[href$="/mapa"] .lbl-dash::after {
+        content: "Mapa";
+        font-size: 10px;
+    }
+
+    #wrapperDash.ag #sidebarDash a[href$="/configuracion"] .lbl-dash::after {
+        content: "Ajustes";
+        font-size: 10px;
+    }
+
+    /* Opcion seleccionada */
+
+    #wrapperDash.ag #sidebarDash .menu-dash > a.active {
+        background: #e8f0fa !important;
+        color: #2d609c !important;
+    }
+
+    /* =================================================
+       BARRA SUPERIOR
+       ================================================= */
+
+    #wrapperDash.ag .main-dash > .container-fluid > .row:first-child {
+        --bs-gutter-x: 10px;
+        --bs-gutter-y: 8px;
+        margin-bottom: 18px !important;
+        flex-wrap: nowrap;
+    }
+
+    #wrapperDash.ag .main-dash > .container-fluid > .row:first-child > .col {
+        min-width: 0;
+    }
+
+    #wrapperDash.ag .search-dash {
+        width: 100%;
+        min-width: 0;
+        border-radius: 12px;
+    }
+
+    #wrapperDash.ag .search-dash input {
+        min-width: 0;
+        font-size: 12px;
+    }
+
+    #wrapperDash.ag .icon-btn-dash,
+    #wrapperDash.ag .avatar-dash {
+        width: 38px !important;
+        height: 38px !important;
+        flex-shrink: 0;
+    }
+
+    #wrapperDash.ag .transito-notificaciones__menu,
+    #wrapperDash.ag .transito-cuenta__menu {
+        max-width: calc(100vw - 28px);
+    }
+
+    /* =================================================
+       HERO - CONSERVAR IMAGEN MARIA MULATA
+       ================================================= */
+
+    #wrapperDash.ag .hero-dash.hero-img-dash {
+        min-height: 210px !important;
+        padding: 22px 19px !important;
+        border-radius: 18px !important;
+
+        background-image:
+            linear-gradient(
+                90deg,
+                rgba(64,112,166,.97) 0%,
+                rgba(64,112,166,.86) 50%,
+                rgba(64,112,166,.20) 100%
+            ),
+            url('/img/Maria Mulata.jpg');
+
+        background-size: cover;
+        background-position: center, center;
+    }
+
+    #wrapperDash.ag .hero-img-dash .hero-title-dash {
+        font-size: 26px !important;
+        line-height: 1.15;
+        margin: 12px 0 8px;
+        max-width: 100%;
+        overflow-wrap: anywhere;
+    }
+
+    #wrapperDash.ag .hero-img-dash .eyebrow-img-dash {
+        font-size: 9px !important;
+        letter-spacing: .07em;
+    }
+
+    #wrapperDash.ag .hero-img-dash .hero-text-dash {
+        font-size: 12px !important;
+        line-height: 1.5;
+        max-width: 95%;
+    }
+
+    #wrapperDash.ag .hero-img-dash .hero-cta-dash {
+        font-size: 11px;
+        padding: 9px 15px;
+    }
+
+    /* =================================================
+       KPI CARDS - CUADRICULA 2 X 2
+       ================================================= */
+
+    #wrapperDash.ag .row:has(> div > .kpi-dash),
+    #wrapperDash.ag .row:has(> div > .kpi-card-dash) {
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+
+    #wrapperDash.ag .row > div:has(> .kpi-dash),
+    #wrapperDash.ag .row > div:has(> .kpi-card-dash) {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    #wrapperDash.ag .kpi-dash,
+    #wrapperDash.ag .kpi-card-dash {
+        position: relative;
+        width: 100%;
+        min-width: 0;
+        min-height: 108px !important;
+        height: 100%;
+
+        padding: 15px 12px !important;
+        border-radius: 14px !important;
+    }
+
+    #wrapperDash.ag .kpi-num-dash,
+    #wrapperDash.ag .kpi-value-dash {
+        font-size: clamp(17px, 5vw, 25px) !important;
+        line-height: 1.2;
+        overflow-wrap: anywhere;
+    }
+
+    #wrapperDash.ag .kpi-label-dash {
+        font-size: 11px !important;
+        line-height: 1.4;
+        white-space: normal !important;
+    }
+
+    #wrapperDash.ag .kpi-icon-dash {
+        font-size: 20px !important;
+    }
+
+    /* =================================================
+       SECCIONES Y TARJETAS
+       ================================================= */
+
+    #wrapperDash.ag .sec-head-ag {
+        gap: 8px;
+        margin-top: 22px;
+        margin-bottom: 12px;
+    }
+
+    #wrapperDash.ag .sec-head-ag h2,
+    #wrapperDash.ag .titulos-ag {
+        font-size: 17px !important;
+    }
+
+    #wrapperDash.ag .see-all-dash {
+        font-size: 11px;
+    }
+
+    #wrapperDash.ag .panel-ag,
+    #wrapperDash.ag .grupo-ag,
+    #wrapperDash.ag .panel-card-dash {
+        min-width: 0;
+        max-width: 100%;
+        border-radius: 15px;
+    }
+
+    #wrapperDash.ag .grupo-ag {
+        padding: 0 12px;
+    }
+
+    #wrapperDash.ag .companero-row-ag {
+        gap: 10px;
+        padding: 13px 0;
+    }
+
+    #wrapperDash.ag .companero-avatar-ag {
+        width: 36px;
+        height: 36px;
+    }
+
+    /* =================================================
+       TABLAS Y FILTROS
+       ================================================= */
+
+    #wrapperDash.ag .table-responsive {
+        max-width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    #wrapperDash.ag .tabla-ag {
+        min-width: 460px;
+    }
+
+    #wrapperDash.ag .tabla-ag th,
+    #wrapperDash.ag .tabla-ag td {
+        padding: 12px 10px;
+        font-size: 11px;
+    }
+
+    #wrapperDash.ag .tabs-ag {
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+
+    #wrapperDash.ag .tab-ag {
+        font-size: 11px;
+        padding: 8px 10px;
+    }
+
+    /* =================================================
+       MAPA
+       ================================================= */
+
+    #wrapperDash.ag .leaflet-container {
+        width: 100% !important;
+        max-width: 100%;
+        z-index: 0;
+    }
+
+    #wrapperDash.ag .mapa-canvas-ag {
+        width: 100%;
+        min-height: 250px;
+    }
+
+    /* Formularios */
+
+    #wrapperDash.ag input,
+    #wrapperDash.ag select,
+    #wrapperDash.ag textarea {
+        max-width: 100%;
+    }
+}
+
+/* Celulares especialmente pequenos */
+
+@media (max-width: 360px) {
+
+    #wrapperDash.ag > .main-dash > .container-fluid {
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
+
+    #wrapperDash.ag #sidebarDash .lbl-dash {
+        font-size: 9px !important;
+    }
+
+    #wrapperDash.ag .kpi-dash,
+    #wrapperDash.ag .kpi-card-dash {
+        padding: 12px 9px !important;
+    }
+}
+
+/* CORRECCION DEL ESPACIO DEL SIDEBAR EN MOVIL */
+
+@media (max-width: 768px) {
+
+    body.rol-transito:has(#wrapperDash.ag),
+    body.rail-collapsed:has(#wrapperDash.ag) {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    #wrapperDash.ag {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    body.rail-collapsed #wrapperDash.ag > .main-dash,
+    body.rol-transito #wrapperDash.ag > .main-dash {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        left: 0 !important;
+    }
+
+    #wrapperDash.ag > .main-dash > .container-fluid {
+        margin: 0 auto !important;
+        padding: 16px 14px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+}
+
+
+/* CORRECCION DE ETIQUETAS DEL MENU INFERIOR */
+
+@media (max-width: 768px) {
+
+    #wrapperDash.ag #sidebarDash {
+        height: auto !important;
+        min-height: 78px !important;
+        padding: 8px 6px calc(12px + env(safe-area-inset-bottom)) !important;
+        overflow: visible !important;
+        box-sizing: border-box;
+    }
+
+    #wrapperDash.ag #sidebarDash .menu-dash > a {
+        height: auto !important;
+        min-height: 62px !important;
+        padding: 8px 2px !important;
+        gap: 5px !important;
+        overflow: visible !important;
+        justify-content: center !important;
+    }
+
+    #wrapperDash.ag #sidebarDash .lbl-dash {
+        height: auto !important;
+        max-height: none !important;
+        min-height: 15px !important;
+        line-height: 16px !important;
+        padding-bottom: 2px !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+        clip-path: none !important;
+        flex-shrink: 0 !important;
+    }
+
+    #wrapperDash.ag #sidebarDash .ic-dash {
+        flex-shrink: 0 !important;
+    }
+
+    #wrapperDash.ag > .main-dash {
+        padding-bottom: calc(105px + env(safe-area-inset-bottom)) !important;
+    }
+}
+
+
+/* KPI CARDS COMPACTAS EN MOVIL */
+
+@media (max-width: 768px) {
+
+    #wrapperDash.ag .kpi-dash,
+    #wrapperDash.ag .kpi-card-dash {
+        min-height: 0 !important;
+        height: auto !important;
+        padding: 10px 12px !important;
+        border-radius: 12px !important;
+        gap: 4px !important;
+    }
+
+    #wrapperDash.ag .kpi-dash > div,
+    #wrapperDash.ag .kpi-card-dash > div {
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+        gap: 4px !important;
+    }
+
+    #wrapperDash.ag .kpi-num-dash,
+    #wrapperDash.ag .kpi-value-dash {
+        margin-top: 0 !important;
+        margin-bottom: 2px !important;
+    }
+
+    #wrapperDash.ag .kpi-label-dash {
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+    }
+
+    #wrapperDash.ag .row:has(> div > .kpi-dash),
+    #wrapperDash.ag .row:has(> div > .kpi-card-dash) {
+        gap: 8px !important;
+        grid-auto-rows: 1fr;
+    }
+}
+/* KPI AGENTE - ESTILO DIRECTOR */
+
+@media (max-width: 768px) {
+
+    #wrapperDash.ag .row:has(> div > .kpi-dash) {
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px !important;
+        grid-auto-rows: 1fr;
+    }
+
+    #wrapperDash.ag .kpi-dash {
+        position: relative;
+        min-height: 96px !important;
+        height: 100% !important;
+        padding: 12px 14px 12px 17px !important;
+        border-radius: 18px !important;
+        border: 1px solid #dce5f0 !important;
+        background: #ffffff !important;
+        box-shadow: 0 3px 12px #173f6509;
+        overflow: hidden;
+    }
+
+    #wrapperDash.ag .kpi-dash .kpi-num-dash,
+    #wrapperDash.ag .kpi-dash .kpi-value-dash {
+        font-size: 26px !important;
+        font-weight: 700;
+        line-height: 1.2;
+        margin-bottom: 0 !important;
+    }
+
+    #wrapperDash.ag .kpi-dash .kpi-label-dash {
+        color: #52647c !important;
+        font-size: 12px !important;
+        font-weight: 400 !important;
+        line-height: 1.4;
+        position: relative;
+        z-index: 2;
+    }
+
+    #wrapperDash.ag .kpi-dash .kpi-icon-dash {
+        font-size: 68px !important;
+        position: absolute !important;
+        right: 8px !important;
+        top: 50% !important;
+        bottom: auto !important;
+        transform: translateY(-50%);
+        opacity: .15 !important;
+        pointer-events: none;
+    }
+
+    #wrapperDash.ag .kpi-dash .kpi-icon-dash i {
+        font-size: inherit !important;
+    }
+}
+@media (max-width: 768px) {
+    #wrapperDash.ag .kpi-dash .kpi-label-dash {
+        margin-top: 5px !important;
+    }
+}

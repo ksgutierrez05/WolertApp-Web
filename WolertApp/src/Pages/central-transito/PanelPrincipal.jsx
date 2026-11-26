@@ -7,6 +7,7 @@ import Layout from "../../Components/transito/Layout";
 import KpiCard from "../../Components/transito/KpiCard";
 
 import {
+  listarOcupacionCentral,
   listarAgentesCentral,
   listarUnidadesCentral,
   listarAtencionesCentral,
@@ -380,6 +381,7 @@ function EncabezadoSeccion({ titulo, enlace, etiqueta }) {
 // ======================================================
 
 export default function PanelPrincipal() {
+  const [ocupacion, setOcupacion] = useState(null);
   const [agentes, setAgentes] = useState([]);
   const [unidades, setUnidades] = useState([]);
   const [atenciones, setAtenciones] = useState([]);
@@ -412,6 +414,7 @@ export default function PanelPrincipal() {
         listarAtencionesCentral(),
         listarAlertasCentral(),
         listarSeguimientos(),
+        listarOcupacionCentral(),
       ]);
 
       if (!activo) return;
@@ -422,6 +425,7 @@ export default function PanelPrincipal() {
         "Atenciones",
         "Alertas",
         "Seguimientos",
+        "Ocupación de grupos",
       ];
 
       const mensajes = resultados.flatMap(
@@ -448,6 +452,7 @@ export default function PanelPrincipal() {
       setAtenciones(datos[2]);
       setAlertas(datos[3]);
       setSeguimientos(datos[4]);
+      setOcupacion(resultados[5].status === "fulfilled" ? datos[5] : null);
 
       setCargas({
         agentes: resultados[0].status === "fulfilled",
@@ -461,8 +466,10 @@ export default function PanelPrincipal() {
     }
 
     cargarDatos();
+    const intervalo = setInterval(() => { if (!document.hidden) cargarDatos(); }, 10000);
 
     return () => {
+      clearInterval(intervalo);
       activo = false;
     };
   }, []);
@@ -481,9 +488,9 @@ export default function PanelPrincipal() {
       prepararAgentesCentral(
         agentes,
         unidades,
-        atenciones
+        atenciones, ocupacion
       ),
-    [agentes, unidades, atenciones]
+    [agentes, unidades, atenciones, ocupacion]
   );
 
   const agentesConUnidad = useMemo(

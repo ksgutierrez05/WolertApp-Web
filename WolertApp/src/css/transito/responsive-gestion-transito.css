@@ -1,0 +1,1429 @@
+﻿/* ==========================================
+   WOLERTAPP - GESTION DE TRANSITO RESPONSIVE
+   Director y Central
+   ========================================== */
+
+.menu-movil-transito {
+    display: none;
+}
+
+@media (max-width: 768px) {
+
+    /* CONTENEDOR GENERAL */
+
+    body:has(#wrapperDash.dt),
+    body:has(#wrapperDash.ct) {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    #wrapperDash.dt,
+    #wrapperDash.ct {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        min-height: 100dvh;
+    }
+
+    /* ELIMINAR ESPACIO DEL SIDEBAR */
+
+    body #wrapperDash.dt > .main-dash,
+    body #wrapperDash.ct > .main-dash {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+
+        margin: 0 !important;
+        padding: 0 !important;
+
+        left: 0 !important;
+    }
+
+    #wrapperDash.dt > .main-dash > .container-fluid,
+    #wrapperDash.ct > .main-dash > .container-fluid {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 auto !important;
+        padding: 14px !important;
+    }
+
+    /* BOTON PARA ABRIR EL MENU */
+
+    .menu-movil-transito {
+        display: flex;
+        align-items: center;
+        padding: 12px 14px 0;
+    }
+
+    .btn-menu-movil-transito {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+
+        min-height: 42px;
+        padding: 8px 14px;
+
+        background: #ffffff;
+        color: #2d609c;
+
+        border: 1px solid #dce5f0;
+        border-radius: 12px;
+
+        font-family: "Inter", sans-serif;
+        font-size: 12px;
+        font-weight: 600;
+
+        cursor: pointer;
+    }
+
+    .btn-menu-movil-transito i {
+        font-size: 22px;
+        line-height: 1;
+    }
+
+    /* SIDEBAR OCULTO POR DEFECTO */
+
+    #wrapperDash.dt #sidebarDash,
+    #wrapperDash.ct #sidebarDash {
+        position: fixed !important;
+        top: 0 !important;
+        bottom: 0 !important;
+        left: 0 !important;
+
+        width: min(280px, 80vw) !important;
+        min-width: 0 !important;
+        max-width: 80vw !important;
+
+        height: 100dvh !important;
+
+        display: flex !important;
+        flex-direction: column !important;
+
+        transform: translateX(-105%) !important;
+        visibility: hidden;
+
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+
+        background: #ffffff;
+        z-index: 1045;
+
+        transition:
+            transform .25s ease,
+            visibility .25s ease;
+    }
+
+    /* SIDEBAR ABIERTO */
+
+    #wrapperDash.dt:has(.btn-menu-movil-transito[aria-expanded="true"]) #sidebarDash,
+    #wrapperDash.ct:has(.btn-menu-movil-transito[aria-expanded="true"]) #sidebarDash {
+        transform: translateX(0) !important;
+        visibility: visible;
+
+        box-shadow: 10px 0 35px rgba(30, 55, 90, .15);
+    }
+
+    /* RECUPERAR ETIQUETAS DEL SIDEBAR */
+
+    #wrapperDash.dt #sidebarDash .lbl-dash,
+    #wrapperDash.ct #sidebarDash .lbl-dash {
+        display: inline-block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+
+        width: auto !important;
+        max-width: none !important;
+        height: auto !important;
+
+        overflow: visible !important;
+        white-space: normal !important;
+
+        font-size: 13px !important;
+        line-height: 1.4;
+    }
+
+    #wrapperDash.dt #sidebarDash .glabel-dash,
+    #wrapperDash.ct #sidebarDash .glabel-dash {
+        display: block !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+
+    #wrapperDash.dt #sidebarDash .menu-dash > a,
+    #wrapperDash.ct #sidebarDash .menu-dash > a {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+
+        width: auto !important;
+        min-height: 42px;
+        padding: 10px 14px !important;
+        gap: 10px;
+    }
+
+    /* FONDO AL DESPLEGAR EL MENU */
+
+    .fondo-menu-movil-transito {
+        position: fixed;
+        inset: 0;
+
+        width: 100%;
+        height: 100%;
+
+        border: 0;
+        background: rgba(25, 45, 75, .35);
+
+        z-index: 1040;
+    }
+
+    /* BOTON PARA CERRAR EL MENU */
+
+    .btn-menu-movil-transito[aria-expanded="true"] {
+        position: fixed;
+        top: 12px;
+        right: 10px;
+        z-index: 1050;
+
+        background: #ffffff;
+        color: #2d609c;
+    }
+
+    /* ENCABEZADOS Y HERO */
+
+    #wrapperDash.dt :is(.hero-dash, .hero-page-dash, .st-header),
+    #wrapperDash.ct :is(.hero-dash, .hero-page-dash, .st-header) {
+
+        min-height: 0 !important;
+        padding: 20px 16px !important;
+        border-radius: 16px !important;
+
+        max-width: 100%;
+    }
+
+    #wrapperDash.dt .hero-title-dash,
+    #wrapperDash.ct .hero-title-dash {
+        font-size: 25px !important;
+        line-height: 1.2;
+    }
+
+    /* PANELES */
+
+    #wrapperDash.dt :is(.panel-card-dash, .table-card-dash),
+    #wrapperDash.ct :is(.panel-card-dash, .table-card-dash) {
+
+        width: 100%;
+        min-width: 0;
+        max-width: 100%;
+
+        border-radius: 14px;
+    }
+
+    /* TABLAS */
+
+    #wrapperDash.dt .table-responsive,
+    #wrapperDash.ct .table-responsive {
+        max-width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* FILTROS */
+
+    #wrapperDash.dt .tabs-dash,
+    #wrapperDash.ct .tabs-dash {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    /* MAPAS */
+
+    #wrapperDash.dt .leaflet-container,
+    #wrapperDash.ct .leaflet-container {
+        width: 100% !important;
+        max-width: 100%;
+        z-index: 0;
+    }
+
+    /* FORMULARIOS */
+
+    #wrapperDash.dt :is(input, select, textarea),
+    #wrapperDash.ct :is(input, select, textarea) {
+        max-width: 100%;
+        min-width: 0;
+    }
+
+    /* BARRA SUPERIOR */
+
+    #wrapperDash.dt .search-dash,
+    #wrapperDash.ct .search-dash {
+        width: 100%;
+        min-width: 0;
+    }
+
+    #wrapperDash.dt .search-dash input,
+    #wrapperDash.ct .search-dash input {
+        min-width: 0;
+        width: 100%;
+    }
+
+}
+
+/* MEJORAR ALINEACION DEL SIDEBAR MOVIL */
+
+@media (max-width: 768px) {
+
+    #wrapperDash:is(.dt, .ct) #sidebarDash {
+        width: min(280px, 82vw) !important;
+        padding: 20px 14px !important;
+        align-items: stretch !important;
+        box-sizing: border-box;
+    }
+
+    /* Contenedores del menu */
+
+    #wrapperDash:is(.dt, .ct) #sidebarDash .menu-dash {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        width: 100% !important;
+        gap: 4px !important;
+        padding: 0 !important;
+    }
+
+    /* Opciones alineadas a la izquierda */
+
+    #wrapperDash:is(.dt, .ct) #sidebarDash .menu-dash > a {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+
+        width: 100% !important;
+        max-width: none !important;
+        min-height: 42px !important;
+
+        margin: 0 !important;
+        padding: 10px 12px !important;
+        gap: 12px !important;
+
+        text-align: left !important;
+        border-radius: 10px !important;
+        box-sizing: border-box;
+    }
+
+    /* Iconos del mismo ancho */
+
+    #wrapperDash:is(.dt, .ct) #sidebarDash .ic-dash {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+
+        width: 24px !important;
+        min-width: 24px !important;
+        height: 24px !important;
+
+        margin: 0 !important;
+        flex-shrink: 0 !important;
+    }
+
+    /* Textos */
+
+    #wrapperDash:is(.dt, .ct) #sidebarDash .lbl-dash {
+        flex: 1 !important;
+        text-align: left !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        line-height: 1.4 !important;
+    }
+
+    /* Titulos de las secciones */
+
+    #wrapperDash:is(.dt, .ct) #sidebarDash .glabel-dash {
+        width: 100% !important;
+        text-align: left !important;
+        padding: 0 12px !important;
+        margin: 16px 0 8px !important;
+        font-size: 11px !important;
+    }
+
+    /* Opcion seleccionada */
+
+    #wrapperDash:is(.dt, .ct) #sidebarDash .menu-dash > a.active {
+        width: 100% !important;
+        border-radius: 10px !important;
+        box-shadow: none !important;
+    }
+
+    /* Logo */
+
+    #wrapperDash:is(.dt, .ct) #sidebarDash .brand-dash {
+        width: 100% !important;
+        justify-content: flex-start !important;
+        padding: 4px 12px !important;
+        margin-bottom: 12px !important;
+    }
+
+    /* Boton cerrar dentro del sidebar */
+
+    .btn-menu-movil-transito[aria-expanded="true"] {
+        top: 18px !important;
+        left: calc(min(280px, 82vw) - 52px) !important;
+        right: auto !important;
+
+        width: 36px !important;
+        height: 36px !important;
+        min-height: 36px !important;
+        padding: 0 !important;
+
+        background: #edf3fa !important;
+        border: none !important;
+        border-radius: 10px !important;
+    }
+
+    .btn-menu-movil-transito[aria-expanded="true"] span {
+        display: none !important;
+    }
+
+    .btn-menu-movil-transito[aria-expanded="true"] i {
+        font-size: 17px !important;
+    }
+
+    /* Cerrar sesion */
+
+    #wrapperDash:is(.dt, .ct) #sidebarDash .logout-dash {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+
+        width: 100% !important;
+        padding: 12px !important;
+        gap: 12px !important;
+        text-align: left !important;
+    }
+}
+
+
+/* KPI CARDS MOVILES - ESTILO SUAVE Y COMPACTO */
+
+@media (max-width: 768px) {
+}
+
+
+/* RECUPERAR ESTILO ORIGINAL DE LAS KPI CARDS */
+
+@media (max-width: 768px) {
+}
+
+
+/* BARRA SUPERIOR COMPACTA EN MOVIL */
+
+@media (max-width: 768px) {
+
+    #wrapperDash:is(.dt, .ct) > .main-dash {
+        position: relative;
+    }
+
+    /* Boton del menu */
+
+    #wrapperDash:is(.dt, .ct) .menu-movil-transito {
+        position: absolute;
+        top: 14px;
+        left: 14px;
+        padding: 0 !important;
+        z-index: 10;
+    }
+
+    .btn-menu-movil-transito[aria-expanded="false"] {
+        width: 42px !important;
+        height: 42px !important;
+        min-height: 42px !important;
+        padding: 0 !important;
+        border-radius: 12px !important;
+    }
+
+    .btn-menu-movil-transito[aria-expanded="false"] span {
+        display: none !important;
+    }
+
+    /* Alinear barra superior */
+
+    #wrapperDash:is(.dt, .ct)
+    .main-dash > .container-fluid > .row:first-child {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+
+        padding-left: 52px !important;
+        margin-bottom: 18px !important;
+
+        --bs-gutter-x: 8px;
+        --bs-gutter-y: 0px;
+    }
+
+    #wrapperDash:is(.dt, .ct)
+    .main-dash > .container-fluid > .row:first-child > .col {
+        min-width: 0 !important;
+        flex: 1 1 0 !important;
+    }
+
+    /* Buscador horizontal */
+
+    #wrapperDash:is(.dt, .ct) .search-dash {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+
+        width: 100% !important;
+        min-width: 0 !important;
+        height: 42px !important;
+        min-height: 42px !important;
+
+        padding: 0 10px !important;
+        gap: 8px !important;
+
+        background: #ffffff !important;
+        border: 1px solid #dce5f0 !important;
+        border-radius: 12px !important;
+
+        box-sizing: border-box;
+        overflow: hidden !important;
+    }
+
+    #wrapperDash:is(.dt, .ct) .search-dash i {
+        position: static !important;
+        flex-shrink: 0 !important;
+        font-size: 16px !important;
+        margin: 0 !important;
+    }
+
+    #wrapperDash:is(.dt, .ct) .search-dash input {
+        flex: 1 1 0 !important;
+        width: 0 !important;
+        min-width: 0 !important;
+        height: 100% !important;
+
+        margin: 0 !important;
+        padding: 0 !important;
+
+        background: transparent !important;
+        border: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        outline: none;
+
+        font-size: 12px !important;
+        text-overflow: ellipsis;
+    }
+
+    /* Notificaciones y avatar */
+
+    #wrapperDash:is(.dt, .ct)
+    :is(.icon-btn-dash, .avatar-dash) {
+        width: 38px !important;
+        height: 38px !important;
+        min-width: 38px !important;
+        flex-shrink: 0 !important;
+    }
+
+    /* Mantener el menu desplegable por encima */
+
+    #wrapperDash:is(.dt, .ct)
+    .menu-movil-transito:has(
+        .btn-menu-movil-transito[aria-expanded="true"]
+    ) {
+        z-index: 1050 !important;
+    }
+}
+
+
+/* CORRECCION DE INTERACCION DEL SIDEBAR MOVIL */
+
+@media (max-width: 768px) {
+
+    #wrapperDash:is(.dt, .ct) {
+        isolation: isolate;
+    }
+
+    #wrapperDash:is(.dt, .ct) > .main-dash {
+        z-index: auto !important;
+        isolation: auto !important;
+        transform: none !important;
+    }
+
+    #wrapperDash:is(.dt, .ct) .menu-movil-transito {
+        z-index: auto !important;
+        isolation: auto !important;
+        transform: none !important;
+    }
+
+    /* Fondo visual sin bloquear los clics */
+
+    #wrapperDash:is(.dt, .ct) .fondo-menu-movil-transito {
+        z-index: 1040 !important;
+        pointer-events: none !important;
+    }
+
+    /* Sidebar completamente interactivo */
+
+    #wrapperDash:is(.dt, .ct) #sidebarDash {
+        z-index: 1060 !important;
+        background: #ffffff !important;
+        opacity: 1 !important;
+    }
+
+    #wrapperDash:is(.dt, .ct):has(
+        .btn-menu-movil-transito[aria-expanded="true"]
+    ) #sidebarDash {
+        pointer-events: auto !important;
+    }
+
+    #wrapperDash:is(.dt, .ct) #sidebarDash a,
+    #wrapperDash:is(.dt, .ct) #sidebarDash button {
+        pointer-events: auto !important;
+        cursor: pointer !important;
+    }
+
+    /* Boton de cierre */
+
+    #wrapperDash:is(.dt, .ct)
+    .btn-menu-movil-transito[aria-expanded="true"] {
+        z-index: 1070 !important;
+        pointer-events: auto !important;
+    }
+
+    /* Bloquear el contenido mientras el menu esta abierto */
+
+    #wrapperDash:is(.dt, .ct):has(
+        .btn-menu-movil-transito[aria-expanded="true"]
+    ) > .main-dash > .container-fluid {
+        pointer-events: none !important;
+    }
+}
+
+
+/* MENU MOVIL - NAVEGACION Y TRANSICIONES */
+
+.transito-menu-capas {
+    display: none;
+}
+
+@media (max-width: 768px) {
+
+    body:has(#wrapperDash:is(.dt, .ct)) {
+        --ancho-menu-transito: min(280px, 82vw);
+    }
+
+    #wrapperDash:is(.dt, .ct) {
+        isolation: auto !important;
+        z-index: auto !important;
+        transform: none !important;
+    }
+
+    #wrapperDash:is(.dt, .ct) > .main-dash {
+        isolation: auto !important;
+        z-index: auto !important;
+        transform: none !important;
+    }
+
+    /* Restaurar interaccion del contenido */
+
+    #wrapperDash:is(.dt, .ct) > .main-dash > .container-fluid {
+        pointer-events: auto !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+
+    /* Sidebar */
+
+    #wrapperDash:is(.dt, .ct) #sidebarDash {
+        width: var(--ancho-menu-transito) !important;
+        max-width: 82vw !important;
+
+        position: fixed !important;
+        z-index: 1060 !important;
+
+        background: #ffffff !important;
+        opacity: 1 !important;
+
+        transform: translateX(-105%) !important;
+        visibility: hidden;
+        pointer-events: none;
+
+        transition:
+            transform .28s cubic-bezier(.22, .61, .36, 1),
+            visibility .28s !important;
+
+        will-change: transform;
+
+        overflow-y: auto !important;
+        overscroll-behavior: contain;
+    }
+
+    /* Sidebar abierto */
+
+    #wrapperDash:is(.dt, .ct):has(
+        .btn-menu-movil-transito[aria-expanded="true"]
+    ) #sidebarDash {
+        transform: translateX(0) !important;
+        visibility: visible !important;
+        pointer-events: auto !important;
+    }
+
+    /* Contenedor del portal */
+
+    .transito-menu-capas {
+        display: block;
+    }
+
+    /* Fondo semitransparente */
+
+    .transito-menu-fondo {
+        position: fixed;
+        inset: 0;
+
+        width: 100%;
+        height: 100%;
+
+        padding: 0;
+        border: 0;
+
+        background: rgba(25, 45, 75, .30);
+
+        z-index: 1055;
+
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+
+        transition:
+            opacity .28s ease,
+            visibility .28s;
+    }
+
+    .transito-menu-capas.abierto .transito-menu-fondo {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+    }
+
+    /* Boton X independiente */
+
+    .transito-menu-cerrar {
+        position: fixed;
+        top: 18px;
+        left: calc(var(--ancho-menu-transito) - 52px);
+
+        width: 36px;
+        height: 36px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        padding: 0;
+        border: 1px solid #dce5f0;
+        border-radius: 10px;
+
+        background: #edf3fa;
+        color: #2d609c;
+
+        font-size: 17px;
+        cursor: pointer;
+
+        z-index: 1070;
+
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+
+        transition: opacity .2s ease;
+    }
+
+    .transito-menu-capas.abierto .transito-menu-cerrar {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+    }
+
+    /* Boton de apertura siempre en su lugar */
+
+    #wrapperDash:is(.dt, .ct) .btn-menu-movil-transito {
+        position: relative !important;
+
+        top: auto !important;
+        left: auto !important;
+        right: auto !important;
+
+        width: 42px !important;
+        height: 42px !important;
+        min-height: 42px !important;
+
+        padding: 0 !important;
+        z-index: 10 !important;
+    }
+
+    #wrapperDash:is(.dt, .ct) .btn-menu-movil-transito i {
+        font-size: 22px !important;
+    }
+
+    /* Evitar desplazamiento del fondo */
+
+    body:has(.transito-menu-capas.abierto) {
+        overflow: hidden !important;
+    }
+}
+
+@media (max-width: 768px) and (prefers-reduced-motion: reduce) {
+    #wrapperDash:is(.dt, .ct) #sidebarDash,
+    .transito-menu-fondo,
+    .transito-menu-cerrar {
+        transition: none !important;
+    }
+}
+
+
+/* RECUPERAR TITULO INSTITUCIONAL DEL SIDEBAR */
+
+@media (max-width: 768px) {
+
+    #wrapperDash:is(.dt, .ct) #sidebarDash .brand-dash {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+
+        width: 100% !important;
+        padding: 4px 44px 4px 8px !important;
+        gap: 10px !important;
+        margin-bottom: 16px !important;
+        overflow: visible !important;
+    }
+
+    #wrapperDash:is(.dt, .ct) #sidebarDash
+    .brand-dash :is(div, span, h1, h2, h3, h4, p, small, strong) {
+        display: revert !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+
+        width: auto !important;
+        max-width: none !important;
+        height: auto !important;
+
+        white-space: normal !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+        text-align: left !important;
+        transform: none !important;
+    }
+
+    #wrapperDash:is(.dt, .ct) #sidebarDash .brand-dash img {
+        flex-shrink: 0 !important;
+    }
+}
+
+
+/* ENCABEZADO INSTITUCIONAL ORIGINAL EN MOVIL */
+
+@media (max-width: 768px) {
+
+    #wrapperDash:is(.dt, .ct) #sidebarDash .brand-dash {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        flex-direction: row !important;
+        gap: 12px !important;
+        min-height: 65px !important;
+        padding: 6px 38px 6px 8px !important;
+        margin-bottom: 22px !important;
+    }
+
+    #wrapperDash:is(.dt, .ct) #sidebarDash
+    .brand-dash :is(h1, h2, h3, h4, strong) {
+        font-size: 16px !important;
+        font-weight: 700 !important;
+        line-height: 1.25 !important;
+        color: #101828 !important;
+        text-align: left !important;
+        white-space: normal !important;
+        margin: 0 !important;
+    }
+
+    .transito-menu-cerrar {
+        width: 30px !important;
+        height: 30px !important;
+        top: 16px !important;
+        left: calc(var(--ancho-menu-transito) - 42px) !important;
+    }
+}
+
+
+/* MANTENER ESTABLE EL ENCABEZADO DEL SIDEBAR */
+
+@media (max-width: 768px) {
+
+    #wrapperDash:is(.dt, .ct) #sidebarDash .brand-dash {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        align-self: stretch !important;
+
+        width: 100% !important;
+        min-width: 0 !important;
+        min-height: 65px !important;
+
+        padding: 6px 38px 6px 8px !important;
+        margin: 0 0 22px 0 !important;
+        gap: 12px !important;
+
+        flex-shrink: 0 !important;
+        box-sizing: border-box !important;
+
+        transform: none !important;
+        transition: none !important;
+        animation: none !important;
+    }
+
+    /* Evitar movimientos del escudo y del titulo */
+
+    #wrapperDash:is(.dt, .ct) #sidebarDash .brand-dash * {
+        transform: none !important;
+        transition: none !important;
+        animation: none !important;
+        translate: none !important;
+    }
+
+    /* Mantener el escudo en su posicion */
+
+    #wrapperDash:is(.dt, .ct) #sidebarDash .brand-dash img {
+        flex-shrink: 0 !important;
+        margin: 0 !important;
+    }
+
+    /* Mantener el titulo alineado */
+
+    #wrapperDash:is(.dt, .ct) #sidebarDash
+    .brand-dash :is(h1, h2, h3, h4, strong, span, p) {
+        position: static !important;
+        margin: 0 !important;
+        padding: 0 !important;
+
+        text-align: left !important;
+        white-space: normal !important;
+
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+
+    /* Evitar movimientos al seleccionar opciones */
+
+    #wrapperDash:is(.dt, .ct) #sidebarDash .menu-dash > a {
+        transform: none !important;
+        translate: none !important;
+
+        transition:
+            background-color .18s ease,
+            color .18s ease !important;
+    }
+}
+
+
+
+/* KPI RESPONSIVE - DIRECTOR Y CENTRAL */
+
+@media (max-width: 768px) {
+
+    #wrapperDash:is(.dt, .ct)
+    .row:has(> div > :is(.kpi-dash, .kpi-card-dash)) {
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-auto-rows: 1fr;
+        gap: 10px !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+
+    #wrapperDash:is(.dt, .ct)
+    .row > div:has(> :is(.kpi-dash, .kpi-card-dash)) {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    #wrapperDash:is(.dt, .ct)
+    :is(.kpi-dash, .kpi-card-dash) {
+        width: 100% !important;
+        min-width: 0 !important;
+        min-height: 94px !important;
+        height: 100% !important;
+        padding: 12px 14px !important;
+        box-sizing: border-box;
+    }
+}
+
+
+/* KPI CARDS - EXCLUSIVAMENTE PANELES PRINCIPALES */
+
+@media (max-width: 768px) {
+
+    #wrapperDash:is(.pg-director-panel, .pg-central-panel,
+                   .pg-director-principal, .pg-central-principal)
+    :is(.kpi-dash, .kpi-card-dash) {
+
+        position: relative !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+
+        min-height: 94px !important;
+        height: 100% !important;
+
+        padding: 13px 14px 13px 17px !important;
+        gap: 7px !important;
+
+        background: #ffffff !important;
+        border: 1px solid #e1e7ef !important;
+        border-radius: 15px !important;
+
+        box-shadow: 0 3px 10px rgba(45, 96, 156, .035) !important;
+        overflow: hidden !important;
+    }
+
+    /* Lineas laterales de colores */
+
+    #wrapperDash:is(.pg-director-panel, .pg-central-panel,
+                   .pg-director-principal, .pg-central-principal)
+    :is(.kpi-dash, .kpi-card-dash)::before {
+
+        display: block !important;
+        position: absolute !important;
+        top: 0 !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        width: 4px !important;
+        height: 100% !important;
+        opacity: 1 !important;
+    }
+
+    /* Iconos decorativos grandes */
+
+    #wrapperDash:is(.pg-director-panel, .pg-central-panel,
+                   .pg-director-principal, .pg-central-principal)
+    :is(.kpi-dash, .kpi-card-dash)
+    :is(.kpi-icon-dash, .kpi-bg-dash, .kpi-icon-bg,
+        .kpi-watermark, .kpi-bg-icon) {
+
+        position: absolute !important;
+        top: 50% !important;
+        right: 4px !important;
+        bottom: auto !important;
+        left: auto !important;
+
+        width: 70px !important;
+        height: 70px !important;
+        font-size: 70px !important;
+        line-height: 1 !important;
+
+        opacity: .13 !important;
+        transform: translateY(-50%) !important;
+        pointer-events: none !important;
+        z-index: 0 !important;
+    }
+
+    #wrapperDash:is(.pg-director-panel, .pg-central-panel,
+                   .pg-director-principal, .pg-central-principal)
+    :is(.kpi-icon-dash, .kpi-bg-dash, .kpi-icon-bg,
+        .kpi-watermark, .kpi-bg-icon) i {
+        font-size: 70px !important;
+    }
+
+    /* Numeros */
+
+    #wrapperDash:is(.pg-director-panel, .pg-central-panel,
+                   .pg-director-principal, .pg-central-principal)
+    :is(.kpi-num-dash, .kpi-value-dash) {
+
+        position: relative;
+        z-index: 1;
+        font-size: 26px !important;
+        font-weight: 700 !important;
+        line-height: 1.15 !important;
+        margin: 0 !important;
+    }
+
+    /* Etiquetas */
+
+    #wrapperDash:is(.pg-director-panel, .pg-central-panel,
+                   .pg-director-principal, .pg-central-principal)
+    .kpi-label-dash {
+
+        position: relative;
+        z-index: 1;
+        font-size: 12px !important;
+        font-weight: 500 !important;
+        line-height: 1.4 !important;
+        color: #52647c !important;
+        margin: 0 !important;
+        white-space: normal !important;
+    }
+}
+
+
+/* COLOR AZUL CIELO - ENCABEZADO PANEL DE TRANSITO */
+
+#wrapperDash:is(.pg-director-panel, .pg-central-panel,
+               .pg-director-principal, .pg-central-principal)
+:is(.hero-eyebrow-dash, .hero-kicker-dash, .hero-badge-dash) {
+    color: #bae6fd !important;
+}
+
+#wrapperDash:is(.pg-director-panel, .pg-central-panel,
+               .pg-director-principal, .pg-central-principal)
+:is(.hero-eyebrow-dash, .hero-kicker-dash, .hero-badge-dash) i {
+    color: inherit !important;
+}
+
+
+/* COLOR AZUL CIELO - PANEL PRINCIPAL DE TRANSITO */
+
+#wrapperDash:is(.dt, .ct) .hero-img-dash .eyebrow-img-dash {
+    color: #B9E4FF !important;
+}
+
+#wrapperDash:is(.dt, .ct) .hero-img-dash .eyebrow-img-dash i {
+    color: inherit !important;
+}
+
+
+/* FECHAS DE LAS TABLAS - PANEL PRINCIPAL DE TRANSITO */
+
+#wrapperDash.dt .director-panel table .wait-dash.wait-warn-dash,
+#wrapperDash.ct table .central-date {
+    background-color: #fff3dc !important;
+    color: #a96a10 !important;
+}
+
+
+/* INDICADORES DE CARGA - MODULO DE TRANSITO */
+
+#wrapperDash:is(.dt, .ct, .ag) .alert.alert-info[role="status"] {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+
+    padding: 24px 16px !important;
+    margin-bottom: 20px;
+
+    background: #ffffff !important;
+    border: 1px solid #e1e8f2 !important;
+    border-radius: 16px !important;
+
+    color: #517aac !important;
+    font-size: 13px;
+    font-weight: 500;
+    text-align: center;
+
+    box-shadow: 0 4px 16px rgba(45, 96, 156, .04);
+}
+
+/* Circulo de carga animado */
+
+#wrapperDash:is(.dt, .ct, .ag) .alert.alert-info[role="status"]::before {
+    content: "";
+    display: block;
+
+    width: 30px;
+    height: 30px;
+
+    border: 3px solid #e5edf7;
+    border-top-color: #517aac;
+    border-radius: 50%;
+
+    animation: cargaTransito .85s linear infinite;
+}
+
+/* Animacion */
+
+@keyframes cargaTransito {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Ajuste compacto para celular */
+
+@media (max-width: 768px) {
+
+    #wrapperDash:is(.dt, .ct, .ag) .alert.alert-info[role="status"] {
+        padding: 18px 12px !important;
+        gap: 9px;
+        border-radius: 13px !important;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #wrapperDash:is(.dt, .ct, .ag) .alert.alert-info[role="status"]::before {
+        animation: none;
+    }
+}
+
+
+/* CARGA MINIMALISTA - TRANSITO */
+
+#wrapperDash:is(.dt, .ct, .ag)
+.alert.alert-info[role="status"] {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    gap: 10px !important;
+    padding: 14px 8px !important;
+    margin: 8px 0 !important;
+
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+
+    font-size: 0 !important;
+}
+
+#wrapperDash:is(.dt, .ct, .ag)
+.alert.alert-info[role="status"]::before {
+    content: "";
+    display: block;
+
+    width: 20px !important;
+    height: 20px !important;
+    flex-shrink: 0;
+
+    border: 2px solid #dce6f3;
+    border-top-color: #517aac;
+    border-radius: 50%;
+
+    animation: cargaTransito .85s linear infinite;
+}
+
+#wrapperDash:is(.dt, .ct, .ag)
+.alert.alert-info[role="status"]::after {
+    content: "Actualizando informaci\00f3n...";
+
+    font-size: 13px;
+    font-weight: 500;
+    color: #517aac;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #wrapperDash:is(.dt, .ct, .ag)
+    .alert.alert-info[role="status"]::before {
+        animation: none;
+    }
+}
+
+
+/* KPI PRINCIPAL CENTRAL - ALINEACION MOVIL */
+
+@media (max-width: 768px) {
+
+    #wrapperDash.pg-central-panel
+    :is(.kpi-dash, .kpi-card-dash) {
+        position: relative !important;
+        min-height: 94px !important;
+        padding: 12px 14px !important;
+
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+
+        gap: 8px !important;
+        overflow: hidden !important;
+        border-radius: 15px !important;
+    }
+
+    /* Iconos arriba a la derecha */
+
+    #wrapperDash.pg-central-panel
+    :is(.kpi-icon-dash, .kpi-bg-dash, .kpi-icon-bg,
+        .kpi-watermark, .kpi-bg-icon) {
+        position: absolute !important;
+
+        top: 12px !important;
+        right: 14px !important;
+        bottom: auto !important;
+        left: auto !important;
+
+        width: 43px !important;
+        height: 43px !important;
+        font-size: 43px !important;
+        line-height: 1 !important;
+
+        opacity: .40 !important;
+        transform: none !important;
+        pointer-events: none !important;
+    }
+
+    #wrapperDash.pg-central-panel
+    :is(.kpi-icon-dash, .kpi-bg-dash, .kpi-icon-bg,
+        .kpi-watermark, .kpi-bg-icon) i {
+        font-size: 43px !important;
+    }
+
+    /* Numeros alineados */
+
+    #wrapperDash.pg-central-panel
+    :is(.kpi-num-dash, .kpi-value-dash) {
+        position: relative;
+        z-index: 1;
+        margin: 0 48px 0 0 !important;
+        line-height: 1.2 !important;
+    }
+
+    /* Etiquetas debajo del numero */
+
+    #wrapperDash.pg-central-panel .kpi-label-dash {
+        position: relative;
+        z-index: 1;
+
+        width: 100% !important;
+        margin: 0 !important;
+
+        font-size: 12px !important;
+        font-weight: 600 !important;
+        line-height: 1.4 !important;
+
+        color: #ffffff !important;
+        text-align: left !important;
+        white-space: normal !important;
+    }
+}
+
+
+/* RECUPERAR TEXTOS KPI PRINCIPAL CENTRAL */
+
+#wrapperDash.pg-central-panel
+:is(.kpi-dash, .kpi-card-dash)
+:is(.kpi-label-dash, .kpi-label, .kpi-text-dash, p, small) {
+    color: #52647c !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    line-height: 1.4 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    position: relative !important;
+    z-index: 2 !important;
+    text-align: left !important;
+    white-space: normal !important;
+}
+
+
+/* KPI PRINCIPAL CENTRAL - MISMO ESTILO DEL DIRECTOR */
+
+@media (max-width: 768px) {
+
+    #wrapperDash.pg-central-panel
+    :is(.kpi-dash, .kpi-card-dash) {
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        align-items: flex-start !important;
+
+        min-height: 96px !important;
+        height: 100% !important;
+        padding: 12px 14px 12px 17px !important;
+        gap: 6px !important;
+
+        border-radius: 15px !important;
+        background: #ffffff !important;
+        border: 1px solid #dfe6f0 !important;
+        box-shadow: 0 3px 10px rgba(45, 96, 156, .035) !important;
+    }
+
+    /* Numeros */
+
+    #wrapperDash.pg-central-panel
+    :is(.kpi-num-dash, .kpi-value-dash) {
+        font-size: 26px !important;
+        font-weight: 700 !important;
+        line-height: 1.15 !important;
+        margin: 0 !important;
+        z-index: 2 !important;
+    }
+
+    /* Etiquetas suaves como las del Director */
+
+    #wrapperDash.pg-central-panel
+    :is(.kpi-dash, .kpi-card-dash)
+    :is(.kpi-label-dash, .kpi-label, .kpi-text-dash, p, small) {
+        font-family: "Inter", sans-serif !important;
+        font-size: 12px !important;
+        font-weight: 400 !important;
+        line-height: 1.4 !important;
+
+        color: #52647c !important;
+        margin: 0 !important;
+        padding: 0 !important;
+
+        text-align: left !important;
+        white-space: normal !important;
+        position: relative !important;
+        z-index: 2 !important;
+    }
+
+    /* Iconos decorativos */
+
+    #wrapperDash.pg-central-panel
+    :is(.kpi-icon-dash, .kpi-bg-dash, .kpi-icon-bg,
+        .kpi-watermark, .kpi-bg-icon) {
+        position: absolute !important;
+        top: 50% !important;
+        right: 8px !important;
+
+        width: 68px !important;
+        height: 68px !important;
+        font-size: 68px !important;
+
+        opacity: .13 !important;
+        transform: translateY(-50%) !important;
+        pointer-events: none !important;
+        z-index: 0 !important;
+    }
+
+    #wrapperDash.pg-central-panel
+    :is(.kpi-icon-dash, .kpi-bg-dash, .kpi-icon-bg,
+        .kpi-watermark, .kpi-bg-icon) i {
+        font-size: 68px !important;
+    }
+}
+
+
+/* ALINEACION DE ENCABEZADOS - CENTRAL DE TRANSITO */
+
+@media (max-width: 768px) {
+
+    #wrapperDash.ct
+    :is(.st-header, .hero-page-dash, .section-header-dash) {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+
+    #wrapperDash.ct
+    :is(.st-header, .hero-page-dash, .section-header-dash)
+    :is(h1, p, .st-eyebrow, .eyebrow-dash, .section-title-dash) {
+        margin-left: 0 !important;
+        padding-left: 0 !important;
+        text-align: left !important;
+    }
+}
+

@@ -184,7 +184,7 @@ export async function listarSeguimientos() {
         puedeRegistrarInforme:
           normalizarEstado(estadoAlerta) === "EN_ATENCION" &&
           normalizarEstado(estadoAsignacion) === "EN_ATENCION" &&
-          estadoAtencion !== "FINALIZADA",
+          ["PENDIENTE", "EN_PROCESO"].includes(estadoAtencion),
       });
     }
   }
@@ -211,6 +211,9 @@ export async function registrarInformeFinal(caso, datos) {
   }
   // Consultar el backend antes de crear: evita duplicar una atención si otra
   // persona de Central la registró después de la última actualización.
+  const vigentes = await listarSeguimientos();
+  const vigente = vigentes.find(c => mismoId(c.idAsignacion, idAsignacion));
+  if (!vigente?.puedeRegistrarInforme) throw new Error("El caso ya no admite registrar el informe.");
   const atenciones = await solicitarLista(`${RUTAS.atenciones}/alerta/${idAlerta}`);
   const coincidentes = atenciones.filter((a) => {
     const asignacion = numero(tomar(a, "idAsignacion", "asignacionId"));
@@ -288,13 +291,8 @@ export async function marcarAlertaResuelta(caso) {
   ) {
     throw new Error("Todas las asignaciones deben estar FINALIZADA antes de resolver la alerta.");
   }
-  const atencion = atenciones.find(
-    (a) =>
-      numero(tomar(a, "idAsignacion", "asignacionId")) ===
-        numero(caso?.idAsignacion) ||
-      numero(tomar(a, "idUnidadTransito", "unidadTransitoId")) ===
-        numero(caso?.idUnidadTransito)
-  );
+  const asignacion = deAlerta.find(a => mismoId(tomar(a, "idAsignacion", "asignacionId"), caso?.idAsignacion));
+  const atencion = asignacion ? buscarAtencion(asignacion, atenciones) : null;
   if (!atencion || normalizarEstado(atencion.estadoFinal) !== "FINALIZADA") {
     throw new Error("Central debe finalizar el informe de atención antes de cerrar la alerta.");
   }

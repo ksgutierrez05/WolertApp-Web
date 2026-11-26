@@ -31,7 +31,12 @@ const MENU = [
         icon: "bi-car-front-fill",
       },
       {
-        id: "agentes",
+        id: "solicitudes-apoyo",
+        label: "Solicitudes de apoyo",
+        href: `${BASE}/solicitudes-apoyo`,
+        icon: "bi-arrow-left-right",
+      },
+{ id: "agentes",
         label: "Agentes",
         href: `${BASE}/agentes`,
         icon: "bi-people",
@@ -53,6 +58,12 @@ const MENU = [
   {
     seccion: "Gestión",
     items: [
+      {
+        id: "tipos-alertas",
+        label: "Tipos de alertas",
+        href: `${BASE}/tipos-alertas`,
+        icon: "bi-shield-exclamation",
+      },
       {
         id: "reportes",
         label: "Informes",
@@ -97,8 +108,8 @@ export default function Sidebar({ activo }) {
         </span>
 
         <span className="brand-name-dash">
-          <span className="d-block">Central de</span>
-          <span className="d-block">Despacho</span>
+          <span className="d-block">Secretaria de</span>
+          <span className="d-block">Tránsito</span>
         </span>
       </div>
 

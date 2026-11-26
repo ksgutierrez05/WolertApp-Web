@@ -1,3 +1,4 @@
+﻿import "../../css/transito/agente-transito/responsive-agente.css";
 import MapaTransito from "../agentes-transito/MapaTransito";
 
 import { Routes, Route, Navigate } from 'react-router-dom';
@@ -19,3 +20,4 @@ export default function Agente() {
     </Routes>
   );
 }
+

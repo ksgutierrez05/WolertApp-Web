@@ -6,7 +6,6 @@ import {
   obtenerCasosAgente,
   registrarLlegada,
   finalizarAsignacion,
-  casoFinalizado,
   fechaCaso,
 } from "../../Services/agenteTransitoService";
 import "../../css/transito/agente-transito/panel-grupo.css";
@@ -110,6 +109,7 @@ function NotificacionGrupo({ item, cerrar }) {
 export default function Grupo() {
   const [grupo, setGrupo] = useState(null);
   const [casos, setCasos] = useState([]);
+  const [casosVerificados, setCasosVerificados] = useState(false);
   const [cargando, setCargando] = useState(true);
   const [procesando, setProcesando] = useState(null);
   const [notificaciones, setNotificaciones] = useState([]);
@@ -135,6 +135,7 @@ export default function Grupo() {
     } else {
       fallos.push(resultadoGrupo.reason?.message || "No se pudo cargar la unidad.");
     }
+    setCasosVerificados(resultadoCasos.status === "fulfilled");
     if (resultadoCasos.status === "fulfilled") {
       setCasos(Array.isArray(resultadoCasos.value) ? resultadoCasos.value : []);
     } else {
@@ -209,11 +210,11 @@ export default function Grupo() {
   }
   const unidad = grupo?.unidad;
   const integrantes = grupo?.integrantes ?? [];
-  const activas = casos.filter((caso) => !casoFinalizado(caso));
+  const activas = casos.filter(caso => !["RESUELTA", "CANCELADA"].includes(normalizar(caso.estadoAlerta)));
   const nombreUnidad = unidad?.nombre || unidad?.nombreUnidad || "Mi grupo";
   const zona =
     unidad?.nombreBarrio || unidad?.nombreComuna || unidad?.zona || "Zona no registrada";
-  const estadoUnidad = unidad?.estado || "Estado no disponible";
+  const estadoUnidad = activas.length ? "OCUPADO" : !casosVerificados ? "Estado por verificar" : unidad?.estado || "Estado no disponible";
   return (
     <Layout
       rol="agente"
@@ -323,6 +324,7 @@ export default function Grupo() {
                   })}
                 </div>
               </div>
+              {estado === "FINALIZADA" && <p className="config-text-dash">Asignación finalizada. Esperando que Central cierre la alerta.</p>}
               <div className="d-flex justify-content-end flex-wrap gap-2 mt-3">
                 {(estado === "ASIGNADA" || estado === "EN_ATENCION") && (
                   <button
@@ -369,7 +371,7 @@ export default function Grupo() {
           const estado = String(
             integrante.estadoAgente || integrante.estado || "Sin estado"
           );
-          const disponible = ["ACTIVO", "DISPONIBLE", "EN_SERVICIO"].includes(
+          const disponible = casosVerificados && normalizar(unidad?.estado) === "OPERATIVA" && activas.length === 0 && ["ACTIVO", "DISPONIBLE", "EN_SERVICIO"].includes(
             normalizar(estado)
           );
           return (
@@ -389,7 +391,7 @@ export default function Grupo() {
                   disponible ? "estado-resuelta-dash" : "estado-atencion-dash"
                 }`}
               >
-                {estado.replaceAll("_", " ")}
+                {activas.length ? "Ocupado" : !casosVerificados ? "Por verificar" : disponible ? "Disponible" : "No disponible"}
               </span>
             </div>
           );

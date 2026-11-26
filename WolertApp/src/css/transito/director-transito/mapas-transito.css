@@ -799,3 +799,77 @@
         font-size: 10px;
     }
 }
+
+/* ENCABEZADO MAPA DE OPERACIONES - DIRECTOR */
+
+#wrapperDash.pg-director-mapa .sem-ops-eyebrow {
+    font-family: "Inter", sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.6px;
+    color: #517aac;
+    margin-bottom: 6px;
+}
+
+#wrapperDash.pg-director-mapa .sem-ops-head h1 {
+    font-family: "Space Grotesk", Inter, sans-serif !important;
+    font-size: clamp(22px, 2.3vw, 27px) !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.9px;
+    line-height: 1.15;
+    color: #183b64 !important;
+    margin: 0 0 7px;
+}
+
+#wrapperDash.pg-director-mapa .sem-ops-head p {
+    font-family: "Inter", sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #718198;
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    #wrapperDash.pg-director-mapa .sem-ops-head {
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+}
+
+
+/* ENCABEZADO MAPA - ESTILO INSTITUCIONAL */
+
+.sem-ops:not(.sem-ops-compacto) .sem-ops-eyebrow {
+    font-family: "Inter", sans-serif !important;
+    font-size: 12px !important;
+    font-weight: 800 !important;
+    letter-spacing: 1.8px !important;
+    color: #517aac !important;
+    line-height: 1.5 !important;
+    margin-bottom: 10px !important;
+}
+
+.sem-ops:not(.sem-ops-compacto) .sem-ops-head h1 {
+    font-family: "Space Grotesk", Inter, sans-serif !important;
+    font-size: 30px !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.8px !important;
+    line-height: 1.2 !important;
+    color: #203752 !important;
+    margin: 0 0 8px !important;
+}
+
+.sem-ops:not(.sem-ops-compacto) .sem-ops-head p {
+    font-family: "Inter", sans-serif !important;
+    font-size: 16px !important;
+    font-weight: 400 !important;
+    line-height: 1.6 !important;
+    color: #74859c !important;
+    margin: 0 !important;
+}
+
+.sem-ops:not(.sem-ops-compacto) .sem-ops-head {
+    margin-bottom: 24px !important;
+}
+

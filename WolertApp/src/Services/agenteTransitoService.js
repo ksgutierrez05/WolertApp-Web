@@ -839,7 +839,7 @@ export async function obtenerCasosAgente() {
           idDeUnidad(asignacion)
         );
 
-        return coincideAlerta && coincideUnidad;
+        return coincideAlerta && coincideUnidad && (atencion.idAsignacion == null || iguales(atencion.idAsignacion, asignacion.idAsignacion));
       })
       .sort(
         (a, b) =>
@@ -873,11 +873,11 @@ export async function obtenerCasosAgente() {
       ),
 
       estadoAlerta: normalizarCentral(
-        alerta?.estado
+        alerta?.estadoAlerta ?? alerta?.estado
       ),
 
       estadoAtencion: normalizarCentral(
-        atencion?.estadoFinal
+        atencion?.estadoFinal ?? atencion?.estadoAtencion ?? "PENDIENTE"
       ),
 
       idAtencionTransito:
@@ -978,6 +978,11 @@ export async function finalizarAsignacion(
     );
   }
 
+  const casos = await obtenerCasosAgente();
+  const caso = casos.find(c => Number(c.idAsignacion) === id);
+  if (caso?.estadoAlerta !== "EN_ATENCION" || caso?.estadoAsignacion !== "EN_ATENCION" || caso?.estadoAtencion !== "FINALIZADA") {
+    throw new Error("Central debe finalizar la atención antes de finalizar la asignación.");
+  }
   return consultarTransito(
     `/api/Asignaciones/${id}/finalizar`,
     {

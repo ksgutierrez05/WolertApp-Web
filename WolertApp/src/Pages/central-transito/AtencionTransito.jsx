@@ -72,7 +72,7 @@ const puedeMostrarInforme = (caso) => ["EN_ATENCION", "RESUELTA"].includes(estad
 const puedeRegistrarInforme = (caso) =>
   estadoDeAlerta(caso) === "EN_ATENCION" &&
   normalizarEstado(caso?.estadoAsignacion) === "EN_ATENCION" &&
-  estadoDeAtencion(caso) !== "FINALIZADA";
+  ["PENDIENTE", "EN_PROCESO"].includes(estadoDeAtencion(caso));
 
 const puedeResolver = (caso) =>
   estadoDeAlerta(caso) === "EN_ATENCION" &&
@@ -374,7 +374,7 @@ export default function SeguimientoCasos() {
   };
 
   const resolver = async () => {
-    if (!seleccionado || guardando) return;
+    if (!seleccionado || guardando || !puedeResolver(seleccionado)) return;
     setConfirmarResolucion(false);
     guardandoRef.current = true;
     setGuardando(true);
@@ -431,6 +431,8 @@ export default function SeguimientoCasos() {
       if (!montadoRef.current) return;
       const casoActualizado = {
         ...seleccionado,
+        estadoAtencion: "FINALIZADA",
+        estadoFinalAtencion: "FINALIZADA",
         descripcionAtencion: nuevaDescripcion,
         observacionAtencion: nuevaObservacion,
       };
@@ -821,7 +823,7 @@ export default function SeguimientoCasos() {
                   <div className="st-form">
                     <h3>Informe final recibido por radio</h3>
                     <p>Consulta el informe registrado de la atención de tránsito.</p>
-                    {!editando ? (
+                    {!editando || !puedeRegistrarInforme(seleccionado) ? (
                       <>
                         <label>Descripción de la atención</label>
                         <div className="st-original">{texto(descripcion, "Sin descripción registrada")}</div>

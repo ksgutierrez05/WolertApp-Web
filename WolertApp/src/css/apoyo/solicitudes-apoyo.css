@@ -1,0 +1,571 @@
+
+.sap {
+  --sap-primary: #517aac;
+  --sap-secondary: #2d609c;
+  --sap-text: #203752;
+  --sap-muted: #74859c;
+  font-family: Inter, sans-serif;
+  color: var(--sap-text);
+  min-width: 0;
+}
+
+.sap.sap-policia {
+  --sap-primary: #2f8f57;
+  --sap-secondary: #1a6b3d;
+}
+
+.sap * {
+  box-sizing: border-box;
+}
+
+.sap-header {
+  margin: 0 0 24px;
+  padding: 0;
+}
+
+.sap-eyebrow {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1.6px;
+  color: var(--sap-primary);
+  margin-bottom: 8px;
+}
+
+.sap-header h1 {
+  font-family: "Space Grotesk", Inter, sans-serif;
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -.8px;
+  margin: 0 0 6px;
+  color: var(--sap-text);
+}
+
+.sap-header p,
+.sap-modal-header p {
+  color: var(--sap-muted);
+  font-size: 15px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* KPI CARDS */
+
+.sap-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.sap-kpi {
+  --kpi-color: #2363ab;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 6px;
+  background: #fff;
+  border: 1px solid #dfe6f0;
+  border-radius: 16px;
+  padding: 17px 16px 17px 19px;
+  min-height: 112px;
+  box-shadow: 0 4px 12px #183b6405;
+}
+
+.sap-red {
+  --kpi-color: #d11932;
+}
+
+.sap-green {
+  --kpi-color: #16965b;
+}
+
+.sap-amber {
+  --kpi-color: #ce871b;
+}
+
+.sap-blue {
+  --kpi-color: #2363ab;
+}
+
+.sap-kpi::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--kpi-color);
+}
+
+.sap-kpi strong {
+  font-size: 29px;
+  line-height: 1.1;
+  color: var(--kpi-color);
+  font-weight: 700;
+  z-index: 1;
+}
+
+.sap-kpi span {
+  font-size: 13px;
+  font-weight: 400;
+  color: #52647c;
+  line-height: 1.4;
+  z-index: 1;
+}
+
+.sap-kpi-icono {
+  position: absolute;
+  right: 9px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 74px;
+  color: var(--kpi-color);
+  opacity: .13;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* PANEL */
+
+.sap-panel {
+  background: white;
+  border: 1px solid #e0e7f0;
+  border-radius: 18px;
+  padding: 24px;
+  min-width: 0;
+}
+
+.sap-panel h2 {
+  font-size: 20px;
+  font-weight: 750;
+  margin: 0 0 18px;
+}
+
+.sap-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.sap-tabs button {
+  border: 0;
+  background: #edf1f7;
+  color: #687b94;
+  padding: 10px 18px;
+  border-radius: 30px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.sap-tabs button.activo {
+  background: var(--sap-primary);
+  color: white;
+}
+
+.sap-herramientas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.sap-buscador {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+  padding: 10px 14px;
+  background: #f3f5f9;
+  border-radius: 12px;
+  color: #74859c;
+}
+
+.sap-buscador input {
+  background: transparent;
+  border: 0;
+  outline: 0;
+  width: 100%;
+  min-width: 0;
+  font-size: 13px;
+}
+
+.sap-herramientas select {
+  background: white;
+  border: 1px solid #dfe6f0;
+  border-radius: 12px;
+  padding: 10px;
+  color: #52647c;
+  font-size: 13px;
+}
+
+/* TABLA */
+
+.sap-tabla-scroll {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.sap-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  min-width: 780px;
+}
+
+.sap-tabla th {
+  background: #f2f5fa;
+  color: #687b94;
+  padding: 14px;
+  text-align: left;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.sap-tabla td {
+  padding: 16px 14px;
+  border-bottom: 1px solid #edf1f6;
+  vertical-align: middle;
+}
+
+.sap-tabla td:nth-child(3) {
+  min-width: 180px;
+  overflow-wrap: anywhere;
+}
+
+.sap-tabla td small {
+  display: block;
+  color: var(--sap-muted);
+  margin-top: 5px;
+}
+
+.sap-fecha {
+  display: inline-block;
+  background: #fff7e4;
+  color: #96701d;
+  padding: 6px 9px;
+  border-radius: 8px;
+  font-size: 11px;
+}
+
+.sap-estado {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  background: #edf1f7;
+  color: #687b94;
+}
+
+.sap-estado-pendiente {
+  background: #fff3da;
+  color: #a87417;
+}
+
+.sap-estado-aceptada,
+.sap-estado-finalizada {
+  background: #e5f5eb;
+  color: #218451;
+}
+
+.sap-estado-rechazada {
+  background: #fce9eb;
+  color: #c83949;
+}
+
+.sap-estado-en_camino {
+  background: #e7effb;
+  color: #3267a6;
+}
+
+.sap-ver {
+  border: 0;
+  border-radius: 9px;
+  background: #edf2f8;
+  color: var(--sap-secondary);
+  padding: 8px 12px;
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* CARGA Y ESTADOS VACIOS */
+
+.sap-vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+  padding: 42px 16px;
+  color: var(--sap-muted);
+}
+
+.sap-vacio > i {
+  font-size: 42px;
+  color: #a6b9cf;
+}
+
+.sap-vacio p {
+  font-size: 13px;
+  margin: 0;
+}
+
+.sap-spinner {
+  width: 30px;
+  height: 30px;
+  border: 3px solid #e2eaf4;
+  border-top-color: var(--sap-primary);
+  border-radius: 50%;
+  animation: sap-girar .8s linear infinite;
+}
+
+@keyframes sap-girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.sap-error,
+.sap-mensaje {
+  background: #f0f4fa;
+  color: var(--sap-text);
+  padding: 13px;
+  border-radius: 10px;
+  font-size: 13px;
+  margin: 12px 0;
+}
+
+.sap-error button {
+  margin-left: 10px;
+  border: 0;
+  background: transparent;
+  color: var(--sap-secondary);
+  font-weight: 700;
+}
+
+/* MODAL */
+
+.sap-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: #152d4b55;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+}
+
+.sap-modal {
+  background: white;
+  border-radius: 20px;
+  width: min(100%, 620px);
+  max-height: 90dvh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px #152d4b25;
+}
+
+.sap-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 24px;
+  border-bottom: 1px solid #e6edf5;
+}
+
+.sap-modal-header h2 {
+  font-family: "Space Grotesk", Inter, sans-serif;
+  font-weight: 750;
+  font-size: 24px;
+  margin: 0 0 5px;
+}
+
+.sap-cerrar {
+  border: 0;
+  background: #edf2f8;
+  color: var(--sap-secondary);
+  border-radius: 10px;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+}
+
+.sap-modal-body {
+  padding: 24px;
+}
+
+.sap-datos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.sap-datos > div,
+.sap-motivo {
+  background: #f6f8fb;
+  border: 1px solid #e5ebf3;
+  border-radius: 12px;
+  padding: 14px;
+  overflow-wrap: anywhere;
+}
+
+.sap-datos small {
+  display: block;
+  font-size: 11px;
+  color: var(--sap-muted);
+  margin-bottom: 8px;
+}
+
+.sap-datos strong {
+  font-size: 13px;
+}
+
+.sap-motivo {
+  margin-top: 14px;
+  font-size: 14px;
+}
+
+.sap-motivo p {
+  color: #687b94;
+  margin: 8px 0 0;
+  line-height: 1.5;
+}
+
+.sap-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.sap-btn-principal,
+.sap-btn-rechazar,
+.sap-btn-secundario {
+  border: 0;
+  border-radius: 10px;
+  padding: 11px 17px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.sap-btn-principal {
+  background: var(--sap-secondary);
+  color: white;
+}
+
+.sap-modal-body > .sap-btn-principal {
+  margin-top: 18px;
+}
+
+.sap-btn-rechazar {
+  background: #fce9eb;
+  color: #c83949;
+}
+
+.sap-btn-secundario {
+  background: #edf2f8;
+  color: #52647c;
+}
+
+.sap-confirmacion {
+  margin-top: 20px;
+  padding: 16px;
+  border: 1px solid #e1e8f2;
+  border-radius: 12px;
+}
+
+.sap-confirmacion label {
+  display: block;
+  font-size: 13px;
+  color: #687b94;
+  margin: 14px 0 8px;
+}
+
+.sap-confirmacion textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #dce4ef;
+  border-radius: 10px;
+  resize: vertical;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.sap button:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 768px) {
+  .sap-header {
+    margin-bottom: 22px;
+  }
+
+  .sap-header h1 {
+    font-size: 27px;
+  }
+
+  .sap-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .sap-kpi {
+    min-height: 96px;
+    padding: 12px 11px 12px 15px;
+    border-radius: 14px;
+  }
+
+  .sap-kpi strong {
+    font-size: 26px;
+  }
+
+  .sap-kpi span {
+    font-size: 12px;
+  }
+
+  .sap-kpi-icono {
+    font-size: 65px;
+  }
+
+  .sap-panel {
+    padding: 15px;
+  }
+
+  .sap-tabs button {
+    flex: 1;
+    padding: 10px;
+    font-size: 12px;
+  }
+
+  .sap-herramientas {
+    flex-direction: column;
+  }
+
+  .sap-modal-header,
+  .sap-modal-body {
+    padding: 18px;
+  }
+
+  .sap-acciones > button {
+    flex: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sap-spinner {
+    animation: none;
+  }
+}

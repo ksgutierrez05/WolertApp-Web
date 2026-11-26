@@ -156,7 +156,12 @@ useEffect(() => {
       <div className={`sem-ops${compacto ? " sem-ops-compacto" : ""}`}>
         <header className="sem-ops-head">
           <div>
-            <h1>Mapa de operaciones</h1>
+            {!compacto && (
+  <div className="sem-ops-eyebrow">
+    DIRECCI&Oacute;N DE TR&Aacute;NSITO
+  </div>
+)}
+<h1>Mapa de operaciones</h1>
             <p>Consulta y seguimiento de las operaciones de tránsito</p>
           </div>
           <div className="sem-ops-live">

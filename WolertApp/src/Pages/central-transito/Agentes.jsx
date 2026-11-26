@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import Layout from "../../Components/transito/Layout";
 import KpiCard from "../../Components/transito/KpiCard";
 import {
+  listarOcupacionCentral,
   listarAgentesCentral,
   listarUnidadesCentral,
   listarAtencionesCentral,
@@ -41,6 +42,7 @@ function AvisoAgentes({ aviso, cerrar }) {
 }
 
 export default function Agentes() {
+  const [ocupacion, setOcupacion] = useState(null);
   const [agentes, setAgentes] = useState([]);
   const [unidades, setUnidades] = useState([]);
   const [atenciones, setAtenciones] = useState([]);
@@ -55,12 +57,14 @@ export default function Agentes() {
   useEffect(() => {
     let activo = true;
     async function cargar() {
-      const [a, u, t] = await Promise.allSettled([
+      const [a, u, t, oc] = await Promise.allSettled([
         listarAgentesCentral(),
         listarUnidadesCentral(),
         listarAtencionesCentral(),
+        listarOcupacionCentral(),
       ]);
       if (!activo) return;
+      setOcupacion(oc.status === "fulfilled" ? oc.value : null);
       const mensajes = [];
       if (a.status === "fulfilled") setAgentes(lista(a.value));
       else mensajes.push("No se pudieron cargar los agentes.");
@@ -78,13 +82,15 @@ export default function Agentes() {
       setCargando(false);
     }
     cargar();
+    const intervalo = setInterval(() => { if (!document.hidden) cargar(); }, 10000);
     return () => {
+      clearInterval(intervalo);
       activo = false;
     };
   }, []);
   const datos = useMemo(
-    () => lista(prepararAgentesCentral(agentes, unidades, atenciones)),
-    [agentes, unidades, atenciones]
+    () => lista(prepararAgentesCentral(agentes, unidades, atenciones, ocupacion)),
+    [agentes, unidades, atenciones, ocupacion]
   );
   const contar = (estado) =>
     datos.filter((agente) => agente.estado === estado).length;

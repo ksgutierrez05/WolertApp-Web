@@ -1,0 +1,233 @@
+.cta-hero {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    overflow: hidden;
+    background: linear-gradient(110deg, #e2ecf9, #f1f6fc);
+    border: 1px solid #dce7f5;
+    border-radius: 18px;
+    padding: 30px 35px;
+    margin-bottom: 24px;
+    min-height: 165px;
+}
+
+.cta-eyebrow {
+    font: 700 11px Inter, sans-serif;
+    letter-spacing: 1.5px;
+    color: #517aac;
+}
+
+.cta-hero h1 {
+    font: 700 34px 'Space Grotesk', sans-serif;
+    color: #294d78;
+    margin: 10px 0;
+}
+
+.cta-hero p {
+    font: 400 14px Inter, sans-serif;
+    color: #647e9d;
+    margin: 0;
+}
+
+.cta-hero-icon {
+    font-size: 95px;
+    color: rgba(81, 122, 172, .18);
+    margin-left: 20px;
+}
+
+.cta-indicadores {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 25px;
+}
+
+.cta-kpi {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border: 1px solid transparent;
+    border-radius: 15px;
+    padding: 20px;
+    text-align: left;
+    cursor: pointer;
+    transition: transform .2s, border-color .2s;
+}
+
+.cta-kpi:hover {
+    transform: translateY(-2px);
+}
+
+.cta-kpi.cta-activo {
+    border-color: currentColor;
+}
+
+.cta-kpi-icono {
+    width: 45px;
+    height: 45px;
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    background: rgba(255,255,255,.65);
+    border-radius: 12px;
+    font-size: 21px;
+}
+
+.cta-kpi strong {
+    display: block;
+    font: 700 28px 'Space Grotesk', sans-serif;
+}
+
+.cta-kpi span {
+    font: 500 12px Inter, sans-serif;
+}
+
+.cta-todas {
+    background: #eaf1fb;
+    color: #517aac;
+}
+
+.cta-alta {
+    background: #fcebec;
+    color: #c54b55;
+}
+
+.cta-media {
+    background: #fff5dd;
+    color: #a67b25;
+}
+
+.cta-baja {
+    background: #e6f5ed;
+    color: #31886a;
+}
+
+.cta-panel {
+    background: #ffffff;
+    border: 1px solid #e3eaf3;
+    border-radius: 17px;
+    padding: 25px;
+    font-family: Inter, sans-serif;
+}
+
+.cta-panel-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.cta-panel-head h2 {
+    font: 700 22px 'Space Grotesk', sans-serif;
+    color: #34465f;
+    margin-bottom: 5px;
+}
+
+.cta-panel-head p {
+    font-size: 13px;
+    color: #8391a5;
+    margin: 0;
+}
+
+.cta-consulta,
+.cta-central {
+    display: inline-flex;
+    align-items: center;
+    background: #edf3fb;
+    color: #517aac;
+    border-radius: 20px;
+    padding: 8px 13px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.cta-tabla th {
+    background: #f5f8fc;
+    color: #64748b;
+    font-size: 12px;
+    padding: 15px;
+    white-space: nowrap;
+    border-bottom: 1px solid #e4eaf3;
+}
+
+.cta-tabla td {
+    padding: 17px 15px;
+    color: #64748b;
+    font-size: 13px;
+    border-color: #edf1f6;
+}
+
+.cta-tipo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #34465f;
+}
+
+.cta-tipo-icono {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    color: #517aac;
+    background: #edf3fb;
+    font-size: 17px;
+}
+
+.cta-prioridad {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.cta-punto {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.cta-vacio {
+    text-align: center;
+    padding: 35px 15px;
+    color: #8391a5;
+    font-size: 14px;
+}
+
+.cta-footer {
+    padding-top: 18px;
+    color: #8391a5;
+    font-size: 12px;
+}
+
+@media (max-width: 1100px) {
+    .cta-indicadores {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 550px) {
+    .cta-indicadores {
+        grid-template-columns: 1fr;
+    }
+
+    .cta-hero,
+    .cta-panel {
+        padding: 18px;
+    }
+
+    .cta-hero-icon {
+        display: none;
+    }
+}

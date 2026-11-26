@@ -317,10 +317,28 @@ export function prepararColaCentral(
     );
   });
 }
+// Una asignación finalizada no libera la unidad mientras la alerta siga abierta.
+export async function listarOcupacionCentral() {
+  const [alertas, asignaciones] = await Promise.all([
+    listarAlertasCentral(),
+    consultarTransito("/api/Asignaciones").then(convertirLista),
+  ]);
+  const estados = new Map(alertas.map(a => [String(idAlertaCentral(a)), estadoAlertaCentral(a)]));
+  return asignaciones.filter(a =>
+    (a.idUnidadTransito ?? a.unidadTransitoId) != null &&
+    !["RESUELTA", "CANCELADA"].includes(estados.get(String(a.idAlerta ?? a.alertaId)))
+  );
+}
+
+function unidadOcupada(id, ocupacion) {
+  return id != null && ocupacion.some(a => String(a.idUnidadTransito ?? a.unidadTransitoId) === String(id));
+}
+
 export function prepararAgentesCentral(
   agentes = [],
   unidades = [],
-  atenciones = []
+  atenciones = [],
+  ocupacion = null
 ) {
   return agentes.map((agente) => {
     const nombre = nombreAgenteCentral(agente);
@@ -328,9 +346,10 @@ export function prepararAgentesCentral(
       agente,
       atenciones
     );
-    const actual = casos.find(
-      (caso) => !finalizadaCentral(caso)
-    );
+    const idGrupo = agente.idUnidadTransito ?? agente.unidadTransitoId;
+    const unidad = obtenerUnidadDeAgente(agente, unidades);
+    const abierta = ocupacion?.find(a => idGrupo != null && String(a.idUnidadTransito ?? a.unidadTransitoId) === String(idGrupo));
+    const actual = casos.find(caso => abierta && String(caso.idAlerta ?? caso.alertaId) === String(abierta.idAlerta ?? abierta.alertaId));
     return {
       id: idAgenteCentral(agente),
       nombre,
@@ -341,13 +360,12 @@ export function prepararAgentesCentral(
         "No registrada",
       zona: zonaCentral(agente, unidades),
       grupo: nombreUnidadCentral(agente, unidades),
-      estado: estadoAgenteCentral(
-        agente,
-        atenciones
-      ),
+      estado: ocupacion === null ? "no-disponible" :
+        estadoAgenteCentral(agente, []) === "no-disponible" ? "no-disponible" :
+        abierta ? "atencion" : !unidad || estadoUnidadCentral(unidad) !== "OPERATIVA" ? "no-disponible" : estadoAgenteCentral(agente, []),
       casoActual: actual
         ? tipoCentral(actual)
-        : "Sin caso activo",
+        : abierta ? `Alerta #${abierta.idAlerta ?? abierta.alertaId}` : "Sin caso activo",
       totalAtenciones: casos.length,
       canal:
         agente?.canalRadio ||
@@ -360,7 +378,8 @@ export function prepararAgentesCentral(
 export function prepararGruposCentral(
   unidades = [],
   agentes = [],
-  atenciones = []
+  atenciones = [],
+  ocupacion = null
 ) {
   return unidades.map((unidad) => {
     const id = idUnidadCentral(unidad);
@@ -374,9 +393,10 @@ export function prepararGruposCentral(
         String(idGrupo) === String(id)
       );
     });
-    const disponibles = integrantes.filter(
+    const bloqueado = id == null || ocupacion === null || unidadOcupada(id, ocupacion) || estadoUnidadCentral(unidad) !== "OPERATIVA";
+    const disponibles = bloqueado ? 0 : integrantes.filter(
       (agente) =>
-        estadoAgenteCentral(agente, atenciones) ===
+        estadoAgenteCentral(agente, []) ===
         "disponible"
     ).length;
     return {
@@ -391,8 +411,8 @@ export function prepararGruposCentral(
         "Sin zona registrada",
       totalAgentes: integrantes.length,
       disponibles,
-      estadoUnidad: estadoUnidadCentral(unidad),
-      disponible: estadoUnidadCentral(unidad) === "OPERATIVA",
+      estadoUnidad: ocupacion !== null && unidadOcupada(id, ocupacion) ? "ACTIVA" : estadoUnidadCentral(unidad),
+      disponible: !bloqueado && estadoUnidadCentral(unidad) === "OPERATIVA",
     };
   });
 }
@@ -401,6 +421,17 @@ export async function asignarGrupoCentral(
   nombreUnidad,
   observacion = ""
 ) {
+  const [ocupacion, unidades, alertas] = await Promise.all([
+    listarOcupacionCentral(), listarUnidadesCentral(), listarAlertasCentral(),
+  ]);
+  const coincidencias = unidades.filter(u => normalizarCentral(u.nombre ?? u.nombreUnidad) === normalizarCentral(nombreUnidad));
+  const unidad = coincidencias[0];
+  if (coincidencias.length !== 1 || estadoUnidadCentral(unidad) !== "OPERATIVA" || unidadOcupada(idUnidadCentral(unidad), ocupacion)) {
+    throw new Error("El grupo no está disponible. Central debe cerrar su alerta activa.");
+  }
+  if (!alertas.some(a => String(idAlertaCentral(a)) === String(idAlerta) && estadoAlertaCentral(a) === "PENDIENTE")) {
+    throw new Error("La alerta ya no está pendiente de asignación.");
+  }
   return consultarTransito("/api/Asignaciones/manual", {
     method: "POST",
     body: JSON.stringify({

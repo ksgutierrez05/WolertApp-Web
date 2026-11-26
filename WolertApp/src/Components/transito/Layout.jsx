@@ -1,3 +1,5 @@
+import "../../css/transito/notificaciones-movil.css";
+import MenuMovilTransito from "./MenuMovilTransito";
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import SidebarDirector from './director-transito/SideBar';
@@ -103,6 +105,10 @@ export default function Layout({ rol = 'director', titulo, activo, busqueda, cla
     <div className={`d-flex pg-${rol}-${activo} ${rol === 'director' ? 'dt' : rol === 'central' ? 'ct' : rol === 'agente' ? 'ag' : ''}`} id="wrapperDash">
       <Sidebar activo={activo} />
       <main className="main-dash flex-grow-1">
+
+    {(rol === "director" || rol === "central") && (
+        <MenuMovilTransito />
+    )}
         <div className="container-fluid px-4 py-4">
 
           <div className={`row g-3 align-items-center ${claseTopbar}`}>
@@ -137,7 +143,10 @@ export default function Layout({ rol = 'director', titulo, activo, busqueda, cla
                 {menuNotificacionesAbierto && (
                   <section className="transito-notificaciones__menu" aria-label="Notificaciones de Tránsito">
                     <header className="transito-notificaciones__header">
-                      <strong>Avisos de {cfg.nombre}</strong>
+                      <div className="transito-avisos-titulo">
+        <strong>Notificaciones</strong>
+        <small>{cfg.nombre}</small>
+    </div>
                       <span>{notificacionesNoLeidas} sin leer</span>
                     </header>
                     <div className="transito-notificaciones__lista">
@@ -145,12 +154,12 @@ export default function Layout({ rol = 'director', titulo, activo, busqueda, cla
                         <p className="transito-notificaciones__estado" role="alert">{errorNotificaciones}</p>
                       )}
                       {!errorNotificaciones && cargandoNotificaciones && (
-                        <p className="transito-notificaciones__estado" role="status">Cargando avisos…</p>
+                        <p className="transito-notificaciones__estado" role="status">Cargando avisosâ€¦</p>
                       )}
                       {!errorNotificaciones && !cargandoNotificaciones && listaNotificaciones.length === 0 && (
                         <p className="transito-notificaciones__estado">No hay avisos de Tránsito.</p>
                       )}
-                      {!errorNotificaciones && !cargandoNotificaciones && listaNotificaciones.slice(0, 6).map((notificacion, indice) => {
+                      {!errorNotificaciones && !cargandoNotificaciones && listaNotificaciones.map((notificacion, indice) => {
                         const fecha = fechaNotificacionTransito(notificacion);
                         const fechaTexto = fecha && !Number.isNaN(new Date(fecha).getTime())
                           ? new Date(fecha).toLocaleString('es-CO', { dateStyle: 'short', timeStyle: 'short' })
@@ -212,3 +221,4 @@ export default function Layout({ rol = 'director', titulo, activo, busqueda, cla
     </div>
   );
 }
+

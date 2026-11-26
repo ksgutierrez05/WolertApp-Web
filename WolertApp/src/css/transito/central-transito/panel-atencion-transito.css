@@ -483,3 +483,37 @@
   }
 }
 
+
+/* ALINEACION DE TEXTAREA DEL INFORME */
+
+.st-modal .st-form form {
+    width: 100%;
+    min-width: 0;
+}
+
+.st-modal .st-form label[for="st-descripcion"],
+.st-modal .st-form label[for="st-observacion"] {
+    display: block;
+    margin-bottom: 8px;
+}
+
+.st-modal .st-form #st-descripcion,
+.st-modal .st-form #st-observacion {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    margin: 0 0 16px;
+    padding: 12px;
+    resize: vertical;
+    font-family: Inter, sans-serif;
+}
+
+.st-modal .st-form #st-descripcion {
+    min-height: 120px;
+}
+
+.st-modal .st-form #st-observacion {
+    min-height: 90px;
+}

@@ -1,3 +1,5 @@
+import SolicitudesApoyoTransito from "../central-transito/SolicitudesApoyo";
+import TiposAlertas from "../central-transito/TiposAlertas";
 import { Routes, Route, Navigate } from "react-router-dom";
 
 import MapaTransito from "../central-transito/MapaTransito";
@@ -16,9 +18,11 @@ export default function Central() {
       <Route path="mapa" element={<MapaTransito />} />
       <Route path="panel" element={<Panel />} />
       <Route path="asignar" element={<Casos />} />
+      <Route path="solicitudes-apoyo" element={<SolicitudesApoyoTransito />} />
       <Route path="atencion" element={<AtencionTransito />} />
       <Route path="agentes" element={<Agentes />} />
       <Route path="historial" element={<Historial />} />
+      <Route path="tipos-alertas" element={<TiposAlertas />} />
       <Route path="reportes" element={<Reportes />} />
       <Route path="configuracion" element={<Configuracion />} />
     </Routes>
