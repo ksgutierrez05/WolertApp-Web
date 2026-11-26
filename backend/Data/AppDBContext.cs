@@ -25,6 +25,7 @@ namespace backend.Data
         public DbSet<Semaforo> Semaforos => Set<Semaforo>();
         public DbSet<Alarma> Alarmas => Set<Alarma>();
         public DbSet<Suscripcion> Suscripciones => Set<Suscripcion>();
+        public DbSet<SuscripcionPush> SuscripcionesPush => Set<SuscripcionPush>();
         public DbSet<Notificacion> Notificaciones => Set<Notificacion>();
         public DbSet<AsignacionUnidad> Asignaciones => Set<AsignacionUnidad>();
         public DbSet<AtencionAlerta> AtencionesAlerta => Set<AtencionAlerta>();
