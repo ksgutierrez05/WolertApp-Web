@@ -134,7 +134,7 @@
 
 /* Tipografía de las KPI cards */
 .kpi-central-titulo {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Inter", sans-serif;
   color: #33475f;
   font-size: 0.98rem;
   font-weight: 600;
@@ -142,7 +142,7 @@
 }
 
 .kpi-central-valor {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Inter", sans-serif;
   color: #1c3149;
   font-size: 2.3rem;
   font-weight: 700;
@@ -150,7 +150,7 @@
 }
 
 .kpi-central-descripcion {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Inter", sans-serif;
   color: #6b7c92;
   font-size: 0.82rem;
   font-weight: 500;

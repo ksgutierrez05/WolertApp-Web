@@ -192,3 +192,31 @@
   .config-campos { grid-template-columns: 1fr; }
   .config-card { padding: 16px; }
 }
+
+/* Estilos propios de Configuración de Central Policía. */
+.configuracion-page, .configuracion-page :not(i):not([class*="bi-"]) { font-family: Inter, sans-serif !important; }
+.configuracion-page { background: #f4f6f8; color: #1f2937; }
+.configuracion-main { padding: 24px; }
+.config-header { margin-bottom: 24px; }
+.config-header h1 { color: #1f2937; font-size: 26px; font-weight: 700; }
+.config-header p { color: #64748b; font-size: 14px; }
+.config-banner { border: 1px solid #dce9e3; background: #fff; color: #1f2937; box-shadow: 0 2px 10px rgba(31,41,55,.035); }
+.config-banner span { color: #64786f; }
+.config-banner h2 { color: #1f2937; font-size: 22px; font-weight: 600; }
+.config-banner p { color: #64748b; }
+.config-avatar { background: #ddf5ea; color: #00634f; }
+.config-grid { gap: 24px; }
+.config-columna { gap: 24px; }
+.config-card { padding: 24px; border: 1px solid #e2e8e5; border-radius: 16px; box-shadow: 0 2px 10px rgba(31,41,55,.035); }
+.config-card h3 { color: #1f2937; font-size: 16px; font-weight: 600; }
+.config-dato { min-height: 68px; border-color: #e2e8e5; background: #fff; }
+.config-dato span { color: #64748b; font-size: 12px; }
+.config-dato strong { color: #1f2937; font-size: 14px; font-weight: 500; }
+.config-documento { border: 1px solid #e2e8e5; background: #f8faf9; }
+.config-documento i { color: #00634f; }
+.config-documento span { color: #64748b; font-size: 11px; }
+.config-documento strong { color: #1f2937; font-size: 18px; }
+.config-seguridad-pendiente { display: flex; gap: 12px; align-items: flex-start; padding: 14px; margin: 0; border: 1px solid #e1e8ef; border-radius: 10px; background: #eff3f7; color: #52677b; font: 400 13px/1.55 Inter, sans-serif; }
+.config-seguridad-pendiente::before { content: ""; flex: 0 0 18px; width: 18px; height: 18px; margin-top: 1px; border-radius: 50%; background: #dce6ef; }
+.config-footer { color: #64748b; font-size: 12px; }
+@media (max-width: 650px) { .configuracion-main { padding: 16px; } .config-card { padding: 18px; } }

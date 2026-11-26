@@ -1,11 +1,10 @@
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 
 import Topbar from "../../Components/Central-policia/Topbar";
 import Kpis from "../../Components/Central-policia/Kpicard";
 
 import {
-  cargarNotificacionesCentral,
   campo,
   fechaDe,
   fechaLegible,
@@ -17,6 +16,11 @@ import {
   esUrgente,
   kpisNotificaciones,
 } from "../../Services/notificacionesCentralService";
+import {
+  suscribirNotificacionesCentral,
+} from "../../Services/notificacionesCentralStore";
+import { obtenerEstadoNotificacionesCentral } from "../../Services/notificacionesCentralStore";
+import { leerIdsLeidos, guardarIdsLeidos } from "../../Services/notificacionesEstado";
 
 import "../../css/Policia/central-policia/css/notificaciones.css";
 
@@ -27,47 +31,50 @@ const PESTANAS = [
   { id: "unidades", label: "Unidades" },
   { id: "informes", label: "Informes y cierre" },
 ];
+const POR_PAGINA = 8;
+
+function fechaPartes(valor) {
+  if (!valor || Number.isNaN(new Date(valor).getTime())) return { fecha: "Fecha no disponible", hora: "" };
+  const fecha = new Date(valor);
+  return {
+    fecha: fecha.toLocaleDateString("es-CO", { day: "2-digit", month: "short", year: "numeric" }),
+    hora: fecha.toLocaleTimeString("es-CO", { hour: "2-digit", minute: "2-digit" }),
+  };
+}
 
 function Notificaciones() {
-  const [notificaciones, setNotificaciones] = useState([]);
-  const [cargando, setCargando] = useState(true);
-  const [error, setError] = useState("");
-  const [recarga, setRecarga] = useState(0);
+  const estadoNotificaciones = useSyncExternalStore(
+    suscribirNotificacionesCentral,
+    obtenerEstadoNotificacionesCentral,
+    obtenerEstadoNotificacionesCentral
+  );
+  const [leidas, setLeidas] = useState(leerIdsLeidos);
   const [pestana, setPestana] = useState("todas");
   const [busqueda, setBusqueda] = useState("");
   const [seleccion, setSeleccion] = useState(null);
+  const [pagina, setPagina] = useState(1);
 
   useEffect(() => {
-    const controller = new AbortController();
+    const sincronizar = () => setLeidas(leerIdsLeidos());
+    window.addEventListener("wolertapp:notificaciones", sincronizar);
+    window.addEventListener("storage", sincronizar);
+    return () => {
+      window.removeEventListener("wolertapp:notificaciones", sincronizar);
+      window.removeEventListener("storage", sincronizar);
+    };
+  }, []);
 
-    cargarNotificacionesCentral(controller.signal)
-      .then((lista) => {
-        if (controller.signal.aborted) return;
-
-        setNotificaciones(lista);
-        setError("");
-      })
-      .catch((err) => {
-        if (!controller.signal.aborted) {
-          setError(err.message);
-        }
-      })
-      .finally(() => {
-        if (!controller.signal.aborted) {
-          setCargando(false);
-        }
-      });
-
-    return () => controller.abort();
-  }, [recarga]);
+  const notificaciones = estadoNotificaciones.lista;
+  const cargando = estadoNotificaciones.cargando;
+  const error = estadoNotificaciones.error;
 
   const filtradas = useMemo(() => {
-    return notificaciones.filter((notificacion) => {
+    return notificaciones.filter((notificacion, indice) => {
       const categoria = categoriaNotificacion(notificacion);
 
       const coincidePestana =
         pestana === "todas" ||
-        (pestana === "noLeidas" && noLeida(notificacion)) ||
+        (pestana === "noLeidas" && noLeida(notificacion, leidas, idNotificacion(notificacion) ?? indice)) ||
         pestana === categoria;
 
       const texto = [
@@ -82,17 +89,26 @@ function Notificaciones() {
         texto.includes(busqueda.toLowerCase())
       );
     });
-  }, [notificaciones, pestana, busqueda]);
+  }, [notificaciones, pestana, busqueda, leidas]);
+
+  const totalPaginas = Math.max(1, Math.ceil(filtradas.length / POR_PAGINA));
+  const paginaActual = Math.min(pagina, totalPaginas);
+  const paginaNotificaciones = filtradas.slice((paginaActual - 1) * POR_PAGINA, paginaActual * POR_PAGINA);
 
   const seleccionada = notificaciones.find(
     (n, indice) =>
       String(idNotificacion(n) ?? indice) === seleccion
   );
 
-  function actualizar() {
-    setCargando(true);
-    setError("");
-    setRecarga((n) => n + 1);
+  function marcarLeida(id) {
+    setLeidas(guardarIdsLeidos([...leerIdsLeidos(), String(id)]));
+  }
+
+  function marcarTodasLeidas() {
+    setLeidas(guardarIdsLeidos([
+      ...leerIdsLeidos(),
+      ...notificaciones.map((notificacion, indice) => idNotificacion(notificacion) ?? indice),
+    ]));
   }
 
   function iconoCategoria(categoria) {
@@ -127,21 +143,13 @@ function Notificaciones() {
             </div>
 
             <div className="d-flex flex-wrap gap-2">
-              <button
-                type="button"
-                className="btn btn-outline-success rounded-pill px-3"
-                onClick={actualizar}
-                disabled={cargando}
-              >
-                <i className="bi bi-arrow-clockwise me-1" />
-                Actualizar
-              </button>
+
 
               <button
                 type="button"
-                className="btn btn-cv-azul rounded-pill px-3"
-                disabled
-                title="Pendiente de confirmar endpoint de lectura"
+                className="btn btn-outline-success btn-sm"
+                disabled={!notificaciones.some((notificacion, indice) => noLeida(notificacion, leidas, idNotificacion(notificacion) ?? indice))}
+                onClick={marcarTodasLeidas}
               >
                 <i className="bi bi-check2-all me-1" />
                 Marcar todas como leídas
@@ -161,11 +169,11 @@ function Notificaciones() {
             valores={
               error
                 ? {}
-                : kpisNotificaciones(notificaciones)
+                : kpisNotificaciones(notificaciones, leidas)
             }
           />
 
-          <div className="mb-3">
+          <div className="notif-filtros-panel">
             <div className="input-group">
               <span className="input-group-text">
                 <i className="bi bi-search" />
@@ -177,12 +185,12 @@ function Notificaciones() {
                 placeholder="Buscar por título o mensaje..."
                 aria-label="Buscar notificaciones"
                 value={busqueda}
-                onChange={(e) => setBusqueda(e.target.value)}
+                onChange={(e) => { setBusqueda(e.target.value); setPagina(1); }}
               />
             </div>
           </div>
 
-          <div className="notif-tabs-dash mb-3">
+          <div className="notif-tabs-dash">
             {PESTANAS.map((tab) => (
               <button
                 key={tab.id}
@@ -190,7 +198,7 @@ function Notificaciones() {
                 className={`notif-tab-dash ${
                   pestana === tab.id ? "active" : ""
                 }`}
-                onClick={() => setPestana(tab.id)}
+                onClick={() => { setPestana(tab.id); setPagina(1); }}
               >
                 {tab.label}
               </button>
@@ -217,61 +225,64 @@ function Notificaciones() {
                 </span>
               </div>
             ) : (
-              <div className="d-flex flex-column gap-2">
-                {filtradas.map((notificacion, indice) => {
+              <div className="notif-lista">
+                {paginaNotificaciones.map((notificacion) => {
                   const categoria =
                     categoriaNotificacion(notificacion);
 
                   const identificador = String(
-                    idNotificacion(notificacion) ?? indice
+                    idNotificacion(notificacion) ?? notificaciones.indexOf(notificacion)
                   );
+                  const partesFecha = fechaPartes(fechaDe(notificacion));
+                  const estaLeida = !noLeida(notificacion, leidas, identificador);
 
                   return (
                     <button
                       key={identificador}
                       type="button"
-                      className="card border-0 shadow-sm w-100 text-start"
+                      className={`notif-fila ${estaLeida ? "leida" : "no-leida"}`}
                       onClick={() => setSeleccion(identificador)}
                     >
-                      <div className="card-body d-flex align-items-start gap-3">
-                        <div className="fs-4 text-success">
+                      <div className="notif-fila-contenido">
+                        <div className={`notif-icon-dash notif-icon-${categoria}`}>
                           <i
                             className={`bi ${iconoCategoria(categoria)}`}
                           />
                         </div>
 
-                        <div className="flex-grow-1">
-                          <div className="d-flex align-items-center flex-wrap gap-2 mb-1">
-                            <strong>
+                        <div className="notif-contenido">
+                          <div className="notif-cabecera">
+                            <div className="notif-titulo-grupo">
+                              <strong className="notif-titulo">
                               {tituloNotificacion(notificacion)}
-                            </strong>
+                              </strong>
 
-                            {noLeida(notificacion) && (
-                              <span className="badge text-bg-primary">
+                            {noLeida(notificacion, leidas, identificador) && (
+                              <span className="notif-estado-unread">
                                 Sin leer
                               </span>
                             )}
 
                             {esUrgente(notificacion) && (
-                              <span className="badge text-bg-danger">
+                              <span className="notif-estado-urgente">
                                 Urgente
                               </span>
                             )}
+                            </div>
+                            <time className="notif-fecha" dateTime={fechaDe(notificacion) || undefined}>
+                              <span>{partesFecha.fecha}</span>
+                              {partesFecha.hora && <span>{partesFecha.hora}</span>}
+                            </time>
                           </div>
 
-                          <p className="text-muted mb-2">
+                          <p className="notif-mensaje">
                             {mensajeNotificacion(notificacion)}
                           </p>
 
-                          <small className="text-secondary">
-                            <i className="bi bi-clock me-1" />
-                            {fechaLegible(
-                              fechaDe(notificacion)
-                            )}
-                          </small>
+                          <span className="notif-categoria-label">{categoria}</span>
                         </div>
 
-                        <i className="bi bi-chevron-right text-muted" />
+                        <i className="bi bi-chevron-right notif-chevron" />
                       </div>
                     </button>
                   );
@@ -279,6 +290,19 @@ function Notificaciones() {
               </div>
             )}
           </section>
+
+          {!cargando && !error && filtradas.length > 0 && (
+            <nav className="notif-paginacion" aria-label="Paginación de notificaciones">
+              <span>Mostrando {(paginaActual - 1) * POR_PAGINA + 1}–{Math.min(paginaActual * POR_PAGINA, filtradas.length)} de {filtradas.length} notificaciones</span>
+              <div className="notif-paginacion-controles">
+                <button type="button" disabled={paginaActual <= 1} onClick={() => setPagina((actual) => Math.max(1, actual - 1))}><i className="bi bi-chevron-left" /> Anterior</button>
+                {Array.from({ length: totalPaginas }, (_, indice) => indice + 1).map((numero) => (
+                  <button key={numero} type="button" className={paginaActual === numero ? "activa" : ""} aria-current={paginaActual === numero ? "page" : undefined} onClick={() => setPagina(numero)}>{numero}</button>
+                ))}
+                <button type="button" disabled={paginaActual >= totalPaginas} onClick={() => setPagina((actual) => Math.min(totalPaginas, actual + 1))}>Siguiente <i className="bi bi-chevron-right" /></button>
+              </div>
+            </nav>
+          )}
 
           {seleccionada && (
             <section className="card-panel-dash p-4 mt-3">
@@ -324,10 +348,18 @@ function Notificaciones() {
                 )}
               </div>
 
-              <p className="text-muted small mt-3 mb-0">
-                Consultar el detalle no modifica el estado
-                de lectura en el servidor.
-              </p>
+              {noLeida(seleccionada, leidas, seleccion) ? (
+                <button
+                  type="button"
+                  className="btn btn-outline-success btn-sm mt-3"
+                  onClick={() => marcarLeida(idNotificacion(seleccionada) ?? seleccion)}
+                >
+                  <i className="bi bi-check2 me-1" />
+                  Marcar como leída
+                </button>
+              ) : (
+                <span className="text-muted small d-block mt-3">Notificación leída.</span>
+              )}
             </section>
           )}
         </div>

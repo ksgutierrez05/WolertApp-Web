@@ -41,16 +41,19 @@ export async function cargarMapaCentral(signal) {
     } else {
       const [tipo] = entradas[indice];
 
-      errores.push(
-        `${tipo}: ${
-          resultado.reason?.message || 'No disponible'
-        }`
-      );
+      errores.push({
+        tipo,
+        mensaje: `No se pudieron cargar ${tipo === 'alertas' ? 'las alertas' : tipo === 'alarmas' ? 'las alarmas' : 'las unidades'}.`,
+        detalleTecnico: resultado.reason?.technicalDetails || resultado.reason?.message || 'No disponible',
+      });
     }
   });
 
   if (errores.length === 3) {
-    throw new Error(errores.join(' | '));
+    const error = new Error('No fue posible cargar la información del mapa. Inténtalo de nuevo.');
+    error.userMessage = error.message;
+    error.technicalDetails = errores.map(({ tipo, detalleTecnico }) => `${endpoints[tipo]}: ${detalleTecnico}`).join('\n');
+    throw error;
   }
 
   return { datos, errores };

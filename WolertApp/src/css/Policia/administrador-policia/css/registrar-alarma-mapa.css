@@ -1,4 +1,3 @@
-
 /* =========================================
    WOLERTAPP
    REGISTRO Y EDICIÓN DE ALARMAS
@@ -11,10 +10,7 @@
 .alarma-confirmacion-fondo,
 .alarmas-crud {
   --alarma-primary: var(--color-primary, #004d40);
-  --alarma-primary-2: var(
-    --color-primary-2,
-    var(--alarma-primary)
-  );
+  --alarma-primary-2: var(--color-primary-2, var(--alarma-primary));
   --alarma-borde: #e1e7e5;
   --alarma-texto: #263e36;
   --alarma-fondo-campo: #f7f8f7;
@@ -117,11 +113,7 @@
 
 .alarma-btn:focus-visible,
 .alarma-accion:focus-visible {
-  outline: 3px solid color-mix(
-    in srgb,
-    var(--alarma-primary) 30%,
-    transparent
-  );
+  outline: 3px solid color-mix(in srgb, var(--alarma-primary) 30%, transparent);
   outline-offset: 2px;
 }
 
@@ -246,11 +238,7 @@
 
   border-radius: 11px;
 
-  background: color-mix(
-    in srgb,
-    var(--alarma-primary) 10%,
-    white
-  );
+  background: color-mix(in srgb, var(--alarma-primary) 10%, white);
 }
 
 .registro-alarma-titulo-icono img {
@@ -620,11 +608,8 @@
 .registro-alarma-form select:focus {
   border-color: var(--alarma-primary);
 
-  box-shadow: 0 0 0 3px color-mix(
-    in srgb,
-    var(--alarma-primary) 10%,
-    transparent
-  );
+  box-shadow: 0 0 0 3px
+    color-mix(in srgb, var(--alarma-primary) 10%, transparent);
 }
 
 .registro-alarma-form input::placeholder {
@@ -750,11 +735,7 @@
 }
 
 .registro-alarma-barrio-opcion:hover {
-  background: color-mix(
-    in srgb,
-    var(--alarma-primary) 8%,
-    white
-  );
+  background: color-mix(in srgb, var(--alarma-primary) 8%, white);
 }
 
 .registro-alarma-barrio-opcion.seleccionado {
@@ -825,19 +806,11 @@
 
   padding: 12px;
 
-  border: 1px solid color-mix(
-    in srgb,
-    var(--alarma-primary) 15%,
-    white
-  );
+  border: 1px solid color-mix(in srgb, var(--alarma-primary) 15%, white);
 
   border-radius: 10px;
 
-  background: color-mix(
-    in srgb,
-    var(--alarma-primary) 6%,
-    white
-  );
+  background: color-mix(in srgb, var(--alarma-primary) 6%, white);
 
   color: var(--alarma-primary);
 }
@@ -1125,4 +1098,58 @@
     transition: none !important;
     animation: none !important;
   }
+}
+
+/* Acciones de tabla: estilo unificado Administrador Policía */
+.alarma-accion.editar,
+.alarma-accion.eliminar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  padding: 0;
+  border-radius: 10px;
+  font-size: 15px;
+  line-height: 1;
+  box-shadow: none;
+  transform: none;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s;
+}
+.alarma-accion.editar {
+  background: #fff4df;
+  border: 1px solid #ffdda0;
+  color: #d88a08;
+}
+.alarma-accion.eliminar {
+  background: #fcebed;
+  border: 1px solid #ffd3d9;
+  color: #ed6677;
+}
+.alarma-accion.editar:hover:not(:disabled) {
+  background: #ffebc4;
+  border-color: #f5c66e;
+  color: #b87500;
+  transform: none;
+  box-shadow: none;
+}
+.alarma-accion.eliminar:hover:not(:disabled) {
+  background: #ffdde2;
+  border-color: #f5aab5;
+  color: #d94b60;
+  transform: none;
+  box-shadow: none;
+}
+.alarma-accion.editar:disabled,
+.alarma-accion.eliminar:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.alarma-accion.editar:focus-visible,
+.alarma-accion.eliminar:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
 }

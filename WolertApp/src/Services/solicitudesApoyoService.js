@@ -52,6 +52,7 @@ async function realizarPeticion(ruta = "", metodo = "GET", cuerpo) {
     throw new Error(
       "No se pudo conectar con el backend. Verifica que esté encendido."
     );
+
   }
 
   const texto = await respuesta.text();
@@ -65,34 +66,34 @@ async function realizarPeticion(ruta = "", metodo = "GET", cuerpo) {
   }
 
   if (!respuesta.ok) {
-    const mensajeError =
-      typeof datos === "string"
-        ? datos
-        : datos?.message ||
-          datos?.mensaje ||
-          datos?.detail ||
-          datos?.title ||
-          "";
+    const detalle = typeof datos === "string"
+      ? datos
+      : datos?.message || datos?.mensaje || datos?.error || datos?.title || texto;
+    const detalleTecnico = String(detalle || "").slice(0, 1000);
+    const mensajeBackend = typeof detalle === "string" ? detalle.trim() : "";
+    const mensajeAmigable = mensajeBackend &&
+      mensajeBackend.length < 180 &&
+      !/exception|stack|\/api\/| at \w+\.|\bselect\b|\binsert\b|\bupdate\b/i.test(mensajeBackend)
+      ? mensajeBackend
+      : null;
+    const mensajesPorEstado = {
+      400: mensajeAmigable || "Revisa la información e inténtalo nuevamente.",
+      401: "Tu sesión expiró. Inicia sesión nuevamente.",
+      403: "No tienes permisos para realizar esta operación.",
+      404: "No se encontró la solicitud de apoyo.",
+      409: mensajeAmigable || "La solicitud cambió y no puede actualizarse en este momento.",
+      422: mensajeAmigable || "La información no cumple con las validaciones requeridas.",
+    };
+    const userMessage = mensajesPorEstado[respuesta.status] ||
+      (respuesta.status >= 500
+        ? "El servidor no pudo completar la operación. Inténtalo de nuevo más tarde."
+        : mensajeAmigable || "No fue posible completar la operación.");
+    const error = new Error(userMessage);
+    error.status = respuesta.status;
+    error.userMessage = userMessage;
+    error.technicalDetails = `/api/SolicitudesApoyo${ruta}: HTTP ${respuesta.status}${detalleTecnico ? ` - ${detalleTecnico}` : ""}`;
+    throw error;
 
-    if (respuesta.status === 401) {
-      throw new Error("Tu sesión ha expirado. Inicia sesión nuevamente.");
-    }
-
-    if (respuesta.status === 403) {
-      throw new Error(
-        "No tienes permisos para realizar esta acción."
-      );
-    }
-
-    if (respuesta.status === 404) {
-      throw new Error(
-        "No se encontró la ruta solicitada en el backend."
-      );
-    }
-
-    throw new Error(
-      mensajeError || `Error HTTP ${respuesta.status}`
-    );
   }
 
   return datos;
@@ -219,3 +220,4 @@ export async function asignarUnidadApoyo(
     datosAsignacion
   );
 }
+

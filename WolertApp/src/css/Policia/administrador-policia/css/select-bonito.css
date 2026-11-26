@@ -1,0 +1,232 @@
+/* =====================================================
+   SELECT BONITO - desplegable personalizado reutilizable
+   ===================================================== */
+
+.sb {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  height: 44px;
+  padding: 0 13px;
+  background: #fbfdfb;
+  border: 1px solid #dce7df;
+  border-radius: 11px;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.sb.sb-campo {
+  height: 41px;
+  background: #fff;
+  border-radius: 10px;
+}
+
+.sb.abierto,
+.sb:focus-within {
+  border-color: #087b58;
+  box-shadow: 0 0 0 3px rgba(8, 123, 88, 0.12);
+}
+
+.sb.activo {
+  background: #edf8f2;
+  border-color: #087b58;
+}
+
+.sb.deshabilitado {
+  opacity: 0.6;
+  background: #f1f4f2;
+}
+
+.sb-boton {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  color: #263d58;
+  font-family: inherit;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.sb-boton:disabled {
+  cursor: not-allowed;
+}
+
+.sb-icono {
+  flex-shrink: 0;
+  font-size: 15px;
+  color: #8495a3;
+}
+
+.sb.activo .sb-icono {
+  color: #087b58;
+}
+
+.sb-texto {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sb-texto.sin-valor {
+  color: #98a5b6;
+}
+
+.sb.activo .sb-texto {
+  color: #087b58;
+  font-weight: 650;
+}
+
+.sb-flecha {
+  flex-shrink: 0;
+  font-size: 12px;
+  color: #8495a3;
+  transition: transform 0.18s ease;
+}
+
+.sb.abierto .sb-flecha {
+  transform: rotate(180deg);
+}
+
+/* Puntos de color */
+.sb-punto {
+  flex-shrink: 0;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+
+.sb-p-rojo { background: #dc3545; }
+.sb-p-ambar { background: #e68a00; }
+.sb-p-verde { background: #07835b; }
+.sb-p-azul { background: #2475d5; }
+.sb-p-gris { background: #b7c3bd; }
+
+/* Botón X */
+.sb-limpiar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  background: rgba(8, 123, 88, 0.12);
+  color: #087b58;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.sb-limpiar i { font-size: 10px; }
+.sb-limpiar:hover { background: rgba(8, 123, 88, 0.24); }
+.sb-limpiar:focus-visible { outline: 2px solid #087b58; outline-offset: 2px; }
+
+/* Menú */
+.sb-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 3000;
+  max-height: 260px;
+  overflow-y: auto;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  background: #fff;
+  border: 1px solid #dce7df;
+  border-radius: 12px;
+  box-shadow: 0 10px 28px rgba(24, 44, 64, 0.14);
+  animation: sb-entrada 0.14s ease;
+}
+
+@keyframes sb-entrada {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.sb-opcion {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 10px;
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
+  color: #263d58;
+  font-family: inherit;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+.sb-opcion:hover,
+.sb-opcion:focus-visible {
+  background: #f1f7f3;
+  outline: 0;
+}
+
+.sb-opcion.seleccionada {
+  background: #e3f4ec;
+  color: #087b58;
+  font-weight: 650;
+}
+
+.sb-opcion-texto {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sb-opcion-cantidad {
+  min-width: 22px;
+  padding: 1px 7px;
+  background: #eef2f0;
+  color: #6b7c8f;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 650;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.sb-opcion.seleccionada .sb-opcion-cantidad {
+  background: rgba(8, 123, 88, 0.14);
+  color: #087b58;
+}
+
+.sb-check {
+  width: 14px;
+  flex-shrink: 0;
+  font-size: 14px;
+  color: #087b58;
+  opacity: 0;
+}
+
+.sb-check.visible { opacity: 1; }
+
+/* Dentro de tarjetas/paneles de Policías: que el menú no quede recortado */
+.panel-filtros-policias,
+.reportes-filtros { overflow: visible; }
+
+@media (prefers-reduced-motion: reduce) {
+  .sb-menu { animation: none; }
+  .sb-flecha, .sb { transition: none; }
+}

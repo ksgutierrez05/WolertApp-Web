@@ -1,0 +1,68 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+
+.rol-patrullero {
+  --pt-green: #0b5d4d;
+  --pt-green-soft: #ddf3ea;
+  --pt-green-pale: #eff7f3;
+  --pt-icon: #187c65;
+  --pt-bg: #f4f6f8;
+  --pt-card: #fff;
+  --pt-border: #dfe7e3;
+  --pt-text: #172b35;
+  --pt-muted: #64748b;
+  color: var(--pt-text);
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif !important;
+}
+
+.rol-patrullero :not(i):not([class*="bi-"]) {
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif !important;
+}
+
+body.rol-patrullero-activo { background: #f4f6f8; }
+body.rol-patrullero-activo .main-dash { background: #f4f6f8; }
+
+.rol-patrullero .co-section-head,
+.rol-patrullero .as-panel,
+.rol-patrullero .as-detalle,
+.rol-patrullero .un-panel,
+.rol-patrullero .sa-patrullero { color: var(--pt-text); }
+
+.rol-patrullero :is(.co-active, .co-alert-list, .co-panel, .al-card, .al-vacio, .as-panel, .as-detalle, .un-panel, .sa-patrullero) {
+  border: 1px solid var(--pt-border);
+  border-radius: 14px;
+  background: var(--pt-card);
+  box-shadow: 0 3px 12px rgba(23, 43, 53, .045);
+}
+
+.rol-patrullero .section-title-dash,
+.rol-patrullero .co-active-title,
+.rol-patrullero .co-empty-state h3,
+.rol-patrullero .un-titulo,
+.rol-patrullero .as-detalle-titulo,
+.rol-patrullero .al-card-title { color: var(--pt-text); }
+
+.rol-patrullero :is(.co-route-button, .sa-primary, .as-acciones .btn-cv-azul) {
+  border: 1px solid var(--pt-green);
+  border-radius: 9px;
+  background: var(--pt-green);
+  color: #fff;
+  font: 600 12px/1.35 Inter, sans-serif;
+}
+
+.rol-patrullero :is(.co-route-button, .sa-primary, .as-acciones .btn-cv-azul):hover:not(:disabled) {
+  border-color: #084d40;
+  background: #084d40;
+}
+
+.rol-patrullero :is(button, input, textarea):focus-visible,
+.rol-patrullero .sb:focus-within {
+  outline: 3px solid rgba(24, 124, 101, .2);
+  outline-offset: 2px;
+}
+
+.rol-patrullero .sb-menu { z-index: 5000; }
+.rol-patrullero .sa-patrullero { overflow: visible; }
+
+@media (max-width: 640px) {
+  .rol-patrullero .main-dash > .container-fluid { padding-right: 14px; padding-left: 14px; }
+}

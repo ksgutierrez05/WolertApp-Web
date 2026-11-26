@@ -116,6 +116,12 @@ export async function cargarOperaciones(signal) {
 
   const datos = {};
   const errores = [];
+  const nombres = {
+    alertas: "alertas",
+    asignaciones: "asignaciones",
+    atenciones: "informes de atención",
+    unidades: "unidades",
+  };
 
   resultados.forEach((resultado, indice) => {
     const [nombre, ruta] = rutas[indice];
@@ -127,16 +133,23 @@ export async function cargarOperaciones(signal) {
       datos[nombre] = resultado.value;
     } else {
       datos[nombre] = [];
-      errores.push(
-        resultado.status === "rejected"
-          ? `${ruta}: ${resultado.reason?.message || "Error de conexión"}`
-          : `${ruta}: la respuesta no es una lista`
-      );
+      errores.push({
+        ruta,
+        mensaje: resultado.status === "rejected"
+          ? `No se pudieron cargar ${nombres[nombre]}.`
+          : `La respuesta de ${nombres[nombre]} no tiene el formato esperado.`,
+        detalleTecnico: resultado.status === "rejected"
+          ? resultado.reason?.technicalDetails || resultado.reason?.message || "Respuesta inválida"
+          : "La respuesta no es una lista",
+      });
     }
   });
 
   if (errores.length === rutas.length) {
-    throw new Error(errores.join("\n"));
+    const error = new Error("No fue posible cargar la información operativa. Inténtalo de nuevo.");
+    error.userMessage = error.message;
+    error.technicalDetails = errores.map(({ ruta, detalleTecnico }) => `${ruta}: ${detalleTecnico}`).join("\n");
+    throw error;
   }
 
   return { datos, errores };

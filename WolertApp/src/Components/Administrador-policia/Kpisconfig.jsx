@@ -23,23 +23,23 @@ export const KPIS_CONFIG = {
         tono: 'verde',
       },
       {
-        clave: 'patrullerosDisponibles',
-        etiqueta: 'Patrulleros disponibles',
-        icono: 'bi-people-fill',
-        tono: 'azul',
+        clave: 'alarmasActivas',
+        etiqueta: 'Alarmas activas',
+        icono: 'bi-broadcast-pin',
+        tono: 'ambar',
       },
     ],
   },
 
   'centro-operativo': {
-    columnas: 'col-6 col-md-3',
+    columnas: 'col-6 col-xl-3',
     claseFila: 'row g-3',
     items: [
       {
-        clave: 'patrullerosServicio',
-        etiqueta: 'Patrulleros en servicio',
-        icono: 'bi-car-front-fill',
-        tono: 'verde',
+        clave: 'totalPolicias',
+        etiqueta: 'Total de policías',
+        icono: 'bi-people-fill',
+        tono: 'azul',
       },
       {
         clave: 'totalAlertasHoy',
@@ -225,94 +225,90 @@ export const KPIS_CONFIG = {
     ],
   },
 
-  
-  
-notificaciones: {
-  columnas: 'col-6 col-xl-3',
-  claseFila: 'row g-3 mb-4',
-  items: [
-    {
-      clave: 'total',
-      etiqueta: 'Total de notificaciones',
-      icono: 'bi-bell-fill',
-      tono: 'azul',
-    },
-    {
-      clave: 'enviadas',
-      etiqueta: 'Enviadas',
-      icono: 'bi-send-check-fill',
-      tono: 'verde',
-    },
-    {
-      clave: 'pendientes',
-      etiqueta: 'Pendientes de envío',
-      icono: 'bi-hourglass-split',
-      tono: 'ambar',
-    },
-    {
-      clave: 'hoy',
-      etiqueta: 'Notificaciones de hoy',
-      icono: 'bi-calendar-check-fill',
-      tono: 'rojo',
-    },
-  ],
-},
+  notificaciones: {
+    columnas: 'col-6 col-xl-3',
+    claseFila: 'row g-3 mb-4',
+    items: [
+      {
+        clave: 'total',
+        etiqueta: 'Total de notificaciones',
+        icono: 'bi-bell-fill',
+        tono: 'azul',
+      },
+      {
+        clave: 'enviadas',
+        etiqueta: 'Enviadas',
+        icono: 'bi-send-check-fill',
+        tono: 'verde',
+      },
+      {
+        clave: 'pendientes',
+        etiqueta: 'Pendientes de envío',
+        icono: 'bi-hourglass-split',
+        tono: 'ambar',
+      },
+      {
+        clave: 'hoy',
+        etiqueta: 'Notificaciones de hoy',
+        icono: 'bi-calendar-check-fill',
+        tono: 'rojo',
+      },
+    ],
+  },
 
-policias: {
-  columnas: "col-12 col-sm-6 col-xl-4",
-  claseFila: "row g-3 mb-4",
-  items: [
-    {
-      clave: "total",
-      etiqueta: "Total de policías",
-      icono: "bi-people-fill",
-      tono: "azul",
-    },
-    {
-      clave: "activos",
-      etiqueta: "Policías activos",
-      icono: "bi-person-check-fill",
-      tono: "verde",
-    },
-    {
-      clave: "unidades",
-      etiqueta: "Unidades con policías",
-      icono: "bi-shield-check",
-      tono: "ambar",
-    },
-  ],
-},
+  policias: {
+    columnas: 'col-12 col-sm-6 col-xl-4',
+    claseFila: 'row g-3 mb-4',
+    items: [
+      {
+        clave: 'total',
+        etiqueta: 'Total de policías',
+        icono: 'bi-people-fill',
+        tono: 'azul',
+      },
+      {
+        clave: 'activos',
+        etiqueta: 'Policías activos',
+        icono: 'bi-person-check-fill',
+        tono: 'verde',
+      },
+      {
+        clave: 'unidades',
+        etiqueta: 'Unidades con policías',
+        icono: 'bi-shield-check',
+        tono: 'ambar',
+      },
+    ],
+  },
 
-unidades: {
-  columnas: "col-6 col-xl-3",
-  claseFila: "row g-3 mb-4",
-  items: [
-    {
-      clave: "total",
-      etiqueta: "Total de unidades",
-      icono: "bi-shield-fill-check",
-      tono: "azul",
-    },
-    {
-      clave: "operativas",
-      etiqueta: "Unidades operativas",
-      icono: "bi-check-circle-fill",
-      tono: "verde",
-    },
-    {
-      clave: "activas",
-      etiqueta: "Unidades activas",
-      icono: "bi-broadcast",
-      tono: "ambar",
-    },
-    {
-      clave: "policias",
-      etiqueta: "Policías asignados",
-      icono: "bi-people-fill",
-      tono: "rojo",
-    },
-  ],
-},
-
-
+  unidades: {
+    columnas: 'col-6 col-xl-3',
+    claseFila: 'row g-3 mb-4',
+    items: [
+      {
+        clave: 'total',
+        etiqueta: 'Total de unidades',
+        icono: 'bi-shield-fill-check',
+        tono: 'azul',
+      },
+      {
+        clave: 'operativas',
+        etiqueta: 'Unidades operativas',
+        icono: 'bi-check-circle-fill',
+        tono: 'verde',
+      },
+      {
+        clave: 'activas',
+        etiqueta: 'Unidades activas',
+        icono: 'bi-broadcast',
+        tono: 'ambar',
+      },
+      {
+        clave: 'policias',
+        etiqueta: 'Policías asignados',
+        icono: 'bi-people-fill',
+        tono: 'rojo',
+      },
+    ],
+  },
 };

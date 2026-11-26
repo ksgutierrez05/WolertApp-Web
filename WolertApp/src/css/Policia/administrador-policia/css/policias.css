@@ -1,4 +1,3 @@
-
 /* ==========================================
    WOLERTAPP - ADMINISTRADOR POLICÍA
    DISEÑO COMPLETO DEL MÓDULO POLICÍAS
@@ -67,7 +66,9 @@
   line-height: 1.2;
   cursor: pointer;
   box-shadow: 0 3px 8px #004d4018;
-  transition: background .2s, transform .2s;
+  transition:
+    background 0.2s,
+    transform 0.2s;
 }
 
 .policias-botones-cabecera .btn-cv-verde:hover,
@@ -93,7 +94,7 @@
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
-  transition: background .2s;
+  transition: background 0.2s;
 }
 
 .policias-botones-cabecera .btn-secundario-dash:hover,
@@ -121,7 +122,9 @@
   border-radius: 13px;
   background: #fff;
   box-shadow: 0 5px 15px #173e320d;
-  transition: transform .2s, box-shadow .2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
 }
 
 .kpi-card-policial:hover {
@@ -206,10 +209,14 @@
 
 /* ==========================================
    PANEL DE FILTROS
+   (overflow visible para que los desplegables
+   no se corten; z-index para quedar sobre la tabla)
 ========================================== */
 
 .panel-filtros-policias {
-  overflow: hidden;
+  position: relative;
+  z-index: 5;
+  overflow: visible;
   border: 1px solid var(--pol-borde);
   border-radius: 14px;
   background: #fff;
@@ -221,11 +228,8 @@
   align-items: center;
   gap: 12px;
   padding: 16px 19px;
-  background: linear-gradient(
-    110deg,
-    #004d40,
-    #006b58
-  );
+  border-radius: 13px 13px 0 0;
+  background: linear-gradient(110deg, #004d40, #006b58);
   color: #fff;
 }
 
@@ -257,11 +261,11 @@
 
 .panel-filtros-policias .panel-filtros-body {
   display: grid;
-  grid-template-columns: minmax(220px, 1.1fr)
-                         minmax(0, 1.9fr);
+  grid-template-columns: minmax(220px, 1.1fr) minmax(0, 1.9fr);
   align-items: end;
   gap: 16px;
   padding: 18px;
+  border-radius: 0 0 13px 13px;
   background: #f5f9f6;
 }
 
@@ -325,18 +329,27 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
   min-width: 0;
+  overflow: visible;
 }
 
 .panel-filtros-policias .filtro-unidad-card {
+  position: relative;
   min-width: 0;
   padding: 12px;
   border: 1px solid #dfe9e2;
   border-radius: 11px;
   background: #fff;
+  overflow: visible;
 }
 
 .panel-filtros-policias .filtro-unidad-card label {
   margin-bottom: 8px;
+}
+
+/* La tarjeta con el menú abierto debe quedar por encima de la otra */
+.panel-filtros-policias .filtro-unidad-card:focus-within,
+.panel-filtros-policias .filtro-unidad-card:has(.sb.abierto) {
+  z-index: 10;
 }
 
 .panel-filtros-policias .form-select {
@@ -363,6 +376,8 @@
 ========================================== */
 
 .policias-tabla-panel {
+  position: relative;
+  z-index: 1;
   overflow: hidden;
   border: 1px solid var(--pol-borde);
   border-radius: 14px;
@@ -405,7 +420,7 @@
   color: #587469;
   font-size: 11px;
   font-weight: 750;
-  letter-spacing: .035em;
+  letter-spacing: 0.035em;
   text-transform: uppercase;
 }
 
@@ -520,7 +535,9 @@
   color: var(--pol-verde) !important;
   font-size: 15px;
   cursor: pointer;
-  transition: background .2s, color .2s;
+  transition:
+    background 0.2s,
+    color 0.2s;
 }
 
 .tabla-policias-alineada .btn-icono-dash:hover {
@@ -542,7 +559,7 @@
 }
 
 .tabla-policias-alineada .btn-icono-dash:disabled {
-  opacity: .5;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
@@ -567,10 +584,11 @@
   margin: 20px auto;
 }
 
+/* overflow visible: los desplegables no se cortan dentro del modal */
 .modal-policias .modal-content {
   border: 0;
   border-radius: 18px;
-  overflow: hidden;
+  overflow: visible;
   background: #fff;
   box-shadow: 0 20px 60px #00000025;
 }
@@ -581,6 +599,7 @@
   justify-content: space-between;
   gap: 14px;
   padding: 19px 24px;
+  border-radius: 18px 18px 0 0;
   background: linear-gradient(110deg, #004d40, #087b58);
 }
 
@@ -602,10 +621,11 @@
   filter: invert(1) brightness(2);
 }
 
+/* Sin scroll interno: el scroll lo hace el contenedor .modal-policias */
 .modal-policias .modal-body-dash {
-  max-height: 65vh;
+  max-height: none;
   padding: 22px 24px;
-  overflow-y: auto;
+  overflow: visible;
 }
 
 /* SECCIONES */
@@ -696,6 +716,15 @@
 
 /* CAMPOS */
 
+.modal-policias .form-field-dash {
+  position: relative;
+}
+
+.modal-policias .form-field-dash:focus-within,
+.modal-policias .form-field-dash:has(.sb.abierto) {
+  z-index: 20;
+}
+
 .modal-policias .form-field-dash label {
   display: block;
   margin-bottom: 6px;
@@ -730,6 +759,7 @@
   gap: 10px;
   padding: 14px 24px;
   border-top: 1px solid #e5eee8;
+  border-radius: 0 0 18px 18px;
   background: #fff;
 }
 
@@ -799,7 +829,7 @@
   }
 
   .modal-policias .modal-body-dash {
-    max-height: 70vh;
+    max-height: none;
     padding: 16px;
   }
 
@@ -811,4 +841,64 @@
   .modal-policias .registro-opciones-policias {
     grid-template-columns: 1fr;
   }
+}
+
+/* Acciones de tabla: estilo unificado Administrador Policía */
+.tabla-policias-alineada .btn-icono-dash.editar-dash,
+.tabla-policias-alineada .btn-icono-dash.borrar-dash {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  padding: 0;
+  border-radius: 10px;
+  font-size: 15px;
+  line-height: 1;
+  box-shadow: none;
+  transform: none;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s;
+}
+
+.tabla-policias-alineada .btn-icono-dash.editar-dash {
+  background: #fff4df;
+  border: 1px solid #ffdda0;
+  color: #d88a08;
+}
+
+.tabla-policias-alineada .btn-icono-dash.borrar-dash {
+  background: #fcebed;
+  border: 1px solid #ffd3d9;
+  color: #ed6677;
+}
+
+.tabla-policias-alineada .btn-icono-dash.editar-dash:hover:not(:disabled) {
+  background: #ffebc4;
+  border-color: #f5c66e;
+  color: #b87500;
+  transform: none;
+  box-shadow: none;
+}
+
+.tabla-policias-alineada .btn-icono-dash.borrar-dash:hover:not(:disabled) {
+  background: #ffdde2;
+  border-color: #f5aab5;
+  color: #d94b60;
+  transform: none;
+  box-shadow: none;
+}
+
+.tabla-policias-alineada .btn-icono-dash.editar-dash:disabled,
+.tabla-policias-alineada .btn-icono-dash.borrar-dash:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.tabla-policias-alineada .btn-icono-dash.editar-dash:focus-visible,
+.tabla-policias-alineada .btn-icono-dash.borrar-dash:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
 }

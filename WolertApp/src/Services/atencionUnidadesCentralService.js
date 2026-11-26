@@ -103,6 +103,17 @@ export const estadoFinalizado = (estado) =>
     "RESUELTO",
   ].includes(normalizar(estado));
 
+export const asignacionEnCurso = (asignacion) => {
+  const estado = obtenerCampo(
+    asignacion,
+    "estadoAsignacion",
+    "EstadoAsignacion",
+    "estado",
+    "Estado"
+  );
+  return !estadoFinalizado(estado) && normalizar(estado) !== "CANCELADA";
+};
+
 export const nombreUnidad = (u) =>
   obtenerCampo(
     u,
@@ -196,29 +207,28 @@ export function resumenAtenciones(atenciones) {
   };
 }
 
-export function resumenUnidades(unidades) {
+export function resumenUnidades(unidades, asignaciones = []) {
+  const idsEnServicio = new Set(
+    asignaciones
+      .filter(asignacionEnCurso)
+      .map((asignacion) => obtenerCampo(asignacion, "idUnidad", "IdUnidad"))
+      .filter((idUnidad) => idUnidad !== null && idUnidad !== undefined)
+      .map(String)
+  );
+
   return {
     total: unidades.length,
 
     disponibles: unidades.filter((u) =>
-      ["DISPONIBLE", "LIBRE"].includes(estadoDe(u))
+      normalizar(estadoDe(u)) === "OPERATIVA"
     ).length,
 
     enServicio: unidades.filter((u) =>
-      [
-        "EN SERVICIO",
-        "EN CAMINO",
-        "EN SITIO",
-        "EN EL SITIO",
-      ].includes(estadoDe(u))
+      idsEnServicio.has(String(idDeUnidad(u)))
     ).length,
 
     ocupadas: unidades.filter((u) =>
-      [
-        "OCUPADA",
-        "OCUPADO",
-        "EN ATENCION",
-      ].includes(estadoDe(u))
+      normalizar(estadoDe(u)) === "ACTIVA"
     ).length,
   };
 }

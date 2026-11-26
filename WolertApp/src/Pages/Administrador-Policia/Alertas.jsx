@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import Topbar from "../../Components/Administrador-policia/Topbar";
+import { useFeedback } from "../../Components/Feedback/useFeedback";
 import Kpis from "../../Components/Administrador-policia/Kpicard";
 import { listarAlertasAdmin } from "../../Services/AlertasAdminService";
 import { formatearFecha } from "../../Utils/centroOperacionesAdmin";
@@ -68,6 +69,7 @@ function Estado({ valor }) {
   );
 }
 function Alertas() {
+  const { toast } = useFeedback();
   const [alertas, setAlertas] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
@@ -76,6 +78,10 @@ function Alertas() {
   const [pagina, setPagina] = useState(1);
   const [seleccionada, setSeleccionada] = useState(null);
   const [recarga, setRecarga] = useState(0);
+  useEffect(() => {
+    if (error) toast.errorFrom(error, "No se pudieron cargar las alertas.", "Error al cargar alertas");
+  }, [error, toast]);
+
   useEffect(() => {
     const controlador = new AbortController();
     listarAlertasAdmin(controlador.signal)
@@ -167,6 +173,7 @@ function Alertas() {
     setCargando(true);
     setRecarga((n) => n + 1);
   }
+
   return (
     <>
       <Topbar placeholder="Consultar alertas..." />
@@ -201,12 +208,16 @@ function Alertas() {
             {error}
           </div>
         )}
+
         <Kpis
           grupo="alertas"
           valores={error ? {} : kpis}
           cargando={cargando}
         />
-        <section className="alertas-filtros">
+
+        <section className="alertas-tabla-panel">
+          <div className="alertas-filtros">
+
           <div className="alertas-buscador">
             <i className="bi bi-search" aria-hidden="true" />
             <input
@@ -219,19 +230,7 @@ function Alertas() {
               placeholder="Buscar por ciudadano, barrio, tipo o número..."
               aria-label="Buscar alertas"
             />
-            {busqueda && (
-              <button
-                type="button"
-                className="alertas-limpiar-busqueda"
-                onClick={() => {
-                  setBusqueda("");
-                  setPagina(1);
-                }}
-                aria-label="Limpiar búsqueda"
-              >
-                <i className="bi bi-x-lg" />
-              </button>
-            )}
+
           </div>
           <div className="alertas-chips">
             <button
@@ -258,24 +257,7 @@ function Alertas() {
               </button>
             ))}
           </div>
-        </section>
-        <section className="alertas-tabla-panel">
-          <div className="alertas-tabla-cabecera">
-            <div className="alertas-tabla-titulo">
-              <span className="alertas-tabla-icono">
-                <i className="bi bi-list-ul" />
-              </span>
-              <div>
-                <h2>Alertas registradas</h2>
-                <p>
-                  Consulta y seguimiento de reportes ciudadanos.
-                </p>
-              </div>
-            </div>
-            <span className="alertas-total-registros">
-              {filtradas.length}{" "}
-              {filtradas.length === 1 ? "registro" : "registros"}
-            </span>
+
           </div>
           <div className="table-responsive alertas-tabla-scroll">
             <table className="tabla-alertas-dash">
@@ -348,15 +330,17 @@ function Alertas() {
                             : "—"}
                         </span>
                       </td>
-                      <td className="alertas-col-acciones">
+
+                      <td className="alertas-col-acciones ver-detalles-cell">
+
                         <button
                           type="button"
-                          className="alertas-btn-ver"
+                          className="alertas-btn-ver btn-ver-detalles"
                           onClick={() => setSeleccionada(alerta)}
                           aria-label={`Ver alerta ${alerta.idAlerta}`}
+                          title="Ver detalles"
                         >
-                          <i className="bi bi-eye" />
-                          Ver
+                          <i className="bi bi-eye-fill" aria-hidden="true" />
                         </button>
                       </td>
                     </tr>

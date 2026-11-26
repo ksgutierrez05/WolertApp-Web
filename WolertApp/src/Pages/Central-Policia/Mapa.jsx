@@ -99,7 +99,7 @@ export default function Mapa() {
           role="status"
         >
           <i className="bi bi-info-circle" />
-          Algunas capas no se pudieron cargar: {errores.join(" | ")}
+          Algunas capas no se pudieron cargar: {errores.map((error) => error.mensaje).join(" ")}
         </div>
       )}
 
@@ -109,6 +109,7 @@ export default function Mapa() {
           busqueda={busqueda}
           cargando={cargando}
           onActualizar={actualizar}
+          mostrarActualizar={false}
         />
       </div>
     </div>
