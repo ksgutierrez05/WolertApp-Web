@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Topbar from "../../Components/Central-policia/Topbar";
 import Kpis from "../../Components/Central-policia/Kpicard";
+import { useFeedback } from "../../Components/Feedback/useFeedback";
 
 import {
   cargarAtencionesCentral,
@@ -37,6 +38,13 @@ const estadoAsignacion = (a) =>
 const estadoAlerta = (a) =>
   normalizar(campo(a, "estado", "Estado"));
 
+const claseEstado = (valor) => {
+  const estado = normalizar(valor);
+  if (["FINALIZADA", "RESUELTA", "CANCELADA"].includes(estado)) return "finalizada";
+  if (!estado || ["PENDIENTE", "SIN INFORME"].includes(estado)) return "por-revisar";
+  return "en-revision";
+};
+
 const idAlertaAtencion = (a) =>
   campo(a, "idAlerta", "IdAlerta");
 
@@ -53,10 +61,8 @@ const nuevaForma = () => ({
   idMedioTransporte: "",
 });
 
-const mensajeError = (error) =>
-  error?.message || "No fue posible completar la operación.";
-
 export default function AtencionAlertas() {
+  const { confirm, toast } = useFeedback();
   const [datos, setDatos] = useState({
     atenciones: [],
     alertas: [],
@@ -67,10 +73,11 @@ export default function AtencionAlertas() {
   const [cargando, setCargando] = useState(true);
   const [guardando, setGuardando] = useState(false);
   const [error, setError] = useState("");
-  const [exito, setExito] = useState("");
   const [recarga, setRecarga] = useState(0);
   const [filtro, setFiltro] = useState("enRevision");
   const [busqueda, setBusqueda] = useState("");
+  const [pagina, setPagina] = useState(1);
+  const registrosPorPagina = 6;
   const [seleccion, setSeleccion] = useState(null);
   const [formulario, setFormulario] = useState(nuevaForma);
 
@@ -88,7 +95,7 @@ export default function AtencionAlertas() {
       })
       .catch((err) => {
         if (!controller.signal.aborted) {
-          setError(mensajeError(err));
+          setError(err.userMessage || "No se pudieron cargar los informes.");
         }
       })
       .finally(() => {
@@ -292,6 +299,13 @@ export default function AtencionAlertas() {
     );
   });
 
+  const totalPaginas = Math.max(1, Math.ceil(filtrados.length / registrosPorPagina));
+  const paginaActual = Math.min(pagina, totalPaginas);
+  const registrosVisibles = filtrados.slice(
+    (paginaActual - 1) * registrosPorPagina,
+    paginaActual * registrosPorPagina
+  );
+
   const valores = {
     porRevisar: casos.filter(
       (c) =>
@@ -319,7 +333,6 @@ export default function AtencionAlertas() {
   function seleccionar(c) {
     setSeleccion(c.clave);
     setError("");
-    setExito("");
 
     setFormulario({
       descripcion:
@@ -357,43 +370,39 @@ export default function AtencionAlertas() {
     };
   }
 
-  async function ejecutar(accion, mensaje) {
+  async function ejecutar(accion, mensaje, mostrarError = true) {
     setGuardando(true);
     setError("");
-    setExito("");
 
     try {
       await accion();
-      setExito(mensaje);
+      toast.success(mensaje);
       refrescar();
     } catch (err) {
-      setError(mensajeError(err));
+      if (!mostrarError) throw err;
+      toast.errorFrom(err, "No fue posible completar la operación.");
     } finally {
       setGuardando(false);
     }
   }
 
   // Registrar informe
-  function registrar(estadoFinal) {
+  async function registrar(estadoFinal) {
     if (
       !seleccionActual ||
       !formulario.descripcion.trim()
     ) {
-      setError("Escribe la descripción del informe.");
+      toast.warning("Escribe la descripción del informe antes de continuar.", "Falta la descripción");
       return;
     }
 
-    if (
-      !window.confirm(
-        `¿Registrar informe ${estadoFinal} para la alerta #${seleccionActual.idAlerta}?`
-      )
-    ) {
-      return;
-    }
-
-    ejecutar(
-      () =>
-        crearAtencionCentral({
+    await confirm({
+      title: "¿Registrar informe?",
+      description: `Confirma el registro del informe ${estadoFinal.replaceAll("_", " ").toLowerCase()} para la alerta #${seleccionActual.idAlerta}.`,
+      confirmLabel: "Registrar informe",
+      failureMessage: "No fue posible registrar el informe.",
+      onConfirm: () => ejecutar(
+        () => crearAtencionCentral({
           idAlerta: Number(seleccionActual.idAlerta),
           idUnidad: Number(
             campo(
@@ -405,36 +414,36 @@ export default function AtencionAlertas() {
           ...cuerpoInforme(estadoFinal),
           idPolicia: null,
         }),
-      "Informe registrado correctamente."
-    );
+        "Informe registrado correctamente.",
+        false
+      ),
+    });
   }
 
   // Finalizar informe existente
-  function finalizarInforme() {
+  async function finalizarInforme() {
     if (
       !idAtencionActual ||
       !formulario.descripcion.trim()
     ) {
-      setError("Escribe la descripción del informe.");
+      toast.warning("Escribe la descripción del informe antes de finalizarlo.", "Falta la descripción");
       return;
     }
 
-    if (
-      !window.confirm(
-        `¿Finalizar el informe #${idAtencionActual}?`
-      )
-    ) {
-      return;
-    }
-
-    ejecutar(
-      () =>
-        actualizarAtencionCentral(
+    await confirm({
+      title: "¿Finalizar informe?",
+      description: `Confirma que deseas finalizar el informe #${idAtencionActual}.`,
+      confirmLabel: "Finalizar informe",
+      failureMessage: "No fue posible finalizar el informe.",
+      onConfirm: () => ejecutar(
+        () => actualizarAtencionCentral(
           idAtencionActual,
           cuerpoInforme("FINALIZADA")
         ),
-      "Informe finalizado correctamente."
-    );
+        "Informe finalizado correctamente.",
+        false
+      ),
+    });
   }
 
   // Guardar cambios sin finalizar
@@ -443,7 +452,7 @@ export default function AtencionAlertas() {
       !idAtencionActual ||
       !formulario.descripcion.trim()
     ) {
-      setError("Escribe la descripción del informe.");
+      toast.warning("Escribe la descripción del informe antes de guardar.", "Falta la descripción");
       return;
     }
 
@@ -458,21 +467,23 @@ export default function AtencionAlertas() {
   }
 
   // Cerrar alerta
-  function resolver() {
-    if (
-      !puedeCerrar ||
-      !window.confirm(
-        `¿Cerrar la alerta #${seleccionActual.idAlerta} como RESUELTA?`
-      )
-    ) {
+  async function resolver() {
+    if (!puedeCerrar) {
+      toast.warning("Finaliza el informe y las asignaciones antes de resolver la alerta.", "La alerta aún está en atención");
       return;
     }
 
-    ejecutar(
-      () =>
-        cerrarAlertaCentral(seleccionActual.idAlerta),
-      "Alerta cerrada correctamente. Comprueba su estado actualizado."
-    );
+    await confirm({
+      title: "¿Resolver alerta?",
+      description: `Confirma que deseas cerrar la alerta #${seleccionActual.idAlerta} como resuelta.`,
+      confirmLabel: "Resolver alerta",
+      failureMessage: "No fue posible resolver la alerta.",
+      onConfirm: () => ejecutar(
+        () => cerrarAlertaCentral(seleccionActual.idAlerta),
+        "Alerta resuelta correctamente.",
+        false
+      ),
+    });
   }
 
   return (
@@ -489,25 +500,12 @@ export default function AtencionAlertas() {
             </p>
           </div>
 
-          <button
-            type="button"
-            className="btn btn-outline-success btn-sm"
-            onClick={refrescar}
-            disabled={cargando || guardando}
-          >
-            Actualizar
-          </button>
+
         </header>
 
         {error && (
           <div className="alert alert-danger" role="alert">
             {error}
-          </div>
-        )}
-
-        {exito && (
-          <div className="alert alert-success" role="status">
-            {exito}
           </div>
         )}
 
@@ -546,7 +544,10 @@ export default function AtencionAlertas() {
                     className={
                       filtro === valor ? "activo" : ""
                     }
-                    onClick={() => setFiltro(valor)}
+                    onClick={() => {
+                      setFiltro(valor);
+                      setPagina(1);
+                    }}
                   >
                     {etiqueta}
                   </button>
@@ -558,9 +559,10 @@ export default function AtencionAlertas() {
 
                 <input
                   value={busqueda}
-                  onChange={(e) =>
-                    setBusqueda(e.target.value)
-                  }
+                  onChange={(e) => {
+                    setBusqueda(e.target.value);
+                    setPagina(1);
+                  }}
                   placeholder="Buscar alerta, unidad o barrio"
                   aria-label="Buscar alertas"
                 />
@@ -577,11 +579,11 @@ export default function AtencionAlertas() {
                   No hay casos para mostrar.
                 </div>
               ) : (
-                filtrados.map((c) => (
+                registrosVisibles.map((c) => (
                   <button
                     key={c.clave}
                     type="button"
-                    className="atencion-item w-100 text-start"
+                    className={`atencion-item w-100 text-start ${seleccion === c.clave ? "seleccionado" : ""}`}
                     onClick={() => seleccionar(c)}
                     aria-pressed={
                       seleccion === c.clave
@@ -603,7 +605,7 @@ export default function AtencionAlertas() {
                       </small>
 
                       <small>
-                        <i className="bi bi-truck-front" />{" "}
+                        <i className="bi bi-car-front" />{" "}
                         {c.unidad
                           ? nombreUnidad(c.unidad)
                           : campo(
@@ -615,7 +617,7 @@ export default function AtencionAlertas() {
                     </span>
 
                     <span className="atencion-item-derecha">
-                      <span className="atencion-estado">
+                      <span className={`atencion-estado ${claseEstado(estadoInforme(c.atencion))}`}>
                         {estadoInforme(c.atencion) ||
                           "SIN INFORME"}
                       </span>
@@ -626,6 +628,33 @@ export default function AtencionAlertas() {
                 ))
               )}
             </div>
+            {!cargando && filtrados.length > 0 && (
+              <nav className="atencion-paginacion" aria-label="Paginación de alertas">
+                <span>
+                  Mostrando {(paginaActual - 1) * registrosPorPagina + 1}–{Math.min(paginaActual * registrosPorPagina, filtrados.length)} de {filtrados.length} alertas
+                </span>
+                <div className="atencion-paginacion-controles">
+                  <button type="button" onClick={() => setPagina((p) => Math.max(1, p - 1))} disabled={paginaActual === 1}>
+                    <i className="bi bi-chevron-left" aria-hidden="true" /> Anterior
+                  </button>
+                  {Array.from({ length: totalPaginas }, (_, i) => i + 1).map((numero) => (
+                    <button
+                      type="button"
+                      key={numero}
+                      className={numero === paginaActual ? "activa" : ""}
+                      aria-current={numero === paginaActual ? "page" : undefined}
+                      aria-label={`Página ${numero}`}
+                      onClick={() => setPagina(numero)}
+                    >
+                      {numero}
+                    </button>
+                  ))}
+                  <button type="button" onClick={() => setPagina((p) => Math.min(totalPaginas, p + 1))} disabled={paginaActual === totalPaginas}>
+                    Siguiente <i className="bi bi-chevron-right" aria-hidden="true" />
+                  </button>
+                </div>
+              </nav>
+            )}
           </div>
 
           {/* DETALLE DE ALERTA */}
@@ -661,7 +690,7 @@ export default function AtencionAlertas() {
                     </p>
                   </div>
 
-                  <span className="atencion-estado">
+                  <span className={`atencion-estado ${claseEstado(estadoAlerta(seleccionActual.alerta))}`}>
                     {estadoAlerta(
                       seleccionActual.alerta
                     ) || "Sin estado"}
@@ -670,7 +699,7 @@ export default function AtencionAlertas() {
 
                 <div className="atencion-unidad">
                   <div className="atencion-unidad-icono">
-                    <i className="bi bi-truck-front" />
+                    <i className="bi bi-car-front" />
                   </div>
 
                   <div>
@@ -712,56 +741,64 @@ export default function AtencionAlertas() {
                   </p>
                 </section>
 
-                <section className="atencion-seccion">
+                <section className="atencion-seccion atencion-participacion">
                   <h3>Estado de la participación</h3>
-
-                  <p>
-                    Asignación #
-                    {idDeAsignacion(
-                      seleccionActual.asignacion
-                    )}
-                    :{" "}
-                    <strong>
-                      {estadoAsignacion(
-                        seleccionActual.asignacion
-                      )}
-                    </strong>
-                  </p>
-
-                  <p>
-                    Informe:{" "}
-                    <strong>
-                      {estadoInforme(atencionActual) ||
-                        "SIN REGISTRAR"}
-                    </strong>
-
-                    {idAtencionActual
-                      ? ` (#${idAtencionActual})`
-                      : ""}
-                  </p>
+                  <div className="atencion-participacion-resumen">
+                    <div className="atencion-participacion-fila">
+                      <span>Asignación #{idDeAsignacion(seleccionActual.asignacion)}</span>
+                      <strong className={`atencion-estado ${claseEstado(estadoAsignacion(seleccionActual.asignacion))}`}>
+                        {estadoAsignacion(seleccionActual.asignacion)}
+                      </strong>
+                    </div>
+                    <div className="atencion-participacion-fila">
+                      <span>Informe {idAtencionActual ? `#${idAtencionActual}` : ""}</span>
+                      <strong className={`atencion-estado ${claseEstado(estadoInforme(atencionActual))}`}>
+                        {estadoInforme(atencionActual) || "SIN REGISTRAR"}
+                      </strong>
+                    </div>
+                  </div>
 
                   {seleccionActual.asignaciones.length >
                     1 && (
-                    <div>
-                      <strong>
-                        Otras asignaciones de esta alerta:
-                      </strong>
-
-                      {seleccionActual.asignaciones.map(
-                        (a) => (
-                          <p key={idDeAsignacion(a)}>
-                            #{idDeAsignacion(a)}:{" "}
-                            {estadoAsignacion(a)}
-                          </p>
-                        )
-                      )}
-                    </div>
+                    <details className="atencion-otras-asignaciones">
+                      <summary>Otras asignaciones de esta alerta ({seleccionActual.asignaciones.length})</summary>
+                      <div className="atencion-asignaciones-lista">
+                        {seleccionActual.asignaciones.map((a) => (
+                          <div className="atencion-asignacion-fila" key={idDeAsignacion(a)}>
+                            <span className="atencion-asignacion-identificador">
+                              <i className="bi bi-file-earmark-check" aria-hidden="true" />
+                              Asignación #{idDeAsignacion(a)}
+                            </span>
+                            <span className={`atencion-estado ${claseEstado(estadoAsignacion(a))}`}>
+                              {estadoAsignacion(a)}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </details>
                   )}
                 </section>
 
                 {/* FORMULARIO DEL INFORME */}
                 <section className="atencion-seccion atencion-seccion-central">
                   <h3>Informe de atención policial</h3>
+
+                  {atencionActual && (puedeRegistrar || puedeEditar) && (
+                    <div className="atencion-informe-registrado atencion-informe-resumen">
+                      <div className="atencion-informe-dato">
+                        <span>Descripción registrada</span>
+                        <p>{campo(atencionActual, "descripcion", "Descripcion") || "Sin informe registrado"}</p>
+                      </div>
+                      <div className="atencion-informe-dato">
+                        <span>Observaciones registradas</span>
+                        <p>{campo(atencionActual, "observacion", "Observacion") || "Sin observaciones"}</p>
+                      </div>
+                      <div className="atencion-informe-dato atencion-informe-fecha">
+                        <span>Fecha de registro</span>
+                        <p>{formatearFecha(campo(atencionActual, "fechaAtencion", "FechaAtencion"))}</p>
+                      </div>
+                    </div>
+                  )}
 
                   {puedeRegistrar || puedeEditar ? (
                     <div className="d-grid gap-3">
@@ -803,7 +840,7 @@ export default function AtencionAlertas() {
                         {puedeRegistrar && (
                           <>
                             <button
-                              className="btn btn-outline-primary"
+                              className="btn atencion-btn atencion-btn-registro"
                               disabled={guardando}
                               onClick={() =>
                                 registrar("EN_PROCESO")
@@ -813,7 +850,7 @@ export default function AtencionAlertas() {
                             </button>
 
                             <button
-                              className="btn btn-success"
+                              className="btn atencion-btn atencion-btn-finalizar"
                               disabled={guardando}
                               onClick={() =>
                                 registrar("FINALIZADA")
@@ -827,7 +864,7 @@ export default function AtencionAlertas() {
                         {puedeEditar && (
                           <>
                             <button
-                              className="btn btn-outline-primary"
+                              className="btn atencion-btn atencion-btn-registro"
                               disabled={guardando}
                               onClick={guardarInforme}
                             >
@@ -835,7 +872,7 @@ export default function AtencionAlertas() {
                             </button>
 
                             <button
-                              className="btn btn-success"
+                              className="btn atencion-btn atencion-btn-finalizar"
                               disabled={guardando}
                               onClick={finalizarInforme}
                             >
@@ -846,36 +883,20 @@ export default function AtencionAlertas() {
                       </div>
                     </div>
                   ) : (
-                    <div>
-                      <p>
-                        <strong>Descripción:</strong>{" "}
-                        {campo(
-                          atencionActual,
-                          "descripcion",
-                          "Descripcion"
-                        ) || "Sin informe registrado"}
-                      </p>
-
-                      <p>
-                        <strong>Observaciones:</strong>{" "}
-                        {campo(
-                          atencionActual,
-                          "observacion",
-                          "Observacion"
-                        ) || "Sin observaciones"}
-                      </p>
-
+                    <div className="atencion-informe-registrado">
+                      <div className="atencion-informe-dato">
+                        <span>Descripción de la atención</span>
+                        <p>{campo(atencionActual, "descripcion", "Descripcion") || "Sin informe registrado"}</p>
+                      </div>
+                      <div className="atencion-informe-dato">
+                        <span>Observaciones</span>
+                        <p>{campo(atencionActual, "observacion", "Observacion") || "Sin observaciones"}</p>
+                      </div>
                       {atencionActual && (
-                        <small>
-                          Registrado:{" "}
-                          {formatearFecha(
-                            campo(
-                              atencionActual,
-                              "fechaAtencion",
-                              "FechaAtencion"
-                            )
-                          )}
-                        </small>
+                        <div className="atencion-informe-dato atencion-informe-fecha">
+                          <span>Fecha de registro</span>
+                          <p>{formatearFecha(campo(atencionActual, "fechaAtencion", "FechaAtencion"))}</p>
+                        </div>
                       )}
                     </div>
                   )}
@@ -891,7 +912,7 @@ export default function AtencionAlertas() {
                 </section>
 
                 {/* CIERRE DE ALERTA */}
-                <section className="atencion-seccion atencion-seccion-central">
+                <section className="atencion-seccion atencion-seccion-central atencion-cierre">
                   <h3>Cierre de la alerta</h3>
 
                   {!informeFinalizado && (
@@ -906,7 +927,7 @@ export default function AtencionAlertas() {
                         El informe ya está finalizado.
                         El policía autorizado debe
                         finalizar su asignación desde
-                        su módulo. Luego pulsa Actualizar.
+                        su módulo. Los datos se cargan automáticamente al entrar.
                       </div>
                     )}
 
@@ -919,15 +940,14 @@ export default function AtencionAlertas() {
                     )}
 
                   {alertaResuelta ? (
-                    <p className="text-success">
-                      <strong>
-                        Esta alerta ya está cerrada.
-                      </strong>
-                    </p>
+                    <div className="atencion-alerta-cerrada" role="status">
+                      <span className="atencion-alerta-cerrada-icono"><i className="bi bi-check-lg" aria-hidden="true" /></span>
+                      <strong>Esta alerta ya está cerrada.</strong>
+                    </div>
                   ) : (
                     <button
                       type="button"
-                      className="btn btn-success"
+                      className="btn atencion-btn atencion-btn-resolver"
                       onClick={resolver}
                       disabled={
                         !puedeCerrar || guardando

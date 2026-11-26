@@ -1,13 +1,32 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { GoogleLogin } from '@react-oauth/google'
-import { login, loginGoogle } from '../../Services/UsuariosAPI.js'
+import { login, loginGoogle, registrarConGoogle } from '../../Services/UsuariosAPI.js'
+import { ListarBarrios } from '../../Services/BarriosApi.js'
 
-function FormLogin({ onLoginSuccess, aviso }) {
+function FormLogin({ onLoginSuccess, aviso, onCambiarRegistro }) {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
     const [mostrarPassword, setMostrarPassword] = useState(false)
     const [cargando, setCargando] = useState(false)
+    const [mostrarCompletarGoogle, setMostrarCompletarGoogle] = useState(false)
+    const [cerrandoPanelGoogle, setCerrandoPanelGoogle] = useState(false)
+    const [credencialGoogle, setCredencialGoogle] = useState('')
+    const [barrios, setBarrios] = useState([])
+    const [datosGoogle, setDatosGoogle] = useState({ cedula: '', username: '', telefono: '', barrioId: '' })
+
+    useEffect(() => {
+        if (!mostrarCompletarGoogle) return undefined
+        let activo = true
+        ListarBarrios()
+            .then((datos) => {
+                if (activo) setBarrios(Array.isArray(datos) ? datos : [])
+            })
+            .catch(() => {
+                if (activo) setError('No se pudo cargar la lista de barrios. Intenta nuevamente.')
+            })
+        return () => { activo = false }
+    }, [mostrarCompletarGoogle])
 
     async function handleSubmit(event) {
         event.preventDefault()
@@ -40,15 +59,147 @@ function FormLogin({ onLoginSuccess, aviso }) {
             const datos = await loginGoogle(respuesta.credential)
             if (onLoginSuccess) onLoginSuccess(datos)
         } catch (err) {
-            setError(err.message)
+            const mensaje = err.message || 'No se pudo iniciar sesión con Google.'
+            if (/no hay una cuenta registrada|reg[ií]strate primero/i.test(mensaje)) {
+                setCredencialGoogle(respuesta.credential)
+                setDatosGoogle({ cedula: '', username: '', telefono: '', barrioId: '' })
+                setError('')
+                setMostrarCompletarGoogle(true)
+            } else {
+                setError(mensaje)
+            }
         } finally {
             setCargando(false)
         }
     }
 
+    function handleCambioGoogle(event) {
+        const { name, value } = event.target
+        const valor = ['cedula', 'telefono'].includes(name) ? value.replace(/\D/g, '') : value
+        setDatosGoogle((actual) => ({ ...actual, [name]: valor }))
+    }
+
+    async function handleRegistroGoogle(event) {
+        event.preventDefault()
+        if (!/^\d{6,10}$/.test(datosGoogle.cedula)) {
+            setError('La cédula debe tener entre 6 y 10 números.')
+            return
+        }
+        if (!datosGoogle.username.trim()) {
+            setError('Completa tu nombre de usuario.')
+            return
+        }
+        if (datosGoogle.username.trim().length > 15) {
+            setError('El nombre de usuario no puede superar los 15 caracteres.')
+            return
+        }
+        if (
+            !datosGoogle.barrioId &&
+            !window.confirm(
+                'No seleccionaste tu barrio. Esta información ayuda a mostrarte vecinos registrados cerca de ti. ¿Seguro que quieres continuar sin agregarlo?'
+            )
+        ) return
+
+        try {
+            setCargando(true)
+            setError('')
+            const sesion = await registrarConGoogle({
+                credential: credencialGoogle,
+                cedula: datosGoogle.cedula,
+                username: datosGoogle.username.trim(),
+                telefono: datosGoogle.telefono || null,
+                barrioId: datosGoogle.barrioId ? Number(datosGoogle.barrioId) : null,
+            })
+            if (onLoginSuccess) onLoginSuccess(sesion)
+        } catch (err) {
+            setError(err.message || 'No se pudo completar el registro con Google.')
+        } finally {
+            setCargando(false)
+        }
+    }
+
+    function volverAlLogin() {
+        if (cerrandoPanelGoogle) return
+        setCerrandoPanelGoogle(true)
+        window.setTimeout(() => {
+            setMostrarCompletarGoogle(false)
+            setCredencialGoogle('')
+            setError('')
+            setCerrandoPanelGoogle(false)
+        }, 560)
+    }
+
     return (
         <div className="form-box form-login">
+            {mostrarCompletarGoogle ? (
+                <form className={`google-completar-form${cerrandoPanelGoogle ? ' is-closing' : ''}`} onSubmit={handleRegistroGoogle}>
+                    <img src="/img/logo.png" alt="WolertApp" className="auth-mobile-logo" />
+                    <h2>Completa tu perfil</h2>
+                    <p className="google-completar-subtitulo">
+                        Google confirmó tu correo. Completa estos datos para crear tu cuenta y continuar.
+                    </p>
+                    <input
+                        className="google-completar-input"
+                        type="text"
+                        name="cedula"
+                        placeholder="Cédula"
+                        aria-label="Cédula"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        minLength={6}
+                        maxLength={10}
+                        value={datosGoogle.cedula}
+                        onChange={handleCambioGoogle}
+                        required
+                    />
+                    <input
+                        className="google-completar-input"
+                        type="text"
+                        name="username"
+                        placeholder="Nombre de usuario"
+                        aria-label="Nombre de usuario"
+                        autoComplete="username"
+                        maxLength={15}
+                        value={datosGoogle.username}
+                        onChange={handleCambioGoogle}
+                        required
+                    />
+                    <input
+                        className="google-completar-input"
+                        type="tel"
+                        name="telefono"
+                        placeholder="Teléfono (opcional)"
+                        aria-label="Teléfono (opcional)"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        value={datosGoogle.telefono}
+                        onChange={handleCambioGoogle}
+                    />
+                    <select
+                        className="google-completar-input"
+                        name="barrioId"
+                        aria-label="Barrio"
+                        value={datosGoogle.barrioId}
+                        onChange={handleCambioGoogle}
+                    >
+                        <option value="">Selecciona tu barrio (opcional)</option>
+                        {barrios.map((barrio) => (
+                            <option key={barrio.idBarrio ?? barrio.IdBarrio} value={barrio.idBarrio ?? barrio.IdBarrio}>
+                                {barrio.nombre ?? barrio.Nombre}
+                            </option>
+                        ))}
+                    </select>
+                    {error && <div className="form-error" role="alert">{error}</div>}
+                    <button type="submit" className="btn-primary" disabled={cargando}>
+                        {cargando ? 'Creando cuenta...' : 'Crear cuenta y continuar'}
+                    </button>
+                    <button type="button" className="google-completar-volver" onClick={volverAlLogin}>
+                        Volver al inicio de sesión
+                    </button>
+                </form>
+            ) : (
             <form onSubmit={handleSubmit} noValidate>
+                <img src="/img/logo.png" alt="WolertApp" className="auth-mobile-logo" />
                 <h2>Iniciar Sesión</h2>
 
                 {aviso && <div className="form-ok" role="status">{aviso}</div>}
@@ -109,7 +260,17 @@ function FormLogin({ onLoginSuccess, aviso }) {
                         locale="es"
                     />
                 </div>
+
+                <button
+                    type="button"
+                    className="login-cambiar-registro"
+                    onClick={onCambiarRegistro}
+                >
+                    <i className="bi bi-person-plus-fill" aria-hidden="true" />
+                    ¿No tienes cuenta? Regístrate
+                </button>
             </form>
+            )}
         </div>
     )
 }

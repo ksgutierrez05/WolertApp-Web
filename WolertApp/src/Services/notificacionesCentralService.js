@@ -110,7 +110,10 @@ export const categoriaNotificacion = (notificacion) => {
   return "otras";
 };
 
-export const noLeida = (notificacion) => {
+export const noLeida = (notificacion, idsLeidos = [], idAlternativo) => {
+  const id = idNotificacion(notificacion) ?? idAlternativo;
+  if (id != null && idsLeidos.map(String).includes(String(id))) return false;
+
   const leida = campo(notificacion, "leida", "Leida");
 
   if (typeof leida === "boolean") {
@@ -125,7 +128,12 @@ export const noLeida = (notificacion) => {
     campo(notificacion, "estado", "Estado")
   );
 
-  return ["NO LEIDA", "PENDIENTE"].includes(estado);
+  if (["LEIDA", "LEIDO", "VISTA", "READ"].includes(estado)) return false;
+  if (["NO LEIDA", "PENDIENTE"].includes(estado)) return true;
+
+  // El backend también puede exponer Estado="Enviada"; ese valor no
+  // representa el estado de lectura, así que no se usa para inferirlo.
+  return true;
 };
 
 export const esUrgente = (notificacion) => {
@@ -141,13 +149,15 @@ export const esUrgente = (notificacion) => {
   ].includes(prioridad);
 };
 
-export function kpisNotificaciones(lista) {
+export function kpisNotificaciones(lista, idsLeidos = []) {
   const hoy = new Date().toDateString();
 
   return {
     total: lista.length,
 
-    noLeidas: lista.filter(noLeida).length,
+    noLeidas: lista.filter((notificacion, indice) =>
+      noLeida(notificacion, idsLeidos, idNotificacion(notificacion) ?? indice)
+    ).length,
 
     urgentes: lista.filter(esUrgente).length,
 

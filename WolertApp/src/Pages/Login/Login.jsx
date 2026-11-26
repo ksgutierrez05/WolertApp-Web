@@ -37,7 +37,10 @@ function Login() {
         Volver
       </a>
 
-      <FormLogin onLoginSuccess={handleLoginSuccess} />
+      <FormLogin
+        onLoginSuccess={handleLoginSuccess}
+        onCambiarRegistro={toggleFormulario}
+      />
 
       <div className="panel-deslizante">
         <img src="/img/logo.png" alt="WolertApp" className="login-logo" />
@@ -51,7 +54,10 @@ function Login() {
         </button>
       </div>
 
-      <FormRegistro onRegistroSuccess={handleRegistroSuccess} />
+      <FormRegistro
+        onRegistroSuccess={handleRegistroSuccess}
+        onCambiarLogin={toggleFormulario}
+      />
     </div>
     );
 };

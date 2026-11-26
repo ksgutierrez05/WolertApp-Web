@@ -24,16 +24,15 @@ const FORM_INICIAL = {
     password: ''
 }
 
-function FormRegistro({ onRegistroSuccess }) {
+function FormRegistro({ onRegistroSuccess, onCambiarLogin }) {
     const [formData, setFormData] = useState(FORM_INICIAL)
     const [barrios, setBarrios] = useState([])
     const [errorBarrios, setErrorBarrios] = useState('')
     const [error, setError] = useState('')
     const [cargando, setCargando] = useState(false)
-
-    const datosGoogleValidos = Boolean(
-        formData.cedula.trim() && formData.username.trim() && formData.barrioId
-    )
+    const [mostrarCompletarGoogle, setMostrarCompletarGoogle] = useState(false)
+    const [cerrandoPanelGoogle, setCerrandoPanelGoogle] = useState(false)
+    const [credencialGoogle, setCredencialGoogle] = useState('')
 
     useEffect(() => {
         ListarBarrios()
@@ -85,6 +84,12 @@ function FormRegistro({ onRegistroSuccess }) {
         event.preventDefault()
         if (!validarCamposNumericos()) return
         if (!validarCorreo()) return
+        if (
+            !formData.barrioId &&
+            !window.confirm(
+                'No seleccionaste tu barrio. Esta información es util para apartados de la app. ¿Seguro que quieres continuar?'
+            )
+        ) return
 
         try {
             setCargando(true)
@@ -98,7 +103,7 @@ function FormRegistro({ onRegistroSuccess }) {
                 segundoApellido: formData.segundoApellido.trim() || null,
                 correo: formData.correo.trim().toLowerCase(),
                 telefono: formData.telefono.trim(),
-                barrioId: Number(formData.barrioId),
+                barrioId: formData.barrioId ? Number(formData.barrioId) : null,
                 calle: formData.calle.trim() || null,
                 carrera: formData.carrera.trim() || null,
                 etapa: formData.etapa.trim() || null,
@@ -119,25 +124,48 @@ function FormRegistro({ onRegistroSuccess }) {
     }
 
     async function handleGoogleSuccess(respuesta) {
-        if (!validarCamposNumericos()) return
-
         if (!respuesta.credential) {
-            setError('Google no devolvió una credencial válida.')
+            setError('No se recibió una credencial válida de Google.')
             return
         }
+        setError('')
+        setCredencialGoogle(respuesta.credential)
+        setMostrarCompletarGoogle(true)
+    }
 
+    function volverAlRegistroGoogle() {
+        setCerrandoPanelGoogle(true)
+        window.setTimeout(() => {
+            setMostrarCompletarGoogle(false)
+            setCredencialGoogle('')
+            setError('')
+            setCerrandoPanelGoogle(false)
+        }, 560)
+    }
+
+    async function handleCompletarGoogle(event) {
+        event.preventDefault()
+        if (!validarCamposNumericos()) return
+        if (!formData.username.trim()) {
+            setError('Completa tu nombre de usuario.')
+            return
+        }
+        if (
+            !formData.barrioId &&
+            !window.confirm(
+                'No seleccionaste tu barrio. Esta información ayuda a mostrarte vecinos registrados cerca de ti. ¿Seguro que quieres continuar sin agregarlo?'
+            )
+        ) return
         try {
             setCargando(true)
             setError('')
-
             const sesion = await registrarConGoogle({
-                credential: respuesta.credential,
+                credential: credencialGoogle,
                 cedula: formData.cedula.trim(),
                 username: formData.username.trim(),
                 telefono: formData.telefono.trim() || null,
-                barrioId: Number(formData.barrioId)
+                barrioId: formData.barrioId ? Number(formData.barrioId) : null
             })
-
             if (onRegistroSuccess) onRegistroSuccess(sesion)
         } catch (err) {
             setError(err.message)
@@ -146,14 +174,45 @@ function FormRegistro({ onRegistroSuccess }) {
         }
     }
 
+    if (mostrarCompletarGoogle) {
+        return (
+            <div className="form-box form-registro">
+                <form className={`google-completar-form${cerrandoPanelGoogle ? ' is-closing' : ''}`} onSubmit={handleCompletarGoogle}>
+                    <img src="/img/logo.png" alt="WolertApp" className="auth-mobile-logo" />
+                    <h2>Completa tu perfil</h2>
+                    <p className="google-completar-subtitulo">Tu cuenta de Google está lista. Agrega estos datos para terminar el registro.</p>
+                    <input className="google-completar-input" type="text" name="cedula" placeholder="Cédula" inputMode="numeric" pattern="[0-9]*" minLength={6} maxLength={10} value={formData.cedula} onChange={handleChange} required />
+                    <input className="google-completar-input" type="text" name="username" placeholder="Nombre de usuario" autoComplete="username" value={formData.username} onChange={handleChange} required />
+                    <input className="google-completar-input" type="tel" name="telefono" placeholder="Teléfono (opcional)" inputMode="numeric" pattern="[0-9]*" value={formData.telefono} onChange={handleChange} />
+                    <select className="google-completar-input" name="barrioId" value={formData.barrioId} onChange={handleChange}>
+                        <option value="">Selecciona tu barrio (opcional)</option>
+                        {barrios.map((barrio) => <option key={barrio.idBarrio} value={barrio.idBarrio}>{barrio.nombre}</option>)}
+                    </select>
+                    {errorBarrios && <div className="form-error" role="status">{errorBarrios}</div>}
+                    {error && <div className="form-error" role="alert">{error}</div>}
+                    <button type="submit" className="btn-primary" disabled={cargando}>{cargando ? 'Creando cuenta...' : 'Crear cuenta y continuar'}</button>
+                    <button type="button" className="google-completar-volver" onClick={volverAlRegistroGoogle} disabled={cerrandoPanelGoogle}>Volver al registro</button>
+                </form>
+            </div>
+        )
+    }
+
     return (
         <div className="form-box form-registro">
             <form onSubmit={handleRegistroClasico}>
+                <img src="/img/logo.png" alt="WolertApp" className="auth-mobile-logo" />
                 <h2>Crear cuenta</h2>
                 <p className="form-subtitle">
                     Regístrate con tus datos o continúa con Google.
                 </p>
 
+                <div className="google-registro-inicio">
+                    <div className="google-registro-ayuda">Regístrate con Google y completa los datos que falten después.</div>
+                    <div className="google-wrapper">
+                        <GoogleLogin onSuccess={handleGoogleSuccess} onError={() => setError('No se pudo iniciar el registro con Google.')} text="continue_with" theme="outline" size="large" shape="pill" width="320" logo_alignment="center" locale="es" />
+                    </div>
+                </div>
+                <div className="divisor"><span>o regístrate con tus datos</span></div>
                 <div className="seccion-titulo">REGISTRO CLÁSICO</div>
 
                 <div className="grid-2">
@@ -238,16 +297,15 @@ function FormRegistro({ onRegistroSuccess }) {
                     required
                 />
 
-                <div className="seccion-titulo">UBICACIÓN</div>
+                <div className="seccion-titulo">UBICACION</div>
                 <select
                     name="barrioId"
                     className="input-gris"
                     value={formData.barrioId}
                     onChange={handleChange}
-                    required
                 >
-                    <option value="" disabled>
-                        Selecciona tu barrio
+                    <option value="">
+                        Selecciona tu barrio (opcional)
                     </option>
                     {barrios.map((barrio) => (
                         <option
@@ -318,6 +376,7 @@ function FormRegistro({ onRegistroSuccess }) {
                     value={formData.username}
                     onChange={handleChange}
                     autoComplete="username"
+                    maxLength={15}
                     required
                 />
                 <input
@@ -340,74 +399,19 @@ function FormRegistro({ onRegistroSuccess }) {
                     {cargando ? 'Creando cuenta...' : 'Registrarme'}
                 </button>
 
-                <div className="divisor">
-                    <span>o</span>
-                </div>
-
-                <div className="google-registro-ayuda">
-                    Para Google completa tu cédula, nombre de usuario y
-                    selecciona tu barrio. El teléfono es opcional.
-                </div>
-
-                <div className="google-wrapper">
-                    {datosGoogleValidos && !cargando ? (
-                        <GoogleLogin
-                            onSuccess={handleGoogleSuccess}
-                            onError={() => {
-                                setError(
-                                    'No se pudo iniciar el registro con Google.'
-                                )
-                            }}
-                            text="continue_with"
-                            theme="outline"
-                            size="large"
-                            shape="pill"
-                            width="320"
-                            logo_alignment="center"
-                            locale="es"
-                        />
-                    ) : (
-                        <button
-                            type="button"
-                            className="btn-google-deshabilitado"
-                            disabled
-                        >
-                            <svg
-                                className="google-g-icon"
-                                viewBox="0 0 48 48"
-                                aria-hidden="true"
-                            >
-                                <path
-                                    fill="#4285F4"
-                                    d="M43.6 24.5c0-1.4-.1-2.8-.4-4.1H24v7.8h11a9.4 9.4 0 0 1-4.1 6.2v5.1h6.6c3.9-3.6 6.1-8.8 6.1-15Z"
-                                />
-                                <path
-                                    fill="#34A853"
-                                    d="M24 44c5.5 0 10.1-1.8 13.5-4.8l-6.6-5.1c-1.8 1.2-4.1 2-6.9 2-5.3 0-9.8-3.6-11.4-8.5H5.8v5.3A20 20 0 0 0 24 44Z"
-                                />
-                                <path
-                                    fill="#FBBC05"
-                                    d="M12.6 27.6a12 12 0 0 1 0-7.2v-5.3H5.8a20 20 0 0 0 0 17.8l6.8-5.3Z"
-                                />
-                                <path
-                                    fill="#EA4335"
-                                    d="M24 11.9c3 0 5.7 1 7.8 3.1l5.9-5.9C34.1 5.8 29.5 4 24 4A20 20 0 0 0 5.8 15.1l6.8 5.3c1.6-4.9 6.1-8.5 11.4-8.5Z"
-                                />
-                            </svg>
-                            <span>
-                                {cargando
-                                    ? 'Procesando...'
-                                    : 'Continuar con Google'}
-                            </span>
-                        </button>
-                    )}
-                </div>
-
                 {error && (
                     <div className="form-error" role="alert">
                         {error}
                     </div>
                 )}
+
+                <button
+                    type="button"
+                    className="registro-cambiar-login"
+                    onClick={onCambiarLogin}
+                >
+                    ¿Ya tienes cuenta? Inicia sesión
+                </button>
             </form>
         </div>
     )

@@ -66,7 +66,7 @@ export const KPIS_PATRULLERO_CONFIG = {
 
   // Mi unidad
   unidad: {
-    columnas: 'col-6 col-md-3',
+    columnas: 'col-12 col-md-4',
     claseFila: 'row g-3 mb-4',
     items: [
       {
@@ -87,12 +87,6 @@ export const KPIS_PATRULLERO_CONFIG = {
         icono: 'bi-hourglass-split',
         tono: 'ambar'
       },
-      {
-        clave: 'enCamino',
-        etiqueta: 'En camino',
-        icono: 'bi-signpost-split',
-        tono: 'rojo'
-      }
     ]
   },
 
@@ -120,9 +114,9 @@ export const KPIS_PATRULLERO_CONFIG = {
         tono: 'ambar'
       },
       {
-        clave: 'vistas',
-        etiqueta: 'Vistas',
-        icono: 'bi-eye',
+        clave: 'resueltas',
+        etiqueta: 'Alertas resueltas',
+        icono: 'bi-check2-circle',
         tono: 'verde'
       }
     ]

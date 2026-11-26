@@ -413,6 +413,24 @@
   .ciudadano-bandeja { padding: 12px 0 25px; }
   .ciudadano-bandeja__hero { align-items: flex-start; flex-direction: column; padding: 20px; }
   .ciudadano-bandeja__summary { grid-template-columns: 1fr; }
+  .ciudadano-vecinos .ciudadano-bandeja__summary,
+  .ciudadano-mis-alertas .ciudadano-bandeja__summary,
+  .ciudadano-alertas .ciudadano-bandeja__summary { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+  .ciudadano-vecinos .ciudadano-bandeja__metric,
+  .ciudadano-mis-alertas .ciudadano-bandeja__metric,
+  .ciudadano-alertas .ciudadano-bandeja__metric { min-width: 0; min-height: 82px; gap: 5px; padding: 8px 6px; }
+  .ciudadano-vecinos .ciudadano-bandeja__metric-icon,
+  .ciudadano-mis-alertas .ciudadano-bandeja__metric-icon,
+  .ciudadano-alertas .ciudadano-bandeja__metric-icon { flex-basis: 28px; height: 28px; border-radius: 8px; font-size: 13px; }
+  .ciudadano-vecinos .ciudadano-bandeja__metric-copy,
+  .ciudadano-mis-alertas .ciudadano-bandeja__metric-copy,
+  .ciudadano-alertas .ciudadano-bandeja__metric-copy { min-width: 0; }
+  .ciudadano-vecinos .ciudadano-bandeja__metric-copy small,
+  .ciudadano-mis-alertas .ciudadano-bandeja__metric-copy small,
+  .ciudadano-alertas .ciudadano-bandeja__metric-copy small { font-size: 9px; line-height: 1.2; }
+  .ciudadano-vecinos .ciudadano-bandeja__metric-copy strong,
+  .ciudadano-mis-alertas .ciudadano-bandeja__metric-copy strong,
+  .ciudadano-alertas .ciudadano-bandeja__metric-copy strong { font-size: 16px; line-height: 1.1; }
   .ciudadano-bandeja__toolbar { align-items: stretch; flex-direction: column; }
   .ciudadano-bandeja__search { width: 100%; }
   .ciudadano-bandeja__item-heading { flex-direction: column; }

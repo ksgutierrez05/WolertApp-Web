@@ -1,4 +1,3 @@
-/* Sobrescritura para el layout de ciudadano */
 .admin-layout__main.main-collapsed {
   padding-top: 0;
 }
@@ -8,16 +7,16 @@
 }
 
 .admin-layout__sidebar .sidebar__footer {
-  margin-top: auto; /* el logout se queda abajo */
+  margin-top: auto;
 }
 
-/* Cuando está colapsado, el label del grupo no ocupa espacio */
 .admin-layout__sidebar.collapsed:not(.peek) .sidebar__group-label {
   display: none;
 }
 
 .ciudadano-mobile-menu,
-.ciudadano-mobile-backdrop {
+.ciudadano-mobile-backdrop,
+.ciudadano-bottom-nav {
   display: none;
 }
 
@@ -26,104 +25,76 @@
     min-height: 0;
   }
 
+  .ciudadano-shell .admin-layout__sidebar-slot {
+    display: none;
+  }
+
   .ciudadano-shell.rol-ciudadano .admin-layout__main {
-    padding-top: 72px;
+    padding: 16px 16px calc(108px + env(safe-area-inset-bottom));
   }
 
-  .ciudadano-shell .admin-layout__sidebar-slot,
-  .ciudadano-shell .admin-layout__sidebar-slot.collapsed,
-  .ciudadano-shell .admin-layout__sidebar-slot.mobile-open {
-    width: 0;
-  }
-
-  .ciudadano-shell .admin-layout__sidebar-slot .admin-layout__sidebar,
-  .ciudadano-shell .admin-layout__sidebar-slot .admin-layout__sidebar.collapsed {
+  .ciudadano-bottom-nav {
     position: fixed;
-    top: 0;
+    z-index: 250;
+    right: 0;
     bottom: 0;
     left: 0;
-    width: min(300px, calc(100vw - 56px));
-    height: 100dvh;
-    z-index: 302;
-    overflow-y: auto;
-    background: #fff;
-    box-shadow: 14px 0 36px rgba(14, 47, 87, .2);
-    transform: translateX(-105%);
-    transition: transform .24s ease;
-  }
-
-  .ciudadano-shell .admin-layout__sidebar-slot.mobile-open .admin-layout__sidebar {
-    width: min(300px, calc(100vw - 56px));
-    transform: translateX(0);
-  }
-
-  .ciudadano-shell .admin-layout__sidebar.collapsed:not(.peek) .sidebar__brand {
-    justify-content: flex-start;
-    gap: 12px;
-    padding: 8px 18px 25px;
-  }
-
-  .ciudadano-shell .admin-layout__sidebar.collapsed:not(.peek) .sidebar__brand-text {
-    width: auto;
-    opacity: 1;
-  }
-
-  .ciudadano-shell .admin-layout__sidebar.collapsed:not(.peek) .sidebar__link {
-    width: calc(100% - 28px);
-    height: auto;
-    justify-content: flex-start;
-    margin: 4px 14px;
-    padding: 11px 14px;
-  }
-
-  .ciudadano-shell .admin-layout__sidebar.collapsed:not(.peek) .sidebar__link i {
-    width: 24px;
-    font-size: 19px;
-  }
-
-  .ciudadano-shell .admin-layout__sidebar.collapsed:not(.peek) .sidebar__logout {
-    width: 100%;
-    height: auto;
-    margin: 0;
-    padding: 12px 14px;
-  }
-
-  .ciudadano-mobile-menu {
-    position: fixed;
-    top: 12px;
-    left: 12px;
-    z-index: 304;
     display: grid;
-    width: 48px;
-    height: 48px;
-    place-items: center;
-    border: 1px solid #dce6f3;
-    border-radius: 14px;
-    background: #fff;
-    color: #184a8c;
-    box-shadow: 0 4px 14px rgba(14, 47, 87, .12);
-    font-size: 23px;
-    cursor: pointer;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    align-items: center;
+    min-height: calc(90px + env(safe-area-inset-bottom));
+    padding: 8px 12px calc(8px + env(safe-area-inset-bottom));
+    border-top: 1px solid #e9edf3;
+    border-radius: 24px 24px 0 0;
+    background: rgb(255 255 255 / 97%);
+    box-shadow: 0 -10px 30px rgb(19 40 68 / 12%);
+    -webkit-backdrop-filter: blur(18px);
+    backdrop-filter: blur(18px);
   }
 
-  .ciudadano-mobile-menu:focus-visible {
+  .ciudadano-bottom-nav__item {
+    display: flex;
+    min-width: 0;
+    min-height: 68px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 7px 1px;
+    overflow-wrap: anywhere;
+    border-radius: 17px;
+    color: #8590a0;
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 1.1;
+    text-align: center;
+    text-decoration: none;
+    transition: color 220ms ease, background-color 220ms ease, transform 220ms ease;
+  }
+
+  .ciudadano-bottom-nav__item i {
+    font-size: 21px;
+    line-height: 1;
+  }
+
+  .ciudadano-bottom-nav__item.active {
+    background: #e7f0fa;
+    color: #315f91;
+    box-shadow: 0 5px 14px rgb(49 95 145 / 12%);
+  }
+
+  .ciudadano-bottom-nav__item:active {
+    transform: scale(.96);
+  }
+
+  .ciudadano-bottom-nav__item:focus-visible {
     outline: 3px solid #f4b942;
-    outline-offset: 3px;
-  }
-
-  .ciudadano-mobile-backdrop {
-    position: fixed;
-    inset: 0;
-    z-index: 301;
-    display: block;
-    border: 0;
-    background: rgba(16, 38, 65, .45);
+    outline-offset: 2px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ciudadano-shell .admin-layout__sidebar,
-  .ciudadano-mobile-menu {
+  .ciudadano-bottom-nav__item {
     transition-duration: .01ms;
   }
 }

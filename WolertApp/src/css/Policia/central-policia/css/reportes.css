@@ -9,7 +9,7 @@
   max-width: 100%;
   background: #f5f7f9;
   color: var(--texto);
-  font-family: Inter, "Segoe UI", Arial, sans-serif;
+  font-family: Inter, "Segoe UI", sans-serif;
 }
 .reportes-page * {
   box-sizing: border-box;
@@ -204,7 +204,7 @@
   font:
     12px Inter,
     "Segoe UI",
-    Arial,
+    Inter,
     sans-serif;
   box-shadow: none;
 }
@@ -258,7 +258,7 @@
   min-width: 930px;
   margin: 0;
   border-collapse: collapse;
-  font-family: Inter, "Segoe UI", Arial, sans-serif;
+  font-family: Inter, "Segoe UI", sans-serif;
 }
 .reportes-page .reportes-tabla thead th {
   padding: 14px 13px;
@@ -351,7 +351,7 @@
   background: white;
   color: #293e33;
   font:
-    12px/1.5 Arial,
+    12px/1.5 Inter,
     sans-serif;
 }
 .reporte-documento-cabecera {

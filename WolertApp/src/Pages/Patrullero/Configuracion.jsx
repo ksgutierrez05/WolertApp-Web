@@ -1,32 +1,42 @@
 
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PageHeader from '../../Components/Patrullero/Pageheader';
 import usePatrullero from '../../Utils/usePatrullero';
+import { useFeedback } from '../../Components/Feedback/useFeedback';
 
 import '../../css/Policia/Patrullero/css/Configuracion.css';
 
 export default function Configuracion() {
   const navigate = useNavigate();
+  const { confirm, toast } = useFeedback();
 
   const { datos, cargando, error } = usePatrullero();
   const p = datos?.policia;
 
+  useEffect(() => {
+    if (error) toast.errorFrom(error, 'No se pudo cargar tu perfil.', 'Error al cargar el perfil');
+  }, [error, toast]);
+
   function cerrarSesion() {
-    if (!window.confirm('¿Seguro que deseas cerrar sesión?')) {
-      return;
-    }
+    confirm({
+      title: '¿Cerrar sesión?',
+      description: 'Confirma que deseas salir de tu sesión de Patrullero.',
+      confirmLabel: 'Cerrar sesión',
+      tone: 'warning',
+      onConfirm: () => {
+        [
+          'token',
+          'usuario',
+          'rol',
+          'idUsuario',
+          'username'
+        ].forEach(k => localStorage.removeItem(k));
 
-    [
-      'token',
-      'usuario',
-      'rol',
-      'idUsuario',
-      'username'
-    ].forEach(k => localStorage.removeItem(k));
-
-    sessionStorage.clear();
-
-    navigate('/', { replace: true });
+        sessionStorage.clear();
+        navigate('/', { replace: true });
+      },
+    });
   }
 
   const fila = (etiqueta, valor) => (
@@ -50,12 +60,6 @@ export default function Configuracion() {
 
       {cargando && (
         <p role="status">Cargando perfil...</p>
-      )}
-
-      {error && (
-        <p className="alert alert-danger" role="alert">
-          {error}
-        </p>
       )}
 
       {/* Perfil */}

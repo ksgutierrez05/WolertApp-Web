@@ -1,0 +1,50 @@
+body.rol-policia .btn-ver-detalles {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex: 0 0 38px !important;
+  width: 38px !important;
+  min-width: 38px !important;
+  max-width: 38px !important;
+  height: 38px !important;
+  min-height: 38px !important;
+  max-height: 38px !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  border: 0 !important;
+  border-radius: 50% !important;
+  background: #ddf5ea !important;
+  color: #00634f !important;
+  box-shadow: none !important;
+  text-decoration: none !important;
+  cursor: pointer !important;
+  transition: background-color 150ms ease !important;
+}
+
+body.rol-policia .btn-ver-detalles:hover {
+  border: 0 !important;
+  background: #c5ebdd !important;
+  color: #00634f !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+body.rol-policia .btn-ver-detalles:focus-visible {
+  outline: 2px solid #00634f !important;
+  outline-offset: 2px;
+}
+
+body.rol-policia .btn-ver-detalles > i {
+  display: block;
+  margin: 0 !important;
+  color: #00634f !important;
+  font-size: 18px !important;
+  line-height: 1 !important;
+}
+
+body.rol-policia .ver-detalles-cell {
+  text-align: center !important;
+  vertical-align: middle;
+}
+
+body.rol-policia .ver-detalles-cell > .tabla-acciones-dash { justify-content: center; }

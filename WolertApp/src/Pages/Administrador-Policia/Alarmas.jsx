@@ -1,6 +1,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Topbar from "../../Components/Administrador-policia/Topbar";
+import { useFeedback } from "../../Components/Feedback/useFeedback";
 import RegistrarAlarmaMapa from "../../Components/Administrador-policia/RegistrarAlarmaMapa";
 import {
   listarAlarmas,
@@ -38,6 +39,7 @@ const esMantenimiento = (e) =>
   ["MANTENIMIENTO", "EN MANTENIMIENTO"].includes(e);
 
 export default function Alarmas() {
+  const { confirm, toast } = useFeedback();
   const [alarmas, setAlarmas] = useState([]);
   const [busqueda, setBusqueda] = useState("");
   const [filtro, setFiltro] = useState("TODAS");
@@ -48,8 +50,15 @@ export default function Alarmas() {
   const [aviso, setAviso] = useState("");
 
   const [editor, setEditor] = useState(null);
-  const [eliminando, setEliminando] = useState(null);
   const [procesando, setProcesando] = useState(false);
+
+  useEffect(() => {
+    if (error) toast.errorFrom(error, "No se pudo completar la operación con alarmas.", "Error de alarmas");
+  }, [error, toast]);
+
+  useEffect(() => {
+    if (aviso) toast.success(aviso, "Operación completada");
+  }, [aviso, toast]);
 
   const POR_PAGINA = 8;
 
@@ -176,24 +185,27 @@ export default function Alarmas() {
     actualizar();
   }
 
-  async function confirmarEliminar() {
-    if (!eliminando || procesando) return;
-
-    setProcesando(true);
-    setError("");
-    setAviso("");
-
-    try {
-      await eliminarAlarma(idAlarma(eliminando));
-      setEliminando(null);
-      setAviso("Alarma eliminada correctamente.");
-      actualizar();
-    } catch (e) {
-      setError(e.message || "No se pudo eliminar la alarma.");
-      setEliminando(null);
-    } finally {
-      setProcesando(false);
-    }
+  function confirmarEliminar(alarma) {
+    if (procesando) return;
+    confirm({
+      title: "¿Eliminar alarma?",
+      description: `Se eliminará ${nombreAlarma(alarma)}. Esta acción no se puede deshacer.`,
+      confirmLabel: "Eliminar alarma",
+      tone: "error",
+      failureMessage: "No se pudo eliminar la alarma.",
+      onConfirm: async () => {
+        setProcesando(true);
+        setError("");
+        setAviso("");
+        try {
+          await eliminarAlarma(idAlarma(alarma));
+          setAviso("Alarma eliminada correctamente.");
+          actualizar();
+        } finally {
+          setProcesando(false);
+        }
+      },
+    });
   }
 
   return (
@@ -228,31 +240,9 @@ export default function Alarmas() {
               Agregar alarma
             </button>
 
-            <button
-              type="button"
-              className="alarma-btn alarma-btn-secundario"
-              onClick={actualizar}
-              disabled={cargando}
-            >
-              <i className="bi bi-arrow-clockwise" />
-              {cargando ? "Actualizando..." : "Actualizar"}
-            </button>
+           
           </div>
         </div>
-
-        {aviso && (
-          <div className="alert alert-success mb-3" role="status">
-            <i className="bi bi-check-circle me-2" />
-            {aviso}
-          </div>
-        )}
-
-        {error && (
-          <div className="alert alert-danger mb-3" role="alert">
-            <i className="bi bi-exclamation-triangle me-2" />
-            {error}
-          </div>
-        )}
 
         <div className="row g-3 mb-4">
           {indicadores.map((item) => (
@@ -275,11 +265,17 @@ export default function Alarmas() {
           ))}
         </div>
 
-        <div className="alarmas-filtros">
+        <section className="alarmas-panel-tabla">
+          <div className="alarmas-filtros">
+            <div className="alarmas-buscador">
+              <i className="bi bi-search" aria-hidden="true" />
+              <input type="search" aria-label="Buscar alarmas" placeholder="Buscar por nombre o barrio..." value={busqueda} onChange={(e) => { setBusqueda(e.target.value); setPagina(1); }} />
+            </div>
           {filtros.map((item) => (
             <button
               key={item.clave}
               type="button"
+              aria-pressed={filtro === item.clave}
               className={`chip-filtro-dash ${
                 filtro === item.clave ? "active" : ""
               }`}
@@ -295,25 +291,6 @@ export default function Alarmas() {
             </button>
           ))}
         </div>
-
-        <section className="alarmas-panel-tabla">
-          <div className="alarmas-tabla-encabezado">
-            <div className="alarmas-tabla-titulo">
-              <span className="alarmas-tabla-icono">
-                <i className="bi bi-broadcast-pin" />
-              </span>
-              <div>
-                <h2>Alarmas registradas</h2>
-                <p>
-                  Consulta, modifica o elimina alarmas.
-                </p>
-              </div>
-            </div>
-
-            <span className="alarmas-total-registros">
-              {filtradas.length} registros
-            </span>
-          </div>
 
           <div className="table-responsive">
             <table className="alarmas-tabla">
@@ -340,12 +317,22 @@ export default function Alarmas() {
                   return (
                     <tr key={idAlarma(a)}>
                       <td>
-                        <div className="alarmas-nombre">
-                          {nombreAlarma(a)}
+                        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                          <span aria-hidden="true" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 40, height: 40, flexShrink: 0, borderRadius: "50%", background: "#e0f2e9", color: "#078568", fontSize: 18 }}>
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M7 18v-6a5 5 0 0 1 10 0v6M5 18h14v3H5z" />
+                              <path d="M12 2v2M4 5l2 2M20 5l-2 2M2 12h2M20 12h2M10 12v3" />
+                            </svg>
+                          </span>
+                          <div>
+                            <div className="alarmas-nombre">
+                              {nombreAlarma(a)}
+                            </div>
+                            <span className="alarmas-codigo">
+                              Código: {idAlarma(a)}
+                            </span>
+                          </div>
                         </div>
-                        <span className="alarmas-codigo">
-                          Código: {idAlarma(a)}
-                        </span>
                       </td>
 
                       <td>
@@ -399,7 +386,7 @@ export default function Alarmas() {
                             className="alarma-accion eliminar"
                             title="Eliminar alarma"
                             aria-label={`Eliminar ${nombreAlarma(a)}`}
-                            onClick={() => setEliminando(a)}
+                            onClick={() => confirmarEliminar(a)}
                           >
                             <i className="bi bi-trash3" />
                           </button>
@@ -472,51 +459,6 @@ export default function Alarmas() {
         />
       )}
 
-      {eliminando && (
-        <div className="alarma-confirmacion-fondo">
-          <section
-            className="alarma-confirmacion"
-            role="alertdialog"
-            aria-modal="true"
-            aria-labelledby="titulo-eliminar-alarma"
-          >
-            <div className="alarma-confirmacion-icono">
-              <i className="bi bi-trash3" />
-            </div>
-
-            <h3 id="titulo-eliminar-alarma">
-              ¿Eliminar alarma?
-            </h3>
-
-            <p>
-              Se eliminará{" "}
-              <strong>{nombreAlarma(eliminando)}</strong>.
-              Esta acción no se puede deshacer.
-            </p>
-
-            <div className="alarma-confirmacion-botones">
-              <button
-                type="button"
-                className="alarma-btn alarma-btn-secundario"
-                disabled={procesando}
-                onClick={() => setEliminando(null)}
-              >
-                Cancelar
-              </button>
-
-              <button
-                type="button"
-                className="alarma-btn alarma-btn-peligro"
-                disabled={procesando}
-                onClick={confirmarEliminar}
-              >
-                <i className="bi bi-trash3" />
-                {procesando ? "Eliminando..." : "Eliminar"}
-              </button>
-            </div>
-          </section>
-        </div>
-      )}
     </>
   );
 }

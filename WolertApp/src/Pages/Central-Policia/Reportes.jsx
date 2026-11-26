@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Topbar from "../../Components/Central-policia/Topbar";
 import Kpis from "../../Components/Central-policia/Kpicard";
+import { useFeedback } from "../../Components/Feedback/useFeedback";
 import {
   cargarCasosCentral,
   construirCasos,
@@ -18,26 +19,8 @@ const mostrar = (valor) =>
 const codigoInforme = (caso) =>
   `WLT-POL-AL-${String(caso.id ?? "0").padStart(5, "0")}`;
 
-function IconoOjo() {
-  return (
-    <svg
-      width="17"
-      height="17"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.9"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M2.3 12s3.5-6.5 9.7-6.5 9.7 6.5 9.7 6.5-3.5 6.5-9.7 6.5S2.3 12 2.3 12Z" />
-      <circle cx="12" cy="12" r="3" />
-    </svg>
-  );
-}
-
 function Reportes() {
+  const { toast } = useFeedback();
   // Datos y carga
   const [datos, setDatos] = useState(null);
   const [cargando, setCargando] = useState(true);
@@ -218,7 +201,11 @@ function Reportes() {
   }
 
   function exportarCSV() {
-    if (cargando || error || !filtrados.length) return;
+    if (cargando || error) return;
+    if (!filtrados.length) {
+      toast.warning("No hay informes que coincidan con los filtros actuales.", "Sin datos para exportar");
+      return;
+    }
     const columnas = [
       "Caso",
       "Fecha",
@@ -251,16 +238,21 @@ function Reportes() {
     const csv = [columnas, ...filas]
       .map((fila) => fila.map(escapar).join(";"))
       .join("\r\n");
-    const url = URL.createObjectURL(
-      new Blob(["\uFEFF", csv], { type: "text/csv;charset=utf-8" }),
-    );
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "informes-central-policia.csv";
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    try {
+      const url = URL.createObjectURL(
+        new Blob(["\uFEFF", csv], { type: "text/csv;charset=utf-8" }),
+      );
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "informes-central-policia.csv";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      toast.success("El archivo CSV se generó correctamente.", "Exportación lista");
+    } catch (err) {
+      toast.errorFrom(err, "No fue posible exportar los informes.", "Error al exportar");
+    }
   }
 
   // Datos del informe imprimible
@@ -301,18 +293,7 @@ function Reportes() {
                 Central Policía.
               </p>
             </div>
-            <button
-              type="button"
-              className="reportes-btn reportes-btn-principal"
-              disabled={cargando}
-              onClick={() => {
-                setSeleccion(null);
-                setRecarga((n) => n + 1);
-              }}
-            >
-              <i className="bi bi-arrow-clockwise" aria-hidden="true" />{" "}
-              {cargando ? "Actualizando..." : "Actualizar"}
-            </button>
+
           </header>
           {error && (
             <div className="alert alert-danger" role="alert">
@@ -454,14 +435,15 @@ function Reportes() {
                               {mostrar(c.estado)}
                             </span>
                           </td>
-                          <td>
+                          <td className="ver-detalles-cell">
                             <button
                               type="button"
-                              className="reportes-btn-ver"
+                              className="reportes-btn-ver btn-ver-detalles"
                               onClick={() => setSeleccion(c.clave)}
                               aria-label={`Ver detalles del caso ${c.id}`}
+                              title="Ver detalles"
                             >
-                              <IconoOjo /> <span>Ver detalle</span>
+                              <i className="bi bi-eye-fill" aria-hidden="true" />
                             </button>
                           </td>
                         </tr>

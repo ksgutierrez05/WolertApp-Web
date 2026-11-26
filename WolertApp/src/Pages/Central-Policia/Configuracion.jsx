@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import Topbar from "../../Components/Central-policia/Topbar";
 import { obtenerPerfilCentral } from "../../Services/configuracionCentralService";
@@ -22,13 +21,9 @@ export default function Configuracion() {
   const [perfil, setPerfil] = useState(null);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
-  const [recarga, setRecarga] = useState(0);
 
   useEffect(() => {
     const controller = new AbortController();
-
-    setCargando(true);
-    setError("");
 
     obtenerPerfilCentral(controller.signal)
       .then((datos) => {
@@ -44,7 +39,7 @@ export default function Configuracion() {
       });
 
     return () => controller.abort();
-  }, [recarga]);
+  }, []);
 
   const nombre = perfil
     ? [perfil.nombres, perfil.apellidos]
@@ -59,22 +54,9 @@ export default function Configuracion() {
       <main className="main-dash configuracion-main">
         <header className="config-header">
           <div>
-            <span className="config-kicker">
-              <i className="bi bi-shield-check me-2" />
-              CENTRAL DE RADIO
-            </span>
             <h1>Configuración</h1>
             <p>Información de tu cuenta y perfil institucional.</p>
           </div>
-
-          <button
-            className="config-btn"
-            disabled={cargando}
-            onClick={() => setRecarga((n) => n + 1)}
-          >
-            <i className="bi bi-arrow-clockwise me-2" />
-            {cargando ? "Cargando..." : "Actualizar"}
-          </button>
         </header>
 
         {error && (
@@ -88,6 +70,7 @@ export default function Configuracion() {
           <div className="config-avatar">
             <i className="bi bi-person-fill" />
           </div>
+
           <div>
             <span>PERFIL INSTITUCIONAL</span>
             <h2>{nombre}</h2>
@@ -108,8 +91,8 @@ export default function Configuracion() {
           <div className="config-grid">
             <section className="config-card">
               <h3>
-                <i className="bi bi-person-badge me-2" />
-                Identificación
+                <i className="bi bi-person-lines-fill me-2" />
+                Información personal
               </h3>
 
               <div className="config-documento">
@@ -123,54 +106,62 @@ export default function Configuracion() {
                 titulo="Nombre completo"
                 valor={nombre}
               />
+
               <Dato
                 icono="bi-person-circle"
                 titulo="Usuario"
                 valor={perfil.usuario}
               />
+
               <Dato
-                icono="bi-shield"
-                titulo="Rol"
-                valor={perfil.rol}
+                icono="bi-envelope"
+                titulo="Correo electrónico"
+                valor={perfil.correo}
+              />
+
+              <Dato
+                icono="bi-telephone"
+                titulo="Teléfono"
+                valor={perfil.telefono}
               />
             </section>
 
             <div className="config-columna">
               <section className="config-card">
                 <h3>
-                  <i className="bi bi-person-lines-fill me-2" />
-                  Información personal
-                </h3>
-
-                <div className="config-campos">
-                  <Dato icono="bi-person" titulo="Nombres" valor={perfil.nombres} />
-                  <Dato icono="bi-person" titulo="Apellidos" valor={perfil.apellidos} />
-                  <Dato icono="bi-envelope" titulo="Correo electrónico" valor={perfil.correo} />
-                  <Dato icono="bi-telephone" titulo="Teléfono" valor={perfil.telefono} />
-                </div>
-              </section>
-
-              <section className="config-card">
-                <h3>
                   <i className="bi bi-building me-2" />
-                  Información institucional
+                  Información de la cuenta
                 </h3>
 
                 <div className="config-campos">
-                  <Dato icono="bi-shield-check" titulo="Rol en el sistema" valor={perfil.rol} />
-                  <Dato icono="bi-person-badge" titulo="Nombre de usuario" valor={perfil.usuario} />
-                  <Dato icono="bi-check-circle" titulo="Estado de cuenta" valor={perfil.estado} />
-                  <Dato icono="bi-geo-alt" titulo="Barrio registrado" valor={perfil.barrio} />
+                  <Dato
+                    icono="bi-shield-check"
+                    titulo="Rol asignado"
+                    valor={perfil.rol}
+                  />
+
+                  <Dato
+                    icono="bi-person-badge"
+                    titulo="Nombre de usuario"
+                    valor={perfil.usuario}
+                  />
+
+                  <Dato
+                    icono="bi-check-circle"
+                    titulo="Estado de cuenta"
+                    valor={perfil.estado}
+                  />
+
+                  <Dato
+                    icono="bi-geo-alt"
+                    titulo="Barrio registrado"
+                    valor={perfil.barrio}
+                  />
                 </div>
               </section>
             </div>
           </div>
         )}
-
-        <footer className="config-footer">
-          <i className="bi bi-lock me-2" />
-          Información consultada desde WOLERTAPP. Perfil de solo lectura.
-        </footer>
       </main>
     </div>
   );

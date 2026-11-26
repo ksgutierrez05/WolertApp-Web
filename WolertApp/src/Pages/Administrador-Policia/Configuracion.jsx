@@ -1,6 +1,7 @@
 
 import { useEffect, useState } from "react";
 import Topbar from "../../Components/Administrador-policia/Topbar";
+import { useFeedback } from "../../Components/Feedback/useFeedback";
 import "../../css/Policia/administrador-policia/css/configuracion.css";
 
 const API = (
@@ -43,6 +44,7 @@ function CampoInformativo({ etiqueta, valor, icono }) {
 }
 
 function Configuracion() {
+  const { toast } = useFeedback();
   const [usuario, setUsuario] = useState(null);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
@@ -59,7 +61,9 @@ function Configuracion() {
         "false"
     );
 
-  const [mensaje, setMensaje] = useState("");
+  useEffect(() => {
+    if (error) toast.errorFrom(error, "No se pudo cargar el perfil.", "Error al cargar perfil");
+  }, [error, toast]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -145,7 +149,7 @@ function Configuracion() {
       String(notificacionesVisuales)
     );
 
-    setMensaje("Preferencias guardadas en este navegador.");
+    toast.success("Las preferencias se guardaron en este navegador.", "Cambios guardados");
   }
 
   function actualizar() {
@@ -518,21 +522,6 @@ function Configuracion() {
           </div>
         </div>
 
-        {mensaje && (
-          <div className="config-toast" role="status">
-            <i className="bi bi-check-circle-fill" />
-
-            <span>{mensaje}</span>
-
-            <button
-              type="button"
-              onClick={() => setMensaje("")}
-              aria-label="Cerrar mensaje"
-            >
-              <i className="bi bi-x-lg" />
-            </button>
-          </div>
-        )}
       </div>
     </>
   );

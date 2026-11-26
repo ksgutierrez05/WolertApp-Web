@@ -1,10 +1,15 @@
-
+import {
+  leerIdsLeidos,
+  guardarIdsLeidos,
+} from "../../Services/notificacionesEstado";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useFeedback } from "../../Components/Feedback/useFeedback";
 import "../../css/Policia/administrador-policia/css/notificaciones.css";
 
 const API = (
   import.meta.env.VITE_API_URL || "http://localhost:5039"
 ).replace(/\/$/, "");
+
 
 /*
  * Obtiene el ID del usuario autenticado desde su JWT.
@@ -20,12 +25,10 @@ function obtenerIdUsuario() {
     const parte = token.split(".")[1];
     if (!parte) return null;
 
-    const base64 = parte
-      .replace(/-/g, "+")
-      .replace(/_/g, "/");
+    const base64 = parte.replace(/-/g, "+").replace(/_/g, "/");
 
     const payload = JSON.parse(
-      atob(base64.padEnd(Math.ceil(base64.length / 4) * 4, "="))
+      atob(base64.padEnd(Math.ceil(base64.length / 4) * 4, "=")),
     );
 
     const claves = [
@@ -65,7 +68,7 @@ async function consultarNotificaciones(signal) {
     throw new Error("Debes iniciar sesión para consultar tus notificaciones.");
   }
 
-  const respuesta = await fetch(`${API}/api/Notificaciones`, {
+  const respuesta = await fetch(`${API}/api/Notificaciones/mias`, {
     method: "GET",
     signal,
     headers: {
@@ -79,23 +82,19 @@ async function consultarNotificaciones(signal) {
   }
 
   if (respuesta.status === 403) {
-    throw new Error(
-      "No tienes permisos para consultar las notificaciones."
-    );
+    throw new Error("No tienes permisos para consultar las notificaciones.");
   }
 
   if (!respuesta.ok) {
     throw new Error(
-      `No se pudieron consultar las notificaciones (${respuesta.status}).`
+      `No se pudieron consultar las notificaciones (${respuesta.status}).`,
     );
   }
 
   const datos = await respuesta.json();
 
   if (!Array.isArray(datos)) {
-    throw new Error(
-      "La API no devolvió una lista válida de notificaciones."
-    );
+    throw new Error("La API no devolvió una lista válida de notificaciones.");
   }
 
   return datos;
@@ -130,110 +129,105 @@ function esHoy(fecha) {
   );
 }
 
-
-
 function Notificaciones() {
+  const { toast } = useFeedback();
   const [notificaciones, setNotificaciones] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
 
   const [busqueda, setBusqueda] = useState("");
   const [filtroFecha, setFiltroFecha] = useState("TODAS");
-  const [recarga, setRecarga] = useState(0);
+  const [leidas, setLeidas] = useState(leerIdsLeidos);
+
+  useEffect(() => {
+    if (error) toast.errorFrom(error, "No se pudieron cargar las notificaciones.", "Error al cargar notificaciones");
+  }, [error, toast]);
+  useEffect(() => {
+    const sync = () => setLeidas(leerIdsLeidos());
+    window.addEventListener("wolertapp:notificaciones", sync);
+    window.addEventListener("storage", sync);
+    return () => {
+      window.removeEventListener("wolertapp:notificaciones", sync);
+      window.removeEventListener("storage", sync);
+    };
+  }, []);
+  const marcar = (ids) => {
+    setLeidas(guardarIdsLeidos([...leerIdsLeidos(), ...ids.map(String)]));
+    toast.success("Las notificaciones seleccionadas quedaron marcadas como leídas.", "Cambios guardados");
+  };
 
   const idUsuarioActual = obtenerIdUsuario();
 
-  const cargarNotificaciones = useCallback(async (signal) => {
-    try {
-      if (!idUsuarioActual) {
-        setNotificaciones([]);
-        throw new Error(
-          "No se pudo identificar tu ID de usuario en la sesión. " +
-          "Verifica que el token incluya el identificador del usuario."
-        );
+  const cargarNotificaciones = useCallback(
+    async (signal) => {
+      try {
+        const datos = await consultarNotificaciones(signal);
+
+        if (signal?.aborted) return;
+
+        /*
+         * Solo se conservan notificaciones dirigidas
+         * al usuario que inició sesión.
+         *
+         * No se filtra por ENVIADA/PENDIENTE porque
+         * esos estados no significan leída/no leída.
+         */
+        const recibidas = [...datos];
+
+        recibidas.sort((a, b) => {
+          const fechaA = new Date(a.fecha || 0).getTime() || 0;
+          const fechaB = new Date(b.fecha || 0).getTime() || 0;
+
+          return fechaB - fechaA;
+        });
+
+        setNotificaciones(recibidas);
+        setError("");
+      } catch (err) {
+        if (err.name !== "AbortError" && !signal?.aborted) {
+          setError(err.message || "No se pudieron cargar las notificaciones.");
+        }
+      } finally {
+        if (!signal?.aborted) {
+          setCargando(false);
+        }
       }
+    },
+    [idUsuarioActual],
+  );
 
-      const datos = await consultarNotificaciones(signal);
+  useEffect(() => {
+    const controller = new AbortController();
 
-      if (signal?.aborted) return;
+    const ejecutarCarga = async () => {
+      await cargarNotificaciones(controller.signal);
+    };
 
-      /*
-       * Solo se conservan notificaciones dirigidas
-       * al usuario que inició sesión.
-       *
-       * No se filtra por ENVIADA/PENDIENTE porque
-       * esos estados no significan leída/no leída.
-       */
-      const recibidas = datos.filter((notificacion) => {
-        const destinatario = Number(
-          notificacion.idUsuario ??
-          notificacion.IdUsuario ??
-          notificacion.id_usuario
-        );
-
-        return destinatario === idUsuarioActual;
-      });
-
-      recibidas.sort((a, b) => {
-        const fechaA = new Date(a.fecha || 0).getTime() || 0;
-        const fechaB = new Date(b.fecha || 0).getTime() || 0;
-
-        return fechaB - fechaA;
-      });
-
-      setNotificaciones(recibidas);
-      setError("");
-    } catch (err) {
-      if (err.name !== "AbortError" && !signal?.aborted) {
-        setError(
-          err.message || "No se pudieron cargar las notificaciones."
-        );
+    const tarea = Promise.resolve().then(() => {
+      if (!controller.signal.aborted) {
+        return ejecutarCarga();
       }
-    } finally {
-      if (!signal?.aborted) {
-        setCargando(false);
+    });
+
+    tarea.catch((error) => {
+      if (!controller.signal.aborted) {
+        console.error("Error al cargar notificaciones:", error);
       }
-    }
-  }, [idUsuarioActual]);
+    });
 
- 
-useEffect(() => {
-  const controller = new AbortController();
-
-  const ejecutarCarga = async () => {
-    await cargarNotificaciones(controller.signal);
-  };
-
-  const tarea = Promise.resolve().then(() => {
-    if (!controller.signal.aborted) {
-      return ejecutarCarga();
-    }
-  });
-
-  tarea.catch((error) => {
-    if (!controller.signal.aborted) {
-      console.error("Error al cargar notificaciones:", error);
-    }
-  });
-
-  return () => controller.abort();
-}, [cargarNotificaciones, recarga]);
-
-
-  function actualizar() {
-    if (cargando) return;
-
-    setCargando(true);
-    setError("");
-    setRecarga((valor) => valor + 1);
-  }
+    const timer = setInterval(ejecutarCarga, 30000);
+    return () => {
+      clearInterval(timer);
+      controller.abort();
+    };
+  }, [cargarNotificaciones]);
 
   const resumen = useMemo(() => {
     return {
       total: notificaciones.length,
       hoy: notificaciones.filter((n) => esHoy(n.fecha)).length,
       alertas: notificaciones.filter(
-        (n) => n.idAlerta !== null && n.idAlerta !== undefined
+        (n) => n.idAlerta !== null && n.idAlerta !== undefined,
       ).length,
     };
   }, [notificaciones]);
@@ -282,48 +276,19 @@ useEffect(() => {
 
           <h1>Mis notificaciones</h1>
 
-          <p>
-            Consulta los avisos y mensajes que has recibido
-            en WOLERTAPP.
-          </p>
+          <p>Consulta los avisos y mensajes que has recibido en WOLERTAPP.</p>
         </div>
 
         <div className="notificaciones-header-acciones">
           <button
             type="button"
             className="btn-notif-primario"
-            onClick={actualizar}
-            disabled={cargando}
+            onClick={() => marcar(notificaciones.map((n) => n.idNotificacion))}
           >
-            <i
-              className="bi bi-arrow-clockwise"
-              aria-hidden="true"
-            />
-            {cargando ? "Actualizando..." : "Actualizar"}
+            Marcar todas como leídas
           </button>
         </div>
       </header>
-
-      {/* MENSAJE DE ERROR */}
-
-      {error && (
-        <div
-          className="notificaciones-mensaje notificaciones-mensaje-error"
-          role="alert"
-        >
-          <i className="bi bi-exclamation-triangle" />
-
-          <span>{error}</span>
-
-          <button
-            type="button"
-            onClick={() => setError("")}
-            aria-label="Cerrar aviso"
-          >
-            <i className="bi bi-x-lg" />
-          </button>
-        </div>
-      )}
 
       {/* RESUMEN */}
 
@@ -376,17 +341,13 @@ useEffect(() => {
 
             <div>
               <h2>Bandeja de entrada</h2>
-              <p>
-                Notificaciones dirigidas a tu usuario.
-              </p>
+              <p>Notificaciones dirigidas a tu usuario.</p>
             </div>
           </div>
 
           <span className="notificaciones-contador">
             {filtradas.length}{" "}
-            {filtradas.length === 1
-              ? "notificación"
-              : "notificaciones"}
+            {filtradas.length === 1 ? "notificación" : "notificaciones"}
           </span>
         </div>
 
@@ -400,9 +361,7 @@ useEffect(() => {
               type="search"
               placeholder="Buscar por mensaje o alerta..."
               value={busqueda}
-              onChange={(evento) =>
-                setBusqueda(evento.target.value)
-              }
+              onChange={(evento) => setBusqueda(evento.target.value)}
             />
           </label>
 
@@ -412,21 +371,13 @@ useEffect(() => {
             <select
               className="form-select"
               value={filtroFecha}
-              onChange={(evento) =>
-                setFiltroFecha(evento.target.value)
-              }
+              onChange={(evento) => setFiltroFecha(evento.target.value)}
             >
-              <option value="TODAS">
-                Todas las recibidas
-              </option>
+              <option value="TODAS">Todas las recibidas</option>
 
-              <option value="HOY">
-                Recibidas hoy
-              </option>
+              <option value="HOY">Recibidas hoy</option>
 
-              <option value="CON_ALERTA">
-                Relacionadas con alertas
-              </option>
+              <option value="CON_ALERTA">Relacionadas con alertas</option>
             </select>
           </label>
         </div>
@@ -471,18 +422,24 @@ useEffect(() => {
 
                 <div className="notificacion-contenido">
                   <div className="notificacion-superior">
-                    <h3>
-                      Notificación #{notificacion.idNotificacion}
-                    </h3>
+                    <h3>Notificación #{notificacion.idNotificacion}</h3>
 
                     <span className="notificacion-prioridad prioridad-enviada">
                       RECIBIDA
                     </span>
                   </div>
 
+                  {!leidas.includes(String(notificacion.idNotificacion)) && (
+                    <button
+                      type="button"
+                      className="ap-marcar"
+                      onClick={() => marcar([notificacion.idNotificacion])}
+                    >
+                      Marcar como leída
+                    </button>
+                  )}
                   <p className="notificacion-mensaje">
-                    {notificacion.mensaje ||
-                      "Notificación sin descripción."}
+                    {notificacion.mensaje || "Notificación sin descripción."}
                   </p>
 
                   <div className="notificacion-detalles">

@@ -214,7 +214,7 @@
   min-width: 0;
 }
 
-.unidades-policia-page .buscador-unidades > label {
+.unidades-policia-page .buscador-unidades>label {
   color: var(--texto);
 
   font-size: 12px;
@@ -284,7 +284,7 @@
   min-width: 0;
 }
 
-.unidades-policia-page .filtro-unidad-card > label {
+.unidades-policia-page .filtro-unidad-card>label {
   display: flex;
 
   align-items: center;
@@ -294,7 +294,7 @@
   margin-bottom: 8px;
 }
 
-.unidades-policia-page .filtro-unidad-card > label > span:last-child {
+.unidades-policia-page .filtro-unidad-card>label>span:last-child {
   display: grid;
 
   gap: 2px;
@@ -525,7 +525,7 @@
   border-bottom: 1px solid var(--borde);
 }
 
-.unidades-policia-page .tabla-header-dash > span {
+.unidades-policia-page .tabla-header-dash>span {
   color: #183b31;
 
   font-size: 14px;
@@ -1019,7 +1019,7 @@
   gap: 14px;
 }
 
-.unidad-detalle-grid > div {
+.unidad-detalle-grid>div {
   min-width: 0;
 
   padding: 15px;
@@ -1118,6 +1118,7 @@
   background: rgba(12, 30, 25, 0.58);
   backdrop-filter: blur(5px);
 }
+
 .unidad-mapa-ventana {
   width: min(1120px, 100%);
   max-height: 94vh;
@@ -1128,6 +1129,7 @@
   background: #fff;
   box-shadow: 0 24px 70px rgba(0, 0, 0, 0.23);
 }
+
 .unidad-mapa-cabecera {
   display: flex;
   align-items: center;
@@ -1135,22 +1137,26 @@
   padding: 18px 24px;
   border-bottom: 1px solid #e2ebe6;
 }
+
 .unidad-mapa-cabecera-info {
   display: flex;
   align-items: center;
   gap: 14px;
 }
+
 .unidad-mapa-cabecera h2 {
   margin: 0;
   color: #183b31;
   font-size: 21px;
   font-weight: 750;
 }
+
 .unidad-mapa-cabecera p {
   margin: 4px 0 0;
   color: #74877d;
   font-size: 12px;
 }
+
 .unidad-modal-icono {
   display: grid;
   place-items: center;
@@ -1159,6 +1165,7 @@
   background: #e8f4ee;
   border-radius: 12px;
 }
+
 .unidad-mapa-cerrar {
   display: grid;
   place-items: center;
@@ -1170,6 +1177,7 @@
   color: #004d40;
   cursor: pointer;
 }
+
 .unidad-mapa-contenido {
   display: grid;
   grid-template-columns: minmax(0, 1.55fr) minmax(300px, 1fr);
@@ -1177,16 +1185,19 @@
   min-height: 0;
   overflow: auto;
 }
-.unidad-mapa-contenido > :first-child {
+
+.unidad-mapa-contenido> :first-child {
   min-width: 0;
   min-height: 420px;
 }
+
 .unidad-mapa-contenido .leaflet-container {
   min-height: 420px;
   width: 100%;
   height: 100%;
   z-index: 0;
 }
+
 .unidad-mapa-formulario {
   display: flex;
   flex-direction: column;
@@ -1197,6 +1208,7 @@
   border-left: 1px solid #e2ebe6;
   background: #fff;
 }
+
 .unidad-mapa-formulario input,
 .unidad-mapa-formulario select,
 .unidad-mapa-formulario textarea {
@@ -1205,53 +1217,65 @@
   border-color: #dce7e0;
   font-family: inherit;
 }
+
 .unidad-mapa-formulario input:focus,
 .unidad-mapa-formulario select:focus {
   outline-color: #004d40;
   border-color: #004d40;
 }
+
 .unidad-mapa-seccion {
   margin-bottom: 18px;
 }
+
 .unidad-mapa-formulario button[type="submit"] {
   background: #004d40;
   border-color: #004d40;
   color: #fff;
   border-radius: 9px;
 }
+
 @media (max-width: 850px) {
   .unidad-mapa-contenido {
     grid-template-columns: 1fr;
   }
-  .unidad-mapa-contenido > :first-child,
+
+  .unidad-mapa-contenido> :first-child,
   .unidad-mapa-contenido .leaflet-container {
     min-height: 300px;
     height: 300px;
   }
+
   .unidad-mapa-formulario {
     border-left: 0;
     border-top: 1px solid #e2ebe6;
     max-height: none;
   }
 }
+
 /* ===== DETALLES REFINADOS ===== */
 .unidad-detalle-ventana {
   width: min(720px, 100%);
 }
+
 .unidad-detalle-header {
   padding: 20px 22px;
 }
+
 .unidad-detalle-header-info h2 {
   font-size: 18px;
   letter-spacing: -0.25px;
 }
+
 .unidad-detalle-body {
   padding: 20px 22px 24px;
 }
+
 .unidad-detalle-grid {
   gap: 12px;
 }
-.unidad-detalle-grid > .unidad-detalle-dato {
+
+.unidad-detalle-grid>.unidad-detalle-dato {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -1260,6 +1284,7 @@
   border: 1px solid #e1eae5;
   border-radius: 12px;
 }
+
 .unidad-detalle-dato-icono {
   display: grid;
   place-items: center;
@@ -1270,9 +1295,11 @@
   border-radius: 10px;
   font-size: 17px;
 }
-.unidad-detalle-dato > div:last-child {
+
+.unidad-detalle-dato>div:last-child {
   min-width: 0;
 }
+
 .unidad-detalle-dato small,
 .unidad-detalle-dato label {
   display: block;
@@ -1280,32 +1307,38 @@
   font-size: 11px;
   margin-bottom: 4px;
 }
+
 .unidad-detalle-dato strong {
   display: block;
   font-size: 14px;
   color: #1d4034;
   font-weight: 700;
 }
+
 .unidad-detalle-seccion-titulo {
   display: flex;
   align-items: center;
   gap: 9px;
   color: #004d40;
 }
+
 .unidad-detalle-seccion-titulo h3 {
   margin: 0;
   font-size: 15px;
 }
+
 .unidad-detalle-vacio,
 .unidad-detalle-aviso {
   color: #72877c;
   font-size: 12px;
 }
+
 .unidad-detalle-lista {
   display: grid;
   gap: 9px;
   margin-top: 12px;
 }
+
 .unidad-detalle-integrante {
   display: flex;
   align-items: center;
@@ -1314,6 +1347,7 @@
   border: 1px solid #e2ebe6;
   border-radius: 10px;
 }
+
 .unidad-detalle-persona-icono {
   display: grid;
   place-items: center;
@@ -1323,14 +1357,429 @@
   border-radius: 9px;
   color: #004d40;
 }
+
 .unidad-detalle-footer {
   padding: 15px 22px;
 }
+
 .unidad-detalle-btn-principal {
   background: #004d40 !important;
   color: white !important;
   border-color: #004d40 !important;
 }
+
 .unidad-detalle-btn-principal:hover {
   background: #006453 !important;
+}
+
+
+/* Acciones de tabla: estilo unificado Administrador Policía */
+.unidades-policia-page .btn-icono-dash.editar-dash,
+.unidades-policia-page .btn-icono-dash.borrar-dash {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  padding: 0;
+  border-radius: 10px;
+  font-size: 15px;
+  line-height: 1;
+  box-shadow: none;
+  transform: none;
+  transition: background-color .15s, border-color .15s;
+}
+
+.unidades-policia-page .btn-icono-dash.editar-dash {
+  background: #fff4df;
+  border: 1px solid #ffdda0;
+  color: #d88a08;
+}
+
+.unidades-policia-page .btn-icono-dash.borrar-dash {
+  background: #fcebed;
+  border: 1px solid #ffd3d9;
+  color: #ed6677;
+}
+
+.unidades-policia-page .btn-icono-dash.editar-dash:hover:not(:disabled) {
+  background: #ffebc4;
+  border-color: #f5c66e;
+  color: #b87500;
+  transform: none;
+  box-shadow: none;
+}
+
+.unidades-policia-page .btn-icono-dash.borrar-dash:hover:not(:disabled) {
+  background: #ffdde2;
+  border-color: #f5aab5;
+  color: #d94b60;
+  transform: none;
+  box-shadow: none;
+}
+
+.unidades-policia-page .btn-icono-dash.editar-dash:disabled,
+.unidades-policia-page .btn-icono-dash.borrar-dash:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+.unidades-policia-page .btn-icono-dash.editar-dash:focus-visible,
+.unidades-policia-page .btn-icono-dash.borrar-dash:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* =====================================================
+   FILTROS REDISEÑADOS
+   ===================================================== */
+
+.unidades-policia-page .panel-filtros-unidades {
+  padding: 16px 18px 12px;
+}
+
+.unidades-policia-page .filtros-unidades-barra {
+  display: grid;
+  grid-template-columns:
+    minmax(220px, 1.5fr)
+    minmax(180px, 1fr)
+    minmax(200px, 1.2fr);
+  gap: 12px;
+  align-items: center;
+}
+
+/* Campo base: buscador, estado y barrio comparten el mismo aspecto */
+.unidades-policia-page .fu-buscador,
+.unidades-policia-page .fu-boton,
+.unidades-policia-page .fu-barrio .barrio-combobox-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  width: 100%;
+  min-width: 0;
+  height: 44px;
+  padding: 0 13px;
+
+  background: #fbfdfb;
+  border: 1px solid #dce7df;
+  border-radius: 11px;
+
+  color: #8495a3;
+  font-family: inherit;
+  font-size: 13px;
+
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    background 0.18s ease;
+}
+
+.unidades-policia-page .fu-buscador:focus-within,
+.unidades-policia-page .fu-boton:focus-visible,
+.unidades-policia-page .fu-desplegable.abierto .fu-boton,
+.unidades-policia-page .fu-barrio .barrio-combobox-control:focus-within {
+  border-color: var(--verde);
+  box-shadow: 0 0 0 3px #004d4014;
+  outline: 0;
+}
+
+.unidades-policia-page .fu-buscador input {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--texto);
+  font-family: inherit;
+  font-size: 13px;
+}
+
+.unidades-policia-page .fu-buscador input::placeholder {
+  color: #98a5b6;
+}
+
+.unidades-policia-page .fu-barrio .barrio-combobox-control input {
+  font-size: 13px;
+}
+
+.unidades-policia-page .fu-barrio .barrio-combobox-control input::placeholder {
+  color: #98a5b6;
+}
+
+/* Desplegable de estado */
+.unidades-policia-page .fu-desplegable {
+  position: relative;
+  min-width: 0;
+}
+
+.unidades-policia-page .fu-boton {
+  text-align: left;
+  cursor: pointer;
+}
+
+.unidades-policia-page .fu-icono {
+  flex-shrink: 0;
+  font-size: 15px;
+}
+
+.unidades-policia-page .fu-texto {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--texto);
+}
+
+.unidades-policia-page .fu-texto.sin-valor {
+  color: #98a5b6;
+}
+
+.unidades-policia-page .fu-flecha {
+  flex-shrink: 0;
+  font-size: 12px;
+  transition: transform 0.18s ease;
+}
+
+.unidades-policia-page .fu-desplegable.abierto .fu-flecha {
+  transform: rotate(180deg);
+}
+
+/* Estado activo (hay un filtro aplicado) */
+.unidades-policia-page .fu-desplegable.activo .fu-boton,
+.unidades-policia-page .fu-barrio.activo .barrio-combobox-control {
+  background: #edf6f1;
+  border-color: var(--verde);
+}
+
+.unidades-policia-page .fu-desplegable.activo .fu-icono,
+.unidades-policia-page .fu-desplegable.activo .fu-flecha,
+.unidades-policia-page .fu-barrio.activo .barrio-combobox-control > i {
+  color: var(--verde);
+}
+
+.unidades-policia-page .fu-desplegable.activo .fu-texto {
+  color: var(--verde);
+  font-weight: 650;
+}
+
+.unidades-policia-page .fu-barrio.activo .barrio-combobox-control input {
+  color: var(--verde);
+  font-weight: 650;
+}
+
+/* Puntos de color */
+.unidades-policia-page .fu-punto {
+  flex-shrink: 0;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+
+.unidades-policia-page .fu-operativa { background: #00845b; }
+.unidades-policia-page .fu-activa    { background: #2868c7; }
+.unidades-policia-page .fu-inactiva  { background: #9aa5a0; }
+.unidades-policia-page .fu-todos     { background: #c3ccc8; }
+
+/* Lista desplegada */
+.unidades-policia-page .fu-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 1100;
+
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+
+  background: #fff;
+  border: 1px solid #dce9e2;
+  border-radius: 12px;
+  box-shadow: 0 12px 28px #003b2d20;
+
+  animation: fu-menu-entrada 0.14s ease;
+}
+
+@keyframes fu-menu-entrada {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.unidades-policia-page .fu-opcion {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  width: 100%;
+  padding: 9px 10px;
+
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
+
+  color: var(--texto);
+  font-family: inherit;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+
+  transition: background 0.12s ease;
+}
+
+.unidades-policia-page .fu-opcion:hover,
+.unidades-policia-page .fu-opcion:focus-visible {
+  background: #f1f7f3;
+  outline: 0;
+}
+
+.unidades-policia-page .fu-opcion.seleccionada {
+  background: #e3f4ec;
+  color: var(--verde);
+  font-weight: 650;
+}
+
+.unidades-policia-page .fu-opcion-texto {
+  flex: 1;
+  min-width: 0;
+}
+
+.unidades-policia-page .fu-opcion-cantidad {
+  min-width: 22px;
+  padding: 1px 7px;
+  background: #eef2f0;
+  color: #6b7c8f;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 650;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.unidades-policia-page .fu-opcion.seleccionada .fu-opcion-cantidad {
+  background: #004d4018;
+  color: var(--verde);
+}
+
+.unidades-policia-page .fu-check {
+  width: 14px;
+  flex-shrink: 0;
+  font-size: 14px;
+  color: var(--verde);
+  opacity: 0;
+}
+
+.unidades-policia-page .fu-check.visible {
+  opacity: 1;
+}
+
+/* Lista de barrios: mismo estilo de selección */
+.unidades-policia-page .fu-barrio .barrio-combobox-lista {
+  border-radius: 12px;
+  box-shadow: 0 12px 28px #003b2d20;
+}
+
+.unidades-policia-page .fu-barrio .barrio-combobox-opcion {
+  padding: 9px 10px;
+  font-size: 13px;
+}
+
+.unidades-policia-page .fu-barrio .barrio-combobox-opcion[aria-selected="true"] {
+  font-weight: 650;
+}
+
+/* Pie: resultados + limpiar */
+.unidades-policia-page .filtros-unidades-pie {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+
+  margin-top: 12px;
+  padding-top: 11px;
+
+  border-top: 1px solid #edf1ee;
+}
+
+.unidades-policia-page .fu-resultados {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.unidades-policia-page .fu-resultados strong {
+  color: var(--verde);
+}
+
+.unidades-policia-page .fu-limpiar {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 6px 12px;
+
+  background: #fff;
+  color: var(--verde);
+
+  border: 1px solid #cfe2d8;
+  border-radius: 100px;
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+
+  transition: background 0.15s ease;
+}
+
+.unidades-policia-page .fu-limpiar:hover {
+  background: var(--verde-claro);
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .unidades-policia-page .filtros-unidades-barra {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .unidades-policia-page .fu-buscador {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 640px) {
+  .unidades-policia-page .filtros-unidades-barra {
+    grid-template-columns: 1fr;
+  }
+
+  .unidades-policia-page .filtros-unidades-pie {
+    justify-content: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .unidades-policia-page .fu-menu { animation: none; }
+  .unidades-policia-page .fu-flecha { transition: none; }
+}
+
+/* =====================================================
+   ESTADO: quitar puntos duplicados
+   (solo debe quedar el .unidad-estado-punto del JSX)
+   ===================================================== */
+
+.unidades-policia-page .unidad-estado::before,
+.unidades-policia-page .unidad-estado::after,
+.unidades-policia-page .unidad-estado-activa::before,
+.unidades-policia-page .unidad-estado-activa::after,
+.unidades-policia-page .unidad-estado-operativa::before,
+.unidades-policia-page .unidad-estado-operativa::after,
+.unidades-policia-page .unidad-estado-inactiva::before,
+.unidades-policia-page .unidad-estado-inactiva::after {
+  content: none !important;
+  display: none !important;
 }

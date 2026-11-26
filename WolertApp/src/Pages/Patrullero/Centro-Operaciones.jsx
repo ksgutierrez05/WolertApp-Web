@@ -1,5 +1,8 @@
 
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Kpis from '../../Components/Patrullero/Kpicard';
+import { useFeedback } from '../../Components/Feedback/useFeedback';
 import usePatrullero from '../../Utils/usePatrullero';
 import {
   EsHoy,
@@ -9,18 +12,37 @@ import {
 import '../../css/Policia/Patrullero/css/centro-operaciones.css';
 
 export default function CentroOperaciones() {
+  const navigate = useNavigate();
   const { datos, cargando, error, recargar } = usePatrullero();
+  const { toast } = useFeedback();
+
+  useEffect(() => {
+    if (error) toast.errorFrom(error, 'No se pudo cargar el centro de operaciones.', 'Error al cargar operaciones');
+  }, [error, toast]);
 
   const asignaciones = datos?.asignaciones || [];
   const atenciones = datos?.atenciones || [];
   const integrantes = datos?.unidad?.policias || [];
 
   const activa = asignaciones.find(
-    a => a.estadoAsignacion === 'EN_ATENCION'
+    a => String(a.estadoAsignacion || a.EstadoAsignacion || '').trim().toUpperCase().replace(/[\s-]+/g, '_') === 'EN_ATENCION'
   );
 
+  const asignacionesVigentes = asignaciones.filter((a) =>
+    ['ASIGNADA', 'EN_ATENCION'].includes(
+      String(a.estadoAsignacion || a.EstadoAsignacion || '').trim().toUpperCase().replace(/[\s-]+/g, '_')
+    )
+  );
+  const asignacionRuta = activa || asignacionesVigentes[0] || null;
+  const iniciarRuta = () => {
+    if (!asignacionRuta) return;
+    navigate('/Patrullero/Asignaciones', {
+      state: { asignacionId: asignacionRuta.idAsignacion ?? asignacionRuta.IdAsignacion },
+    });
+  };
+
   const nuevas = asignaciones.filter(
-    a => a.estadoAsignacion === 'ASIGNADA'
+    a => String(a.estadoAsignacion || a.EstadoAsignacion || '').trim().toUpperCase().replace(/[\s-]+/g, '_') === 'ASIGNADA'
   );
 
   const hoy = atenciones.filter(
@@ -31,7 +53,7 @@ export default function CentroOperaciones() {
   const valores = {
     alertasAsignadas: asignaciones.length,
     atencionActiva: asignaciones.filter(
-      a => a.estadoAsignacion === 'EN_ATENCION'
+      a => String(a.estadoAsignacion || a.EstadoAsignacion || '').trim().toUpperCase().replace(/[\s-]+/g, '_') === 'EN_ATENCION'
     ).length,
     atendidasHoy: hoy.length,
     companeros: integrantes.filter(
@@ -67,12 +89,7 @@ export default function CentroOperaciones() {
       )}
 
       {error && (
-        <div className="alert alert-danger" role="alert">
-          {error}
-          <button type="button" onClick={recargar}>
-            Reintentar
-          </button>
-        </div>
+        <button type="button" className="btn btn-link btn-sm px-0" onClick={recargar}>Reintentar carga</button>
       )}
 
       <section aria-label="Indicadores operativos">
@@ -106,6 +123,7 @@ export default function CentroOperaciones() {
           </div>
 
           <article className="card-panel-dash co-active h-100 d-flex flex-column">
+            <div className="co-active-content" hidden={!activa}>
             <div className="co-active-top">
               <div className="co-active-empty">
                 <p className="co-active-title">
@@ -151,22 +169,31 @@ export default function CentroOperaciones() {
                 </div>
 
                 <div>
-                  <b>Ruta de atención</b>
-                  <span>
-                    Consulta el detalle de la alerta para
-                    conocer su ubicación.
-                  </span>
+                  <b>{asignacionRuta ? "Detalle de la asignación" : "Ruta no disponible"}</b>
+                  <span>{asignacionRuta ? `Consulta la atención activa en Mis Asignaciones · Alerta #${asignacionRuta.idAlerta ?? asignacionRuta.IdAlerta ?? ""}` : "Se habilita cuando exista una asignación vigente."}</span>
                 </div>
               </div>
 
               <button
                 type="button"
-                className="btn btn-cv-azul btn-sm px-3"
-                disabled
+                className="btn co-route-button btn-sm px-3"
+                disabled={!asignacionRuta}
+                onClick={iniciarRuta}
               >
                 Iniciar ruta
               </button>
             </div>
+            </div>
+            {!activa && (
+              <div className="co-active-empty-state">
+                <span className="co-empty-icon"><i className="bi bi-clipboard2-check" aria-hidden="true" /></span>
+                <div>
+                  <h3>No hay una atencion activa</h3>
+                  <p>Cuando exista una asignacion vigente, aqui veras la ubicacion de la alerta y el seguimiento de tu unidad.</p>
+                  <button type="button" className="btn co-route-button mt-3" disabled={!asignacionRuta} onClick={iniciarRuta}><i className="bi bi-signpost-split me-2" aria-hidden="true" /> Iniciar ruta{asignacionRuta ? ` · Alerta #${asignacionRuta.idAlerta ?? asignacionRuta.IdAlerta ?? ""}` : ""}</button>
+                </div>
+              </div>
+            )}
           </article>
         </section>
 

@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MapContainer, TileLayer, LayersControl, Marker, useMapEvents, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, LayersControl, Marker, Popup, useMapEvents, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import '../../css/global.css';
 import '../../css/temas.css';
 import '../../css/ciudadano/reportar-emergencia.css';
-import { crearAlerta } from '../../Services/AlertasAPI.js';
+import { crearAlerta, listarAlertas } from '../../Services/AlertasAPI.js';
 import { listarTiposAlerta } from '../../Services/TipoAlertasAPI.js';
 
 const CENTRO_INICIAL = [10.4731, -73.2446]; // Valledupar
@@ -27,6 +27,29 @@ const iconoPin = L.divIcon({
   iconSize: [34, 44],
   iconAnchor: [17, 43],
 });
+const cacheIconosAlertaActiva = new Map();
+function colorUnicoAlerta(id) {
+  const numero = Number(id);
+  const valor = Number.isFinite(numero)
+    ? numero
+    : Array.from(String(id)).reduce((suma, letra) => suma + letra.charCodeAt(0), 0);
+  return `hsl(${(valor * 137.508) % 360} 76% 44%)`;
+}
+
+function iconoAlertaActiva(id) {
+  const clave = String(id);
+  if (!cacheIconosAlertaActiva.has(clave)) {
+    const color = colorUnicoAlerta(id);
+    cacheIconosAlertaActiva.set(clave, L.divIcon({
+      className: 're-alerta-marker-wrap',
+      html: `<span class="re-alerta-pin" style="--pulse-color:${color}"><span class="re-alerta-pin-pulso"></span><svg width="38" height="48" viewBox="0 0 38 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M19 1C9.1 1 1 8.8 1 18.4 1 30.2 19 47 19 47s18-16.8 18-28.6C37 8.8 28.9 1 19 1Z" fill="${color}" stroke="#fff" stroke-width="2"/><circle cx="19" cy="18" r="6" fill="#fff"/></svg></span>`,
+      iconSize: [38, 48],
+      iconAnchor: [19, 47],
+      popupAnchor: [0, -44],
+    }));
+  }
+  return cacheIconosAlertaActiva.get(clave);
+}
 
 function ClickMapa({ onPick }) {
   useMapEvents({ click: (e) => onPick(e.latlng) });
@@ -60,6 +83,24 @@ const normalizar = (texto) =>
     .replace(/\s+/g, ' ')
     .trim()
     .toLowerCase();
+
+const estadosFinalesAlerta = new Set([
+  'resuelta', 'resuelto', 'cerrada', 'cerrado', 'cancelada', 'cancelado',
+  'atendida', 'atendido', 'finalizada', 'finalizado', 'completada', 'completado',
+]);
+const estadoAlertaDe = (alerta) => alerta?.estado ?? alerta?.Estado ?? alerta?.estadoAlerta ?? alerta?.EstadoAlerta ?? '';
+const esAlertaActiva = (alerta) => {
+  const estado = normalizar(estadoAlertaDe(alerta));
+  return Boolean(estado) && !estadosFinalesAlerta.has(estado);
+};
+const coordenadasDeAlerta = (alerta) => {
+  const lat = Number(alerta?.latitud ?? alerta?.Latitud ?? alerta?.latitude ?? alerta?.Latitude);
+  const lng = Number(alerta?.longitud ?? alerta?.Longitud ?? alerta?.longitude ?? alerta?.Longitude);
+  return Number.isFinite(lat) && Number.isFinite(lng) && Math.abs(lat) <= 90 && Math.abs(lng) <= 180
+    ? [lat, lng]
+    : null;
+};
+const tipoDeAlerta = (alerta) => alerta?.tipo ?? alerta?.Tipo ?? alerta?.tipoNombre ?? alerta?.TipoNombre ?? 'Alerta activa';
 
 const prioridadOrden = { ALTA: 0, MEDIA: 1, BAJA: 2 };
 function colorUnicoTipo(tipo) {
@@ -110,6 +151,8 @@ export default function ReportarEmergencia({ onClose }) {
   const [resultado, setResultado] = useState(null);
   const [referenciaAlerta, setReferenciaAlerta] = useState(null);
   const [tipos, setTipos] = useState([]);
+  const [alertasActivas, setAlertasActivas] = useState([]);
+  const [errorAlertasMapa, setErrorAlertasMapa] = useState('');
   const [cargandoTipos, setCargandoTipos] = useState(true);
   const [errorTipos, setErrorTipos] = useState('');
   const [busquedaTipo, setBusquedaTipo] = useState('');
@@ -175,6 +218,41 @@ export default function ReportarEmergencia({ onClose }) {
   useEffect(() => {
     usarMiUbicacion();
   }, []);
+
+  useEffect(() => {
+    if (!mostrarMapa) return undefined;
+
+    let activo = true;
+    let cargando = false;
+    const controlador = new AbortController();
+    const cargarAlertasActivas = async () => {
+      if (cargando) return;
+      cargando = true;
+      try {
+        const datos = await listarAlertas(controlador.signal);
+        if (activo) {
+          setAlertasActivas(Array.isArray(datos) ? datos.filter(esAlertaActiva) : []);
+          setErrorAlertasMapa('');
+        }
+      } catch (err) {
+        if (activo && err.name !== 'AbortError') {
+          setErrorAlertasMapa('No se pudieron cargar las alertas activas.');
+        }
+      } finally {
+        cargando = false;
+      }
+    };
+
+    cargarAlertasActivas();
+    const intervalo = window.setInterval(cargarAlertasActivas, 60000);
+    window.addEventListener('focus', cargarAlertasActivas);
+    return () => {
+      activo = false;
+      controlador.abort();
+      window.clearInterval(intervalo);
+      window.removeEventListener('focus', cargarAlertasActivas);
+    };
+  }, [mostrarMapa]);
 
   const elegirTipo = (seleccionado) => {
     setTipo(seleccionado);
@@ -384,6 +462,24 @@ export default function ReportarEmergencia({ onClose }) {
                   </LayersControl>
                   <ClickMapa onPick={setPos} />
                   <Volar destino={volarA} />
+                  {alertasActivas.map((alerta, index) => {
+                    const coordenadas = coordenadasDeAlerta(alerta);
+                    if (!coordenadas) return null;
+
+                    const id = alerta.idAlerta ?? alerta.IdAlerta ?? alerta.id ?? alerta.Id ?? index;
+                    const barrio = alerta.barrioNombre ?? alerta.BarrioNombre;
+                    return (
+                      <Marker key={id} position={coordenadas} icon={iconoAlertaActiva(id)}>
+                        <Popup>
+                          <div className="re-popup-alerta">
+                            <strong>{tipoDeAlerta(alerta)}</strong>
+                            <span><i className="bi bi-geo-alt" /> {barrio || 'Ubicación reportada'}</span>
+                            <span className="re-popup-alerta-estado">Alerta activa</span>
+                          </div>
+                        </Popup>
+                      </Marker>
+                    );
+                  })}
                   {pos && (
                     <Marker
                       position={[pos.lat, pos.lng]}
@@ -398,6 +494,7 @@ export default function ReportarEmergencia({ onClose }) {
                     />
                   )}
                 </MapContainer>
+                {errorAlertasMapa && <div className="re-alertas-mapa-error" role="status">{errorAlertasMapa}</div>}
                 {pos && (
                   <div className="re-chip-coords">
                     <i className="bi bi-geo-alt-fill" /> {pos.lat.toFixed(5)}, {pos.lng.toFixed(5)}

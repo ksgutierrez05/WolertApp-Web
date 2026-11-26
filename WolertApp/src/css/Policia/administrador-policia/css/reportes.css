@@ -1,9 +1,11 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
 
 /* ==========================================
    REPORTES - ADMINISTRADOR POLICÍA
 ========================================== */
 
 .reportes-page {
+  font-family: "Inter", sans-serif;
   --rp-primary: #08765a;
   --rp-primary-dark: #075b47;
   --rp-text: #263d58;
@@ -57,7 +59,7 @@
   font-size: 13px;
 }
 
-.reportes-header > button {
+.reportes-header>button {
   min-height: 40px;
   padding: 0 16px;
   border-radius: 9px;
@@ -155,7 +157,7 @@
   margin: 0;
 }
 
-.reportes-filtros label > span {
+.reportes-filtros label>span {
   color: #53647b;
   font-size: 11px;
   font-weight: 750;
@@ -352,7 +354,7 @@
     font-size: 26px;
   }
 
-  .reportes-header > button {
+  .reportes-header>button {
     width: 100%;
   }
 
@@ -361,7 +363,7 @@
     padding: 16px;
   }
 
-  .reportes-panel-header > button {
+  .reportes-panel-header>button {
     width: 100%;
   }
 
@@ -377,4 +379,201 @@
   .reportes-footer {
     padding: 13px;
   }
+}
+
+.reportes-page .reportes-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  background: #fff;
+  gap: 12px
+}
+
+.reportes-filtros .input-group {
+  flex: 1 1 260px;
+  width: auto
+}
+
+.reportes-filtros .form-select {
+  width: auto;
+  min-width: 150px
+}
+
+.rp-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: 100%;
+  padding-top: 12px;
+  border-top: 1px solid #edf1f4
+}
+
+.rp-chip,
+.rp-paginacion button {
+  border: 1px solid #dce9e3;
+  background: #f3f8f5;
+  color: #0b4a3f;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 600
+}
+
+.rp-chip span {
+  margin-left: 8px;
+  background: #e0eee6;
+  padding: 2px 6px;
+  border-radius: 12px
+}
+
+.rp-chip.activo,
+.rp-accion {
+  background: #0b4a3f;
+  color: white;
+  border: 1px solid #0b4a3f
+}
+
+.rp-chip.activo span {
+  background: #ffffff30
+}
+
+.rp-accion {
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap
+}
+
+.rp-accion:disabled,
+.rp-paginacion button:disabled {
+  opacity: .45;
+  cursor: not-allowed
+}
+
+.reportes-page .reportes-footer {
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px
+}
+
+.rp-paginacion {
+  display: flex;
+  align-items: center;
+  gap: 10px
+}
+
+.rp-modal-fondo {
+  position: fixed;
+  inset: 0;
+  background: #10251f80;
+  z-index: 2000;
+  display: grid;
+  place-items: center;
+  padding: 16px
+}
+
+.rp-modal {
+  background: white;
+  border-radius: 14px;
+  padding: 24px;
+  width: min(100%, 480px);
+  display: grid;
+  gap: 14px;
+  box-shadow: 0 12px 40px #0002
+}
+
+.rp-modal h2 {
+  font-size: 21px;
+  color: #0b4a3f;
+  margin: 0
+}
+
+.rp-modal label {
+  display: grid;
+  gap: 6px;
+  font-size: 13px
+}
+
+.rp-modal-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px
+}
+
+.rp-modal-acciones button:not(.rp-accion) {
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 8px;
+  padding: 8px 12px
+}
+
+.reportes-header h1 {
+  font-family: "Space Grotesk", sans-serif
+}
+
+.reportes-page .reportes-header>button {
+  background: #0b4a3f;
+  color: white;
+  border-color: #0b4a3f
+}
+
+/* Filtros alineados, independientes de estilos globales Bootstrap */
+.reportes-page .reportes-filtros {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+  padding: 18px 20px;
+}
+
+.reportes-page .rp-fila-filtros {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(145px, 180px) max-content;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.reportes-page .rp-fila-filtros .input-group,
+.reportes-page .rp-fila-filtros .form-select {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  height: 42px;
+}
+
+.reportes-page .rp-fila-filtros .rp-accion {
+  height: 42px;
+  margin: 0;
+}
+
+.reportes-page .rp-chips {
+  margin: 0;
+  padding-top: 12px;
+}
+
+.reportes-page .reportes-tabla-contenedor {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+@media(max-width: 720px) {
+  .reportes-page .rp-fila-filtros {
+    grid-template-columns: minmax(0, 1fr) max-content;
+  }
+
+  .reportes-page .rp-fila-filtros .input-group {
+    grid-column: 1 / -1;
+  }
+}
+
+@media(max-width: 420px) {
+  .reportes-page .rp-fila-filtros {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Tipografía uniforme del módulo */
+.reportes-page :is(h1, h2, h3, h4, p, span, label, button, input, select, textarea, table, th, td, a) {
+  font-family: "Inter", sans-serif;
 }

@@ -1,6 +1,7 @@
-
 import { useEffect, useMemo, useState } from "react";
 import { obtenerHistorial } from "../../Services/HistorialEstadisticasService";
+import SelectBonito from "../../Components/Administrador-policia/SelectBonito";
+import { useFeedback } from "../../Components/Feedback/useFeedback";
 import "../../css/Policia/administrador-policia/css/historial.css";
 
 // ========================================
@@ -87,9 +88,7 @@ function clasificarEstado(estado) {
     return "enProceso";
   }
 
-  if (
-    ["PENDIENTE", "NUEVA", "SIN ASIGNAR"].includes(valor)
-  ) {
+  if (["PENDIENTE", "NUEVA", "SIN ASIGNAR"].includes(valor)) {
     return "pendiente";
   }
 
@@ -117,9 +116,7 @@ function fechaValida(fecha) {
 
   const resultado = new Date(fecha);
 
-  return Number.isNaN(resultado.getTime())
-    ? null
-    : resultado;
+  return Number.isNaN(resultado.getTime()) ? null : resultado;
 }
 
 function formatearFecha(fecha) {
@@ -196,11 +193,20 @@ const TARJETAS = [
   },
 ];
 
+// Opciones de los desplegables ("" = sin filtro)
+const OPCIONES_FECHA = [
+  { valor: "", etiqueta: "Todas las fechas" },
+  { valor: "hoy", etiqueta: "Hoy" },
+  { valor: "semana", etiqueta: "Esta semana" },
+  { valor: "mes", etiqueta: "Este mes" },
+];
+
 // ========================================
 // COMPONENTE PRINCIPAL
 // ========================================
 
 function Historial() {
+  const { toast } = useFeedback();
   const [datos, setDatos] = useState({
     atenciones: [],
     asignaciones: [],
@@ -209,6 +215,10 @@ function Historial() {
 
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (error) toast.errorFrom(error, "No se pudo cargar el historial.", "Error al cargar historial");
+  }, [error, toast]);
   const [recarga, setRecarga] = useState(0);
 
   const [filtroFecha, setFiltroFecha] = useState("todas");
@@ -225,9 +235,7 @@ function Historial() {
 
     async function cargarDatos() {
       try {
-        const resultado = await obtenerHistorial(
-          controlador.signal
-        );
+        const resultado = await obtenerHistorial(controlador.signal);
 
         if (controlador.signal.aborted) return;
 
@@ -238,23 +246,16 @@ function Historial() {
           asignaciones: Array.isArray(resultado?.asignaciones)
             ? resultado.asignaciones
             : [],
-          alertas: Array.isArray(resultado?.alertas)
-            ? resultado.alertas
-            : [],
+          alertas: Array.isArray(resultado?.alertas) ? resultado.alertas : [],
         });
 
         setError("");
       } catch (err) {
-        if (
-          controlador.signal.aborted ||
-          err.name === "AbortError"
-        ) {
+        if (controlador.signal.aborted || err.name === "AbortError") {
           return;
         }
 
-        setError(
-          err.message || "No se pudo cargar el historial."
-        );
+        setError(err.message || "No se pudo cargar el historial.");
       } finally {
         if (!controlador.signal.aborted) {
           setCargando(false);
@@ -291,25 +292,13 @@ function Historial() {
     const { atenciones, asignaciones, alertas } = datos;
 
     return atenciones.map((atencion, indice) => {
-      const idAsignacion = obtenerCampo(
-        atencion,
-        "idAsignacion",
-        "IdAsignacion"
-      );
+      const idAsignacion = obtenerCampo(atencion, "idAsignacion", "IdAsignacion");
 
-      const idAlertaAtencion = obtenerCampo(
-        atencion,
-        "idAlerta",
-        "IdAlerta"
-      );
+      const idAlertaAtencion = obtenerCampo(atencion, "idAlerta", "IdAlerta");
 
       const asignacion =
         asignaciones.find((item) => {
-          const id = obtenerCampo(
-            item,
-            "idAsignacion",
-            "IdAsignacion"
-          );
+          const id = obtenerCampo(item, "idAsignacion", "IdAsignacion");
 
           return (
             idAsignacion != null &&
@@ -319,46 +308,22 @@ function Historial() {
         }) ||
         (idAlertaAtencion != null
           ? asignaciones.find((item) => {
-              const id = obtenerCampo(
-                item,
-                "idAlerta",
-                "IdAlerta"
-              );
+              const id = obtenerCampo(item, "idAlerta", "IdAlerta");
 
-              return (
-                id != null &&
-                String(id) === String(idAlertaAtencion)
-              );
+              return id != null && String(id) === String(idAlertaAtencion);
             })
           : null);
 
       const idAlerta =
-        idAlertaAtencion ??
-        obtenerCampo(
-          asignacion,
-          "idAlerta",
-          "IdAlerta"
-        );
+        idAlertaAtencion ?? obtenerCampo(asignacion, "idAlerta", "IdAlerta");
 
       const alerta = alertas.find((item) => {
-        const id = obtenerCampo(
-          item,
-          "idAlerta",
-          "IdAlerta"
-        );
+        const id = obtenerCampo(item, "idAlerta", "IdAlerta");
 
-        return (
-          idAlerta != null &&
-          id != null &&
-          String(id) === String(idAlerta)
-        );
+        return idAlerta != null && id != null && String(id) === String(idAlerta);
       });
 
-      const estado = obtenerEstado(
-        atencion,
-        asignacion,
-        alerta
-      );
+      const estado = obtenerEstado(atencion, asignacion, alerta);
 
       const unidad =
         obtenerCampo(
@@ -375,11 +340,7 @@ function Historial() {
           "unidadNombre",
           "UnidadNombre"
         ) ||
-        obtenerCampo(
-          atencion.unidad || atencion.Unidad,
-          "nombre",
-          "Nombre"
-        ) ||
+        obtenerCampo(atencion.unidad || atencion.Unidad, "nombre", "Nombre") ||
         obtenerCampo(
           asignacion?.unidad || asignacion?.Unidad,
           "nombre",
@@ -395,11 +356,7 @@ function Historial() {
           "barrioNombre",
           "BarrioNombre"
         ) ||
-        obtenerCampo(
-          alerta,
-          "nombreBarrio",
-          "NombreBarrio"
-        ) ||
+        obtenerCampo(alerta, "nombreBarrio", "NombreBarrio") ||
         "Barrio no disponible";
 
       const nombreAlerta =
@@ -440,11 +397,7 @@ function Historial() {
           "policiaNombre",
           "PoliciaNombre"
         ) ||
-        obtenerCampo(
-          asignacion,
-          "nombrePolicia",
-          "NombrePolicia"
-        ) ||
+        obtenerCampo(asignacion, "nombrePolicia", "NombrePolicia") ||
         "No disponible";
 
       const fecha = obtenerFecha(atencion);
@@ -459,9 +412,7 @@ function Historial() {
 
       return {
         clave:
-          idAtencion != null
-            ? `atencion-${idAtencion}`
-            : `registro-${indice}`,
+          idAtencion != null ? `atencion-${idAtencion}` : `registro-${indice}`,
         estadoReal: estado,
         categoriaEstado: clasificarEstado(estado),
         fecha,
@@ -485,18 +436,15 @@ function Historial() {
       total: registros.length,
 
       finalizadas: registros.filter(
-        (registro) =>
-          registro.categoriaEstado === "finalizada"
+        (registro) => registro.categoriaEstado === "finalizada"
       ).length,
 
       enProceso: registros.filter(
-        (registro) =>
-          registro.categoriaEstado === "enProceso"
+        (registro) => registro.categoriaEstado === "enProceso"
       ).length,
 
       pendientes: registros.filter(
-        (registro) =>
-          registro.categoriaEstado === "pendiente"
+        (registro) => registro.categoriaEstado === "pendiente"
       ).length,
     }),
     [registros]
@@ -511,14 +459,54 @@ function Historial() {
       ...new Set(
         registros
           .map((registro) => registro.unidad)
-          .filter(
-            (nombre) =>
-              nombre &&
-              nombre !== "Unidad no disponible"
-          )
+          .filter((nombre) => nombre && nombre !== "Unidad no disponible")
       ),
     ].sort((a, b) => a.localeCompare(b, "es"));
   }, [registros]);
+
+  // Opciones para los desplegables bonitos
+  const opcionesUnidad = useMemo(
+    () => [
+      { valor: "", etiqueta: "Todas las unidades", cantidad: registros.length },
+      ...unidades.map((nombre) => ({
+        valor: nombre,
+        etiqueta: nombre,
+        cantidad: registros.filter((r) => r.unidad === nombre).length,
+      })),
+    ],
+    [unidades, registros]
+  );
+
+  const opcionesEstado = useMemo(
+    () => [
+      { valor: "", etiqueta: "Todos los estados", cantidad: registros.length },
+      {
+        valor: "finalizada",
+        etiqueta: "Finalizadas",
+        punto: "verde",
+        cantidad: valoresKpi.finalizadas,
+      },
+      {
+        valor: "enProceso",
+        etiqueta: "En proceso",
+        punto: "ambar",
+        cantidad: valoresKpi.enProceso,
+      },
+      {
+        valor: "pendiente",
+        etiqueta: "Pendientes",
+        punto: "rojo",
+        cantidad: valoresKpi.pendientes,
+      },
+      {
+        valor: "otro",
+        etiqueta: "Otros estados",
+        punto: "gris",
+        cantidad: registros.filter((r) => r.categoriaEstado === "otro").length,
+      },
+    ],
+    [registros, valoresKpi]
+  );
 
   // ========================================
   // FILTRAR Y ORDENAR
@@ -529,18 +517,13 @@ function Historial() {
 
     return registros
       .filter((registro) => {
-        const cumpleFecha = coincideFecha(
-          registro.fecha,
-          filtroFecha
-        );
+        const cumpleFecha = coincideFecha(registro.fecha, filtroFecha);
 
         const cumpleUnidad =
-          filtroUnidad === "todas" ||
-          registro.unidad === filtroUnidad;
+          filtroUnidad === "todas" || registro.unidad === filtroUnidad;
 
         const cumpleEstado =
-          filtroEstado === "todos" ||
-          registro.categoriaEstado === filtroEstado;
+          filtroEstado === "todos" || registro.categoriaEstado === filtroEstado;
 
         const contenido = normalizar(
           [
@@ -555,32 +538,18 @@ function Historial() {
           ].join(" ")
         );
 
-        const cumpleBusqueda =
-          !texto || contenido.includes(texto);
+        const cumpleBusqueda = !texto || contenido.includes(texto);
 
-        return (
-          cumpleFecha &&
-          cumpleUnidad &&
-          cumpleEstado &&
-          cumpleBusqueda
-        );
+        return cumpleFecha && cumpleUnidad && cumpleEstado && cumpleBusqueda;
       })
       .sort((a, b) => {
-        const fechaA =
-          fechaValida(a.fecha)?.getTime() ?? 0;
+        const fechaA = fechaValida(a.fecha)?.getTime() ?? 0;
 
-        const fechaB =
-          fechaValida(b.fecha)?.getTime() ?? 0;
+        const fechaB = fechaValida(b.fecha)?.getTime() ?? 0;
 
         return fechaB - fechaA;
       });
-  }, [
-    registros,
-    filtroFecha,
-    filtroUnidad,
-    filtroEstado,
-    busqueda,
-  ]);
+  }, [registros, filtroFecha, filtroUnidad, filtroEstado, busqueda]);
 
   // ========================================
   // RENDERIZADO
@@ -589,82 +558,41 @@ function Historial() {
   return (
     <div className="historial-page">
       <div className="historial-contenido">
-
         {/* ENCABEZADO */}
 
         <header className="historial-encabezado">
           <div className="historial-encabezado-texto">
             <h1>Historial de Atenciones</h1>
 
-            <p>
-              Consulta las atenciones realizadas por las
-              unidades policiales.
-            </p>
+            <p>Consulta las atenciones realizadas por las unidades policiales.</p>
           </div>
 
-          <button
-            type="button"
-            className="btn-cv-verde"
-            onClick={actualizarHistorial}
-            disabled={cargando}
-          >
-            <i
-              className={`bi bi-arrow-clockwise ${
-                cargando ? "historial-girando" : ""
-              }`}
-              aria-hidden="true"
-            />
-
-            {cargando ? "Actualizando..." : "Actualizar"}
-          </button>
+         
         </header>
 
         {/* ERROR */}
 
         {error && (
-          <div className="historial-error" role="alert">
-            <div>
-              <i className="bi bi-exclamation-triangle me-2" />
-              {error}
-            </div>
-
-            <button
-              type="button"
-              onClick={actualizarHistorial}
-              disabled={cargando}
-            >
-              Reintentar
-            </button>
-          </div>
+          <button type="button" className="btn btn-link btn-sm px-0" onClick={actualizarHistorial} disabled={cargando}>
+            Reintentar carga del historial
+          </button>
         )}
 
         {/* TARJETAS KPI */}
 
         <div className="row g-3 mb-4">
           {TARJETAS.map((tarjeta) => (
-            <div
-              className="col-6 col-xl-3"
-              key={tarjeta.clave}
-            >
-              <article
-                className={`kpi-card-policial tono-${tarjeta.tono}`}
-              >
+            <div className="col-6 col-xl-3" key={tarjeta.clave}>
+              <article className={`kpi-card-policial tono-${tarjeta.tono}`}>
                 <div className="kpi-card-icono">
-                  <i
-                    className={`bi ${tarjeta.icono}`}
-                    aria-hidden="true"
-                  />
+                  <i className={`bi ${tarjeta.icono}`} aria-hidden="true" />
                 </div>
 
                 <div className="kpi-card-info">
-                  <span className="kpi-card-titulo">
-                    {tarjeta.titulo}
-                  </span>
+                  <span className="kpi-card-titulo">{tarjeta.titulo}</span>
 
                   <strong className="kpi-card-valor">
-                    {cargando
-                      ? "..."
-                      : valoresKpi[tarjeta.clave]}
+                    {cargando ? "..." : valoresKpi[tarjeta.clave]}
                   </strong>
                 </div>
               </article>
@@ -680,17 +608,12 @@ function Historial() {
         >
           <div className="historial-panel-filtros-cabecera">
             <div className="historial-filtro-icono">
-              <i
-                className="bi bi-funnel"
-                aria-hidden="true"
-              />
+              <i className="bi bi-funnel" aria-hidden="true" />
             </div>
 
             <div className="historial-panel-titulos">
               <h2>Filtros de historial</h2>
-              <p>
-                Encuentra atenciones por fecha, unidad o estado.
-              </p>
+              <p>Encuentra atenciones por fecha, unidad o estado.</p>
             </div>
 
             <button
@@ -698,122 +621,62 @@ function Historial() {
               className="historial-limpiar"
               onClick={limpiarFiltros}
             >
-              <i
-                className="bi bi-arrow-counterclockwise"
-                aria-hidden="true"
-              />
+              <i className="bi bi-arrow-counterclockwise" aria-hidden="true" />
               Limpiar filtros
             </button>
           </div>
 
           <div className="historial-panel-filtros-cuerpo">
-            <label className="historial-control-filtro">
-              <i
-                className="bi bi-calendar3"
-                aria-hidden="true"
+            <div className="historial-filtro-sb">
+              <small>Fecha</small>
+
+              <SelectBonito
+                id="hFecha"
+                ariaLabel="Filtrar por fecha"
+                icono="bi-calendar3"
+                placeholder="Todas las fechas"
+                valor={filtroFecha === "todas" ? "" : filtroFecha}
+                onChange={(v) => setFiltroFecha(v || "todas")}
+                opciones={OPCIONES_FECHA}
               />
+            </div>
 
-              <span>
-                <small>Fecha</small>
+            <div className="historial-filtro-sb">
+              <small>Unidad policial</small>
 
-                <select
-                  value={filtroFecha}
-                  onChange={(e) =>
-                    setFiltroFecha(e.target.value)
-                  }
-                >
-                  <option value="todas">
-                    Todas las fechas
-                  </option>
-                  <option value="hoy">Hoy</option>
-                  <option value="semana">
-                    Esta semana
-                  </option>
-                  <option value="mes">
-                    Este mes
-                  </option>
-                </select>
-              </span>
-            </label>
-
-            <label className="historial-control-filtro">
-              <i
-                className="bi bi-people"
-                aria-hidden="true"
+              <SelectBonito
+                id="hUnidad"
+                ariaLabel="Filtrar por unidad"
+                icono="bi-people"
+                placeholder="Todas las unidades"
+                valor={filtroUnidad === "todas" ? "" : filtroUnidad}
+                onChange={(v) => setFiltroUnidad(v || "todas")}
+                opciones={opcionesUnidad}
               />
+            </div>
 
-              <span>
-                <small>Unidad policial</small>
+            <div className="historial-filtro-sb">
+              <small>Estado</small>
 
-                <select
-                  value={filtroUnidad}
-                  onChange={(e) =>
-                    setFiltroUnidad(e.target.value)
-                  }
-                >
-                  <option value="todas">
-                    Todas las unidades
-                  </option>
-
-                  {unidades.map((unidad) => (
-                    <option
-                      key={unidad}
-                      value={unidad}
-                    >
-                      {unidad}
-                    </option>
-                  ))}
-                </select>
-              </span>
-            </label>
-
-            <label className="historial-control-filtro">
-              <i
-                className="bi bi-check2-circle"
-                aria-hidden="true"
+              <SelectBonito
+                id="hEstado"
+                ariaLabel="Filtrar por estado"
+                icono="bi-check2-circle"
+                placeholder="Todos los estados"
+                valor={filtroEstado === "todos" ? "" : filtroEstado}
+                onChange={(v) => setFiltroEstado(v || "todos")}
+                opciones={opcionesEstado}
               />
-
-              <span>
-                <small>Estado</small>
-
-                <select
-                  value={filtroEstado}
-                  onChange={(e) =>
-                    setFiltroEstado(e.target.value)
-                  }
-                >
-                  <option value="todos">
-                    Todos los estados
-                  </option>
-                  <option value="finalizada">
-                    Finalizadas
-                  </option>
-                  <option value="enProceso">
-                    En proceso
-                  </option>
-                  <option value="pendiente">
-                    Pendientes
-                  </option>
-                  <option value="otro">
-                    Otros estados
-                  </option>
-                </select>
-              </span>
-            </label>
+            </div>
 
             <label className="historial-control-busqueda">
-              <i
-                className="bi bi-search"
-                aria-hidden="true"
-              />
+              <i className="bi bi-search" aria-hidden="true" />
 
               <input
                 type="search"
                 placeholder="Buscar alerta, barrio, unidad..."
                 value={busqueda}
-                onChange={(e) =>
-                  setBusqueda(e.target.value)
-                }
+                onChange={(e) => setBusqueda(e.target.value)}
                 aria-label="Buscar en el historial"
               />
             </label>
@@ -825,10 +688,7 @@ function Historial() {
         <section className="historial-panel-timeline">
           <div className="historial-timeline-cabecera">
             <div className="historial-timeline-icono">
-              <i
-                className="bi bi-clock-history"
-                aria-hidden="true"
-              />
+              <i className="bi bi-clock-history" aria-hidden="true" />
             </div>
 
             <div>
@@ -851,10 +711,7 @@ function Historial() {
             </div>
           ) : registrosFiltrados.length === 0 ? (
             <div className="historial-vacio">
-              <i
-                className="bi bi-inbox"
-                aria-hidden="true"
-              />
+              <i className="bi bi-inbox" aria-hidden="true" />
 
               <h3>
                 {error
@@ -871,8 +728,7 @@ function Historial() {
           ) : (
             <div className="historial-registros">
               {registrosFiltrados.map((registro) => {
-                const categoria =
-                  registro.categoriaEstado;
+                const categoria = registro.categoriaEstado;
 
                 const icono =
                   categoria === "finalizada"
@@ -889,30 +745,20 @@ function Historial() {
                     key={registro.clave}
                   >
                     <div className="historial-registro-icono">
-                      <i
-                        className={`bi ${icono}`}
-                        aria-hidden="true"
-                      />
+                      <i className={`bi ${icono}`} aria-hidden="true" />
                     </div>
 
                     <div className="historial-registro-contenido">
                       <div className="historial-registro-superior">
-                        <h3>
-                          {registro.nombreAlerta}
-                        </h3>
+                        <h3>{registro.nombreAlerta}</h3>
 
-                        <span
-                          className={`historial-estado ${categoria}`}
-                        >
+                        <span className={`historial-estado ${categoria}`}>
                           {registro.estadoReal}
                         </span>
                       </div>
 
                       <p className="historial-registro-barrio">
-                        <i
-                          className="bi bi-geo-alt"
-                          aria-hidden="true"
-                        />
+                        <i className="bi bi-geo-alt" aria-hidden="true" />
                         {registro.barrio}
                       </p>
 

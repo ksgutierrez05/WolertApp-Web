@@ -196,7 +196,7 @@
 
 /* [TEXTO] --------------------------------------------------------------- */
 .mapop-title-dash {
-  font-family: 'Space Grotesk', 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 22px;
   font-weight: 700;
   color: var(--ink);

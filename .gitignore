@@ -1,24 +1,18 @@
 # Variables de entorno
-WolertApp/.env
-WolertApp/.env.local
-WolertApp/.env.*.local
+.env
+.env.*
+!.env.example
 
-# Dependencias de Node
+# Dependencias
 node_modules/
 **/node_modules/
 
 # Archivos generados
 dist/
 **/dist/
+**/bin/
+**/obj/
 
-# Cache generado por PowerShell
+# Archivos temporales
 /Microsoft/
-.env.local
-
 transito-respaldo-temporal/
-
-.env.local
-
-transito-respaldo-temporal/
-
-**/.env.local
