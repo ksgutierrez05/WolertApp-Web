@@ -376,6 +376,7 @@ function FormRegistro({ onRegistroSuccess, onCambiarLogin }) {
                     value={formData.username}
                     onChange={handleChange}
                     autoComplete="username"
+                    maxLength={15}
                     required
                 />
                 <input

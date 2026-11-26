@@ -74,7 +74,7 @@ export default function Alertas() {
   ).length;
 
   return (
-    <main className="ciudadano-bandeja">
+    <main className="ciudadano-bandeja ciudadano-alertas">
       <header className="ciudadano-bandeja__hero">
         <div>
           <span className="ciudadano-bandeja__eyebrow">

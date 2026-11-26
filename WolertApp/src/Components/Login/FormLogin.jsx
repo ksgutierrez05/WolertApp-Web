@@ -89,6 +89,10 @@ function FormLogin({ onLoginSuccess, aviso, onCambiarRegistro }) {
             setError('Completa tu nombre de usuario.')
             return
         }
+        if (datosGoogle.username.trim().length > 15) {
+            setError('El nombre de usuario no puede superar los 15 caracteres.')
+            return
+        }
         if (
             !datosGoogle.barrioId &&
             !window.confirm(
@@ -155,6 +159,7 @@ function FormLogin({ onLoginSuccess, aviso, onCambiarRegistro }) {
                         placeholder="Nombre de usuario"
                         aria-label="Nombre de usuario"
                         autoComplete="username"
+                        maxLength={15}
                         value={datosGoogle.username}
                         onChange={handleCambioGoogle}
                         required

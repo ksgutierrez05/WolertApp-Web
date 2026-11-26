@@ -157,16 +157,6 @@ body.modo-registro .auth-container .btn-volver {
   background:#e8f6ee; color:#1a7f4b;
 }
 
-.auth-container .link-olvide {
-  display:block; text-align:center; margin-top:16px; font-size:14px;
-  color:var(--muted); text-decoration:none; background:none; border:none;
-  cursor:pointer;
-}
-
-.auth-container .link-olvide:hover {
-  text-decoration:underline; color:var(--azul-oscuro);
-}
-
 .auth-container .form-registro {
   overflow-y:auto; padding:32px clamp(22px, 4vw, 54px); justify-content:flex-start; scrollbar-color:#cbd5e1 transparent;
   scrollbar-width:thin;
@@ -729,28 +719,28 @@ body.modo-registro .auth-container .btn-volver {
     display:inline-flex; justify-content:center; width:100%;
   }
   .auth-container.active .form-registro {
-    animation:registro-movil-entra .68s cubic-bezier(.22, 1, .36, 1) both; will-change:transform, opacity;
+    animation:registro-movil-entra .78s cubic-bezier(.2, .85, .25, 1) both; will-change:transform, opacity;
   }
   .auth-container:not(.active) .form-login {
-    animation:login-movil-entra .68s cubic-bezier(.22, 1, .36, 1) both; will-change:transform, opacity;
+    animation:login-movil-entra .78s cubic-bezier(.2, .85, .25, 1) both; will-change:transform, opacity;
   }
 }
 
 @keyframes registro-movil-entra {
   from {
-    transform:translateY(38px) scale(.99); opacity:0;
+    transform:translateY(54px) scale(.975); opacity:0; filter:blur(5px);
   }
   to {
-    transform:translateY(0) scale(1); opacity:1;
+    transform:translateY(0) scale(1); opacity:1; filter:blur(0);
   }
 }
 
 @keyframes login-movil-entra {
   from {
-    transform:translateY(-38px) scale(.99); opacity:0;
+    transform:translateY(-54px) scale(.975); opacity:0; filter:blur(5px);
   }
   to {
-    transform:translateY(0) scale(1); opacity:1;
+    transform:translateY(0) scale(1); opacity:1; filter:blur(0);
   }
 }
 
