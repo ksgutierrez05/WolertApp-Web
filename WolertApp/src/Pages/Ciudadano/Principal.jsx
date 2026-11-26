@@ -1,3 +1,4 @@
+import { cerrarSesionCiudadano } from "../../Services/sesionCiudadanoService";
 import { useState, useEffect, useMemo } from 'react';
 import '../../css/global.css';
 import '../../css/temas.css';
@@ -178,11 +179,7 @@ export default function Principal() {
 
   const navigate = useNavigate();
 
-  const cerrarSesion = () => {
-    document.body.classList.remove('modo-compacto');
-    logOut();
-    navigate('/login', { replace: true });
-  };
+  const cerrarSesion = cerrarSesionCiudadano;
 
   const notificacionesVisibles = notificaciones.filter((n) => notificacionPermitidaCiudadano(n, preferencias));
   const totalAvisos = notificacionesVisibles.length;

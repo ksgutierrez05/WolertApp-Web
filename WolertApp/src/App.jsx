@@ -1,3 +1,4 @@
+import SeguimientoPush from "./Components/SeguimientoPush";
 
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import RutaProtegida from './Components/RutaProtegida';
@@ -62,7 +63,7 @@ function App() {
         </Route>
 
         <Route element={<RutaProtegida roles={['CIUDADANO']} />}>
-          <Route path="/ciudadano/*" element={<Ciudadano />} />
+          <Route path="/ciudadano/*" element={<SeguimientoPush><Ciudadano /></SeguimientoPush>} />
         </Route>
 
         <Route element={<RutaProtegida roles={['ADMIN_TRANSITO', 'DirectorTransito']} />}>

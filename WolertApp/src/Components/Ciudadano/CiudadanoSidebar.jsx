@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { cerrarSesion } from '../../Utils/utils';
+import { cerrarSesionCiudadano } from "../../Services/sesionCiudadanoService";
 
 const menu = [
   { group: 'General', items: [{ label: 'Principal', href: '/ciudadano', icon: 'bi-house' }] },
@@ -36,7 +36,7 @@ export default function CiudadanoSidebar({ onNavigate }) {
       ))}
 
       <div className="sidebar__footer">
-        <button type="button" className="sidebar__logout" onClick={() => { document.body.classList.remove('modo-compacto'); cerrarSesion(); window.location.href = '/login'; }}>
+        <button type="button" className="sidebar__logout" onClick={cerrarSesionCiudadano}>
           <i className="bi bi-box-arrow-right sidebar__icon" />
           <span className="sidebar__label">Cerrar sesión</span>
         </button>

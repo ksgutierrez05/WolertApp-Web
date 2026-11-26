@@ -1,3 +1,8 @@
+import {
+  activarNotificacionesPush,
+  desactivarNotificacionesPush,
+  obtenerSuscripcionesPush
+} from "../../Services/webPushService";
 import { useEffect, useMemo, useState } from "react";
 import "../../css/global.css";
 import "../../css/temas.css";
@@ -23,13 +28,14 @@ const camposIniciales = (usuario = {}) => ({
   casa: usuario.casa || "",
 });
 
-function Switch({ id, checked, onChange, label }) {
+function Switch({ id, checked, onChange, label, disabled = false }) {
   return (
     <label className="citizen-settings__switch" htmlFor={id}>
       <input
         id={id}
         type="checkbox"
         checked={checked}
+        disabled={disabled}
         onChange={(event) => onChange(event.target.checked)}
       />
       <span aria-hidden="true" />
@@ -88,6 +94,56 @@ export default function Configuracion() {
     .map((parte) => parte[0])
     .join("")
     .toUpperCase();
+
+  const [pushActivo, setPushActivo] = useState(false);
+  const [pushProcesando, setPushProcesando] = useState(false);
+
+  useEffect(() => {
+    if (!idUsuario) return;
+
+    let vigente = true;
+
+    obtenerSuscripcionesPush()
+      .then(async (datos) => {
+        const id = localStorage.getItem("idSuscripcionPush");
+        const registro = await navigator.serviceWorker?.getRegistration();
+        const suscripcion = await registro?.pushManager.getSubscription();
+
+        if (vigente) {
+          setPushActivo(Boolean(suscripcion && datos.some(s =>
+            String(s.idSuscripcionPush) === id &&
+            s.estado === "ACTIVA"
+          )));
+        }
+      })
+      .catch(() => {
+        if (vigente) setPushActivo(false);
+      });
+
+    return () => { vigente = false; };
+  }, [idUsuario]);
+
+  async function cambiarPush(value) {
+    setPushProcesando(true);
+    setError("");
+    setAviso("");
+
+    try {
+      if (value) {
+        await activarNotificacionesPush(500);
+        setPushActivo(true);
+        setAviso("Notificaciones cercanas activadas correctamente.");
+      } else {
+        await desactivarNotificacionesPush();
+        setPushActivo(false);
+        setAviso("Notificaciones del dispositivo desactivadas.");
+      }
+    } catch (err) {
+      setError(err.message || "No se pudo actualizar el dispositivo.");
+    } finally {
+      setPushProcesando(false);
+    }
+  }
 
   const cambiarPreferencia = (key, value) => {
     const nuevas = guardarPreferenciasCiudadano({ ...preferencias, [key]: value });
@@ -339,6 +395,23 @@ export default function Configuracion() {
             </header>
 
             <div className="citizen-settings__options">
+              <div className="citizen-settings__option">
+                <div>
+                  <b>Notificaciones en mi dispositivo</b>
+                  <small>
+                    Recibe alertas en un radio de 500 metros de tu
+                    ultima ubicaci&oacute;n autorizada, incluso con
+                    la pagina cerrada si el navegador lo permite.
+                  </small>
+                </div>
+                <Switch
+                  id="pref-push"
+                  checked={pushActivo}
+                  disabled={pushProcesando}
+                  label={pushProcesando ? "..." : pushActivo ? "Si" : "No"}
+                  onChange={cambiarPush}
+                />
+              </div>
               <div className="citizen-settings__option">
                 <div>
                   <b>Avisos de la comunidad</b>
