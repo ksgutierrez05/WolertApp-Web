@@ -1,3 +1,4 @@
+import PoliciaBottomNav from "../Policia/PoliciaBottomNav";
 
 import { NavLink, useNavigate } from "react-router-dom";
 import { useFeedback } from "../Feedback/useFeedback";
@@ -86,6 +87,7 @@ function Sidebar() {
   }
 
   return (
+    <>
     <aside className="sidebar-dash" id="sidebarDash">
       {/* LOGO Y NOMBRE */}
       <div className="d-flex align-items-center brand-dash">
@@ -159,6 +161,13 @@ function Sidebar() {
         </span>
       </a>
     </aside>
+
+    <PoliciaBottomNav
+        rol="patrullero"
+        menu={MENU_PATRULLERO}
+        cerrarSesion={cerrarSesion}
+    />
+    </>
   );
 }
 
