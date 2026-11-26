@@ -1,4 +1,4 @@
-const PREFS = { avisosComunidad: true, avisosMisAlertas: true, modoCompacto: false };
+const PREFS = { avisosComunidad: true, avisosMisAlertas: true, modoCompacto: false, mantenerPushAlCerrarSesion: false };
 
 function clave() {
   return `wolert:preferencias-ciudadano:${localStorage.getItem("idUsuario") || "sin-usuario"}`;

@@ -1,3 +1,4 @@
+import { prepararPushAlIniciarSesion } from "./pushPersistenteService";
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5039';
 function obtenerToken() {
     return localStorage.getItem('token');
@@ -69,6 +70,7 @@ export async function login(usuario) {
     }
 
     const datos = await respuesta.json();
+    await prepararPushAlIniciarSesion(datos);
     localStorage.setItem('token', datos.token);
     localStorage.setItem('rol', datos.rol);
     localStorage.setItem('idUsuario', datos.idUsuario);
@@ -182,6 +184,7 @@ export async function loginGoogle(credential) {
     }
 
     const datos = await respuesta.json();
+    await prepararPushAlIniciarSesion(datos);
     localStorage.setItem('token', datos.token);
     localStorage.setItem('rol', datos.rol);
     localStorage.setItem('idUsuario', datos.idUsuario);
@@ -207,6 +210,7 @@ export async function registrarConGoogle(registro) {
     }
 
     const datos = await respuesta.json();
+    await prepararPushAlIniciarSesion(datos);
     localStorage.setItem('token', datos.token);
     localStorage.setItem('rol', datos.rol);
     localStorage.setItem('idUsuario', datos.idUsuario);

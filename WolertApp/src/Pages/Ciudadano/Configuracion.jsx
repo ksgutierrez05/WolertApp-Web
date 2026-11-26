@@ -412,7 +412,73 @@ export default function Configuracion() {
                   onChange={cambiarPush}
                 />
               </div>
-              <div className="citizen-settings__option">
+              
+
+              
+
+
+              
+ 
+              
+ 
+              
+ 
+              
+ 
+              
+ 
+              
+ 
+              
+ 
+              
+ 
+              
+ 
+              
+ 
+              
+ 
+              
+ 
+              
+ 
+              
+ 
+              
+<div className="citizen-settings__option">
+                <div>
+                  <b>Mantener alertas al cerrar sesi&oacute;n</b>
+                  <small>
+                    Contin&uacute;a recibiendo alertas en este dispositivo
+                    incluso despu&eacute;s de cerrar sesi&oacute;n.
+                    Activa esta opci&oacute;n solo en dispositivos personales.
+                  </small>
+                </div>
+                <Switch
+                  id="pref-push-persistente"
+                  checked={pushActivo && preferencias.mantenerPushAlCerrarSesion}
+                  disabled={!pushActivo || pushProcesando}
+                  label={pushActivo && preferencias.mantenerPushAlCerrarSesion ? "Si" : "No"}
+                  onChange={(value) => cambiarPreferencia("mantenerPushAlCerrarSesion", value)}
+                />
+              </div>
+
+              <div className="citizen-push-warning">
+                <i className="bi bi-info-circle-fill" />
+                <div>
+                  <strong>Informaci&oacute;n importante</strong>
+                  <p>
+                    Al salir de WolertApp o cerrar el navegador,
+                    las alertas se enviar&aacute;n tomando como referencia
+                    tu &uacute;ltima ubicaci&oacute;n registrada.
+                    Esta tendr&aacute; una vigencia m&aacute;xima de 24 horas.
+                    Tu ubicaci&oacute;n se actualizar&aacute; cuando vuelvas
+                    a utilizar la plataforma y permitas el acceso al GPS.
+                  </p>
+                </div>
+              </div>
+<div className="citizen-settings__option">
                 <div>
                   <b>Avisos de la comunidad</b>
                   <small>Alertas cercanas reportadas por tus vecinos.</small>

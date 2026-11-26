@@ -743,3 +743,32 @@ body.modo-compacto .ciudadano-settings__card {
 .citizen-settings__loading span {
   border-top-color: var(--color-primary-2);
 }
+.citizen-push-warning {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px;
+    margin: 12px 0;
+    border: 1px solid #efdfb7;
+    border-radius: 12px;
+    background: #fffbef;
+    color: #826322;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.citizen-push-warning > i {
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.citizen-push-warning strong {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 13px;
+}
+
+.citizen-push-warning p {
+    margin: 0;
+    color: #88764e;
+}
