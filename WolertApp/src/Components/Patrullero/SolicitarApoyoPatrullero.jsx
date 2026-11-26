@@ -1,24 +1,26 @@
 import { useState } from "react";
+import SelectBonito from "../Administrador-policia/SelectBonito";
+import { useFeedback } from "../Feedback/useFeedback";
 import {
   crearSolicitudApoyo,
 } from "../../Services/solicitudesApoyoService";
 
 import "../../css/Policia/Patrullero/css/apoyo-solicitudes.css";
+import "../../css/Policia/Patrullero/css/apoyo-patrullero.css";
 
 export default function SolicitarApoyoPatrullero({
   asignacion,
   onCreada,
 }) {
+  const { toast } = useFeedback();
   const [abierto, setAbierto] = useState(false);
   const [motivo, setMotivo] = useState("");
   const [destino, setDestino] = useState("TRANSITO");
   const [cargando, setCargando] = useState(false);
-  const [error, setError] = useState("");
-  const [ok, setOk] = useState("");
 
   const estado = String(
-    asignacion?.estadoAsignacion || ""
-  ).toUpperCase();
+    asignacion?.estadoAsignacion || asignacion?.EstadoAsignacion || ""
+  ).trim().toUpperCase().replace(/[\s-]+/g, "_");
 
   const habilitado =
     asignacion &&
@@ -26,8 +28,10 @@ export default function SolicitarApoyoPatrullero({
 
   async function enviar(e) {
     e.preventDefault();
-    setError("");
-    setOk("");
+    if (motivo.trim().length < 8) {
+      toast.warning("Describe el motivo con al menos 8 caracteres.", "Revisa el motivo");
+      return;
+    }
     setCargando(true);
 
     try {
@@ -38,21 +42,21 @@ export default function SolicitarApoyoPatrullero({
         motivo.trim()
       );
 
-      setOk("Solicitud enviada a la central de destino.");
       setAbierto(false);
       setMotivo("");
-      onCreada?.();
+      await Promise.resolve(onCreada?.()).catch((errorCarga) => {
+        toast.errorFrom(errorCarga, "La solicitud se envió, pero no se pudieron actualizar los datos.");
+      });
+      toast.success("La solicitud se envió a la central destinataria.", "Apoyo solicitado");
     } catch (e) {
-      setError(
-        e.message || "No se pudo solicitar apoyo."
-      );
+      toast.errorFrom(e, "No se pudo solicitar apoyo.", "Error al solicitar apoyo");
     } finally {
       setCargando(false);
     }
   }
 
   return (
-    <section className="sa-box">
+    <section className="sa-box sa-patrullero">
       <div className="sa-head">
         <div>
           <strong>Apoyo interinstitucional</strong>
@@ -67,7 +71,6 @@ export default function SolicitarApoyoPatrullero({
           disabled={!habilitado}
           onClick={() => {
             setAbierto(!abierto);
-            setError("");
           }}
         >
           Solicitar apoyo
@@ -79,30 +82,23 @@ export default function SolicitarApoyoPatrullero({
           Selecciona una asignación activa para solicitar apoyo.
         </p>
       )}
-
-      {ok && (
-        <p className="sa-ok" role="status">
-          {ok}
-        </p>
-      )}
-
-      {abierto && habilitado && (
+{abierto && habilitado && (
         <form onSubmit={enviar} className="sa-form">
           <label>
             Central destinataria
-            <select
-              value={destino}
-              onChange={(e) =>
-                setDestino(e.target.value)
-              }
-            >
-              <option value="TRANSITO">
-                Central de Tránsito
-              </option>
-              <option value="POLICIA">
-                Central de Policía
-              </option>
-            </select>
+            <SelectBonito
+              id="apoyo-patrullero-destino"
+              ariaLabel="Seleccionar central destinataria"
+              valor={destino}
+              onChange={setDestino}
+              opciones={[
+                { valor: "TRANSITO", etiqueta: "Central de Tránsito" },
+                { valor: "POLICIA", etiqueta: "Central de Policía" },
+              ]}
+              placeholder="Selecciona una central"
+              icono="bi-building"
+              variante="campo"
+            />
           </label>
 
           <label>
@@ -118,14 +114,7 @@ export default function SolicitarApoyoPatrullero({
               placeholder="Describe por qué se necesita apoyo"
             />
           </label>
-
-          {error && (
-            <p className="sa-error" role="alert">
-              {error}
-            </p>
-          )}
-
-          <div className="sa-actions">
+<div className="sa-actions">
             <button
               type="button"
               onClick={() => setAbierto(false)}

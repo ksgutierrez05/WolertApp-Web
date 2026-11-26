@@ -1,8 +1,11 @@
 import SolicitarApoyoPatrullero from "../../Components/Patrullero/SolicitarApoyoPatrullero";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import PageHeader from "../../Components/Patrullero/Pageheader";
 import Kpis from "../../Components/Patrullero/Kpicard";
+import SelectBonito from "../../Components/Administrador-policia/SelectBonito";
+import { useFeedback } from "../../Components/Feedback/useFeedback";
 import usePatrullero from "../../Utils/usePatrullero";
 
 import {
@@ -15,18 +18,36 @@ import {
 import "../../css/Policia/Patrullero/css/asignaciones.css";
 
 export default function MisAsignaciones() {
+  const location = useLocation();
+  const navigate = useNavigate();
   const { datos, cargando, error, recargar } = usePatrullero();
+  const { confirm, toast } = useFeedback();
+
+  useEffect(() => {
+    if (error) toast.errorFrom(error, "No se pudieron cargar las asignaciones.", "Error al cargar asignaciones");
+  }, [error, toast]);
 
   const [filtro, setFiltro] = useState("todas");
   const [busqueda, setBusqueda] = useState("");
   const [tipo, setTipo] = useState("");
   const [fecha, setFecha] = useState("");
-  const [seleccionId, setSeleccionId] = useState(null);
+  const [pagina, setPagina] = useState(null);
+  const [seleccionId, setSeleccionId] = useState(() => location.state?.asignacionId ?? null);
   const [ocupado, setOcupado] = useState(false);
-  const [accionError, setAccionError] = useState("");
-  const [accionOk, setAccionOk] = useState("");
+  const porPagina = 5;
 
-  const asignaciones = datos?.asignaciones || [];
+  const asignaciones = useMemo(() => datos?.asignaciones || [], [datos?.asignaciones]);
+
+  useEffect(() => {
+    const idSolicitado = location.state?.asignacionId;
+    if (idSolicitado == null || asignaciones.length === 0) return;
+
+    const existe = asignaciones.some(
+      (asignacion) => String(asignacion.idAsignacion ?? asignacion.IdAsignacion) === String(idSolicitado)
+    );
+    if (!existe) return;
+    navigate(location.pathname, { replace: true, state: null });
+  }, [asignaciones, location.pathname, location.state?.asignacionId, navigate]);
 
   const alertasPorId = useMemo(
     () =>
@@ -41,7 +62,7 @@ export default function MisAsignaciones() {
 
   const seleccion =
     asignaciones.find(
-      (a) => String(a.idAsignacion) === String(seleccionId)
+      (a) => String(a.idAsignacion ?? a.IdAsignacion) === String(seleccionId)
     ) || null;
 
   const alertaSeleccionada = seleccion
@@ -56,7 +77,7 @@ export default function MisAsignaciones() {
   ];
 
   const filtradas = asignaciones.filter((a) => {
-    const estado = String(a.estadoAsignacion || "").toUpperCase();
+    const estado = String(a.estadoAsignacion || a.EstadoAsignacion || "").trim().toUpperCase().replace(/[\s-]+/g, "_");
 
     if (filtro === "activas" && estado !== "EN_ATENCION")
       return false;
@@ -108,6 +129,16 @@ export default function MisAsignaciones() {
     ),
   ];
 
+  const totalPaginas = Math.max(1, Math.ceil(filtradas.length / porPagina));
+  const indiceSeleccionado = filtradas.findIndex(
+    (asignacion) => String(asignacion.idAsignacion ?? asignacion.IdAsignacion) === String(seleccionId)
+  );
+  const paginaSeleccionada = indiceSeleccionado >= 0
+    ? Math.floor(indiceSeleccionado / porPagina) + 1
+    : 1;
+  const paginaActual = Math.min(pagina ?? paginaSeleccionada, totalPaginas);
+  const asignacionesPagina = filtradas.slice((paginaActual - 1) * porPagina, paginaActual * porPagina);
+
   const valores = {
     total: asignaciones.filter(
       (a) => a.estadoAsignacion === "EN_ATENCION"
@@ -125,38 +156,36 @@ export default function MisAsignaciones() {
     if (!seleccion || ocupado) return;
 
     const id = seleccion.idAsignacion;
-    setOcupado(true);
-    setAccionError("");
-    setAccionOk("");
-
-    try {
-      if (accion === "llegada") {
-        await RegistrarLlegada(id);
-      } else if (accion === "finalizar") {
-        await FinalizarAsignacion(id);
-      } else {
-        return;
-      }
-
-      await recargar();
-
-      setAccionOk(
-        accion === "llegada"
-          ? "Llegada registrada correctamente."
-          : "Participación finalizada correctamente."
-      );
-    } catch (e) {
-      setAccionError(
-        e?.message || "No se pudo actualizar la asignación."
-      );
-    } finally {
-      setOcupado(false);
-    }
+    const esLlegada = accion === "llegada";
+    await confirm({
+      title: esLlegada ? "¿Registrar llegada?" : "¿Finalizar participación?",
+      description: esLlegada
+        ? `Confirma que tu unidad llegó al sitio de la alerta #${seleccion.idAlerta}.`
+        : `Confirma que deseas finalizar tu participación en la asignación #${id}.`,
+      confirmLabel: esLlegada ? "Registrar llegada" : "Finalizar",
+      failureMessage: "No se pudo actualizar la asignación. Revisa su estado e inténtalo de nuevo.",
+      onConfirm: async () => {
+        setOcupado(true);
+        try {
+          if (esLlegada) await RegistrarLlegada(id);
+          else await FinalizarAsignacion(id);
+          toast.success(
+            esLlegada ? "La llegada quedó registrada." : "Tu participación se finalizó correctamente.",
+            esLlegada ? "Llegada registrada" : "Participación finalizada"
+          );
+          await recargar().catch((errorCarga) => {
+            toast.errorFrom(errorCarga, "La operación se completó, pero no se pudieron actualizar los datos.");
+          });
+        } finally {
+          setOcupado(false);
+        }
+      },
+    });
   }
 
   const estadoSeleccion = String(
-    seleccion?.estadoAsignacion || ""
-  ).toUpperCase();
+    seleccion?.estadoAsignacion || seleccion?.EstadoAsignacion || ""
+  ).trim().toUpperCase().replace(/[\s-]+/g, "_");
 
   const pasoActual =
     estadoSeleccion === "FINALIZADA"
@@ -183,12 +212,7 @@ export default function MisAsignaciones() {
       )}
 
       {error && (
-        <div className="alert alert-danger" role="alert">
-          {error}
-          <button type="button" onClick={recargar}>
-            Reintentar
-          </button>
-        </div>
+        <button type="button" className="btn btn-link btn-sm px-0" onClick={recargar}>Reintentar carga</button>
       )}
 
       <div className="row g-4 align-items-start">
@@ -205,7 +229,7 @@ export default function MisAsignaciones() {
                   className={`as-chip ${
                     filtro === clave ? "active" : ""
                   }`}
-                  onClick={() => setFiltro(clave)}
+                  onClick={() => { setFiltro(clave); setPagina(1); }}
                   aria-pressed={filtro === clave}
                 >
                   {etiqueta}
@@ -221,31 +245,27 @@ export default function MisAsignaciones() {
                 placeholder="Buscar por número de caso..."
                 aria-label="Buscar por número de caso"
                 value={busqueda}
-                onChange={(e) => setBusqueda(e.target.value)}
+                onChange={(e) => { setBusqueda(e.target.value); setPagina(1); }}
               />
             </div>
 
             <div className="as-filtros-extra">
-              <select
-                className="as-campo"
-                aria-label="Tipo de alerta"
-                value={tipo}
-                onChange={(e) => setTipo(e.target.value)}
-              >
-                <option value="">Tipo de alerta</option>
-                {tipos.map((t) => (
-                  <option key={t} value={t}>
-                    {String(t).replaceAll("_", " ")}
-                  </option>
-                ))}
-              </select>
+              <SelectBonito
+                id="asignacion-filtro-tipo"
+                ariaLabel="Filtrar por tipo de alerta"
+                valor={tipo}
+                onChange={(valor) => { setTipo(valor); setPagina(1); }}
+                opciones={tipos.map((t) => ({ valor: t, etiqueta: String(t).replaceAll("_", " ") }))}
+                placeholder="Todos los tipos"
+                icono="bi-exclamation-circle"
+              />
 
               <input
                 type="date"
                 className="as-campo"
                 aria-label="Filtrar por fecha"
                 value={fecha}
-                onChange={(e) => setFecha(e.target.value)}
+                onChange={(e) => { setFecha(e.target.value); setPagina(1); }}
               />
             </div>
 
@@ -263,7 +283,7 @@ export default function MisAsignaciones() {
                 </div>
               ) : (
                 <div className="as-lista">
-                  {filtradas.map((a) => {
+                  {asignacionesPagina.map((a) => {
                     const seleccionada =
                       String(seleccionId) ===
                       String(a.idAsignacion);
@@ -276,9 +296,8 @@ export default function MisAsignaciones() {
                           seleccionada ? "as-item-activo" : ""
                         }`}
                         onClick={() => {
-                          setSeleccionId(a.idAsignacion);
-                          setAccionError("");
-                          setAccionOk("");
+                          setSeleccionId(a.idAsignacion ?? a.IdAsignacion);
+                          setPagina(null);
                         }}
                       >
                         <div className="as-item-cabecera">
@@ -309,6 +328,18 @@ export default function MisAsignaciones() {
                   })}
                 </div>
               )
+            )}
+            {!cargando && !error && filtradas.length > 0 && (
+              <nav className="as-paginacion" aria-label="Paginacion de asignaciones">
+                <span>{(paginaActual - 1) * porPagina + 1}–{Math.min(paginaActual * porPagina, filtradas.length)} de {filtradas.length}</span>
+                <div>
+                  <button type="button" disabled={paginaActual === 1} onClick={() => setPagina(Math.max(1, paginaActual - 1))}>Anterior</button>
+                  {Array.from({ length: totalPaginas }, (_, index) => index + 1).map((numero) => (
+                    <button key={numero} type="button" className={paginaActual === numero ? "active" : ""} aria-current={paginaActual === numero ? "page" : undefined} onClick={() => setPagina(numero)}>{numero}</button>
+                  ))}
+                  <button type="button" disabled={paginaActual === totalPaginas} onClick={() => setPagina(Math.min(totalPaginas, paginaActual + 1))}>Siguiente</button>
+                </div>
+              </nav>
             )}
           </div>
         </section>
@@ -344,45 +375,17 @@ export default function MisAsignaciones() {
               </div>
             ) : (
               <div className="as-detalle-info">
-                <h3>
-                  Asignación #{seleccion.idAsignacion}
-                  {" · "}
-                  Alerta #{seleccion.idAlerta}
-                </h3>
-
-                <p>
-                  <strong>Unidad policial</strong>
-                  {seleccion.unidadNombre || "—"}
-                </p>
-
-                <p>
-                  <strong>Fecha de asignación</strong>
-                  {FormatearFecha(seleccion.fecha)}
-                </p>
-
-                <p>
-                  <strong>Tipo de alerta</strong>
-                  {String(
-                    alertaSeleccionada?.tipo || "—"
-                  ).replaceAll("_", " ")}
-                </p>
-
-                <p>
-                  <strong>Prioridad</strong>
-                  {alertaSeleccionada?.prioridad || "—"}
-                </p>
-
-                <p className="as-detalle-ancho">
-                  <strong>Observación</strong>
-                  {seleccion.observacion ||
-                    "Sin observaciones"}
-                </p>
-
-                <p className="as-detalle-ancho">
-                  <strong>Descripción de la alerta</strong>
-                  {alertaSeleccionada?.descripcion ||
-                    "Descripción no disponible"}
-                </p>
+                <h3>Asignación #{seleccion.idAsignacion} · Alerta #{seleccion.idAlerta}</h3>
+                <div className="as-datos-grid">
+                  <div className="as-dato"><span><i className="bi bi-car-front" aria-hidden="true" /> Unidad policial</span><strong>{seleccion.unidadNombre || "—"}</strong></div>
+                  <div className="as-dato"><span><i className="bi bi-calendar3" aria-hidden="true" /> Fecha de asignación</span><strong>{FormatearFecha(seleccion.fecha)}</strong></div>
+                  <div className="as-dato"><span><i className="bi bi-exclamation-circle" aria-hidden="true" /> Tipo de alerta</span><strong>{String(alertaSeleccionada?.tipo || "—").replaceAll("_", " ")}</strong></div>
+                  <div className="as-dato"><span><i className="bi bi-flag" aria-hidden="true" /> Prioridad</span><strong>{alertaSeleccionada?.prioridad || "—"}</strong></div>
+                  <div className="as-dato"><span><i className="bi bi-geo-alt" aria-hidden="true" /> Barrio</span><strong>{alertaSeleccionada?.barrioNombre || alertaSeleccionada?.nombreBarrio || alertaSeleccionada?.barrio?.nombre || "No disponible"}</strong></div>
+                  <div className="as-dato"><span><i className="bi bi-activity" aria-hidden="true" /> Estado</span><strong>{estadoSeleccion.replaceAll("_", " ")}</strong></div>
+                  <div className="as-dato as-dato-ancho"><span><i className="bi bi-chat-left-text" aria-hidden="true" /> Observación</span><strong>{seleccion.observacion || "Sin observaciones"}</strong></div>
+                  <div className="as-dato as-dato-ancho"><span><i className="bi bi-card-text" aria-hidden="true" /> Descripción</span><strong>{alertaSeleccionada?.descripcion || "Descripción no disponible"}</strong></div>
+                </div>
               </div>
             )}
 
@@ -416,20 +419,7 @@ export default function MisAsignaciones() {
                 ))}
               </div>
             )}
-
-            {accionError && (
-              <p className="alert alert-danger" role="alert">
-                {accionError}
-              </p>
-            )}
-
-            {accionOk && (
-              <p className="alert alert-success" role="status">
-                {accionOk}
-              </p>
-            )}
-
-            <div className="as-acciones">
+<div className="as-acciones">
               <button
                 type="button"
                 className="btn btn-outline-secondary btn-sm"

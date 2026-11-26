@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import Topbar from "../../Components/Administrador-policia/Topbar";
+import { useFeedback } from "../../Components/Feedback/useFeedback";
 
 import {
   listarTiposAlerta,
@@ -59,6 +60,7 @@ function iconoTipo(nombre) {
 }
 
 function TiposAlertas() {
+  const { toast } = useFeedback();
   const [tipos, setTipos] = useState([]);
   const [busqueda, setBusqueda] = useState("");
   const [filtro, setFiltro] = useState("");
@@ -66,6 +68,10 @@ function TiposAlertas() {
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
   const [recarga, setRecarga] = useState(0);
+
+  useEffect(() => {
+    if (error) toast.errorFrom(error, "No se pudieron cargar los tipos de alerta.", "Error al cargar tipos");
+  }, [error, toast]);
 
   // Desplegable de prioridad
   const [menuAbierto, setMenuAbierto] = useState(false);
@@ -227,20 +233,6 @@ function TiposAlertas() {
       </div>
 
       {/* ERRORES REALES DE LA API */}
-
-      {error && (
-        <div
-          className="alert alert-danger mb-4"
-          role="alert"
-        >
-          <i
-            className="bi bi-exclamation-circle me-2"
-            aria-hidden="true"
-          />
-
-          {error}
-        </div>
-      )}
 
       {/* TARJETAS KPI */}
 

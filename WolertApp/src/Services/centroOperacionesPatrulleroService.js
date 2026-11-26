@@ -44,6 +44,21 @@ const idUnidad = (obj) =>
 const idAsignacion = (obj) =>
   campo(obj, "idAsignacion", "IdAsignacion");
 
+export function coordenadasAlerta(alerta) {
+  const direccion = campo(alerta, "direccion", "Direccion", "ubicacion", "Ubicacion");
+  const origen = direccion && typeof direccion === "object" ? direccion : alerta;
+  const latitud = campo(origen, "latitud", "Latitud", "latitude", "Latitude", "lat", "Lat");
+  const longitud = campo(origen, "longitud", "Longitud", "longitude", "Longitude", "lng", "Lng");
+
+  if (latitud == null || longitud == null || latitud === "" || longitud === "") return null;
+  const lat = Number(latitud);
+  const lng = Number(longitud);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+  if (Math.abs(lat) > 90 || Math.abs(lng) > 180 || (lat === 0 && lng === 0)) return null;
+
+  return { latitud: lat, longitud: lng };
+}
+
 export async function cargarCentroPatrullero(signal) {
   const idUsuario = ObtenerIdUsuario();
 

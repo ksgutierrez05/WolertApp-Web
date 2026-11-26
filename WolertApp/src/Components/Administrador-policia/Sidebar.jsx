@@ -1,4 +1,5 @@
 import { NavLink, useNavigate } from "react-router-dom";
+import { useFeedback } from "../Feedback/useFeedback";
 import logoPolicia from "../../../public/img/logopolicia.png";
 
 const ICONOS_POLICIA = {
@@ -105,14 +106,20 @@ const MENU_POLICIA = [
 
 function SidebarPolicia() {
   const navigate = useNavigate();
+  const { confirm } = useFeedback();
 
-  // Cerrar sesión sin confirmación del navegador
   function cerrarSesion(evento) {
     evento.preventDefault();
-
-    localStorage.removeItem("token");
-
-    navigate("/", { replace: true });
+    confirm({
+      title: "¿Cerrar sesión?",
+      description: "Confirma que deseas salir de tu sesión de Administrador Policía.",
+      confirmLabel: "Cerrar sesión",
+      tone: "warning",
+      onConfirm: () => {
+        localStorage.removeItem("token");
+        navigate("/", { replace: true });
+      },
+    });
   }
   return (
     <aside className="sidebar-dash" id="sidebarDash">

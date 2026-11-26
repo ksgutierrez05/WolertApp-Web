@@ -1,12 +1,19 @@
 
+import { useEffect } from "react";
 import PageHeader from "../../Components/Patrullero/Pageheader";
 import Kpis from "../../Components/Patrullero/Kpicard";
+import { useFeedback } from "../../Components/Feedback/useFeedback";
 import usePatrullero from "../../Utils/usePatrullero";
 
 import "../../css/Policia/Patrullero/css/unidad.css";
 
 export default function MiUnidad() {
   const { datos, cargando, error, recargar } = usePatrullero();
+  const { toast } = useFeedback();
+
+  useEffect(() => {
+    if (error) toast.errorFrom(error, "No se pudo cargar la información de la unidad.", "Error al cargar la unidad");
+  }, [error, toast]);
 
   const unidad = datos?.unidad;
   const integrantes = unidad?.policias || [];
@@ -25,7 +32,6 @@ export default function MiUnidad() {
     integrantes: integrantes.length,
     disponibles,
     enAtencion: activas,
-    enCamino: "—",
   };
 
   const fila = (icono, nombre, valor) => (
@@ -50,12 +56,7 @@ export default function MiUnidad() {
       )}
 
       {error && (
-        <div className="alert alert-danger" role="alert">
-          {error}
-          <button type="button" onClick={recargar}>
-            Reintentar
-          </button>
-        </div>
+        <button type="button" className="btn btn-link btn-sm px-0" onClick={recargar}>Reintentar carga</button>
       )}
 
       <section className="un-ficha" aria-label="Ficha de la unidad">
@@ -72,13 +73,14 @@ export default function MiUnidad() {
             </h2>
 
             <p className="un-ficha-sub">
-              <i className="bi bi-geo-alt" />
+              <i className="bi bi-geo-alt" aria-hidden="true" />
               {" "}Barrio: {unidad?.nombreBarrio || "—"}
             </p>
           </div>
         </div>
 
         <div className="un-ficha-der">
+          <span className="un-ficha-estado"><i className="bi bi-activity" aria-hidden="true" /> {unidad?.estado || "Estado no disponible"}</span>
           <div className="un-ficha-dato">
             <span className="un-ficha-num">
               {asignaciones.length}
@@ -115,11 +117,8 @@ export default function MiUnidad() {
             </h2>
 
             <dl className="un-datos">
-              {fila("bi-hash", "Código", unidad?.idUnidad)}
               {fila("bi-shield", "Estado", unidad?.estado)}
               {fila("bi-geo-alt", "Barrio", unidad?.nombreBarrio)}
-              {fila("bi-pin-map", "Latitud", unidad?.latitud)}
-              {fila("bi-pin-map", "Longitud", unidad?.longitud)}
             </dl>
           </div>
         </section>
@@ -162,14 +161,11 @@ export default function MiUnidad() {
 
                       <span>
                         {p.rango || "Policía"}
-                        {" · "}
-                        {p.estado || "Sin estado"}
                       </span>
 
-                      <small>
-                        Placa: {p.placa || "—"}
-                      </small>
+                      <small><i className="bi bi-credit-card-2-front" aria-hidden="true" /> Placa {p.placa || "—"}</small>
                     </div>
+                    <span className={`un-integrante-estado${String(p.estado || "").trim().toUpperCase() === "DISPONIBLE" ? " disponible" : ""}`}>{p.estado || "Sin estado"}</span>
                   </article>
                 ))}
               </div>

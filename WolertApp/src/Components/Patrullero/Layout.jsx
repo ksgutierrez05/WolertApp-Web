@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Topbar from './Topbar';
+import { FeedbackProvider } from '../Feedback/FeedbackProvider';
+import '../../css/Policia/Patrullero/css/patrullero-refinements.css';
 
 function Layout() {
   const [busqueda, setBusqueda] = useState('');
@@ -18,15 +20,18 @@ function Layout() {
 
   useEffect(() => {
     document.body.classList.add('rol-policia');
+    document.body.classList.add('rol-patrullero-activo');
 
     return () => {
       document.body.classList.remove('rol-policia');
+      document.body.classList.remove('rol-patrullero-activo');
     };
   }, []);
 
 
   return (
-    <>
+    <FeedbackProvider>
+      <div className="rol-patrullero">
       <Sidebar />
 
       <div id="wrapperDash">
@@ -43,7 +48,8 @@ function Layout() {
           </div>
         </main>
       </div>
-    </>
+      </div>
+    </FeedbackProvider>
   );
 }
 

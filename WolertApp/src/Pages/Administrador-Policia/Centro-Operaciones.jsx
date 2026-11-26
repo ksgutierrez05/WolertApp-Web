@@ -4,6 +4,7 @@ import MapaOperaciones from "../../Components/Central-policia/MapaOperaciones";
 import "../../css/Policia/central-policia/css/Mapa.css";
 
 import Topbar from "../../Components/Administrador-policia/Topbar";
+import { useFeedback } from "../../Components/Feedback/useFeedback";
 import Kpis from "../../Components/Administrador-policia/Kpicard";
 import { obtenerCentroOperaciones } from "../../Services/CentroOperacionesAdminService";
 import {
@@ -30,8 +31,13 @@ function estiloAlerta(tipo) {
 }
 
 export default function CentroOperaciones() {
+  const { toast } = useFeedback();
   const [datos, setDatos] = useState(null);
   const [errores, setErrores] = useState([]);
+
+  useEffect(() => {
+    if (errores.length) toast.warning("Algunas consultas del centro de operaciones no se completaron.", "Información parcial");
+  }, [errores, toast]);
   const [cargando, setCargando] = useState(true);
   const [recarga, setRecarga] = useState(0);
   const [expandido, setExpandido] = useState(false);
@@ -93,17 +99,6 @@ export default function CentroOperaciones() {
         </p>
         <i className="bi bi-shield-fill-check hero-icon-dash" />
       </section>
-
-      {errores.length > 0 && (
-        <div className="alert alert-warning" role="alert">
-          <strong>Algunas consultas no se completaron:</strong>
-          <ul className="mb-0 mt-2">
-            {errores.map((e, i) => (
-              <li key={i}>{e}</li>
-            ))}
-          </ul>
-        </div>
-      )}
 
       <Kpis grupo="centro-principal" valores={kpis} cargando={cargando} />
 

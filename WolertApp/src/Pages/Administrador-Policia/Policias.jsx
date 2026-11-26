@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Topbar from "../../Components/Administrador-policia/Topbar";
 import SelectBonito from "../../Components/Administrador-policia/SelectBonito";
+import { useFeedback } from "../../Components/Feedback/useFeedback";
 import {
   listarPolicias,
   actualizarPolicia,
@@ -107,6 +108,7 @@ function validarFila(fila) {
 }
 
 export default function Policias() {
+  const { confirm, toast } = useFeedback();
   const [policias, setPolicias] = useState([]);
   const [busqueda, setBusqueda] = useState("");
   const [estado, setEstado] = useState("");
@@ -115,8 +117,8 @@ export default function Policias() {
   const [cargando, setCargando] = useState(true);
   const [guardando, setGuardando] = useState(false);
 
-  const [error, setError] = useState("");
-  const [mensaje, setMensaje] = useState("");
+  const [, setError] = useState("");
+  const [, setMensaje] = useState("");
 
   const [modal, setModal] = useState(null);
 
@@ -145,7 +147,10 @@ export default function Policias() {
         if (vivo) setPolicias(datos);
       })
       .catch((e) => {
-        if (vivo) setError(e.message);
+        if (vivo) {
+          setError(e.message);
+          toast.errorFrom(e, "No se pudo cargar el personal policial.", "Error al cargar policías");
+        }
       })
       .finally(() => {
         if (vivo) setCargando(false);
@@ -154,7 +159,7 @@ export default function Policias() {
     return () => {
       vivo = false;
     };
-  }, []);
+  }, [toast]);
 
   async function cargarUnidades() {
     const datos = await apiAdminPolicia("/api/Unidades");
@@ -180,6 +185,7 @@ export default function Policias() {
       await cargarUnidades();
     } catch (e) {
       setError(e.message);
+      toast.errorFrom(e, "No se pudieron cargar las unidades.", "Error al consultar unidades");
     }
   }
 
@@ -202,6 +208,7 @@ export default function Policias() {
       await cargarUnidades();
     } catch (e) {
       setError(e.message);
+      toast.errorFrom(e, "No se pudieron cargar las unidades.", "Error al consultar unidades");
     }
   }
 
@@ -223,22 +230,10 @@ export default function Policias() {
   // GUARDAR
   // =========================================
 
-  async function guardar(e) {
-    e.preventDefault();
-
-    if (guardando) return;
-
+  async function guardarRegistro(datos) {
     setGuardando(true);
     setError("");
     setMensaje("");
-
-    const datos = {
-      placa: texto(formulario.placa),
-      rango: texto(formulario.rango) || null,
-      estado: formulario.estado,
-      idUnidad: formulario.idUnidad === "" ? null : Number(formulario.idUnidad),
-    };
-
     try {
       if (modal === "editar") {
         await actualizarPolicia(formulario.idUsuario, datos);
@@ -253,34 +248,67 @@ export default function Policias() {
 
       setModal(null);
       setMensaje("Registro guardado correctamente.");
+      toast.success("El registro policial se guardó correctamente.", "Cambios guardados");
     } catch (e) {
       setError(e.message);
+      toast.errorFrom(e, "No se pudo guardar el registro policial.", "Error al guardar");
     } finally {
       setGuardando(false);
     }
   }
 
-  async function borrar(policia) {
-    const confirmar = window.confirm(
-      `¿Eliminar el registro policial de ${policia.nombreUsuario || policia.placa}?`
-    );
+  function guardar(e) {
+    e.preventDefault();
+    if (guardando) return;
 
-    if (!confirmar) return;
+    const datos = {
+      placa: texto(formulario.placa),
+      rango: texto(formulario.rango) || null,
+      estado: formulario.estado,
+      idUnidad: formulario.idUnidad === "" ? null : Number(formulario.idUnidad),
+    };
+    const original = policias.find((policia) => Number(policia.idUsuario) === Number(formulario.idUsuario));
 
-    setGuardando(true);
-    setError("");
-    setMensaje("");
-
-    try {
-      await eliminarPolicia(policia.idUsuario);
-      await recargar();
-
-      setMensaje("Registro policial eliminado.");
-    } catch (e) {
-      setError(e.message);
-    } finally {
-      setGuardando(false);
+    if (modal === "editar" && original && texto(original.estado).toUpperCase() !== texto(datos.estado).toUpperCase()) {
+      const activando = texto(datos.estado).toUpperCase() === "ACTIVO";
+      confirm({
+        title: activando ? "¿Activar policía?" : "¿Desactivar policía?",
+        description: `Confirma que deseas ${activando ? "activar" : "desactivar"} a ${original.nombreUsuario || original.placa}.`,
+        confirmLabel: activando ? "Activar" : "Desactivar",
+        tone: activando ? "confirm" : "warning",
+        failureMessage: "No se pudo actualizar el estado policial.",
+        onConfirm: () => guardarRegistro(datos),
+      });
+      return;
     }
+
+    guardarRegistro(datos);
+  }
+
+  async function borrar(policia) {
+    confirm({
+      title: "¿Eliminar registro policial?",
+      description: `Se eliminará el registro de ${policia.nombreUsuario || policia.placa}. Esta acción no se puede deshacer.`,
+      confirmLabel: "Eliminar",
+      tone: "error",
+      failureMessage: "No se pudo eliminar el registro policial.",
+      onConfirm: async () => {
+        setGuardando(true);
+        setError("");
+        setMensaje("");
+        try {
+          await eliminarPolicia(policia.idUsuario);
+          await recargar();
+          setMensaje("Registro policial eliminado.");
+          toast.success("El registro policial se eliminó correctamente.", "Registro eliminado");
+        } catch (e) {
+          setError(e.message);
+          throw e;
+        } finally {
+          setGuardando(false);
+        }
+      },
+    });
   }
 
   // =========================================
@@ -486,6 +514,7 @@ export default function Policias() {
       setModal("excel");
     } catch (e) {
       setError(`No se pudo leer el Excel: ${e.message}`);
+      toast.warning(`No se pudo leer el archivo Excel: ${e.message}`, "Revisa el archivo");
     } finally {
       evento.target.value = "";
     }
@@ -510,19 +539,15 @@ export default function Policias() {
     enlace.click();
 
     URL.revokeObjectURL(url);
+    toast.success("La plantilla CSV se descargó correctamente.", "Descarga completada");
   }
 
   // =========================================
   // IMPORTAR REGISTROS
   // =========================================
 
-  async function importarExcel() {
+  async function procesarImportacion(validas) {
     if (guardando) return;
-
-    const validas = filasExcel.filter((fila) => !fila.error);
-
-    if (!validas.length) return;
-
     setGuardando(true);
     setResultadosExcel([]);
 
@@ -555,6 +580,7 @@ export default function Policias() {
       await recargar();
     } catch (e) {
       setError(e.message);
+      toast.errorFrom(e, "No se pudo actualizar la lista de policías.", "Error al actualizar datos");
     }
 
     setGuardando(false);
@@ -564,6 +590,33 @@ export default function Policias() {
         salida.filter((r) => r.estado === "OK").length
       } correctos, ${salida.filter((r) => r.estado === "ERROR").length} fallidos.`
     );
+    const correctos = salida.filter((r) => r.estado === "OK").length;
+    const fallidos = salida.length - correctos;
+    if (fallidos === 0) {
+      toast.success(`Se importaron ${correctos} registros policiales.`, "Importación completada");
+    } else if (correctos === 0) {
+      toast.error(`No se pudo importar ninguno de los ${fallidos} registros.`, "Error de importación");
+    } else {
+      toast.warning(`Se importaron ${correctos} registros y ${fallidos} tuvieron errores.`, "Importación parcial");
+    }
+  }
+
+  function importarExcel() {
+    if (guardando) return;
+    const validas = filasExcel.filter((fila) => !fila.error);
+    if (!validas.length) {
+      toast.warning("No hay filas válidas para importar.", "Revisa el archivo");
+      return;
+    }
+
+    confirm({
+      title: "¿Importar policías?",
+      description: `Se intentará registrar ${validas.length} policías válidos del archivo Excel.`,
+      confirmLabel: `Importar ${validas.length}`,
+      tone: "confirm",
+      failureMessage: "No se pudo completar la importación.",
+      onConfirm: () => procesarImportacion(validas),
+    });
   }
 
   // =========================================
@@ -611,18 +664,6 @@ export default function Policias() {
           </button>
         </div>
       </div>
-
-      {mensaje && (
-        <div className="alert alert-success" role="status">
-          {mensaje}
-        </div>
-      )}
-
-      {error && !modal && (
-        <div className="alert alert-danger" role="alert">
-          {error}
-        </div>
-      )}
 
       {/* TARJETAS KPI */}
 
@@ -969,10 +1010,14 @@ export default function Policias() {
                   </div>
                 </>
               ) : (
-                <form onSubmit={guardar}>
+                <form
+                  onSubmit={guardar}
+                  onInvalid={(evento) => {
+                    evento.preventDefault();
+                    toast.warning(evento.target.validationMessage || "Revisa los campos obligatorios.", "Datos incompletos");
+                  }}
+                >
                   <div className="modal-body-dash">
-                    {error && <div className="alert alert-danger">{error}</div>}
-
                     {modal === "crear" && (
                       <div className="form-seccion-policias">
                         <div className="form-seccion-titulo">

@@ -1,6 +1,7 @@
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import PageHeader from "../../Components/Patrullero/Pageheader";
+import { useFeedback } from "../../Components/Feedback/useFeedback";
 import {
   ListarMisNotificaciones,
   FormatearFecha,
@@ -13,11 +14,13 @@ import {
 import "../../css/Policia/Patrullero/css/notificaciones.css";
 
 export default function Notificaciones() {
+  const { toast } = useFeedback();
   const [filtro, setFiltro] = useState("todas");
   const [notificaciones, setNotificaciones] = useState([]);
   const [leidas, setLeidas] = useState(leerIdsLeidos);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
+  const ultimoErrorToast = useRef("");
 
   useEffect(() => {
     let activo = true;
@@ -33,12 +36,15 @@ export default function Notificaciones() {
         );
         setLeidas(leerIdsLeidos());
         setError("");
+        ultimoErrorToast.current = "";
       } catch (err) {
         if (activo) {
-          setError(
-            err.message ||
-              "No se pudieron cargar las notificaciones."
-          );
+          const mensaje = err.message || "No se pudieron cargar las notificaciones.";
+          setError(mensaje);
+          if (ultimoErrorToast.current !== mensaje) {
+            ultimoErrorToast.current = mensaje;
+            toast.errorFrom(err, "No se pudieron cargar las notificaciones.", "Error al cargar notificaciones");
+          }
         }
       } finally {
         if (activo) setCargando(false);
@@ -69,13 +75,14 @@ export default function Notificaciones() {
       );
       window.removeEventListener("storage", sincronizar);
     };
-  }, []);
+  }, [toast]);
 
   const estaLeida = (notificacion) =>
     leidas.includes(String(notificacion.idNotificacion));
 
   const marcarLeida = (id) => {
     setLeidas(guardarIdsLeidos([...leidas, id]));
+    toast.success("La notificación quedó marcada como leída.", "Cambios guardados");
   };
 
   const marcarTodas = () => {
@@ -85,6 +92,7 @@ export default function Notificaciones() {
         ...notificaciones.map((n) => n.idNotificacion),
       ])
     );
+    toast.success("Todas las notificaciones se marcaron como leídas.", "Cambios guardados");
   };
 
   const pendientes = notificaciones.filter(
@@ -149,12 +157,6 @@ export default function Notificaciones() {
         <p className="nt-mensaje">
           Cargando notificaciones...
         </p>
-      )}
-
-      {error && (
-        <div className="alert alert-danger">
-          {error}
-        </div>
       )}
 
       <section className="nt-panel">

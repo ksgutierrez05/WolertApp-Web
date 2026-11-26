@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Topbar from "../../Components/Administrador-policia/Topbar";
+import { useFeedback } from "../../Components/Feedback/useFeedback";
 import { obtenerDatosEstadisticas } from "../../Services/HistorialEstadisticasService";
 import "../../css/Policia/administrador-policia/css/estadisticas.css";
 
@@ -264,12 +265,17 @@ function Trend({ buckets, rows }) {
   );
 }
 export default function Estadisticas() {
+  const { toast } = useFeedback();
   const [data, setData] = useState({});
   const [errors, setErrors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [reload, setReload] = useState(0);
   const [period, setPeriod] = useState("mes");
   const [updated, setUpdated] = useState(null);
+
+  useEffect(() => {
+    if (errors.length) toast.warning("Algunos indicadores no pudieron consultarse.", "Datos parciales");
+  }, [errors, toast]);
   useEffect(() => {
     const c = new AbortController();
     setLoading(true);
@@ -279,6 +285,9 @@ export default function Estadisticas() {
           setData(r.datos);
           setErrors(r.errores || []);
           setUpdated(new Date());
+          if (reload > 0 && !(r.errores || []).length) {
+            toast.success("Los indicadores se actualizaron correctamente.", "Datos actualizados");
+          }
         }
       })
       .catch((e) => {
@@ -291,7 +300,7 @@ export default function Estadisticas() {
         if (!c.signal.aborted) setLoading(false);
       });
     return () => c.abort();
-  }, [reload]);
+  }, [reload, toast]);
   const now = new Date(),
     buckets = periodBuckets(period, now);
   const rows = (k) => (Array.isArray(data[k]) ? data[k] : []);
@@ -354,18 +363,6 @@ export default function Estadisticas() {
               {loading ? "Actualizando..." : "Actualizar datos"}
             </button>
           </div>
-          {errors.length > 0 && (
-            <div className="es-error" role="alert">
-              Algunas consultas no se completaron. Los indicadores afectados no
-              están disponibles.
-              <details>
-                <summary>Ver errores</summary>
-                {errors.map((e, i) => (
-                  <p key={i}>{e}</p>
-                ))}
-              </details>
-            </div>
-          )}
           <div className="es-kpis">
             {[
               ["Total de alertas", total, "bi-bell-fill", "#2474ce", "#e4edfc"],

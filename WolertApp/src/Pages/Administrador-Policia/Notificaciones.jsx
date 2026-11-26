@@ -3,6 +3,7 @@ import {
   guardarIdsLeidos,
 } from "../../Services/notificacionesEstado";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useFeedback } from "../../Components/Feedback/useFeedback";
 import "../../css/Policia/administrador-policia/css/notificaciones.css";
 
 const API = (import.meta.env.VITE_API_URL || "https://localhost:7138").replace(
@@ -129,6 +130,7 @@ function esHoy(fecha) {
 }
 
 function Notificaciones() {
+  const { toast } = useFeedback();
   const [notificaciones, setNotificaciones] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
@@ -136,6 +138,10 @@ function Notificaciones() {
   const [busqueda, setBusqueda] = useState("");
   const [filtroFecha, setFiltroFecha] = useState("TODAS");
   const [leidas, setLeidas] = useState(leerIdsLeidos);
+
+  useEffect(() => {
+    if (error) toast.errorFrom(error, "No se pudieron cargar las notificaciones.", "Error al cargar notificaciones");
+  }, [error, toast]);
   useEffect(() => {
     const sync = () => setLeidas(leerIdsLeidos());
     window.addEventListener("wolertapp:notificaciones", sync);
@@ -145,8 +151,10 @@ function Notificaciones() {
       window.removeEventListener("storage", sync);
     };
   }, []);
-  const marcar = (ids) =>
+  const marcar = (ids) => {
     setLeidas(guardarIdsLeidos([...leerIdsLeidos(), ...ids.map(String)]));
+    toast.success("Las notificaciones seleccionadas quedaron marcadas como leídas.", "Cambios guardados");
+  };
 
   const idUsuarioActual = obtenerIdUsuario();
 
@@ -281,27 +289,6 @@ function Notificaciones() {
           </button>
         </div>
       </header>
-
-      {/* MENSAJE DE ERROR */}
-
-      {error && (
-        <div
-          className="notificaciones-mensaje notificaciones-mensaje-error"
-          role="alert"
-        >
-          <i className="bi bi-exclamation-triangle" />
-
-          <span>{error}</span>
-
-          <button
-            type="button"
-            onClick={() => setError("")}
-            aria-label="Cerrar aviso"
-          >
-            <i className="bi bi-x-lg" />
-          </button>
-        </div>
-      )}
 
       {/* RESUMEN */}
 

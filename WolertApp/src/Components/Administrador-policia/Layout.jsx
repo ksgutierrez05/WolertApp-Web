@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
+import { FeedbackProvider } from '../Feedback/FeedbackProvider';
 import '../../css/Policia/ver-detalles.css';
 import SidebarPolicia from '../Administrador-policia/Sidebar';
 
@@ -10,16 +11,18 @@ function Layout() {
   }, []);
 
   return (
-    <>
-      <SidebarPolicia />
-      <div id="wrapperDash">
-        <main className="main-dash">
-          <div className="container-fluid">
-            <Outlet />
-          </div>
-        </main>
-      </div>
-    </>
+    <FeedbackProvider>
+      <>
+        <SidebarPolicia />
+        <div id="wrapperDash">
+          <main className="main-dash">
+            <div className="container-fluid">
+              <Outlet />
+            </div>
+          </main>
+        </div>
+      </>
+    </FeedbackProvider>
   );
 }
 

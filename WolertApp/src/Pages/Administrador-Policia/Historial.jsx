@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { obtenerHistorial } from "../../Services/HistorialEstadisticasService";
 import SelectBonito from "../../Components/Administrador-policia/SelectBonito";
+import { useFeedback } from "../../Components/Feedback/useFeedback";
 import "../../css/Policia/administrador-policia/css/historial.css";
 
 // ========================================
@@ -205,6 +206,7 @@ const OPCIONES_FECHA = [
 // ========================================
 
 function Historial() {
+  const { toast } = useFeedback();
   const [datos, setDatos] = useState({
     atenciones: [],
     asignaciones: [],
@@ -213,6 +215,10 @@ function Historial() {
 
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (error) toast.errorFrom(error, "No se pudo cargar el historial.", "Error al cargar historial");
+  }, [error, toast]);
   const [recarga, setRecarga] = useState(0);
 
   const [filtroFecha, setFiltroFecha] = useState("todas");
@@ -567,20 +573,9 @@ function Historial() {
         {/* ERROR */}
 
         {error && (
-          <div className="historial-error" role="alert">
-            <div>
-              <i className="bi bi-exclamation-triangle me-2" />
-              {error}
-            </div>
-
-            <button
-              type="button"
-              onClick={actualizarHistorial}
-              disabled={cargando}
-            >
-              Reintentar
-            </button>
-          </div>
+          <button type="button" className="btn btn-link btn-sm px-0" onClick={actualizarHistorial} disabled={cargando}>
+            Reintentar carga del historial
+          </button>
         )}
 
         {/* TARJETAS KPI */}

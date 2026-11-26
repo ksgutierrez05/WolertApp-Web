@@ -18,6 +18,7 @@ import {
 } from "react-leaflet";
 
 import L from "leaflet";
+import { useFeedback } from "../Feedback/useFeedback";
 import "leaflet/dist/leaflet.css";
 
 import {
@@ -119,6 +120,7 @@ export default function RegistrarAlarmaMapa({
   onClose,
   onGuardada,
 }) {
+  const { confirm, toast } = useFeedback();
   const editando = Boolean(alarmaEditar);
   const idEditar = idDe(alarmaEditar);
 
@@ -232,6 +234,10 @@ export default function RegistrarAlarmaMapa({
     useState(false);
 
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (error) toast.error(error, "Revisa los datos de la alarma");
+  }, [error, toast]);
 
   // ========================================
   // CARGAR BARRIOS
@@ -415,51 +421,8 @@ export default function RegistrarAlarmaMapa({
   // GUARDAR ALARMA
   // ========================================
 
-  async function guardar(evento) {
-    evento.preventDefault();
-
-    setMostrarBarrios(false);
-    setError("");
-
-    if (!nombre.trim()) {
-      setError(
-        "Escribe el nombre de la alarma."
-      );
-      return;
-    }
-
-    if (!comuna || !barrio) {
-      setError(
-        "Selecciona una comuna y un barrio."
-      );
-      return;
-    }
-
-    if (!posicion) {
-      setError(
-        "Selecciona la ubicación en el mapa."
-      );
-      return;
-    }
-
-    if (editando && idEditar == null) {
-      setError(
-        "No se encontró el identificador de la alarma."
-      );
-      return;
-    }
-
-    const datos = {
-      nombre: nombre.trim(),
-      idBarrio: Number(barrio),
-      latitud: posicion.lat,
-      longitud: posicion.lng,
-      radioCobertura: Number(radio),
-      estado,
-    };
-
+  async function persistirAlarma(datos) {
     setGuardando(true);
-
     try {
       if (editando) {
         await modificarAlarma(
@@ -479,6 +442,53 @@ export default function RegistrarAlarmaMapa({
     } finally {
       setGuardando(false);
     }
+  }
+
+  function guardar(evento) {
+    evento.preventDefault();
+    setMostrarBarrios(false);
+    setError("");
+
+    if (!nombre.trim()) {
+      setError("Escribe el nombre de la alarma.");
+      return;
+    }
+    if (!comuna || !barrio) {
+      setError("Selecciona una comuna y un barrio.");
+      return;
+    }
+    if (!posicion) {
+      setError("Selecciona la ubicación en el mapa.");
+      return;
+    }
+    if (editando && idEditar == null) {
+      setError("No se encontró el identificador de la alarma.");
+      return;
+    }
+
+    const datos = {
+      nombre: nombre.trim(),
+      idBarrio: Number(barrio),
+      latitud: posicion.lat,
+      longitud: posicion.lng,
+      radioCobertura: Number(radio),
+      estado,
+    };
+
+    if (editando && estado !== estadoOriginal) {
+      const activando = estado === "ACTIVA";
+      confirm({
+        title: activando ? "¿Activar alarma?" : "¿Desactivar alarma?",
+        description: `Confirma que deseas ${activando ? "activar" : "desactivar"} ${nombre.trim()}.`,
+        confirmLabel: activando ? "Activar" : "Desactivar",
+        tone: activando ? "confirm" : "warning",
+        failureMessage: "No se pudo actualizar la alarma.",
+        onConfirm: () => persistirAlarma(datos),
+      });
+      return;
+    }
+
+    persistirAlarma(datos);
   }
 
   // ========================================
@@ -790,6 +800,10 @@ export default function RegistrarAlarmaMapa({
           <form
             className="registro-alarma-form"
             onSubmit={guardar}
+            onInvalid={(evento) => {
+              evento.preventDefault();
+              toast.warning(evento.target.validationMessage || "Completa los campos requeridos.", "Datos incompletos");
+            }}
           >
             {/* DATOS DEL SISTEMA
                 IMAGEN PERSONALIZADA */}

@@ -5,6 +5,7 @@ import autoTable from "jspdf-autotable";
 import { listarTiposAlerta } from "../../Services/AlertasAdminService";
 import Kpis from "../../Components/Administrador-policia/Kpicard";
 import SelectBonito from "../../Components/Administrador-policia/SelectBonito";
+import { useFeedback } from "../../Components/Feedback/useFeedback";
 import { obtenerDatosEstadisticas } from "../../Services/HistorialEstadisticasService";
 
 import "../../css/Policia/administrador-policia/css/reportes.css";
@@ -48,6 +49,7 @@ const OPCIONES_PERIODO = [
 ];
 
 function Reportes() {
+  const { toast } = useFeedback();
   const [datos, setDatos] = useState({
     alertas: [],
     atenciones: [],
@@ -68,6 +70,18 @@ function Reportes() {
   const [responsable, setResponsable] = useState("");
   const [cargo, setCargo] = useState("Administrador de Policía");
   const [pdfError, setPdfError] = useState("");
+
+  useEffect(() => {
+    if (error) toast.errorFrom(error, "No se pudieron cargar los reportes.", "Error al cargar reportes");
+  }, [error, toast]);
+
+  useEffect(() => {
+    if (erroresParciales.length) toast.warning("Algunos recursos del reporte no están disponibles.", "Consulta parcial");
+  }, [erroresParciales, toast]);
+
+  useEffect(() => {
+    if (pdfError) toast.errorFrom(pdfError, "No se pudo generar el documento PDF.", "Error al generar PDF");
+  }, [pdfError, toast]);
   const [generando, setGenerando] = useState(false);
   const [busqueda, setBusqueda] = useState("");
   const [estado, setEstado] = useState("todos");
@@ -278,7 +292,10 @@ function Reportes() {
 
   async function generarPDF(e) {
     e.preventDefault();
-    if (!seleccion || !responsable.trim() || !cargo.trim()) return;
+    if (!seleccion || !responsable.trim() || !cargo.trim()) {
+      toast.warning("Completa el responsable y el cargo antes de generar el PDF.", "Revisa los datos");
+      return;
+    }
     setGenerando(true);
     setPdfError("");
     try {
@@ -396,6 +413,7 @@ function Reportes() {
         );
       }
       doc.save(`${codigo}.pdf`);
+      toast.success("El informe PDF se generó correctamente.", "Descarga completada");
       setSeleccion(null);
     } catch (err) {
       setPdfError(err.message || "No se pudo generar el PDF.");
@@ -411,7 +429,10 @@ function Reportes() {
   }
 
   function exportarCSV() {
-    if (!registrosFiltrados.length) return;
+    if (!registrosFiltrados.length) {
+      toast.info("No hay registros para exportar con los filtros actuales.", "Sin datos");
+      return;
+    }
 
     const columnas = ["ID", "TIPO DE ALERTA", "BARRIO", "FECHA", "PRIORIDAD", "ESTADO"];
 
@@ -442,6 +463,7 @@ function Reportes() {
 
     enlace.click();
     URL.revokeObjectURL(url);
+    toast.success("El archivo CSV se exportó correctamente.", "Exportación completada");
   }
 
   return (
@@ -457,27 +479,9 @@ function Reportes() {
       </header>
 
       {error && (
-        <div className="alert alert-danger">
-          {error}
-          <button
-            className="btn btn-sm btn-outline-danger ms-3"
-            onClick={actualizar}
-            type="button"
-          >
-            Reintentar
-          </button>
-        </div>
-      )}
-
-      {erroresParciales.length > 0 && (
-        <div className="alert alert-warning">
-          Algunos recursos no pudieron consultarse:
-          <ul className="mb-0 mt-2">
-            {erroresParciales.map((e, i) => (
-              <li key={i}>{e}</li>
-            ))}
-          </ul>
-        </div>
+        <button className="btn btn-link btn-sm px-0" onClick={actualizar} type="button">
+          Reintentar carga de reportes
+        </button>
       )}
 
       <Kpis grupo="reportes" valores={valoresKpi} cargando={cargando} />
@@ -660,7 +664,14 @@ function Reportes() {
           aria-modal="true"
           aria-labelledby="rp-titulo"
         >
-          <form className="rp-modal" onSubmit={generarPDF}>
+          <form
+            className="rp-modal"
+            onSubmit={generarPDF}
+            onInvalid={(evento) => {
+              evento.preventDefault();
+              toast.warning(evento.target.validationMessage || "Completa los campos obligatorios.", "Datos incompletos");
+            }}
+          >
             <h2 id="rp-titulo">Generar informe policial</h2>
             <p>
               Alerta #{seleccion.id} · {seleccion.tipo}
@@ -683,7 +694,6 @@ function Reportes() {
                 onChange={(e) => setCargo(e.target.value)}
               />
             </label>
-            {pdfError && <p role="alert">{pdfError}</p>}
             <div className="rp-modal-acciones">
               <button
                 type="button"

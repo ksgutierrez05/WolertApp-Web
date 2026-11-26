@@ -1,6 +1,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Topbar from "../../Components/Administrador-policia/Topbar";
+import { useFeedback } from "../../Components/Feedback/useFeedback";
 import RegistrarAlarmaMapa from "../../Components/Administrador-policia/RegistrarAlarmaMapa";
 import {
   listarAlarmas,
@@ -38,6 +39,7 @@ const esMantenimiento = (e) =>
   ["MANTENIMIENTO", "EN MANTENIMIENTO"].includes(e);
 
 export default function Alarmas() {
+  const { confirm, toast } = useFeedback();
   const [alarmas, setAlarmas] = useState([]);
   const [busqueda, setBusqueda] = useState("");
   const [filtro, setFiltro] = useState("TODAS");
@@ -48,8 +50,15 @@ export default function Alarmas() {
   const [aviso, setAviso] = useState("");
 
   const [editor, setEditor] = useState(null);
-  const [eliminando, setEliminando] = useState(null);
   const [procesando, setProcesando] = useState(false);
+
+  useEffect(() => {
+    if (error) toast.errorFrom(error, "No se pudo completar la operación con alarmas.", "Error de alarmas");
+  }, [error, toast]);
+
+  useEffect(() => {
+    if (aviso) toast.success(aviso, "Operación completada");
+  }, [aviso, toast]);
 
   const POR_PAGINA = 8;
 
@@ -176,24 +185,27 @@ export default function Alarmas() {
     actualizar();
   }
 
-  async function confirmarEliminar() {
-    if (!eliminando || procesando) return;
-
-    setProcesando(true);
-    setError("");
-    setAviso("");
-
-    try {
-      await eliminarAlarma(idAlarma(eliminando));
-      setEliminando(null);
-      setAviso("Alarma eliminada correctamente.");
-      actualizar();
-    } catch (e) {
-      setError(e.message || "No se pudo eliminar la alarma.");
-      setEliminando(null);
-    } finally {
-      setProcesando(false);
-    }
+  function confirmarEliminar(alarma) {
+    if (procesando) return;
+    confirm({
+      title: "¿Eliminar alarma?",
+      description: `Se eliminará ${nombreAlarma(alarma)}. Esta acción no se puede deshacer.`,
+      confirmLabel: "Eliminar alarma",
+      tone: "error",
+      failureMessage: "No se pudo eliminar la alarma.",
+      onConfirm: async () => {
+        setProcesando(true);
+        setError("");
+        setAviso("");
+        try {
+          await eliminarAlarma(idAlarma(alarma));
+          setAviso("Alarma eliminada correctamente.");
+          actualizar();
+        } finally {
+          setProcesando(false);
+        }
+      },
+    });
   }
 
   return (
@@ -231,20 +243,6 @@ export default function Alarmas() {
            
           </div>
         </div>
-
-        {aviso && (
-          <div className="alert alert-success mb-3" role="status">
-            <i className="bi bi-check-circle me-2" />
-            {aviso}
-          </div>
-        )}
-
-        {error && (
-          <div className="alert alert-danger mb-3" role="alert">
-            <i className="bi bi-exclamation-triangle me-2" />
-            {error}
-          </div>
-        )}
 
         <div className="row g-3 mb-4">
           {indicadores.map((item) => (
@@ -388,7 +386,7 @@ export default function Alarmas() {
                             className="alarma-accion eliminar"
                             title="Eliminar alarma"
                             aria-label={`Eliminar ${nombreAlarma(a)}`}
-                            onClick={() => setEliminando(a)}
+                            onClick={() => confirmarEliminar(a)}
                           >
                             <i className="bi bi-trash3" />
                           </button>
@@ -461,51 +459,6 @@ export default function Alarmas() {
         />
       )}
 
-      {eliminando && (
-        <div className="alarma-confirmacion-fondo">
-          <section
-            className="alarma-confirmacion"
-            role="alertdialog"
-            aria-modal="true"
-            aria-labelledby="titulo-eliminar-alarma"
-          >
-            <div className="alarma-confirmacion-icono">
-              <i className="bi bi-trash3" />
-            </div>
-
-            <h3 id="titulo-eliminar-alarma">
-              ¿Eliminar alarma?
-            </h3>
-
-            <p>
-              Se eliminará{" "}
-              <strong>{nombreAlarma(eliminando)}</strong>.
-              Esta acción no se puede deshacer.
-            </p>
-
-            <div className="alarma-confirmacion-botones">
-              <button
-                type="button"
-                className="alarma-btn alarma-btn-secundario"
-                disabled={procesando}
-                onClick={() => setEliminando(null)}
-              >
-                Cancelar
-              </button>
-
-              <button
-                type="button"
-                className="alarma-btn alarma-btn-peligro"
-                disabled={procesando}
-                onClick={confirmarEliminar}
-              >
-                <i className="bi bi-trash3" />
-                {procesando ? "Eliminando..." : "Eliminar"}
-              </button>
-            </div>
-          </section>
-        </div>
-      )}
     </>
   );
 }

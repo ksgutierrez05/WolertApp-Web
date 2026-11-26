@@ -1,6 +1,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Topbar from "../../Components/Administrador-policia/Topbar";
+import { useFeedback } from "../../Components/Feedback/useFeedback";
 import Kpis from "../../Components/Administrador-policia/Kpicard";
 import { listarAlertasAdmin } from "../../Services/AlertasAdminService";
 import { formatearFecha } from "../../Utils/centroOperacionesAdmin";
@@ -81,6 +82,7 @@ function Estado({ valor }) {
 }
 
 function Alertas() {
+  const { toast } = useFeedback();
   const [alertas, setAlertas] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
@@ -89,6 +91,10 @@ function Alertas() {
   const [pagina, setPagina] = useState(1);
   const [seleccionada, setSeleccionada] = useState(null);
   const [recarga, setRecarga] = useState(0);
+
+  useEffect(() => {
+    if (error) toast.errorFrom(error, "No se pudieron cargar las alertas.", "Error al cargar alertas");
+  }, [error, toast]);
 
   useEffect(() => {
     const controlador = new AbortController();
@@ -213,13 +219,6 @@ function Alertas() {
           </div>
 
         </div>
-
-        {error && (
-          <div className="alert alert-warning" role="alert">
-            <i className="bi bi-exclamation-triangle me-2" />
-            {error}
-          </div>
-        )}
 
         <Kpis
           grupo="alertas"

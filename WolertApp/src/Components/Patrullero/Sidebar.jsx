@@ -1,5 +1,6 @@
 
 import { NavLink, useNavigate } from "react-router-dom";
+import { useFeedback } from "../Feedback/useFeedback";
 
 const RAIZ = "/Patrullero";
 
@@ -60,34 +61,28 @@ const MENU_PATRULLERO = [
 
 function Sidebar() {
   const navigate = useNavigate();
+  const { confirm } = useFeedback();
 
   // Cerrar sesión directamente, sin confirmación
   function cerrarSesion(evento) {
     evento.preventDefault();
-
-    try {
-      // Eliminar datos de autenticación
-      [
-        "token",
-        "usuario",
-        "rol",
-        "idUsuario",
-        "username",
-      ].forEach((clave) => {
-        localStorage.removeItem(clave);
-      });
-
-      // Limpiar datos temporales de sesión
-      sessionStorage.clear();
-    } catch (error) {
-      console.warn(
-        "No se pudo limpiar el almacenamiento",
-        error
-      );
-    }
-
-    // Volver al inicio sin conservar esta ruta
-    navigate("/", { replace: true });
+    confirm({
+      title: "¿Cerrar sesión?",
+      description: "Confirma que deseas salir de tu sesión de Patrullero.",
+      confirmLabel: "Cerrar sesión",
+      tone: "warning",
+      onConfirm: () => {
+        try {
+          ["token", "usuario", "rol", "idUsuario", "username"].forEach((clave) => {
+            localStorage.removeItem(clave);
+          });
+          sessionStorage.clear();
+        } catch (error) {
+          console.warn("No se pudo limpiar el almacenamiento", error);
+        }
+        navigate("/", { replace: true });
+      },
+    });
   }
 
   return (

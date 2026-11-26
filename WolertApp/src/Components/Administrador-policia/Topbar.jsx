@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useFeedback } from "../Feedback/useFeedback";
 import {
   cargarNotificacionesCentral,
   idNotificacion,
@@ -40,7 +41,9 @@ export default function Topbar({
   onCambio,
 }) {
   const navigate = useNavigate();
+  const { toast } = useFeedback();
   const ref = useRef(null);
+  const ultimoErrorNotificaciones = useRef("");
   const [panel, setPanel] = useState("");
   const [texto, setTexto] = useState("");
   const [lista, setLista] = useState([]);
@@ -59,9 +62,16 @@ export default function Topbar({
         if (!c.signal.aborted) {
           setLista(datos);
           setError("");
+          ultimoErrorNotificaciones.current = "";
         }
       } catch (e) {
-        if (!c.signal.aborted) setError(e.message);
+        if (!c.signal.aborted) {
+          setError(e.message);
+          if (ultimoErrorNotificaciones.current !== e.message) {
+            ultimoErrorNotificaciones.current = e.message;
+            toast.errorFrom(e, "No se pudieron cargar las notificaciones.", "Error de conexión");
+          }
+        }
       } finally {
         ocupado = false;
         if (!c.signal.aborted) setCargando(false);
@@ -78,7 +88,7 @@ export default function Topbar({
       window.removeEventListener("wolertapp:notificaciones", sincronizar);
       window.removeEventListener("storage", sincronizar);
     };
-  }, []);
+  }, [toast]);
   useEffect(() => {
     const fuera = (e) => {
       if (!ref.current?.contains(e.target)) setPanel("");

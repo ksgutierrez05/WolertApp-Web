@@ -5,6 +5,7 @@ import Topbar from "../../Components/Administrador-policia/Topbar";
 import Kpis from "../../Components/Administrador-policia/Kpicard";
 
 import SelectBonito from "../../Components/Administrador-policia/SelectBonito";
+import { useFeedback } from "../../Components/Feedback/useFeedback";
 
 import MapaUnidadesPoliciales from "../../Components/Administrador-policia/MapaUnidadesPoliciales";
 
@@ -371,6 +372,7 @@ function FiltroEstado({ id, valor, onChange, conteos, total }) {
 // ======================================================*
 
 export default function Unidades() {
+  const { confirm, toast } = useFeedback();
   const [unidades, setUnidades] = useState([]);
 
   const [barrios, setBarrios] = useState([]);
@@ -400,6 +402,18 @@ export default function Unidades() {
   const [form, setForm] = useState({ ...FORM_INICIAL });
 
   const [pagina, setPagina] = useState(1);
+
+  useEffect(() => {
+    if (error) toast.errorFrom(error, "No se pudo completar la operación con unidades.", "Error de unidades");
+  }, [error, toast]);
+
+  useEffect(() => {
+    if (errorPolicias) toast.errorFrom(errorPolicias, "No se pudieron consultar los policías.", "Error al cargar integrantes");
+  }, [errorPolicias, toast]);
+
+  useEffect(() => {
+    if (mensaje) toast.success(mensaje, "Operación completada");
+  }, [mensaje, toast]);
 
   // ====================================================*
   // CARGAR DATOS*
@@ -717,43 +731,9 @@ export default function Unidades() {
   // GUARDAR O ACTUALIZAR*
   // ====================================================*
 
-  async function guardar(e) {
-    e.preventDefault();
-
-    if (guardando) return;
-
-    setError("");
-
-    const cuerpo = {
-      nombre: form.nombre.trim(),
-      idBarrio: Number(form.idBarrio),
-      latitud: Number(form.latitud),
-      longitud: Number(form.longitud),
-    };
-
-    const datosInvalidos =
-      !cuerpo.nombre ||
-      !form.idBarrio ||
-      !Number.isInteger(cuerpo.idBarrio) ||
-      cuerpo.idBarrio <= 0 ||
-      form.latitud === "" ||
-      form.longitud === "" ||
-      !Number.isFinite(cuerpo.latitud) ||
-      !Number.isFinite(cuerpo.longitud) ||
-      Math.abs(cuerpo.latitud) > 90 ||
-      Math.abs(cuerpo.longitud) > 180;
-
-    if (datosInvalidos) {
-      setError("Completa los datos y selecciona una ubicación válida.");
-
-      return;
-    }
-
+  async function guardarUnidad(cuerpo, edicion) {
     setGuardando(true);
-
     try {
-      const edicion = Boolean(seleccion);
-
       if (edicion) {
         await apiAdminPolicia(`/api/Unidades/${seleccion.idUnidad}`, {
           method: "PUT",
@@ -789,42 +769,77 @@ export default function Unidades() {
     }
   }
 
+  function guardar(e) {
+    e.preventDefault();
+    if (guardando) return;
+
+    setError("");
+    const cuerpo = {
+      nombre: form.nombre.trim(),
+      idBarrio: Number(form.idBarrio),
+      latitud: Number(form.latitud),
+      longitud: Number(form.longitud),
+    };
+    const datosInvalidos =
+      !cuerpo.nombre ||
+      !form.idBarrio ||
+      !Number.isInteger(cuerpo.idBarrio) ||
+      cuerpo.idBarrio <= 0 ||
+      form.latitud === "" ||
+      form.longitud === "" ||
+      !Number.isFinite(cuerpo.latitud) ||
+      !Number.isFinite(cuerpo.longitud) ||
+      Math.abs(cuerpo.latitud) > 90 ||
+      Math.abs(cuerpo.longitud) > 180;
+
+    if (datosInvalidos) {
+      setError("Completa los datos y selecciona una ubicación válida.");
+      return;
+    }
+
+    const edicion = Boolean(seleccion);
+    if (edicion && String(seleccion.estado || "").trim().toUpperCase() !== String(form.estado || "").trim().toUpperCase()) {
+      const activando = String(form.estado).trim().toUpperCase() === "OPERATIVA";
+      confirm({
+        title: activando ? "¿Activar unidad?" : "¿Cambiar estado de la unidad?",
+        description: `Confirma que deseas cambiar ${seleccion.nombre} al estado ${form.estado}.`,
+        confirmLabel: "Confirmar cambio",
+        tone: "warning",
+        failureMessage: "No se pudo actualizar el estado de la unidad.",
+        onConfirm: () => guardarUnidad(cuerpo, edicion),
+      });
+      return;
+    }
+
+    guardarUnidad(cuerpo, edicion);
+  }
+
   // ====================================================*
   // ELIMINAR*
   // ====================================================*
 
   function confirmarEliminar(u) {
-    setSeleccion(u);
-
-    setError("");
-
-    setModal("eliminar");
-  }
-
-  async function eliminar() {
-    if (!seleccion || guardando) return;
-
-    setGuardando(true);
-
-    setError("");
-
-    try {
-      await apiAdminPolicia(`/api/Unidades/${seleccion.idUnidad}`, {
-        method: "DELETE",
-      });
-
-      setModal("");
-
-      setSeleccion(null);
-
-      await cargar();
-
-      setMensaje("Unidad eliminada correctamente.");
-    } catch (e) {
-      setError(e.message || "No se pudo eliminar la unidad.");
-    } finally {
-      setGuardando(false);
-    }
+    confirm({
+      title: "¿Eliminar unidad?",
+      description: `Se eliminará la unidad ${u.nombre}. Esta acción no se puede deshacer.`,
+      confirmLabel: "Eliminar unidad",
+      tone: "error",
+      failureMessage: "No se pudo eliminar la unidad.",
+      onConfirm: async () => {
+        if (guardando) return;
+        setGuardando(true);
+        setError("");
+        try {
+          await apiAdminPolicia(`/api/Unidades/${u.idUnidad}`, { method: "DELETE" });
+          setSeleccion(null);
+          setModal("");
+          await cargar();
+          setMensaje("Unidad eliminada correctamente.");
+        } finally {
+          setGuardando(false);
+        }
+      },
+    });
   }
 
   // ====================================================*
@@ -854,20 +869,6 @@ export default function Unidades() {
         {/* INDICADORES */}
 
         <Kpis {...indicadores} />
-
-        {mensaje && (
-          <div className="alert alert-success mt-3" role="status">
-            <i className="bi bi-check-circle me-2" />
-
-            {mensaje}
-          </div>
-        )}
-
-        {error && !modal && (
-          <div className="alert alert-danger mt-3" role="alert">
-            {error}
-          </div>
-        )}
 
         {/* FILTROS */}
 
@@ -1155,7 +1156,14 @@ export default function Unidades() {
                 }}
               />
 
-              <form className="unidad-mapa-formulario" onSubmit={guardar}>
+              <form
+                className="unidad-mapa-formulario"
+                onSubmit={guardar}
+                onInvalid={(evento) => {
+                  evento.preventDefault();
+                  toast.warning(evento.target.validationMessage || "Revisa los campos obligatorios.", "Datos incompletos");
+                }}
+              >
                 <div className="unidad-mapa-seccion">
                   <div className="unidad-modal-icono unidad-modal-icono-pequeno unidad-icono-imagen">
                     <IconoUnidad tamaño={26} />
@@ -1167,12 +1175,6 @@ export default function Unidades() {
                     <p>Configuración de la unidad policial</p>
                   </div>
                 </div>
-
-                {error && (
-                  <div className="alert alert-danger" role="alert">
-                    {error}
-                  </div>
-                )}
 
                 <div className="unidad-mapa-campo">
                   <label htmlFor="unidadNombre">Nombre de la unidad</label>
@@ -1434,49 +1436,6 @@ export default function Unidades() {
 
       {/* MODAL ELIMINAR */}
 
-      {modal === "eliminar" && seleccion && (
-        <div
-          className="unidad-detalle-fondo"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Eliminar unidad"
-        >
-          <div className="unidad-eliminar-ventana">
-            <div className="unidad-eliminar-icono">
-              <i className="bi bi-trash3" />
-            </div>
-
-            <h3>Eliminar unidad</h3>
-
-            <p>
-              ¿Deseas eliminar la unidad <strong>{seleccion.nombre}</strong>?
-              Esta acción no se puede deshacer.
-            </p>
-
-            {error && <div className="alert alert-danger">{error}</div>}
-
-            <div className="unidad-eliminar-acciones">
-              <button
-                type="button"
-                className="unidad-detalle-btn-secundario"
-                onClick={cerrarModal}
-                disabled={guardando}
-              >
-                Cancelar
-              </button>
-
-              <button
-                type="button"
-                className="unidad-eliminar-btn"
-                onClick={eliminar}
-                disabled={guardando}
-              >
-                {guardando ? "Eliminando..." : "Eliminar unidad"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 }
