@@ -1,3 +1,4 @@
+using backend.Services;
 
 using System.Security.Claims;
 using System.Text;
@@ -11,6 +12,10 @@ using Oracle.EntityFrameworkCore.Infrastructure;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+builder.Services.AddScoped<WebPushService>();
+builder.Services.AddScoped<AlertasCercanasService>();
+
+
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen(options =>

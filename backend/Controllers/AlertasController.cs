@@ -18,9 +18,14 @@ namespace backend.Controllers
     {
         private readonly AppDBContext _context;
 
-        public AlertasController(AppDBContext context)
+        private readonly backend.Services.AlertasCercanasService _alertasCercanas;
+
+        public AlertasController(
+            AppDBContext context,
+            backend.Services.AlertasCercanasService alertasCercanas)
         {
             _context = context;
+            _alertasCercanas = alertasCercanas;
         }
 
         // Barrio y comuna del usuario que hace la petición (salen del token + la base de datos)
@@ -150,6 +155,26 @@ namespace backend.Controllers
                     dto.Latitud == null ? null : Math.Round(dto.Latitud.Value, 6),
                     dto.Longitud == null ? null : Math.Round(dto.Longitud.Value, 6),
                     dto.SemaforoId);
+
+                try
+                {
+                    await _alertasCercanas.NotificarAsync(
+                        idAlerta,
+                        idUsuario,
+                        dto.Latitud,
+                        dto.Longitud,
+                        tipoNombre
+                    );
+                }
+                catch (Exception)
+                {
+                    var logger = HttpContext.RequestServices
+                        .GetRequiredService<ILogger<AlertasController>>();
+
+                    logger.LogWarning(
+                        "La alerta {Id} fue registrada, pero fallo el envio Push.",
+                        idAlerta);
+                }
 
                 return Ok(new { IdAlerta = idAlerta });
             }
