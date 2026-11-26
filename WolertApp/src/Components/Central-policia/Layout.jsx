@@ -2,6 +2,9 @@
 import { useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "./Sidebar";
+import { FeedbackProvider } from "../Feedback/FeedbackProvider";
+import "../../css/Policia/ver-detalles.css";
+import "../../css/Policia/central-policia/css/tipografia-central.css";
 
 export default function Layout() {
   const location = useLocation();
@@ -17,7 +20,7 @@ export default function Layout() {
   }, []);
 
   return (
-    <>
+    <FeedbackProvider>
       <Sidebar />
 
       <div
@@ -36,6 +39,6 @@ export default function Layout() {
           </div>
         </main>
       </div>
-    </>
+    </FeedbackProvider>
   );
 }

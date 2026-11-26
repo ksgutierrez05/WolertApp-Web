@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
+import { useFeedback } from "../Feedback/useFeedback";
 
 import {
   listarSolicitudesApoyo,
   responderSolicitudApoyo,
   asignarUnidadApoyo,
 } from "../../Services/solicitudesApoyoService";
+import SelectBonito from "../Administrador-policia/SelectBonito";
 
 import "../../css/Policia/Patrullero/css/apoyo-solicitudes.css";
 
@@ -18,11 +20,11 @@ const ESTADOS = [
   "CANCELADA",
 ];
 
-export default function SolicitudesApoyoCentral() {
+export default function SolicitudesApoyoCentral({ mostrarActualizar = true }) {
+  const { confirm, prompt, toast } = useFeedback();
   const [datos, setDatos] = useState([]);
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState("");
-  const [ok, setOk] = useState("");
   const [filtro, setFiltro] = useState("PENDIENTE");
   const [abierto, setAbierto] = useState(false);
   const [procesando, setProcesando] = useState(null);
@@ -36,66 +38,75 @@ export default function SolicitudesApoyoCentral() {
       setDatos(Array.isArray(res) ? res : []);
       setError("");
     } catch (e) {
-      setError(e.message);
+      setError(e.userMessage || "No fue posible cargar las solicitudes de apoyo.");
     } finally {
       setCargando(false);
     }
   }
 
   useEffect(() => {
-    cargar();
+    const solicitudInicial = window.setTimeout(() => void cargar(), 0);
+    return () => window.clearTimeout(solicitudInicial);
   }, []);
 
   async function actuar(id, accion) {
     let observacion = "";
 
     if (accion === "RECHAZADA") {
-      observacion =
-        window.prompt("Motivo del rechazo:") ?? "";
-
-      if (!observacion.trim()) return;
+      observacion = await prompt({
+        title: "Motivo del rechazo",
+        description: "Indica por qué se rechaza esta solicitud de apoyo.",
+        inputLabel: "Motivo",
+        placeholder: "Escribe el motivo",
+        multiline: true,
+        required: true,
+        confirmLabel: "Continuar",
+        tone: "warning",
+      });
+      if (!observacion) return;
     }
 
-    if (
-      accion === "ACEPTADA" &&
-      !window.confirm(
-        "¿Aceptar esta solicitud de apoyo?"
-      )
-    ) {
-      return;
-    }
+    const esAsignacion = accion === "ASIGNAR";
+    const esRechazo = accion === "RECHAZADA";
+    const detalle = esAsignacion
+      ? "Confirma que deseas asignar automáticamente una unidad de apoyo disponible."
+      : esRechazo
+        ? `Confirma el rechazo de la solicitud con este motivo: ${observacion}`
+        : "Confirma que deseas aceptar esta solicitud de apoyo.";
 
-    if (
-      accion === "ASIGNAR" &&
-      !window.confirm(
-        "¿Asignar automáticamente una unidad de apoyo disponible?"
-      )
-    ) {
-      return;
-    }
-
-    setProcesando(id);
-    setError("");
-    setOk("");
-
-    try {
-      if (accion === "ASIGNAR") {
-        await asignarUnidadApoyo(id);
-      } else {
-        await responderSolicitudApoyo(
-          id,
-          accion,
-          observacion
-        );
-      }
-
-      setOk("Solicitud actualizada.");
-      await cargar();
-    } catch (e) {
-      setError(e.message);
-    } finally {
-      setProcesando(null);
-    }
+    await confirm({
+      title: esAsignacion
+        ? "¿Asignar unidad de apoyo?"
+        : esRechazo
+          ? "¿Rechazar solicitud?"
+          : "¿Aceptar solicitud de apoyo?",
+      description: detalle,
+      confirmLabel: esAsignacion ? "Asignar unidad" : esRechazo ? "Rechazar" : "Aceptar",
+      tone: esRechazo ? "warning" : "confirm",
+      failureMessage: "No fue posible actualizar la solicitud de apoyo.",
+      onConfirm: async () => {
+        setProcesando(id);
+        setError("");
+        try {
+          if (esAsignacion) {
+            await asignarUnidadApoyo(id);
+          } else {
+            await responderSolicitudApoyo(id, accion, observacion);
+          }
+          toast.success(
+            esAsignacion
+              ? "La unidad de apoyo se asignó correctamente."
+              : esRechazo
+                ? "La solicitud de apoyo fue rechazada."
+                : "La solicitud de apoyo fue aceptada.",
+            esAsignacion ? "Asignación exitosa" : "Solicitud actualizada"
+          );
+          await cargar();
+        } finally {
+          setProcesando(null);
+        }
+      },
+    });
   }
 
   const visibles = datos.filter(
@@ -122,13 +133,13 @@ export default function SolicitudesApoyoCentral() {
         </div>
 
         <div className="sa-actions">
-          <button
+          {mostrarActualizar && <button
             type="button"
             onClick={cargar}
             disabled={cargando}
           >
             Actualizar
-          </button>
+          </button>}
 
           <button
             type="button"
@@ -146,23 +157,21 @@ export default function SolicitudesApoyoCentral() {
           <div className="sa-filtros">
             <label>
               Estado
-              <select
-                value={filtro}
-                onChange={(e) =>
-                  setFiltro(e.target.value)
-                }
-              >
-                {ESTADOS.map((estado) => (
-                  <option
-                    key={estado}
-                    value={estado}
-                  >
-                    {estado === "TODAS"
-                      ? "Todos"
-                      : estado.replaceAll("_", " ")}
-                  </option>
-                ))}
-              </select>
+              <SelectBonito
+                id="solicitudes-apoyo-estado"
+                ariaLabel="Filtrar solicitudes por estado"
+                valor={filtro}
+                onChange={setFiltro}
+                opciones={ESTADOS.map((estado) => ({
+                  valor: estado,
+                  etiqueta: estado === "TODAS"
+                    ? "Todos"
+                    : estado.replaceAll("_", " "),
+                }))}
+                placeholder="Estado"
+                icono="bi-funnel"
+                variante="filtro"
+              />
             </label>
           </div>
 
@@ -173,12 +182,6 @@ export default function SolicitudesApoyoCentral() {
           {error && (
             <p className="sa-error" role="alert">
               {error}
-            </p>
-          )}
-
-          {ok && (
-            <p className="sa-ok" role="status">
-              {ok}
             </p>
           )}
 

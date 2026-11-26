@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import Topbar from "../../Components/Central-policia/Topbar";
 import Kpis from "../../Components/Central-policia/Kpicard";
+import SelectBonito from "../../Components/Administrador-policia/SelectBonito";
 
 import {
   cargarUnidadesCentral,
@@ -10,14 +11,31 @@ import {
   idDeUnidad,
   idDeAlerta,
   estadoDe,
-  estadoFinalizado,
+  asignacionEnCurso,
   nombreUnidad,
-  nombrePolicia,
   tipoDeAlerta,
   resumenUnidades,
 } from "../../Services/atencionUnidadesCentralService";
 
 import "../../css/Policia/central-policia/css/unidades.css";
+
+const claseEstadoUnidad = (valor) => {
+  const normalizado = String(valor || "")
+    .trim()
+    .toUpperCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^A-Z0-9]+/g, "_")
+    .replace(/^_|_$/g, "");
+
+  if (normalizado === "OPERATIVA") return "operativa";
+  if (normalizado === "ACTIVA") return "activa";
+  if (["OCUPADA", "OCUPADO", "EN_ATENCION"].includes(normalizado)) return "ocupada";
+  if (["FUERA_DE_SERVICIO", "FUERA_SERVICIO", "INACTIVA"].includes(normalizado)) return "fuera-servicio";
+  if (["EN_CAMINO", "DESPLAZAMIENTO"].includes(normalizado)) return "en-camino";
+  if (["EN_SITIO", "EN_LUGAR"].includes(normalizado)) return "en-sitio";
+  return "otro";
+};
 
 function Unidades() {
   const [datos, setDatos] = useState({
@@ -29,11 +47,11 @@ function Unidades() {
 
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
-  const [recarga, setRecarga] = useState(0);
 
   const [busqueda, setBusqueda] = useState("");
   const [filtroUnidad, setFiltroUnidad] = useState("todas");
   const [filtroEstado, setFiltroEstado] = useState("todos");
+  const [pagina, setPagina] = useState(1);
   const [detalle, setDetalle] = useState(null);
 
   useEffect(() => {
@@ -58,27 +76,20 @@ function Unidades() {
       });
 
     return () => controller.abort();
-  }, [recarga]);
+  }, []);
 
   const valores = useMemo(
-    () => resumenUnidades(datos.unidades),
-    [datos.unidades]
+    () => resumenUnidades(datos.unidades, datos.asignaciones),
+    [datos.unidades, datos.asignaciones]
   );
 
   const registros = useMemo(() => {
-    return datos.policias.map((policia, indice) => {
-      const idUnidadPolicia = obtenerCampo(
-        policia,
-        "idUnidad",
-        "IdUnidad"
-      );
+    const unidadesUnicas = [...new Map(
+      datos.unidades.map((unidad) => [String(idDeUnidad(unidad)), unidad])
+    ).values()];
 
-      const unidad = datos.unidades.find(
-        (u) =>
-          String(idDeUnidad(u)) ===
-          String(idUnidadPolicia)
-      );
-
+    return unidadesUnicas.map((unidad) => {
+      const idUnidad = idDeUnidad(unidad);
       const asignacion = datos.asignaciones.find(
         (a) =>
           String(
@@ -87,8 +98,8 @@ function Unidades() {
               "idUnidad",
               "IdUnidad"
             )
-          ) === String(idUnidadPolicia) &&
-          !estadoFinalizado(estadoDe(a))
+          ) === String(idUnidad) &&
+          asignacionEnCurso(a)
       );
 
       const alerta = datos.alertas.find(
@@ -104,21 +115,14 @@ function Unidades() {
       );
 
       return {
-        clave: `${obtenerCampo(
-          policia,
-          "idPolicia",
-          "IdPolicia",
-          "idUsuario",
-          "IdUsuario"
-        ) ?? indice}`,
-        policia,
+        clave: String(idUnidad),
         unidad,
         asignacion,
         alerta,
-        idUnidadPolicia,
+        idUnidad,
       };
     });
-  }, [datos]);
+  }, [datos.unidades, datos.asignaciones, datos.alertas]);
 
   const estados = useMemo(
     () =>
@@ -136,23 +140,16 @@ function Unidades() {
 
       const coincideUnidad =
         filtroUnidad === "todas" ||
-        String(registro.idUnidadPolicia) === filtroUnidad;
+        String(registro.idUnidad) === filtroUnidad;
 
       const coincideEstado =
         filtroEstado === "todos" ||
         estado === filtroEstado;
 
       const textoBusqueda = [
-        nombrePolicia(registro.policia),
         nombreUnidad(registro.unidad),
-        obtenerCampo(
-          registro.policia,
-          "cedula",
-          "Cedula",
-          "identificacion",
-          "Identificacion"
-        ),
         estado,
+        registro.alerta ? tipoDeAlerta(registro.alerta) : "Sin asignación activa",
       ]
         .join(" ")
         .toLowerCase();
@@ -165,23 +162,13 @@ function Unidades() {
     });
   }, [registros, filtroUnidad, filtroEstado, busqueda]);
 
-  function actualizar() {
-    setCargando(true);
-    setError("");
-    setDetalle(null);
-    setRecarga((actual) => actual + 1);
-  }
-
-  const identificacion = (p) =>
-    obtenerCampo(
-      p,
-      "cedula",
-      "Cedula",
-      "identificacion",
-      "Identificacion",
-      "numeroDocumento",
-      "NumeroDocumento"
-    ) || "—";
+  const registrosPorPagina = 8;
+  const totalPaginas = Math.max(1, Math.ceil(filtrados.length / registrosPorPagina));
+  const paginaActual = Math.min(pagina, totalPaginas);
+  const registrosPagina = filtrados.slice(
+    (paginaActual - 1) * registrosPorPagina,
+    paginaActual * registrosPorPagina
+  );
 
   const atencionActual = (registro) => {
     if (!registro.asignacion) {
@@ -203,7 +190,7 @@ function Unidades() {
 
   return (
     <div className="unidad-page">
-      <Topbar placeholder="Buscar patrullero, unidad o caso..." />
+      <Topbar placeholder="Buscar unidad..." />
 
       <main className="main-dash">
         <div className="container-fluid">
@@ -215,22 +202,11 @@ function Unidades() {
                   Unidades
                 </h1>
 
-                <p className="unidad-descripcion mb-0">
-                  Consulta la disponibilidad y el estado
-                  operativo de los patrulleros.
-                </p>
+                <p className="unidad-descripcion mb-0">Consulta el estado y la atención actual de las unidades policiales.</p>
               </div>
             </div>
 
-            <button
-              type="button"
-              className="btn btn-outline-success btn-sm"
-              onClick={actualizar}
-              disabled={cargando}
-            >
-              <i className="bi bi-arrow-clockwise me-2" />
-              Actualizar
-            </button>
+
           </header>
 
           {error && (
@@ -250,217 +226,108 @@ function Unidades() {
             />
           </div>
 
-          <div className="unidad-aviso">
-            <i className="bi bi-info-circle-fill" />
-
-            <span>
-              Esta información es solo de consulta.
-              La administración de patrulleros
-              corresponde al Comandante de Estación.
-            </span>
-          </div>
-
           <section className="unidad-filtros card-panel-dash">
             <div className="unidad-search">
               <div className="input-group">
-                <span className="input-group-text">
-                  <i className="bi bi-search" />
-                </span>
-
+                <span className="input-group-text" aria-hidden="true"><i className="bi bi-search" /></span>
                 <input
-                  type="text"
+                  type="search"
                   className="form-control"
-                  placeholder="Buscar nombre o identificación..."
-                  aria-label="Buscar patrulleros"
+                  placeholder="Buscar unidad..."
+                  aria-label="Buscar unidad"
                   value={busqueda}
-                  onChange={(e) =>
-                    setBusqueda(e.target.value)
-                  }
+                  onChange={(e) => { setBusqueda(e.target.value); setPagina(1); }}
                 />
               </div>
             </div>
-
-            <select
-              className="form-select unidad-select"
-              value={filtroUnidad}
-              onChange={(e) =>
-                setFiltroUnidad(e.target.value)
-              }
-              aria-label="Filtrar por unidad"
-            >
-              <option value="todas">
-                Todas las unidades
-              </option>
-
-              {datos.unidades.map((u) => (
-                <option
-                  key={idDeUnidad(u)}
-                  value={String(idDeUnidad(u))}
-                >
-                  {nombreUnidad(u)}
-                </option>
-              ))}
-            </select>
-
-            <select
-              className="form-select unidad-select"
-              value={filtroEstado}
-              onChange={(e) =>
-                setFiltroEstado(e.target.value)
-              }
-              aria-label="Filtrar por estado"
-            >
-              <option value="todos">
-                Todos los estados
-              </option>
-
-              {estados.map((estado) => (
-                <option key={estado} value={estado}>
-                  {estado}
-                </option>
-              ))}
-            </select>
+            <SelectBonito
+              id="unidades-filtro-unidad"
+              ariaLabel="Filtrar por unidad"
+              valor={filtroUnidad}
+              onChange={(valor) => { setFiltroUnidad(valor); setPagina(1); }}
+              opciones={[
+                { valor: "todas", etiqueta: "Todas las unidades" },
+                ...datos.unidades.map((u) => ({ valor: String(idDeUnidad(u)), etiqueta: nombreUnidad(u) })),
+              ]}
+              placeholder="Todas las unidades"
+              icono="bi-car-front"
+              variante="filtro"
+            />
+            <SelectBonito
+              id="unidades-filtro-estado"
+              ariaLabel="Filtrar por estado"
+              valor={filtroEstado}
+              onChange={(valor) => { setFiltroEstado(valor); setPagina(1); }}
+              opciones={[
+                { valor: "todos", etiqueta: "Todos los estados" },
+                ...estados.map((estado) => ({ valor: estado, etiqueta: estado })),
+              ]}
+              placeholder="Todos los estados"
+              icono="bi-funnel"
+              variante="filtro"
+            />
           </section>
-
           <section className="card-panel-dash unidad-panel-tabla">
             <div className="unidad-tabla-encabezado">
               <div>
                 <h2>Estado de las unidades</h2>
-                <p>
-                  Información de los patrulleros registrados.
-                </p>
+                <p>Consulta el estado y la atención actual de las unidades policiales</p>
               </div>
-
-              <span className="unidad-tabla-icono">
-                <i className="bi bi-shield-check" />
-              </span>
             </div>
-
             <div className="unidad-tabla-wrap table-responsive">
               <table className="table unidad-tabla align-middle">
-                <thead>
-                  <tr>
-                    <th>Patrullero</th>
-                    <th>Unidad / CAI</th>
-                    <th>Estado</th>
-                    <th>Atención actual</th>
-                    <th className="text-end">
-                      Detalle
-                    </th>
-                  </tr>
-                </thead>
-
+                <thead><tr><th>Unidad</th><th>Estado</th><th>Atención actual</th><th className="text-center">Detalle</th></tr></thead>
                 <tbody>
                   {cargando ? (
-                    <tr>
-                      <td
-                        colSpan="5"
-                        className="text-center p-4"
-                      >
-                        Cargando patrulleros...
-                      </td>
-                    </tr>
+                    <tr><td colSpan="4" className="text-center p-4">Cargando unidades...</td></tr>
                   ) : error ? (
-                    <tr>
-                      <td
-                        colSpan="5"
-                        className="text-center p-4"
-                      >
-                        No se pudo cargar la información.
-                      </td>
-                    </tr>
+                    <tr><td colSpan="4" className="text-center p-4">No se pudo cargar la información.</td></tr>
                   ) : filtrados.length === 0 ? (
-                    <tr>
-                      <td
-                        colSpan="5"
-                        className="text-center p-4 text-muted"
-                      >
-                        No se encontraron patrulleros
-                        con esos filtros.
+                    <tr><td colSpan="4" className="text-center p-4 text-muted">No se encontraron unidades con esos filtros.</td></tr>
+                  ) : registrosPagina.map((registro) => (
+                    <tr key={registro.clave}>
+                      <td>
+                        <span className="unidad-nombre-cai">
+                          <span className="unidad-vehiculo-icono"><i className="bi bi-car-front" aria-hidden="true" /></span>
+                          <strong>{nombreUnidad(registro.unidad) || "Unidad sin nombre"}</strong>
+                        </span>
+                      </td>
+                      <td><span className={`unidad-estado ${claseEstadoUnidad(estadoDe(registro.unidad))}`}>{estadoDe(registro.unidad) || "No disponible"}</span></td>
+                      <td><span className="unidad-sin-atencion">{atencionActual(registro)}</span></td>
+                      <td className="ver-detalles-cell text-center">
+                        <button type="button" className="unidad-btn-detalle btn-ver-detalles" title="Ver detalles" aria-label={`Ver detalles de ${nombreUnidad(registro.unidad)}`} onClick={() => setDetalle(registro)}>
+                          <i className="bi bi-eye-fill" aria-hidden="true" />
+                        </button>
                       </td>
                     </tr>
-                  ) : (
-                    filtrados.map((registro) => (
-                      <tr key={registro.clave}>
-                        <td>
-                          <div className="unidad-patrullero">
-                            <div className="unidad-avatar">
-                              <i className="bi bi-person-fill" />
-                            </div>
-
-                            <div>
-                              <strong>
-                                {nombrePolicia(
-                                  registro.policia
-                                )}
-                              </strong>
-
-                              <small>
-                                {identificacion(
-                                  registro.policia
-                                )}
-                              </small>
-                            </div>
-                          </div>
-                        </td>
-
-                        <td>
-                          <span className="unidad-nombre-cai">
-                            <i className="bi bi-geo-alt" />
-                            {" "}
-                            {registro.unidad
-                              ? nombreUnidad(
-                                  registro.unidad
-                                )
-                              : "Sin unidad"}
-                          </span>
-                        </td>
-
-                        <td>
-                          <span className="badge text-bg-light">
-                            {estadoDe(registro.unidad) ||
-                              "No disponible"}
-                          </span>
-                        </td>
-
-                        <td>
-                          <span className="unidad-sin-atencion">
-                            {atencionActual(registro)}
-                          </span>
-                        </td>
-
-                        <td className="text-end">
-                          <button
-                            type="button"
-                            className="btn btn-light btn-sm unidad-btn-detalle"
-                            aria-label="Ver detalle del patrullero"
-                            onClick={() =>
-                              setDetalle(registro)
-                            }
-                          >
-                            <i className="bi bi-eye" />
-                          </button>
-                        </td>
-                      </tr>
-                    ))
-                  )}
+                  ))}
                 </tbody>
               </table>
             </div>
+            {!cargando && !error && filtrados.length > 0 && (
+              <nav className="unidad-paginacion" aria-label="Paginación de unidades">
+                <span>Mostrando {(paginaActual - 1) * registrosPorPagina + 1}–{Math.min(paginaActual * registrosPorPagina, filtrados.length)} de {filtrados.length} unidades</span>
+                <div className="unidad-paginacion-controles">
+                  <button type="button" disabled={paginaActual === 1} onClick={() => setPagina((p) => Math.max(1, p - 1))}><i className="bi bi-chevron-left" aria-hidden="true" /> Anterior</button>
+                  {Array.from({ length: totalPaginas }, (_, i) => i + 1).map((numero) => (
+                    <button key={numero} type="button" className={numero === paginaActual ? "activa" : ""} aria-current={numero === paginaActual ? "page" : undefined} aria-label={`Página ${numero}`} onClick={() => setPagina(numero)}>{numero}</button>
+                  ))}
+                  <button type="button" disabled={paginaActual === totalPaginas} onClick={() => setPagina((p) => Math.min(totalPaginas, p + 1))}>Siguiente <i className="bi bi-chevron-right" aria-hidden="true" /></button>
+                </div>
+              </nav>
+            )}
           </section>
         </div>
       </main>
 
       {detalle && (
         <div
-          className="modal d-block"
+          className="modal d-block unidad-modal-backdrop"
+          id="modalDetalleUnidad"
           tabIndex="-1"
           role="dialog"
           aria-modal="true"
-          aria-labelledby="modalDetallePatrulleroTitulo"
-          style={{
-            background: "rgba(0, 0, 0, 0.55)",
-          }}
+          aria-labelledby="modalDetalleUnidadTitulo"
           onClick={() => setDetalle(null)}
         >
           <div
@@ -470,15 +337,14 @@ function Unidades() {
             <div className="modal-content unidad-modal">
               <div className="modal-header">
                 <div>
-                  <span className="unidad-modal-subtitulo">
-                    INFORMACIÓN OPERATIVA
-                  </span>
+                  <span className="unidad-modal-subtitulo">INFORMACIÓN DE UNIDAD</span>
 
                   <h5
                     className="modal-title"
-                    id="modalDetallePatrulleroTitulo"
+                    id="modalDetalleUnidadTitulo"
                   >
-                    Detalle del patrullero
+                    <i className="bi bi-truck unidad-modal-titulo-icon" aria-hidden="true" />
+                    {nombreUnidad(detalle.unidad) || "Unidad sin nombre"}
                   </h5>
                 </div>
 
@@ -491,56 +357,25 @@ function Unidades() {
               </div>
 
               <div className="modal-body">
-                <div className="unidad-modal-identidad">
-                  <div className="unidad-avatar unidad-avatar-grande">
-                    <i className="bi bi-person-fill" />
-                  </div>
-
-                  <div>
-                    <h6>
-                      {nombrePolicia(detalle.policia)}
-                    </h6>
-                    <span>Personal policial</span>
-                  </div>
-                </div>
-
                 <div className="unidad-detalle-lista">
                   <div className="unidad-detalle-fila">
-                    <span>Identificación</span>
-                    <strong>
-                      {identificacion(detalle.policia)}
-                    </strong>
+                    <span className="unidad-detalle-etiqueta">
+                      <i className="bi bi-activity" aria-hidden="true" />
+                      Estado operativo
+                    </span>
+                    <span className={`unidad-estado ${claseEstadoUnidad(estadoDe(detalle.unidad))}`}>
+                      {estadoDe(detalle.unidad) || "No disponible"}
+                    </span>
                   </div>
 
                   <div className="unidad-detalle-fila">
-                    <span>Unidad / CAI</span>
-                    <strong>
-                      {detalle.unidad
-                        ? nombreUnidad(detalle.unidad)
-                        : "Sin unidad"}
-                    </strong>
-                  </div>
-
-                  <div className="unidad-detalle-fila">
-                    <span>Estado operativo</span>
-                    <strong className="unidad-detalle-disponible">
-                      {estadoDe(detalle.unidad) ||
-                        "No disponible"}
-                    </strong>
-                  </div>
-
-                  <div className="unidad-detalle-fila">
-                    <span>Atención actual</span>
-                    <strong>
+                    <span className="unidad-detalle-etiqueta">
+                      <i className="bi bi-clipboard2-pulse" aria-hidden="true" />
+                      Atención actual
+                    </span>
+                    <span className="unidad-detalle-atencion">
                       {atencionActual(detalle)}
-                    </strong>
-                  </div>
-
-                  <div className="unidad-detalle-fila">
-                    <span>ID de unidad</span>
-                    <strong>
-                      {detalle.idUnidadPolicia ?? "—"}
-                    </strong>
+                    </span>
                   </div>
                 </div>
               </div>

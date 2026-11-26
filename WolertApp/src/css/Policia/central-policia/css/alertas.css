@@ -98,7 +98,7 @@
 }
 
 .al-title {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Inter", sans-serif;
 
   font-weight: 700;
 
@@ -246,7 +246,7 @@
 }
 
 .al-modal-title {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Inter", sans-serif;
 
   font-weight: 700;
 
@@ -294,7 +294,7 @@
 }
 
 .al-section-title {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Inter", sans-serif;
 
   font-weight: 700;
 
@@ -922,10 +922,203 @@ body.rol-policia .al-paginacion-controles span {
 
 /* Título Alertas entrantes: mismo estilo de Unidades */
 body.rol-policia .page-title-dash {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Inter", sans-serif;
   font-size: clamp(25px, 2.2vw, 31px);
   font-weight: 700;
   letter-spacing: -0.8px;
   color: #193b35;
   line-height: 1.2;
+}
+
+/* Modal de detalle de alerta */
+.alerta-detalle-backdrop {
+  overflow-y: auto;
+  padding: 16px;
+  background: rgba(20, 36, 31, 0.48);
+  font-family: Inter, sans-serif;
+}
+
+.alerta-detalle-dialog {
+  width: 100%;
+  max-width: 760px;
+}
+
+.alerta-detalle-modal {
+  overflow: hidden;
+  border: 1px solid #e4ece8;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 20px 56px rgba(25, 52, 43, 0.18);
+  color: #263c34;
+  font-family: Inter, sans-serif;
+}
+
+.alerta-detalle-header {
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #edf2ef;
+}
+
+.alerta-detalle-header .modal-title {
+  margin: 0;
+  color: #243a32;
+  font: 700 20px/1.35 Inter, sans-serif;
+}
+
+.alerta-detalle-subtitulo {
+  margin: 3px 0 0;
+  color: #71817a;
+  font: 400 12px/1.5 Inter, sans-serif;
+}
+
+.alerta-detalle-body {
+  padding: 20px 24px;
+  font-family: Inter, sans-serif;
+}
+
+.alerta-detalle-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.alerta-detalle-campo {
+  min-width: 0;
+  min-height: 76px;
+  padding: 12px 14px;
+  border: 1px solid #edf2ef;
+  border-radius: 11px;
+  background: #fbfdfc;
+}
+
+.alerta-detalle-etiqueta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  color: #71817b;
+  font: 500 11px/1.4 Inter, sans-serif;
+}
+
+.alerta-detalle-etiqueta i {
+  flex: 0 0 18px;
+  color: #4d927a;
+  font-size: 17px;
+  line-height: 1;
+  text-align: center;
+}
+
+.alerta-detalle-campo > p {
+  margin: 0;
+  color: #2d4039;
+  font: 600 13px/1.5 Inter, sans-serif;
+  overflow-wrap: anywhere;
+}
+
+.alerta-detalle-campo--descripcion {
+  grid-column: 1 / -1;
+  min-height: 92px;
+}
+
+.alerta-detalle-campo--descripcion > p {
+  font-weight: 400;
+  white-space: pre-wrap;
+}
+
+.alerta-detalle-chip {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 5px 9px;
+  border: 0;
+  border-radius: 7px;
+  font: 600 11px/1.35 Inter, sans-serif;
+  text-transform: capitalize;
+}
+
+.alerta-detalle-chip--alta {
+  background: #fbe9e8;
+  color: #a94f4b;
+}
+
+.alerta-detalle-chip--media,
+.alerta-detalle-chip--pendiente {
+  background: #fbf2df;
+  color: #8c6927;
+}
+
+.alerta-detalle-chip--baja,
+.alerta-detalle-chip--resuelta {
+  background: #e4f4eb;
+  color: #28704f;
+}
+
+.alerta-detalle-chip--atencion {
+  background: #eaf1fb;
+  color: #426b91;
+}
+
+.alerta-detalle-chip--neutral {
+  background: #eef2f0;
+  color: #596a62;
+}
+
+.alerta-detalle-footer {
+  gap: 10px;
+  padding: 14px 24px 18px;
+  border-top: 1px solid #edf2ef;
+}
+
+.alerta-detalle-btn-cerrar,
+.alerta-detalle-btn-asignaciones {
+  min-height: 38px;
+  padding: 8px 15px;
+  border-radius: 8px;
+  font: 600 12px/1.4 Inter, sans-serif;
+}
+
+.alerta-detalle-btn-cerrar {
+  border: 1px solid #8bb9a7;
+  background: #fff;
+  color: #17644f;
+}
+
+.alerta-detalle-btn-cerrar:hover {
+  border-color: #649b84;
+  background: #f0f8f4;
+  color: #125642;
+}
+
+.alerta-detalle-btn-asignaciones {
+  border: 1px solid #176b54;
+  background: #176b54;
+  color: #fff;
+  text-decoration: none;
+}
+
+.alerta-detalle-btn-asignaciones:hover {
+  border-color: #105742;
+  background: #105742;
+  color: #fff;
+}
+
+@media (max-width: 576px) {
+  .alerta-detalle-backdrop {
+    padding: 10px;
+  }
+
+  .alerta-detalle-header,
+  .alerta-detalle-body,
+  .alerta-detalle-footer {
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  .alerta-detalle-grid {
+    gap: 9px;
+  }
+
+  .alerta-detalle-campo {
+    padding: 11px 12px;
+  }
 }

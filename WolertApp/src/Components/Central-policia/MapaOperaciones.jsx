@@ -273,6 +273,7 @@ export default function MapaOperaciones({
   cargando = false,
 
   onActualizar,
+  mostrarActualizar = true,
 }) {
   const [capas, setCapas] = useState({
     alarmas: true,
@@ -411,7 +412,7 @@ export default function MapaOperaciones({
             <small>Capas y elementos registrados</small>
           </div>
 
-          <button
+          {mostrarActualizar && <button
             type="button"
             className="mapa-central-actualizar"
             onClick={onActualizar}
@@ -420,7 +421,7 @@ export default function MapaOperaciones({
             <i className="bi bi-arrow-clockwise" />
 
             <span>{cargando ? "Cargando..." : "Actualizar mapa"}</span>
-          </button>
+          </button>}
         </div>
 
         <div className="mapa-central-filtros">

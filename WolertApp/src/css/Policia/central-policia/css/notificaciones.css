@@ -200,3 +200,47 @@
     font-size: 15px;
   }
 }
+
+/* Presentación armonizada de Notificaciones para Central Policía. */
+.notificaciones-page,
+.notificaciones-page :not(i):not([class*="bi-"]) { font-family: Inter, sans-serif !important; }
+.notificaciones-page { --notif-borde: #e2e8e5; --notif-verde: #00634f; --notif-secundario: #64748b; }
+.notif-filtros-panel { position: relative; z-index: 3; display: grid; grid-template-columns: minmax(240px, 1fr) auto; align-items: center; gap: 14px; padding: 16px; margin: 20px 0 16px; border: 1px solid var(--notif-borde); border-radius: 16px; background: #fff; }
+.notif-filtros-panel .input-group { min-width: 0; height: 44px; }
+.notif-filtros-panel .input-group-text { display: grid; width: 44px; place-items: center; border-color: var(--notif-borde); border-radius: 10px 0 0 10px; background: #fff; color: #71877e; }
+.notif-filtros-panel .form-control { height: 44px; min-width: 0; border-color: var(--notif-borde); border-radius: 0 10px 10px 0; box-shadow: none; font: 400 13px/1.4 Inter, sans-serif; }
+.notif-filtros-panel .form-control:focus { border-color: #00634f; }
+.notif-tabs-dash { gap: 6px; }
+.notif-tab-dash { min-height: 40px; padding: 8px 12px; border: 1px solid #e2e8e5; border-radius: 8px; background: #fff; color: #64748b; font: 500 12px/1.4 Inter, sans-serif; transition: background-color 150ms ease, border-color 150ms ease; }
+.notif-tab-dash:hover { border-color: #c5ebdd; background: #ddf5ea; color: #00634f; }
+.notif-tab-dash.active { border-color: #00634f; background: #00634f; color: #fff; }
+.notif-lista { display: flex; flex-direction: column; }
+.notif-fila { width: 100%; padding: 16px; border: 0; border-bottom: 1px solid #edf1ef; background: #fff; color: #1f2937; text-align: left; }
+.notif-fila:last-child { border-bottom: 0; }
+.notif-fila:hover { background: #f8fbf9; }
+.notif-fila.no-leida { background: #fbfdfc; }
+.notif-fila-contenido { display: flex; align-items: flex-start; gap: 14px; }
+.notif-icon-dash { display: grid; flex: 0 0 42px; width: 42px; height: 42px; place-items: center; border-radius: 11px; font-size: 18px; }
+.notif-icon-alertas { background: #fff2e8; color: #9a5b24; }
+.notif-icon-unidades { background: #e5eefc; color: #285da8; }
+.notif-icon-informes { background: #ddf5ea; color: #00634f; }
+.notif-icon-otras { background: #eff3f5; color: #64788c; }
+.notif-contenido { flex: 1; min-width: 0; }
+.notif-cabecera { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.notif-titulo-grupo { display: flex; min-width: 0; align-items: center; flex-wrap: wrap; gap: 8px; }
+.notif-titulo { color: #1f2937; font: 600 14px/1.5 Inter, sans-serif; }
+.notif-estado-unread, .notif-estado-urgente { display: inline-flex; padding: 3px 8px; border-radius: 6px; font: 600 11px/1.35 Inter, sans-serif; }
+.notif-estado-unread { background: #e5eefc; color: #285da8; }
+.notif-estado-urgente { background: #f8e8e8; color: #925050; }
+.notif-fecha { display: flex; flex: 0 0 auto; flex-direction: column; align-items: flex-end; color: #64748b; font: 400 12px/1.45 Inter, sans-serif; }
+.notif-mensaje { margin: 5px 0 8px; color: #64748b; font: 400 13px/1.55 Inter, sans-serif; }
+.notif-categoria-label { color: #64786f; font: 500 11px/1.4 Inter, sans-serif; text-transform: capitalize; }
+.notif-chevron { margin: 8px 0 0 auto; color: #94a3b8; }
+.notif-paginacion { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding: 16px 4px; color: #64748b; font: 400 12px/1.5 Inter, sans-serif; }
+.notif-paginacion-controles { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+.notif-paginacion-controles button { display: inline-flex; min-width: 34px; height: 34px; align-items: center; justify-content: center; gap: 5px; padding: 0 10px; border: 1px solid #e2e8e5; border-radius: 7px; background: #fff; color: #475569; font: 500 12px/1.4 Inter, sans-serif; }
+.notif-paginacion-controles button:hover:not(:disabled) { background: #ddf5ea; color: #00634f; }
+.notif-paginacion-controles button.activa { border-color: #00634f; background: #00634f; color: #fff; }
+.notif-paginacion-controles button:disabled { background: #f4f6f5; color: #9aa6a0; cursor: not-allowed; }
+@media (max-width: 900px) { .notif-filtros-panel { grid-template-columns: 1fr; } }
+@media (max-width: 576px) { .notif-cabecera { flex-direction: column; gap: 5px; } .notif-fecha { flex-direction: row; align-items: center; gap: 8px; } .notif-filtros-panel { padding: 12px; } .notif-fila { padding: 14px 10px; } }

@@ -33,7 +33,8 @@ function CentroOperaciones() {
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
   const [avisos, setAvisos] = useState([]);
-  const [recarga, setRecarga] = useState(0);
+  const [pagina, setPagina] = useState(1);
+  const porPagina = 8;
 
   useEffect(() => {
     const controller = new AbortController();
@@ -62,7 +63,7 @@ function CentroOperaciones() {
       });
 
     return () => controller.abort();
-  }, [recarga]);
+  }, []);
 
   const resumen = useMemo(
     () => resumenOperativo(datos),
@@ -76,9 +77,14 @@ function CentroOperaciones() {
           (a, b) =>
             new Date(fechaAlerta(b) || 0) -
             new Date(fechaAlerta(a) || 0)
-        )
-        .slice(0, 6),
+        ),
     [datos.alertas]
+  );
+  const totalPaginas = Math.max(1, Math.ceil(recientes.length / porPagina));
+  const paginaActual = Math.min(pagina, totalPaginas);
+  const alertasPagina = recientes.slice(
+    (paginaActual - 1) * porPagina,
+    paginaActual * porPagina
   );
 
   const atencionesActivas = useMemo(() => {
@@ -100,25 +106,9 @@ function CentroOperaciones() {
     [datos.unidades]
   );
 
-  function actualizar() {
-    setCargando(true);
-    setError("");
-    setAvisos([]);
-    setRecarga((n) => n + 1);
-  }
-
   const totalUnidades = datos.unidades.length;
   const disponibles = resumen.centro.unidadesDisponibles;
-
-  const porcentajeDisponibles =
-    !cargando && !error && totalUnidades
-      ? (disponibles / totalUnidades) * 100
-      : 0;
-
-  const porcentajeOcupadas =
-    !cargando && !error && totalUnidades
-      ? (ocupadas / totalUnidades) * 100
-      : 0;
+  const otrosEstados = Math.max(0, totalUnidades - disponibles - ocupadas);
 
   return (
     <>
@@ -127,54 +117,13 @@ function CentroOperaciones() {
         iniciales="CR"
       />
 
-      {/* HERO */}
-      <section className="hero-dash mb-4">
-        <div className="hero-content-dash">
-          <div className="eyebrow-dash">
-            CENTRAL DE RADIO · CENTRO DE OPERACIONES
-          </div>
-
-          <h1 className="hero-title-dash">
-            Turno en línea,
-            <br />
-            alertas en curso
-          </h1>
-
-          <p className="hero-text-dash">
-            Monitoreo de alertas, unidades y atenciones
-            con datos del sistema.
-          </p>
-
-          <Link
-            to="/Central-Policia/Alertas"
-            className="hero-cta-dash"
-          >
-            <span className="hero-cta-icon-dash">
-              <i className="bi bi-exclamation-lg" />
-            </span>
-            Ver alertas
-            <i className="bi bi-arrow-right hero-cta-arrow-dash" />
-          </Link>
-        </div>
-      </section>
-
-      {/* ACTUALIZAR */}
-      <div className="d-flex justify-content-end mb-3">
-        <button
-          type="button"
-          className="co-action co-refresh"
-          onClick={actualizar}
-          disabled={cargando}
-        >
-          <i
-            className={`bi bi-arrow-clockwise ${
-              cargando ? "co-spin" : ""
-            }`}
-            aria-hidden="true"
-          />
-          {cargando ? "Actualizando..." : "Actualizar"}
-        </button>
-      </div>
+      <img
+        className="co-hero-banner mb-4"
+        src="/img/banner-central-policia.png"
+        alt="Bienvenido, Operador Policial. Monitoreo de alertas, unidades y atenciones con datos del sistema."
+        width="2150"
+        height="480"
+      />
 
       {/* ERRORES */}
       {error && (
@@ -192,7 +141,7 @@ function CentroOperaciones() {
           </p>
           <ul className="mb-0">
             {avisos.map((aviso, i) => (
-              <li key={i}>{aviso}</li>
+              <li key={i}>{aviso.mensaje}</li>
             ))}
           </ul>
         </div>
@@ -251,7 +200,7 @@ function CentroOperaciones() {
                   </td>
                 </tr>
               ) : (
-                recientes.map((a, i) => {
+                alertasPagina.map((a, i) => {
                   const prioridad = prioridadAlerta(a) || "";
                   const estado = estadoAlerta(a) || "";
 
@@ -291,16 +240,14 @@ function CentroOperaciones() {
                         </span>
                       </td>
 
-                      <td>
+                      <td className="ver-detalles-cell">
                         <Link
                           to="/Central-Policia/Alertas"
-                          className="co-action co-view"
+                          className="co-action co-view btn-ver-detalles"
+                          title="Ver detalles"
+                          aria-label={`Ver detalles de la alerta ${idAlerta(a)}`}
                         >
-                          <i
-                            className="bi bi-eye"
-                            aria-hidden="true"
-                          />
-                          Ver
+                          <i className="bi bi-eye-fill" aria-hidden="true" />
                         </Link>
                       </td>
                     </tr>
@@ -310,6 +257,16 @@ function CentroOperaciones() {
             </tbody>
           </table>
         </div>
+        {!cargando && !error && recientes.length > 0 && (
+          <nav className="co-pagination" aria-label="Paginación de alertas">
+            <span>Mostrando {(paginaActual - 1) * porPagina + 1}–{Math.min(paginaActual * porPagina, recientes.length)} de {recientes.length} alertas</span>
+            <div>
+              <button type="button" onClick={() => setPagina((p) => Math.max(1, p - 1))} disabled={paginaActual === 1}>Anterior</button>
+              <span>Página {paginaActual} de {totalPaginas}</span>
+              <button type="button" onClick={() => setPagina((p) => Math.min(totalPaginas, p + 1))} disabled={paginaActual === totalPaginas}>Siguiente</button>
+            </div>
+          </nav>
+        )}
       </section>
 
       {/* TARJETAS INFERIORES */}
@@ -396,8 +353,9 @@ function CentroOperaciones() {
               </h2>
             </div>
 
-            <div className="mapa-fila-dash co-unit-row">
+            <div className="mapa-fila-dash co-unit-row co-unit-available">
               <span className="dot dot-disponible-dash" />
+              <i className="bi bi-check-circle" aria-hidden="true" />
               <span className="lbl-dash">
                 Disponibles
               </span>
@@ -406,8 +364,9 @@ function CentroOperaciones() {
               </span>
             </div>
 
-            <div className="mapa-fila-dash co-unit-row">
+            <div className="mapa-fila-dash co-unit-row co-unit-busy">
               <span className="dot dot-ocupada-dash" />
+              <i className="bi bi-truck" aria-hidden="true" />
               <span className="lbl-dash">
                 Ocupadas / en servicio
               </span>
@@ -416,37 +375,23 @@ function CentroOperaciones() {
               </span>
             </div>
 
-            <div className="mapa-fila-dash co-unit-row">
+            <div className="mapa-fila-dash co-unit-row co-unit-other">
+              <span className="dot" />
+              <i className="bi bi-three-dots" aria-hidden="true" />
+              <span className="lbl-dash">Otros estados</span>
+              <span className="num-dash">
+                {cargando || error ? "—" : otrosEstados}
+              </span>
+            </div>
+
+            <div className="mapa-fila-dash co-unit-row co-unit-total">
+              <i className="bi bi-car-front" aria-hidden="true" />
               <span className="lbl-dash">
                 Total registradas
               </span>
               <span className="num-dash">
                 {cargando || error ? "—" : totalUnidades}
               </span>
-            </div>
-
-            {/* BARRA DE DISTRIBUCIÓN */}
-            <div
-              className="co-unit-progress"
-              role="img"
-              aria-label={
-                cargando || error
-                  ? "Sin datos de unidades"
-                  : `${disponibles} disponibles y ${ocupadas} ocupadas`
-              }
-            >
-              <span
-                className="co-unit-progress-available"
-                style={{
-                  width: `${porcentajeDisponibles}%`,
-                }}
-              />
-              <span
-                className="co-unit-progress-busy"
-                style={{
-                  width: `${porcentajeOcupadas}%`,
-                }}
-              />
             </div>
 
             <p className="co-unit-note">

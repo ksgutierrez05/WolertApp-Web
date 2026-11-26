@@ -1,0 +1,188 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+
+body.rol-policia,
+body.rol-policia :not(i):not([class*="bi-"]) {
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif !important;
+}
+
+body.rol-policia .kpi-central-card {
+  min-height: 108px;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(24, 44, 64, 0.055);
+}
+
+body.rol-policia .kpi-central-titulo,
+body.rol-policia .kpi-central-valor,
+body.rol-policia .kpi-central-descripcion {
+  font-family: "Inter", system-ui, sans-serif !important;
+}
+
+body.rol-policia .kpi-central-valor { font-size: 1.85rem; }
+
+body.rol-policia .card-panel-dash {
+  background: #fff;
+  border: 1px solid #e7ecef;
+  border-radius: 14px;
+  box-shadow: 0 3px 12px rgba(25, 50, 45, 0.045);
+}
+
+body.rol-policia .tabla-alertas-dash {
+  margin-bottom: 0;
+  color: #344054;
+}
+
+body.rol-policia .tabla-alertas-dash thead th {
+  padding: 11px 12px;
+  color: #667085;
+  background: #f8faf9;
+  border-bottom: 1px solid #e8edeb;
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .035em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+body.rol-policia .tabla-alertas-dash tbody tr { height: 54px; }
+body.rol-policia .tabla-alertas-dash tbody td {
+  padding: 10px 12px;
+  border-color: #edf0ef;
+  font-size: .82rem;
+  vertical-align: middle;
+}
+
+body.rol-policia .co-pagination,
+body.rol-policia .co-pagination > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+body.rol-policia .co-pagination {
+  padding-top: 14px;
+  color: #667085;
+  font-size: .8rem;
+}
+body.rol-policia .co-pagination > div { gap: 10px; }
+body.rol-policia .co-pagination button {
+  padding: 6px 11px;
+  color: #176b4d;
+  background: white;
+  border: 1px solid #dce6e1;
+  border-radius: 7px;
+  font: inherit;
+}
+body.rol-policia .co-pagination button:disabled { opacity: .45; }
+
+body.rol-policia .co-summary-card {
+  padding: 20px !important;
+  border: 1px solid #e7ecef;
+  border-radius: 14px;
+  box-shadow: 0 3px 12px rgba(25, 50, 45, 0.045);
+}
+body.rol-policia .co-summary-card::before,
+body.rol-policia .co-summary-card::after { display: none !important; }
+body.rol-policia .co-summary-card .encabezado-panel-dash { margin-bottom: 14px; }
+body.rol-policia .co-summary-card .section-title-dash { font-size: 1rem; }
+body.rol-policia .co-summary-card .tabla-atenciones-dash tbody tr { height: 46px; }
+body.rol-policia .co-unit-row {
+  min-height: 54px;
+  padding: 10px 12px;
+  border: 1px solid #edf0ef;
+  border-radius: 9px;
+  background: #fff;
+}
+body.rol-policia .co-unit-row .num-dash { font-size: 1.15rem; font-weight: 700; }
+body.rol-policia .co-unit-row > i { width: 18px; color: #667085; text-align: center; }
+body.rol-policia .co-unit-available > i,
+body.rol-policia .co-unit-available .num-dash { color: #16835d; }
+body.rol-policia .co-unit-busy > i,
+body.rol-policia .co-unit-busy .num-dash { color: #c83e4d; }
+body.rol-policia .co-unit-other > i,
+body.rol-policia .co-unit-other .num-dash { color: #b7791f; }
+body.rol-policia .co-unit-total > i { color: #176b4d; }
+body.rol-policia .co-unit-other .dot { background: #d69e2e; }
+body.rol-policia .co-unit-progress { display: none !important; }
+body.rol-policia .co-unit-note { margin: 12px 0 0; color: #77827e; font-size: .75rem; }
+
+body.rol-policia .cp-topbar { position: relative; z-index: 1040; }
+body.rol-policia .cp-anchor,
+body.rol-policia .cp-search { position: relative; }
+body.rol-policia .cp-pop {
+  position: absolute;
+  top: calc(100% + 9px);
+  right: 0;
+  z-index: 1050;
+  overflow: hidden;
+  color: #263e36;
+  background: #fff;
+  border: 1px solid #e1e9e5;
+  border-radius: 10px;
+  box-shadow: 0 10px 28px rgba(23, 59, 50, .12);
+  font-size: .82rem;
+}
+body.rol-policia .cp-pop button {
+  color: #145f48;
+  background: transparent;
+  border: 0;
+  font: inherit;
+  cursor: pointer;
+}
+body.rol-policia .cp-pop button:disabled { opacity: .45; cursor: default; }
+body.rol-policia .cp-results { right: auto; left: 0; width: 100%; max-height: 320px; overflow-y: auto; }
+body.rol-policia .cp-pop-heading { display: block; padding: 12px 14px 8px; color: #77827e; font-size: .7rem; text-transform: uppercase; letter-spacing: .06em; }
+body.rol-policia .cp-results > button,
+body.rol-policia .cp-profile > button {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 14px;
+  text-align: left;
+}
+body.rol-policia .cp-results > button:hover,
+body.rol-policia .cp-profile > button:hover { background: #f2f7f4; }
+body.rol-policia .cp-bell,
+body.rol-policia .cp-avatar { position: relative; cursor: pointer; }
+body.rol-policia .cp-count {
+  position: absolute;
+  top: -5px;
+  right: -6px;
+  min-width: 18px;
+  padding: 2px 5px;
+  color: #fff;
+  background: #c84450;
+  border-radius: 10px;
+  font-size: .65rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+body.rol-policia .cp-notifications { width: min(380px, calc(100vw - 28px)); }
+body.rol-policia .cp-pop-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 13px 14px; border-bottom: 1px solid #edf1ef; }
+body.rol-policia .cp-pop-header button { font-size: .7rem; font-weight: 600; }
+body.rol-policia .cp-notification-list { max-height: 350px; overflow-y: auto; }
+body.rol-policia .cp-notification { display: flex; align-items: center; border-bottom: 1px solid #edf1ef; }
+body.rol-policia .cp-notification.is-unread { background: #f0f7f3; }
+body.rol-policia .cp-notification-content { display: grid; flex: 1; gap: 5px; min-width: 0; padding: 11px 12px; text-align: left; overflow-wrap: anywhere; }
+body.rol-policia .cp-notification-content strong { display: flex; align-items: center; gap: 7px; font-size: .78rem; }
+body.rol-policia .cp-notification-content > span { color: #53645e; font-size: .76rem; }
+body.rol-policia .cp-notification-content small { color: #77827e; font-size: .68rem; }
+body.rol-policia .cp-unread-dot { width: 7px; height: 7px; flex: 0 0 7px; background: #19845f; border-radius: 50%; }
+body.rol-policia .cp-mark-read { width: 34px; height: 34px; margin: 0 8px; border-radius: 6px !important; }
+body.rol-policia .cp-mark-read:hover { background: #e4f1e9; }
+body.rol-policia .cp-view-all { width: 100%; padding: 11px; color: #176b4d !important; background: #f8faf9 !important; font-weight: 600 !important; }
+body.rol-policia .cp-empty { margin: 0; padding: 18px 14px; color: #66736e; text-align: center; }
+body.rol-policia .cp-error { color: #a53540; }
+body.rol-policia .cp-profile { width: min(250px, calc(100vw - 28px)); padding-bottom: 5px; }
+body.rol-policia .cp-profile > strong,
+body.rol-policia .cp-profile > span { display: block; padding: 13px 14px 2px; }
+body.rol-policia .cp-profile > span { padding-top: 0; padding-bottom: 10px; color: #77827e; border-bottom: 1px solid #edf1ef; font-size: .75rem; }
+body.rol-policia .cp-profile > button { justify-content: flex-start; }
+
+@media (max-width: 640px) {
+  body.rol-policia .co-pagination { align-items: flex-start; flex-direction: column; }
+  body.rol-policia .cp-topbar { gap: 9px !important; }
+  body.rol-policia .cp-topbar .search-dash { min-width: 0; }
+  body.rol-policia .cp-topbar .avatar-dash,
+  body.rol-policia .cp-topbar .icon-btn-dash { width: 38px; height: 38px; }
+}

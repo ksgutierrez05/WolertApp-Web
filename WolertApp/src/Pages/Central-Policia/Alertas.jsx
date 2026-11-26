@@ -15,7 +15,12 @@ import {
   esCritica,
   esPendiente,
   esResuelta,
+  esFinalizadaAsignacion,
+  campo,
 } from "../../Services/OperacionesCentralService.js";
+import { nombreUnidad } from "../../Services/atencionUnidadesCentralService";
+import { consultarCentral } from "../../Services/centralPoliciaApi";
+import { zonaDelCaso } from "../../Services/ubicacionAlertaCentral";
 import "../../css/Policia/central-policia/css/alertas.css";
 const datosVacios = () => ({
   alertas: [],
@@ -23,6 +28,26 @@ const datosVacios = () => ({
   atenciones: [],
   unidades: [],
 });
+
+const clasePrioridadDetalle = (valor) => {
+  const prioridad = String(valor || "").toUpperCase();
+  if (["ALTA", "CRITICA", "CRÍTICA", "URGENTE"].includes(prioridad)) return "alta";
+  if (prioridad === "MEDIA") return "media";
+  if (prioridad === "BAJA") return "baja";
+  return "neutral";
+};
+
+const claseEstadoDetalle = (alerta) => {
+  if (esResuelta(alerta)) return "resuelta";
+  if (esPendiente(alerta)) return "pendiente";
+  return "atencion";
+};
+
+const etiquetaEstadoDetalle = (alerta) =>
+  estadoAlerta(alerta)
+    .replaceAll("_", " ")
+    .toLocaleLowerCase("es")
+    .replace(/^\p{L}/u, (letra) => letra.toLocaleUpperCase("es")) || "—";
 function Alertas() {
   const [datos, setDatos] = useState(datosVacios);
   const [cargando, setCargando] = useState(true);
@@ -32,6 +57,7 @@ function Alertas() {
   const [busqueda, setBusqueda] = useState("");
   const [recarga, setRecarga] = useState(0);
   const [alertaSeleccionada, setAlertaSeleccionada] = useState(null);
+  const [barrios, setBarrios] = useState([]);
   const [pagina, setPagina] = useState(1);
   const porPagina = 10;
   useEffect(() => {
@@ -56,6 +82,48 @@ function Alertas() {
       });
     return () => controller.abort();
   }, [recarga]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    consultarCentral("/api/Barrios", { signal: controller.signal })
+      .then((resultado) => {
+        if (controller.signal.aborted) return;
+        const lista = Array.isArray(resultado)
+          ? resultado
+          : resultado?.data || resultado?.barrios || resultado?.Barrios;
+        setBarrios(Array.isArray(lista) ? lista : []);
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) setBarrios([]);
+      });
+    return () => controller.abort();
+  }, []);
+
+  const asignacionSeleccionada = useMemo(() => {
+    if (!alertaSeleccionada) return null;
+    return datos.asignaciones.find(
+      (asignacion) =>
+        String(campo(asignacion, "idAlerta", "IdAlerta", "ID_ALERTA")) ===
+          String(idAlerta(alertaSeleccionada)) &&
+        !esFinalizadaAsignacion(asignacion)
+    ) || null;
+  }, [alertaSeleccionada, datos.asignaciones]);
+
+  const unidadSeleccionada = useMemo(() => {
+    if (!asignacionSeleccionada) return "Sin unidad asignada";
+    const idUnidad = campo(
+      asignacionSeleccionada,
+      "idUnidad", "IdUnidad", "ID_UNIDAD"
+    );
+    const unidad = datos.unidades.find(
+      (item) => String(campo(item, "idUnidad", "IdUnidad", "ID_UNIDAD")) === String(idUnidad)
+    );
+    return unidad
+      ? nombreUnidad(unidad)
+      : idUnidad != null
+        ? `Unidad #${idUnidad}`
+        : "Sin unidad asignada";
+  }, [asignacionSeleccionada, datos.unidades]);
   const valores = useMemo(() => resumenOperativo(datos).alertas, [datos]);
   const filtradas = useMemo(
     () =>
@@ -117,15 +185,7 @@ function Alertas() {
             Consulta y filtra las alertas recibidas desde los ciudadanos.
           </p>
         </div>
-        <button
-          type="button"
-          className="btn btn-outline-success btn-sm"
-          disabled={cargando}
-          onClick={actualizar}
-        >
-          <i className="bi bi-arrow-clockwise me-1" />
-          {cargando ? "Actualizando..." : "Actualizar"}
-        </button>
+
       </div>
       {error && (
         <div className="alert alert-danger" role="alert">
@@ -251,14 +311,15 @@ function Alertas() {
                         {estadoAlerta(a).replaceAll("_", " ") || "—"}
                       </span>
                     </td>
-                    <td>
+                    <td className="ver-detalles-cell">
                       <button
                         type="button"
-                        className="al-btn-ver"
+                        className="al-btn-ver btn-ver-detalles"
                         onClick={() => setAlertaSeleccionada(a)}
+                        title="Ver detalles"
+                        aria-label={`Ver detalles de la alerta ${idAlerta(a)}`}
                       >
-                        <i className="bi bi-eye me-1" />
-                        Ver detalles
+                        <i className="bi bi-eye-fill" aria-hidden="true" />
                       </button>
                     </td>
                   </tr>
@@ -298,94 +359,60 @@ function Alertas() {
       </section>
       {alertaSeleccionada && (
         <div
-          className="modal d-block"
+          className="modal d-block alerta-detalle-backdrop"
           role="dialog"
           aria-modal="true"
-          aria-label="Detalle de alerta"
-          style={{
-            background: "rgba(0, 0, 0, 0.55)",
-            overflowY: "auto",
-          }}
+          aria-labelledby="alerta-detalle-titulo"
           onMouseDown={(e) => {
-            if (e.target === e.currentTarget) {
-              cerrarModal();
-            }
+            if (e.target === e.currentTarget) cerrarModal();
           }}
         >
-          <div className="modal-dialog modal-dialog-centered modal-lg">
-            <div className="modal-content border-0 rounded-4 shadow">
-              <div className="modal-header">
+          <div className="modal-dialog modal-dialog-centered alerta-detalle-dialog">
+            <div className="modal-content alerta-detalle-modal">
+              <div className="modal-header alerta-detalle-header">
                 <div>
-                  <h5 className="modal-title fw-bold">
+                  <h2 className="modal-title" id="alerta-detalle-titulo">
                     Alerta #{idAlerta(alertaSeleccionada)}
-                  </h5>
-                  <small className="text-muted">
-                    Información del reporte ciudadano
-                  </small>
+                  </h2>
+                  <p className="alerta-detalle-subtitulo">Información del reporte ciudadano</p>
                 </div>
-                <button
-                  type="button"
-                  className="btn-close"
-                  aria-label="Cerrar"
-                  onClick={cerrarModal}
-                />
+                <button type="button" className="btn-close" aria-label="Cerrar" onClick={cerrarModal} />
               </div>
-              <div className="modal-body p-4">
-                <div className="row g-4">
-                  <div className="col-md-6">
-                    <small className="text-muted">Tipo de alerta</small>
-                    <p className="fw-semibold mb-0">
-                      {tipoAlerta(alertaSeleccionada)}
-                    </p>
+              <div className="modal-body alerta-detalle-body">
+                <div className="alerta-detalle-grid">
+                  <div className="alerta-detalle-campo">
+                    <div className="alerta-detalle-etiqueta"><i className="bi bi-bell" aria-hidden="true" />Tipo de alerta</div>
+                    <p>{tipoAlerta(alertaSeleccionada)}</p>
                   </div>
-                  <div className="col-md-6">
-                    <small className="text-muted">Prioridad</small>
-                    <p className="fw-semibold mb-0">
-                      {prioridadAlerta(alertaSeleccionada) || "—"}
-                    </p>
+                  <div className="alerta-detalle-campo">
+                    <div className="alerta-detalle-etiqueta"><i className="bi bi-exclamation-triangle" aria-hidden="true" />Prioridad</div>
+                    <p><span className={`alerta-detalle-chip alerta-detalle-chip--${clasePrioridadDetalle(prioridadAlerta(alertaSeleccionada))}`}>{prioridadAlerta(alertaSeleccionada) || "—"}</span></p>
                   </div>
-                  <div className="col-md-6">
-                    <small className="text-muted">Ubicación</small>
-                    <p className="fw-semibold mb-0">
-                      {ubicacionAlerta(alertaSeleccionada)}
-                    </p>
+                  <div className="alerta-detalle-campo">
+                    <div className="alerta-detalle-etiqueta"><i className="bi bi-geo-alt" aria-hidden="true" />Zona o barrio</div>
+                    <p>{zonaDelCaso({ alerta: alertaSeleccionada }, barrios)}</p>
                   </div>
-                  <div className="col-md-6">
-                    <small className="text-muted">Estado</small>
-                    <p className="fw-semibold mb-0">
-                      {estadoAlerta(alertaSeleccionada).replaceAll("_", " ") ||
-                        "—"}
-                    </p>
+                  <div className="alerta-detalle-campo">
+                    <div className="alerta-detalle-etiqueta"><i className="bi bi-activity" aria-hidden="true" />Estado de la alerta</div>
+                    <p><span className={`alerta-detalle-chip alerta-detalle-chip--${claseEstadoDetalle(alertaSeleccionada)}`}>{etiquetaEstadoDetalle(alertaSeleccionada)}</span></p>
                   </div>
-                  <div className="col-md-6">
-                    <small className="text-muted">Fecha del reporte</small>
-                    <p className="fw-semibold mb-0">
-                      {fechaLegible(fechaAlerta(alertaSeleccionada))}
-                    </p>
+                  <div className="alerta-detalle-campo">
+                    <div className="alerta-detalle-etiqueta"><i className="bi bi-calendar3" aria-hidden="true" />Fecha y hora del reporte</div>
+                    <p>{fechaLegible(fechaAlerta(alertaSeleccionada))}</p>
                   </div>
-                  <div className="col-12">
-                    <small className="text-muted">Descripción</small>
-                    <p className="mb-0">
-                      {alertaSeleccionada.descripcion ||
-                        alertaSeleccionada.Descripcion ||
-                        "Sin descripción registrada."}
-                    </p>
+                  <div className="alerta-detalle-campo">
+                    <div className="alerta-detalle-etiqueta"><i className="bi bi-truck" aria-hidden="true" />Unidad asignada</div>
+                    <p>{unidadSeleccionada}</p>
+                  </div>
+                  <div className="alerta-detalle-campo alerta-detalle-campo--descripcion">
+                    <div className="alerta-detalle-etiqueta"><i className="bi bi-card-text" aria-hidden="true" />Descripción</div>
+                    <p>{alertaSeleccionada.descripcion || alertaSeleccionada.Descripcion || "Sin descripción registrada."}</p>
                   </div>
                 </div>
               </div>
-              <div className="modal-footer">
-                <button
-                  type="button"
-                  className="btn btn-outline-secondary"
-                  onClick={cerrarModal}
-                >
-                  Cerrar
-                </button>
-                <Link
-                  to="/Central-Policia/Asignaciones"
-                  className="btn btn-success"
-                >
-                  <i className="bi bi-truck me-2" />
+              <div className="modal-footer alerta-detalle-footer">
+                <button type="button" className="btn alerta-detalle-btn-cerrar" onClick={cerrarModal}>Cerrar</button>
+                <Link to="/Central-Policia/Asignaciones" className="btn alerta-detalle-btn-asignaciones">
                   Ir a asignaciones
                 </Link>
               </div>

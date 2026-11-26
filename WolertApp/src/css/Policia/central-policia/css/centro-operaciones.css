@@ -1,214 +1,10 @@
 @scope (body.rol-policia) {
-  .hero-dash {
-    position: relative;
-
-    overflow: hidden;
-
-    min-height: 230px;
-
-    padding: 32px;
-
-    border-radius: 18px;
-
-    color: #fff;
-
-    background-image:
-      linear-gradient(
-        90deg,
-        rgba(2, 35, 31, 0.98) 0%,
-
-        rgba(2, 43, 37, 0.88) 38%,
-
-        rgba(2, 43, 37, 0.25) 75%,
-
-        rgba(2, 43, 37, 0.08) 100%
-      ),
-      url("/img/central.jpeg");
-
-    background-position:
-      center,
-      center 45%;
-
-    background-size: cover;
-
-    background-repeat: no-repeat;
+  .co-hero-banner {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 16px;
   }
-
-  .hero-content-dash {
-    position: relative;
-
-    z-index: 1;
-
-    max-width: 720px;
-  }
-
-  .hero-dash .eyebrow-dash {
-    color: #a8e8d4;
-
-    font-size: 0.78rem;
-
-    font-weight: 700;
-
-    letter-spacing: 1.2px;
-  }
-
-  .hero-dash .hero-title-dash {
-    margin: 10px 0;
-
-    color: #fff;
-
-    font-size: clamp(1.7rem, 3vw, 2.5rem);
-
-    font-weight: 800;
-
-    line-height: 1.2;
-  }
-
-  .hero-dash .hero-title-dash span {
-    color: #54d6b4;
-  }
-
-  .hero-dash .hero-text-dash {
-    max-width: 560px;
-
-    margin-bottom: 18px;
-
-    color: rgba(255, 255, 255, 0.9);
-
-    line-height: 1.6;
-  }
-
-  .hero-side-dash {
-    display: flex;
-
-    flex-direction: column;
-
-    align-items: flex-end;
-
-    gap: 18px;
-  }
-
-  .estado-chip-dash {
-    display: inline-flex;
-
-    align-items: center;
-
-    gap: 8px;
-
-    padding: 8px 12px;
-
-    border: 1px solid rgba(255, 255, 255, 0.2);
-
-    border-radius: 100px;
-
-    color: #fff;
-
-    background: rgba(255, 255, 255, 0.1);
-
-    font-size: 11px;
-
-    font-weight: 600;
-
-    white-space: nowrap;
-  }
-
-  .estado-chip-dash .dot {
-    width: 7px;
-
-    height: 7px;
-
-    border-radius: 50%;
-
-    background: #57dfa7;
-
-    box-shadow: 0 0 0 4px rgba(87, 223, 167, 0.12);
-  }
-
-  .hero-cta-dash {
-    display: inline-flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    gap: 11px;
-
-    min-height: 44px;
-
-    padding: 10px 18px;
-
-    border: 1px solid rgba(111, 232, 203, 0.25);
-
-    border-radius: 999px;
-
-    background: linear-gradient(135deg, #087f70, #056655);
-
-    color: #fff;
-
-    font-size: 0.82rem;
-
-    font-weight: 700;
-
-    line-height: 1.2;
-
-    text-decoration: none;
-
-    box-shadow: 0 5px 14px rgba(0, 35, 30, 0.18);
-
-    transition:
-      background 0.2s ease,
-      transform 0.2s ease,
-      box-shadow 0.2s ease;
-  }
-
-  .hero-cta-dash:hover {
-    background: linear-gradient(135deg, #09947e, #08715e);
-
-    color: #fff;
-
-    transform: translateY(-2px);
-
-    box-shadow: 0 8px 18px rgba(0, 35, 30, 0.24);
-  }
-
-  .hero-cta-dash:focus-visible {
-    outline: 3px solid rgba(168, 232, 212, 0.8);
-
-    outline-offset: 3px;
-  }
-
-  .hero-cta-icon-dash {
-    display: inline-flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    width: 25px;
-
-    height: 25px;
-
-    border-radius: 50%;
-
-    background: rgba(255, 255, 255, 0.17);
-
-    color: #fff;
-
-    font-size: 0.85rem;
-  }
-
-  .hero-cta-arrow-dash {
-    margin-left: 2px;
-
-    font-size: 0.9rem;
-
-    transition: transform 0.2s ease;
-  }
-
-  .hero-cta-dash:hover .hero-cta-arrow-dash {
-    transform: translateX(3px);
-  }
-
   .kpis-central-dash {
     display: grid;
 
@@ -1097,16 +893,6 @@
       font-size: 0.75rem;
     }
 
-    .hero-dash {
-      min-height: 220px;
-
-      padding: 24px 20px;
-
-      background-position:
-        center,
-        58% center;
-    }
-
     .hero-dash .eyebrow-dash {
       font-size: 0.68rem;
 
@@ -1338,7 +1124,7 @@ body.rol-policia .co-status-dot {
   background: #18a66d;
 }
 
-*/* Botones VER y ACTUALIZAR: estilo de la referencia */*
+/* Botones VER y ACTUALIZAR: estilo de la referencia */
 
 body.rol-policia {
   --co-green: #006b53;

@@ -1002,16 +1002,16 @@ export default function Unidades() {
 
                       <td>{mostrar(cantidadPolicias(u))}</td>
 
-                      <td>
+                      <td className="ver-detalles-cell">
                         <div className="tabla-acciones-dash">
                           <button
                             type="button"
-                            className="btn-icono-dash btn-ver-detalle-admin"
+                            className="btn-icono-dash btn-ver-detalle-admin btn-ver-detalles"
                             title="Ver detalles"
                             aria-label={`Ver detalles de ${u.nombre}`}
                             onClick={() => verDetalle(u)}
                           >
-                            <i className="bi bi-file-earmark-text" />
+                            <i className="bi bi-eye-fill" aria-hidden="true" />
                           </button>
 
                           <button

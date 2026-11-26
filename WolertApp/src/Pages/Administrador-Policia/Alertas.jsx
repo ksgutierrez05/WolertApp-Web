@@ -351,15 +351,15 @@ function Alertas() {
                         </span>
                       </td>
 
-                      <td className="alertas-col-acciones">
+                      <td className="alertas-col-acciones ver-detalles-cell">
                         <button
                           type="button"
-                          className="alertas-btn-ver"
+                          className="alertas-btn-ver btn-ver-detalles"
                           onClick={() => setSeleccionada(alerta)}
                           aria-label={`Ver alerta ${alerta.idAlerta}`}
+                          title="Ver detalles"
                         >
-                          <i className="bi bi-file-earmark-text" />
-                          Ver
+                          <i className="bi bi-eye-fill" aria-hidden="true" />
                         </button>
                       </td>
                     </tr>

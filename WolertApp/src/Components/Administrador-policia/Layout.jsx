@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
+import '../../css/Policia/ver-detalles.css';
 import SidebarPolicia from '../Administrador-policia/Sidebar';
 
 function Layout() {
