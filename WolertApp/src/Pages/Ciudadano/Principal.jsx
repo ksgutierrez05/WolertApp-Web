@@ -499,7 +499,6 @@ export default function Principal() {
       {/* SOS */}
       <div className="sos-panel-usu mb-4">
         <div className="sos-panel-texto-usu">
-          <span className="sos-panel-badge-usu"><i className="bi bi-bell-fill"></i></span>
           <div>
             <div className="sos-panel-titulo-usu">Botón de emergencia</div>
             <div className="sos-panel-sub-usu">Envía tu ubicación en tiempo real a las autoridades y a tus vecinos conectados.</div>

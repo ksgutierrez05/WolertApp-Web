@@ -67,7 +67,7 @@ export default function Vecinos() {
   const [barrios, setBarrios] = useState([]);
   const [barrioIdActual, setBarrioIdActual] = useState(null);
   const [barrioNombreActual, setBarrioNombreActual] = useState("");
-  const [filtro, setFiltro] = useState("todos");
+  const [busqueda, setBusqueda] = useState("");
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
 
@@ -140,11 +140,18 @@ export default function Vecinos() {
   const sinBarrio = clasificados.filter(
     (usuario) => usuario.idBarrioComparado === null || barrioIdActual === null,
   );
-  const listaVisible = filtro === "vecinos"
-    ? vecinos
-    : filtro === "otros"
-      ? otrosBarrios
-      : clasificados;
+  const consulta = normalizarNombreBarrio(busqueda);
+  const listaVisible = clasificados.filter((usuario) => {
+    if (!consulta) return true;
+    const barrio = barrioNombreDe(usuario)
+      || barrios.find((item) => barrioIdDe(item) === usuario.idBarrioComparado)?.nombre
+      || "";
+    return normalizarNombreBarrio([
+      nombreUsuario(usuario),
+      barrio,
+      usuario.mismoBarrio ? "mismo barrio" : "otro barrio",
+    ].join(" ")).includes(consulta);
+  });
 
   return (
     <main className="ciudadano-bandeja ciudadano-vecinos">
@@ -181,17 +188,16 @@ export default function Vecinos() {
 
       <section className="ciudadano-bandeja__panel" aria-label="Personas de la comunidad">
         <div className="ciudadano-bandeja__toolbar">
-          <div className="ciudadano-bandeja__filters" role="group" aria-label="Filtrar personas por barrio">
-            <FilterButton active={filtro === "todos"} onClick={() => setFiltro("todos")}>
-              Todos ({clasificados.length})
-            </FilterButton>
-            <FilterButton active={filtro === "vecinos"} onClick={() => setFiltro("vecinos")}>
-              Mismo barrio ({vecinos.length})
-            </FilterButton>
-            <FilterButton active={filtro === "otros"} onClick={() => setFiltro("otros")}>
-              Otros barrios ({otrosBarrios.length})
-            </FilterButton>
-          </div>
+          <label className="ciudadano-bandeja__search">
+            <i className="bi bi-search" aria-hidden="true" />
+            <input
+              type="search"
+              value={busqueda}
+              onChange={(event) => setBusqueda(event.target.value)}
+              placeholder="Buscar por nombre o barrio..."
+              aria-label="Buscar vecinos por nombre o barrio"
+            />
+          </label>
         </div>
 
         {error && (
@@ -270,19 +276,6 @@ function Metric({ icon, label, value, tone = "" }) {
         <strong>{value}</strong>
       </span>
     </div>
-  );
-}
-
-function FilterButton({ active, onClick, children }) {
-  return (
-    <button
-      type="button"
-      className={active ? "active" : ""}
-      aria-pressed={active}
-      onClick={onClick}
-    >
-      {children}
-    </button>
   );
 }
 
