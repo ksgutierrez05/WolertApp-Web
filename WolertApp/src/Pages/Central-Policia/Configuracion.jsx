@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import Topbar from "../../Components/Central-policia/Topbar";
 import { obtenerPerfilCentral } from "../../Services/configuracionCentralService";
@@ -55,15 +54,9 @@ export default function Configuracion() {
       <main className="main-dash configuracion-main">
         <header className="config-header">
           <div>
-            <span className="config-kicker">
-              <i className="bi bi-shield-check me-2" />
-              CENTRAL DE RADIO
-            </span>
             <h1>Configuración</h1>
             <p>Información de tu cuenta y perfil institucional.</p>
           </div>
-
-
         </header>
 
         {error && (
@@ -77,6 +70,7 @@ export default function Configuracion() {
           <div className="config-avatar">
             <i className="bi bi-person-fill" />
           </div>
+
           <div>
             <span>PERFIL INSTITUCIONAL</span>
             <h2>{nombre}</h2>
@@ -112,16 +106,24 @@ export default function Configuracion() {
                 titulo="Nombre completo"
                 valor={nombre}
               />
+
               <Dato
                 icono="bi-person-circle"
                 titulo="Usuario"
                 valor={perfil.usuario}
               />
-              <Dato icono="bi-envelope" titulo="Correo electrónico" valor={perfil.correo} />
-              <Dato icono="bi-telephone" titulo="Teléfono" valor={perfil.telefono} />
-              <p className="config-seguridad-pendiente" role="status">
-                La edición del perfil requiere un endpoint que derive la cuenta desde el JWT y acepte solo campos personales autorizados. El controlador ASP.NET Core no está incluido en este workspace, así que no se conecta una escritura insegura por ID.
-              </p>
+
+              <Dato
+                icono="bi-envelope"
+                titulo="Correo electrónico"
+                valor={perfil.correo}
+              />
+
+              <Dato
+                icono="bi-telephone"
+                titulo="Teléfono"
+                valor={perfil.telefono}
+              />
             </section>
 
             <div className="config-columna">
@@ -132,31 +134,34 @@ export default function Configuracion() {
                 </h3>
 
                 <div className="config-campos">
-                  <Dato icono="bi-shield-check" titulo="Rol asignado" valor={perfil.rol} />
-                  <Dato icono="bi-person-badge" titulo="Nombre de usuario" valor={perfil.usuario} />
-                  <Dato icono="bi-check-circle" titulo="Estado de cuenta" valor={perfil.estado} />
-                  <Dato icono="bi-geo-alt" titulo="Barrio registrado" valor={perfil.barrio} />
+                  <Dato
+                    icono="bi-shield-check"
+                    titulo="Rol asignado"
+                    valor={perfil.rol}
+                  />
+
+                  <Dato
+                    icono="bi-person-badge"
+                    titulo="Nombre de usuario"
+                    valor={perfil.usuario}
+                  />
+
+                  <Dato
+                    icono="bi-check-circle"
+                    titulo="Estado de cuenta"
+                    valor={perfil.estado}
+                  />
+
+                  <Dato
+                    icono="bi-geo-alt"
+                    titulo="Barrio registrado"
+                    valor={perfil.barrio}
+                  />
                 </div>
-              </section>
-
-              <section className="config-card">
-                <h3>
-                  <i className="bi bi-shield-lock me-2" />
-                  Cambiar contraseña
-                </h3>
-
-                <p className="config-seguridad-pendiente" role="status">
-                  El frontend conoce una ruta de cambio por ID, pero no el controlador que la protege. Hasta verificar validación de contraseña actual y autorización contra el usuario del JWT, el cambio queda pendiente para evitar modificar credenciales de otra cuenta.
-                </p>
               </section>
             </div>
           </div>
         )}
-
-        <footer className="config-footer">
-          <i className="bi bi-lock me-2" />
-          Información consultada desde WOLERTAPP. Perfil de solo lectura.
-        </footer>
       </main>
     </div>
   );
